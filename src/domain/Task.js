@@ -1,5 +1,6 @@
 import { TaskStatus } from "./TaskStatus.js";
 import { Priority } from "./Priority.js";
+
 export class Task {
 
     constructor(data = {}) {
@@ -11,13 +12,13 @@ export class Task {
         this.description = data.description ?? "";
 
         this.status = data.status ?? TaskStatus.INBOX;
-        
+
         this.areaId = data.areaId ?? null;
 
         this.contextId = data.contextId ?? null;
 
         this.priority = data.priority ?? Priority.NONE;
-        
+
         this.tagIds = data.tagIds ?? [];
 
         this.attachments = data.attachments ?? [];
@@ -75,7 +76,7 @@ export class Task {
 
     complete() {
 
-        this.status = "COMPLETED";
+        this.status = TaskStatus.COMPLETED;
 
         this.completedAt = new Date().toISOString();
 
@@ -85,7 +86,7 @@ export class Task {
 
     archive() {
 
-        this.status = "ARCHIVED";
+        this.status = TaskStatus.ARCHIVED;
 
         this.touch();
 
@@ -93,7 +94,7 @@ export class Task {
 
     delete() {
 
-        this.status = "DELETED";
+        this.status = TaskStatus.DELETED;
 
         this.touch();
 
@@ -101,7 +102,9 @@ export class Task {
 
     restore() {
 
-        this.status = "PENDING";
+        this.status = TaskStatus.PENDING;
+
+        this.completedAt = null;
 
         this.touch();
 
