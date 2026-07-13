@@ -1,3 +1,5 @@
+import { TaskStatus } from "./TaskStatus.js";
+import { Priority } from "./Priority.js";
 export class Task {
 
     constructor(data = {}) {
@@ -8,14 +10,14 @@ export class Task {
 
         this.description = data.description ?? "";
 
-        this.status = data.status ?? "INBOX";
-
+        this.status = data.status ?? TaskStatus.INBOX;
+        
         this.areaId = data.areaId ?? null;
 
         this.contextId = data.contextId ?? null;
 
-        this.priority = data.priority ?? 0;
-
+        this.priority = data.priority ?? Priority.NONE;
+        
         this.tagIds = data.tagIds ?? [];
 
         this.attachments = data.attachments ?? [];
