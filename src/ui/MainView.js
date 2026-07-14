@@ -4,15 +4,15 @@ export class MainView {
 
         const app = document.getElementById("app");
 
-        app.innerHTML = `
-            <h2>Mis tareas</h2>
+        let html = "<h2>Mis tareas</h2><ul>";
 
-            <ul>
-                ${tasks.map(task => `
-                    <li>${task.title}</li>
-                `).join("")}
-            </ul>
-        `;
+        for (const task of tasks) {
+            html += `<li>${task.title}</li>`;
+        }
+
+        html += "</ul>";
+
+        app.innerHTML = html;
 
     }
 
