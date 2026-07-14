@@ -1,5 +1,11 @@
 export class MainView {
 
+    constructor(callbacks) {
+
+        this.callbacks = callbacks;
+
+    }
+
     render(tasks = []) {
 
         const app = document.getElementById("app");
@@ -14,7 +20,9 @@ export class MainView {
                     placeholder="Nueva tarea"
                     autocomplete="off">
 
-                <button type="submit">Agregar</button>
+                <button type="submit">
+                    Agregar
+                </button>
             </form>
 
             <ul>
@@ -28,7 +36,10 @@ export class MainView {
                 <li
                     class="task"
                     data-id="${task.id}"
-                    style="cursor:pointer; ${completed ? "text-decoration:line-through;color:gray;" : ""}">
+                    style="
+                        cursor:pointer;
+                        ${completed ? "text-decoration: line-through; color: gray;" : ""}
+                    ">
                     ${task.title}
                 </li>
             `;
@@ -37,6 +48,40 @@ export class MainView {
         html += "</ul>";
 
         app.innerHTML = html;
+
+        this.bindEvents();
+
+    }
+
+    bindEvents() {
+
+        const form = document.getElementById("taskForm");
+
+        form.addEventListener("submit", (event) => {
+
+            event.preventDefault();
+
+            const input = document.getElementById("taskTitle");
+
+            const title = input.value.trim();
+
+            if (!title) {
+                return;
+            }
+
+            this.callbacks.onCreateTask(title);
+
+        });
+
+        document.querySelectorAll(".task").forEach(item => {
+
+            item.addEventListener("click", () => {
+
+                this.callbacks.onToggleTask(item.dataset.id);
+
+            });
+
+        });
 
     }
 
