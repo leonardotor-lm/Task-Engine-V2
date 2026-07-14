@@ -14,26 +14,57 @@ export class App {
 
     start() {
 
-    console.log(`${Config.APP_NAME} v${Config.VERSION}`);
+        console.log(`${Config.APP_NAME} v${Config.VERSION}`);
 
-    this.taskService.createTask({
-        title: "Preparar clase de Literatura",
-        description: "Leer los cuentos.",
-        priority: Priority.HIGH,
-        dueDate: "2026-07-20"
-    });
+        this.taskService.createTask({
+            title: "Preparar clase de Literatura",
+            priority: Priority.HIGH
+        });
 
-    this.taskService.createTask({
-        title: "Corregir evaluaciones"
-    });
+        this.taskService.createTask({
+            title: "Corregir evaluaciones"
+        });
 
-    this.taskService.createTask({
-        title: "Comprar leche"
-    });
+        this.render();
 
-    const tasks = this.taskService.getAllTasks();
+    }
 
-    this.mainView.render(tasks);
+    render() {
 
-}
+        const tasks = this.taskService.getAllTasks();
+
+        this.mainView.render(tasks);
+
+        this.bindEvents();
+
+    }
+
+    bindEvents() {
+
+        const form = document.getElementById("taskForm");
+
+        form.addEventListener("submit", (event) => {
+
+            event.preventDefault();
+
+            const input = document.getElementById("taskTitle");
+
+            const title = input.value.trim();
+
+            if (!title) {
+                return;
+            }
+
+            this.taskService.createTask({
+                title
+            });
+
+            input.value = "";
+
+            this.render();
+
+        });
+
+    }
+
 }
