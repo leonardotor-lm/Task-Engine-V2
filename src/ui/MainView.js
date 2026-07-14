@@ -9,19 +9,40 @@ export class MainView {
         const app = document.getElementById("app");
 
         let html = `
-            <h2>Mis tareas</h2>
+            <div class="layout">
 
-            <form id="taskForm">
-                <input
-                    id="taskTitle"
-                    type="text"
-                    placeholder="Nueva tarea"
-                    autocomplete="off">
+                <aside class="sidebar">
 
-                <button type="submit">Agregar</button>
-            </form>
+                    <h3>Task Engine</h3>
 
-            <ul>
+                    <nav>
+                        <button>Inbox</button>
+                        <button>Hoy</button>
+                        <button>Próximas</button>
+                        <button>Todas</button>
+                    </nav>
+
+                </aside>
+
+                <main class="content">
+
+                    <h2>Mis tareas</h2>
+
+                    <form id="taskForm">
+
+                        <input
+                            id="taskTitle"
+                            type="text"
+                            placeholder="Nueva tarea"
+                            autocomplete="off">
+
+                        <button type="submit">
+                            Agregar
+                        </button>
+
+                    </form>
+
+                    <ul>
         `;
 
         for (const task of tasks) {
@@ -32,31 +53,34 @@ export class MainView {
                 <li
                     class="task"
                     data-id="${task.id}"
-                    style="
-                        cursor:pointer;
-                        ${completed ? "text-decoration: line-through; color: gray;" : ""}
-                    ">
+                    style="${completed ? "text-decoration:line-through;color:gray;" : ""}">
                     ${task.title}
                 </li>
             `;
+
         }
 
-        html += "</ul>";
-
         html += `
-            <hr>
+                    </ul>
 
-            <h3>Tarea seleccionada</h3>
+                </main>
+
+                <aside class="details">
         `;
 
         if (selectedTask) {
 
             html += `
-                <p><strong>Título:</strong> ${selectedTask.title}</p>
-                <p><strong>Descripción:</strong> ${selectedTask.description || "-"}</p>
+                <h3>Detalle</h3>
+
+                <p><strong>${selectedTask.title}</strong></p>
+
+                <p>${selectedTask.description || "Sin descripción"}</p>
 
                 <button id="toggleTask">
-                    ${selectedTask.status === "COMPLETED" ? "Marcar pendiente" : "Completar"}
+                    ${selectedTask.status === "COMPLETED"
+                        ? "Marcar pendiente"
+                        : "Completar"}
                 </button>
 
                 <button id="editTask">
@@ -66,9 +90,19 @@ export class MainView {
 
         } else {
 
-            html += `<p>No hay ninguna tarea seleccionada.</p>`;
+            html += `
+                <h3>Detalle</h3>
+
+                <p>Seleccioná una tarea.</p>
+            `;
 
         }
+
+        html += `
+                </aside>
+
+            </div>
+        `;
 
         app.innerHTML = html;
 
@@ -78,9 +112,9 @@ export class MainView {
 
     bindEvents(selectedTask) {
 
-        document.getElementById("taskForm").addEventListener("submit", (event) => {
+        document.getElementById("taskForm").addEventListener("submit", e => {
 
-            event.preventDefault();
+            e.preventDefault();
 
             const input = document.getElementById("taskTitle");
 
@@ -112,7 +146,7 @@ export class MainView {
 
             document.getElementById("editTask").addEventListener("click", () => {
 
-                alert("Editor de tareas: próximo paso.");
+                alert("Próximamente");
 
             });
 
