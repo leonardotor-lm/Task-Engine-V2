@@ -14,9 +14,37 @@ export class AreaService {
 
     }
 
+    getAreaById(id) {
+
+        return this.repository.getById(id);
+
+    }
+
     createArea(data) {
 
         return this.repository.add(data);
+
+    }
+
+    updateArea(id, data) {
+
+        const area = this.repository.getById(id);
+
+        if (!area) {
+            throw new Error("El área no existe.");
+        }
+
+        area.update(data);
+
+        this.repository.update(area);
+
+        return area;
+
+    }
+
+    deleteArea(id) {
+
+        this.repository.remove(id);
 
     }
 
