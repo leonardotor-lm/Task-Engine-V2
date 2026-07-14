@@ -43,7 +43,9 @@ export class App {
 
     start() {
 
-        console.log(`${Config.APP_NAME} v${Config.VERSION}`);
+    console.log(`${Config.APP_NAME} v${Config.VERSION}`);
+
+    if (this.taskService.getAllTasks().length === 0) {
 
         this.taskService.createTask({
             title: "Preparar clase de Literatura",
@@ -54,10 +56,11 @@ export class App {
             title: "Corregir evaluaciones"
         });
 
-        this.render();
-
     }
 
+    this.render();
+
+}
     render() {
 
         this.mainView.render(
