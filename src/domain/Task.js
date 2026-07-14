@@ -8,7 +8,7 @@ export class Task {
         this.id = data.id ?? crypto.randomUUID();
 
         this.title = (data.title ?? "").trim();
-        
+
         this.description = data.description ?? "";
 
         this.status = data.status ?? TaskStatus.INBOX;
@@ -26,6 +26,8 @@ export class Task {
         this.parentTaskId = data.parentTaskId ?? null;
 
         this.recurrenceId = data.recurrenceId ?? null;
+
+        this.recurrence = data.recurrence ?? null;
 
         this.manualOrder = data.manualOrder ?? 0;
 
@@ -47,10 +49,37 @@ export class Task {
 
     }
 
+    isCompleted() {
+
+        return this.status === TaskStatus.COMPLETED;
+
+    }
+
+    isArchived() {
+
+        return this.status === TaskStatus.ARCHIVED;
+
+    }
+
+    isDeleted() {
+
+        return this.status === TaskStatus.DELETED;
+
+    }
+
     update(data = {}) {
 
-        if (data.title !== undefined)
-            this.title = data.title;
+        if (data.title !== undefined) {
+
+            const title = data.title.trim();
+
+            if (!title) {
+                throw new Error("El título no puede estar vacío.");
+            }
+
+            this.title = title;
+
+        }
 
         if (data.description !== undefined)
             this.description = data.description;
@@ -76,6 +105,10 @@ export class Task {
 
     complete() {
 
+        if (this.isArchived() || this.isDeleted()) {
+            throw new Error("No se puede completar esta tarea.");
+        }
+
         this.status = TaskStatus.COMPLETED;
 
         this.completedAt = new Date().toISOString();
@@ -85,6 +118,10 @@ export class Task {
     }
 
     archive() {
+
+        if (this.isDeleted()) {
+            throw new Error("No se puede archivar una tarea eliminada.");
+        }
 
         this.status = TaskStatus.ARCHIVED;
 
@@ -101,6 +138,10 @@ export class Task {
     }
 
     restore() {
+
+        if (this.isDeleted()) {
+            throw new Error("No se puede restaurar una tarea eliminada.");
+        }
 
         this.status = TaskStatus.PENDING;
 
@@ -153,6 +194,8 @@ export class Task {
             parentTaskId: this.parentTaskId,
 
             recurrenceId: this.recurrenceId,
+
+            recurrence: this.recurrence,
 
             manualOrder: this.manualOrder,
 
