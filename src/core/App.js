@@ -9,6 +9,8 @@ export class App {
 
         this.taskService = new TaskService();
 
+        this.selectedTask = null;
+
         this.mainView = new MainView({
 
             onCreateTask: (title) => {
@@ -22,6 +24,14 @@ export class App {
             onToggleTask: (id) => {
 
                 this.taskService.toggleTask(id);
+
+                this.render();
+
+            },
+
+            onSelectTask: (id) => {
+
+                this.selectedTask = this.taskService.getTaskById(id);
 
                 this.render();
 
@@ -50,9 +60,10 @@ export class App {
 
     render() {
 
-        const tasks = this.taskService.getAllTasks();
-
-        this.mainView.render(tasks);
+        this.mainView.render(
+            this.taskService.getAllTasks(),
+            this.selectedTask
+        );
 
     }
 
