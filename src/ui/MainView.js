@@ -4,7 +4,23 @@ export class MainView {
 
         const app = document.getElementById("app");
 
-        let html = "<h2>Mis tareas</h2><ul>";
+        let html = `
+            <h2>Mis tareas</h2>
+
+            <form id="taskForm">
+                <input
+                    id="taskTitle"
+                    type="text"
+                    placeholder="Nueva tarea"
+                    autocomplete="off">
+
+                <button type="submit">
+                    Agregar
+                </button>
+            </form>
+
+            <ul>
+        `;
 
         for (const task of tasks) {
             html += `<li>${task.title}</li>`;
