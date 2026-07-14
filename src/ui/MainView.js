@@ -1,12 +1,10 @@
 export class MainView {
 
     constructor(callbacks) {
-
         this.callbacks = callbacks;
-
     }
 
-    render(tasks = []) {
+    render(tasks = [], selectedTask = null) {
 
         const app = document.getElementById("app");
 
@@ -20,9 +18,7 @@ export class MainView {
                     placeholder="Nueva tarea"
                     autocomplete="off">
 
-                <button type="submit">
-                    Agregar
-                </button>
+                <button type="submit">Agregar</button>
             </form>
 
             <ul>
@@ -47,17 +43,42 @@ export class MainView {
 
         html += "</ul>";
 
+        html += `
+            <hr>
+
+            <h3>Tarea seleccionada</h3>
+        `;
+
+        if (selectedTask) {
+
+            html += `
+                <p><strong>Título:</strong> ${selectedTask.title}</p>
+                <p><strong>Descripción:</strong> ${selectedTask.description || "-"}</p>
+
+                <button id="toggleTask">
+                    ${selectedTask.status === "COMPLETED" ? "Marcar pendiente" : "Completar"}
+                </button>
+
+                <button id="editTask">
+                    Editar
+                </button>
+            `;
+
+        } else {
+
+            html += `<p>No hay ninguna tarea seleccionada.</p>`;
+
+        }
+
         app.innerHTML = html;
 
-        this.bindEvents();
+        this.bindEvents(selectedTask);
 
     }
 
-    bindEvents() {
+    bindEvents(selectedTask) {
 
-        const form = document.getElementById("taskForm");
-
-        form.addEventListener("submit", (event) => {
+        document.getElementById("taskForm").addEventListener("submit", (event) => {
 
             event.preventDefault();
 
@@ -65,9 +86,7 @@ export class MainView {
 
             const title = input.value.trim();
 
-            if (!title) {
-                return;
-            }
+            if (!title) return;
 
             this.callbacks.onCreateTask(title);
 
@@ -77,11 +96,27 @@ export class MainView {
 
             item.addEventListener("click", () => {
 
-                this.callbacks.onToggleTask(item.dataset.id);
+                this.callbacks.onSelectTask(item.dataset.id);
 
             });
 
         });
+
+        if (selectedTask) {
+
+            document.getElementById("toggleTask").addEventListener("click", () => {
+
+                this.callbacks.onToggleTask(selectedTask.id);
+
+            });
+
+            document.getElementById("editTask").addEventListener("click", () => {
+
+                alert("Editor de tareas: próximo paso.");
+
+            });
+
+        }
 
     }
 
