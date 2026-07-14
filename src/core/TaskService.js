@@ -14,16 +14,8 @@ export class TaskService {
         return this.repository.getAll();
     }
 
-    getTaskById(id) {
-        return this.repository.getById(id);
-    }
-
-    updateTask(task) {
-        this.repository.update(task);
-    }
-
-    deleteTask(id) {
-        this.repository.remove(id);
+    toggleTask(id) {
+        return this.repository.toggleComplete(id);
     }
 
 }
