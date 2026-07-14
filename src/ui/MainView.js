@@ -1,7 +1,16 @@
+import { Sidebar } from "./Sidebar.js";
+import { TaskList } from "./TaskList.js";
+
 export class MainView {
 
     constructor(callbacks) {
+
         this.callbacks = callbacks;
+
+        this.sidebar = new Sidebar();
+
+        this.taskList = new TaskList();
+
     }
 
     render(tasks = [], selectedTask = null) {
@@ -11,59 +20,9 @@ export class MainView {
         let html = `
             <div class="layout">
 
-                <aside class="sidebar">
+                ${this.sidebar.render()}
 
-                    <h3>Task Engine</h3>
-
-                    <nav>
-                        <button>Inbox</button>
-                        <button>Hoy</button>
-                        <button>Próximas</button>
-                        <button>Todas</button>
-                    </nav>
-
-                </aside>
-
-                <main class="content">
-
-                    <h2>Mis tareas</h2>
-
-                    <form id="taskForm">
-
-                        <input
-                            id="taskTitle"
-                            type="text"
-                            placeholder="Nueva tarea"
-                            autocomplete="off">
-
-                        <button type="submit">
-                            Agregar
-                        </button>
-
-                    </form>
-
-                    <ul>
-        `;
-
-        for (const task of tasks) {
-
-            const completed = task.status === "COMPLETED";
-
-            html += `
-                <li
-                    class="task"
-                    data-id="${task.id}"
-                    style="${completed ? "text-decoration:line-through;color:gray;" : ""}">
-                    ${task.title}
-                </li>
-            `;
-
-        }
-
-        html += `
-                    </ul>
-
-                </main>
+                ${this.taskList.render(tasks)}
 
                 <aside class="details">
         `;
@@ -78,7 +37,7 @@ export class MainView {
                 <p>${selectedTask.description || "Sin descripción"}</p>
 
                 <button id="toggleTask">
-                    ${selectedTask.status === "COMPLETED"
+                    ${selectedTask.isCompleted()
                         ? "Marcar pendiente"
                         : "Completar"}
                 </button>
@@ -92,7 +51,6 @@ export class MainView {
 
             html += `
                 <h3>Detalle</h3>
-
                 <p>Seleccioná una tarea.</p>
             `;
 
@@ -112,7 +70,7 @@ export class MainView {
 
     bindEvents(selectedTask) {
 
-        document.getElementById("taskForm").addEventListener("submit", e => {
+        document.getElementById("taskForm").addEventListener("submit", (e) => {
 
             e.preventDefault();
 
