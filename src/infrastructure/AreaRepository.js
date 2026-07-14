@@ -49,4 +49,32 @@ export class AreaRepository {
 
     }
 
+getById(id) {
+
+    return this.areas.find(area => area.id === id) ?? null;
+
+}
+
+update(area) {
+
+    const index = this.areas.findIndex(a => a.id === area.id);
+
+    if (index === -1) {
+        throw new Error("El área no existe.");
+    }
+
+    this.areas[index] = area;
+
+    this.save();
+
+}
+
+remove(id) {
+
+    this.areas = this.areas.filter(area => area.id !== id);
+
+    this.save();
+
+}
+    
 }
