@@ -35,9 +35,24 @@ export class TaskRepository {
     }
 
     remove(id) {
-
         this.tasks = this.tasks.filter(task => task.id !== id);
+    }
 
+    toggleComplete(id) {
+
+        const task = this.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (task.status === "COMPLETED") {
+            task.restore();
+        } else {
+            task.complete();
+        }
+
+        return task;
     }
 
 }
