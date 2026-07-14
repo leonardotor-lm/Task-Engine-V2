@@ -63,7 +63,17 @@ export class App {
 
             this.render();
 
-        });
+       document.querySelectorAll(".task").forEach(item => {
+
+    item.addEventListener("click", () => {
+
+        this.taskService.toggleTask(item.dataset.id);
+
+        this.render();
+
+    });
+
+}); 
 
     }
 
