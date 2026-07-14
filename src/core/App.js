@@ -14,23 +14,26 @@ export class App {
 
     start() {
 
-        console.log(`${Config.APP_NAME} v${Config.VERSION}`);
+    console.log(`${Config.APP_NAME} v${Config.VERSION}`);
 
-        const task = this.taskService.createTask({
+    this.taskService.createTask({
+        title: "Preparar clase de Literatura",
+        description: "Leer los cuentos.",
+        priority: Priority.HIGH,
+        dueDate: "2026-07-20"
+    });
 
-            title: "Preparar clase de Literatura",
-            description: "Leer los cuentos.",
-            priority: Priority.HIGH,
-            dueDate: "2026-07-20"
+    this.taskService.createTask({
+        title: "Corregir evaluaciones"
+    });
 
-        });
+    this.taskService.createTask({
+        title: "Comprar leche"
+    });
 
-        console.log(task);
+    const tasks = this.taskService.getAllTasks();
 
-        console.log(this.taskService.getAllTasks());
+    this.mainView.render(tasks);
 
-        this.mainView.render();
-
-    }
-
+}
 }
