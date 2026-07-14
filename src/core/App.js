@@ -41,40 +41,40 @@ export class App {
 
     bindEvents() {
 
-        const form = document.getElementById("taskForm");
+    const form = document.getElementById("taskForm");
 
-        form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", (event) => {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            const input = document.getElementById("taskTitle");
+        const input = document.getElementById("taskTitle");
 
-            const title = input.value.trim();
+        const title = input.value.trim();
 
-            if (!title) {
-                return;
-            }
+        if (!title) {
+            return;
+        }
 
-            this.taskService.createTask({
-                title
-            });
+        this.taskService.createTask({
+            title
+        });
 
-            input.value = "";
-
-            this.render();
-
-       document.querySelectorAll(".task").forEach(item => {
-
-    item.addEventListener("click", () => {
-
-        this.taskService.toggleTask(item.dataset.id);
+        input.value = "";
 
         this.render();
 
     });
 
-}); 
+    document.querySelectorAll(".task").forEach(item => {
 
-    }
+        item.addEventListener("click", () => {
+
+            this.taskService.toggleTask(item.dataset.id);
+
+            this.render();
+
+        });
+
+    });
 
 }
