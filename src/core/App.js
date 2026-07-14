@@ -7,8 +7,27 @@ export class App {
 
     constructor() {
 
-        this.mainView = new MainView();
         this.taskService = new TaskService();
+
+        this.mainView = new MainView({
+
+            onCreateTask: (title) => {
+
+                this.taskService.createTask({ title });
+
+                this.render();
+
+            },
+
+            onToggleTask: (id) => {
+
+                this.taskService.toggleTask(id);
+
+                this.render();
+
+            }
+
+        });
 
     }
 
@@ -35,46 +54,6 @@ export class App {
 
         this.mainView.render(tasks);
 
-        this.bindEvents();
-
     }
-
-    bindEvents() {
-
-    const form = document.getElementById("taskForm");
-
-    form.addEventListener("submit", (event) => {
-
-        event.preventDefault();
-
-        const input = document.getElementById("taskTitle");
-
-        const title = input.value.trim();
-
-        if (!title) {
-            return;
-        }
-
-        this.taskService.createTask({
-            title
-        });
-
-        input.value = "";
-
-        this.render();
-
-    });
-
-    document.querySelectorAll(".task").forEach(item => {
-
-        item.addEventListener("click", () => {
-
-            this.taskService.toggleTask(item.dataset.id);
-
-            this.render();
-
-        });
-
-    });
 
 }
