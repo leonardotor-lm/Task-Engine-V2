@@ -1,9 +1,38 @@
 import { Task } from "../domain/Task.js";
 
+const STORAGE_KEY = "task-engine-v2";
+
 export class TaskRepository {
 
     constructor() {
+
         this.tasks = [];
+
+        this.load();
+
+    }
+
+    load() {
+
+        const json = localStorage.getItem(STORAGE_KEY);
+
+        if (!json) {
+            return;
+        }
+
+        const data = JSON.parse(json);
+
+        this.tasks = data.map(task => new Task(task));
+
+    }
+
+    save() {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(this.tasks.map(task => task.toJSON()))
+        );
+
     }
 
     getAll() {
@@ -20,7 +49,10 @@ export class TaskRepository {
 
         this.tasks.push(task);
 
+        this.save();
+
         return task;
+
     }
 
     update(task) {
@@ -32,10 +64,17 @@ export class TaskRepository {
         }
 
         this.tasks[index] = task;
+
+        this.save();
+
     }
 
     remove(id) {
+
         this.tasks = this.tasks.filter(task => task.id !== id);
+
+        this.save();
+
     }
 
     toggleComplete(id) {
@@ -52,7 +91,10 @@ export class TaskRepository {
             task.complete();
         }
 
+        this.save();
+
         return task;
+
     }
 
 }
