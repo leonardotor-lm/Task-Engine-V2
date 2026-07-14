@@ -1,5 +1,6 @@
 import { Sidebar } from "./Sidebar.js";
 import { TaskList } from "./TaskList.js";
+import { TaskDetails } from "./TaskDetails.js";
 
 export class MainView {
 
@@ -8,61 +9,24 @@ export class MainView {
         this.callbacks = callbacks;
 
         this.sidebar = new Sidebar();
-
         this.taskList = new TaskList();
+        this.taskDetails = new TaskDetails();
 
     }
 
     render(tasks = [], selectedTask = null) {
 
-        const app = document.getElementById("app");
-
-        let html = `
+        document.getElementById("app").innerHTML = `
             <div class="layout">
 
                 ${this.sidebar.render()}
 
                 ${this.taskList.render(tasks)}
 
-                <aside class="details">
-        `;
-
-        if (selectedTask) {
-
-            html += `
-                <h3>Detalle</h3>
-
-                <p><strong>${selectedTask.title}</strong></p>
-
-                <p>${selectedTask.description || "Sin descripción"}</p>
-
-                <button id="toggleTask">
-                    ${selectedTask.isCompleted()
-                        ? "Marcar pendiente"
-                        : "Completar"}
-                </button>
-
-                <button id="editTask">
-                    Editar
-                </button>
-            `;
-
-        } else {
-
-            html += `
-                <h3>Detalle</h3>
-                <p>Seleccioná una tarea.</p>
-            `;
-
-        }
-
-        html += `
-                </aside>
+                ${this.taskDetails.render(selectedTask)}
 
             </div>
         `;
-
-        app.innerHTML = html;
 
         this.bindEvents(selectedTask);
 
@@ -70,7 +34,7 @@ export class MainView {
 
     bindEvents(selectedTask) {
 
-        document.getElementById("taskForm").addEventListener("submit", (e) => {
+        document.getElementById("taskForm").addEventListener("submit", e => {
 
             e.preventDefault();
 
