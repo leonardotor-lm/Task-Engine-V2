@@ -14,16 +14,24 @@ export class MainView {
                     placeholder="Nueva tarea"
                     autocomplete="off">
 
-                <button type="submit">
-                    Agregar
-                </button>
+                <button type="submit">Agregar</button>
             </form>
 
             <ul>
         `;
 
         for (const task of tasks) {
-            html += `<li>${task.title}</li>`;
+
+            const completed = task.status === "COMPLETED";
+
+            html += `
+                <li
+                    class="task"
+                    data-id="${task.id}"
+                    style="cursor:pointer; ${completed ? "text-decoration:line-through;color:gray;" : ""}">
+                    ${task.title}
+                </li>
+            `;
         }
 
         html += "</ul>";
