@@ -7,8 +7,8 @@ export class Task {
 
         this.id = data.id ?? crypto.randomUUID();
 
-        this.title = data.title ?? "";
-
+        this.title = (data.title ?? "").trim();
+        
         this.description = data.description ?? "";
 
         this.status = data.status ?? TaskStatus.INBOX;
