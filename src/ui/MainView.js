@@ -39,8 +39,8 @@ export class MainView {
 
                 ${center}
 
-                ${this.taskDetails.render(selectedTask)}
-
+                this.taskDetails.render(selectedTask, areas);
+                
             </div>
         `;
 
