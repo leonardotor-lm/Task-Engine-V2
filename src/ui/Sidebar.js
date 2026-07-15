@@ -9,18 +9,26 @@ export class Sidebar {
 
                 <nav>
 
-                    <button>Inbox</button>
+                    <button id="showTasks">
+                        📥 Inbox
+                    </button>
 
-                    <button>Hoy</button>
+                    <button>
+                        📅 Hoy
+                    </button>
 
-                    <button>Próximas</button>
+                    <button>
+                        📆 Próximas
+                    </button>
 
-                    <button>Todas</button>
+                    <button>
+                        📋 Todas
+                    </button>
 
                     <hr>
 
                     <button id="manageAreas">
-                        Áreas
+                        ⚙️ Áreas
                     </button>
 
                 </nav>
