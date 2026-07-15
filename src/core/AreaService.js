@@ -31,14 +31,12 @@ export class AreaService {
         const area = this.repository.getById(id);
 
         if (!area) {
-            throw new Error("El área no existe.");
+            throw new Error("Área inexistente.");
         }
 
         area.update(data);
 
         this.repository.update(area);
-
-        return area;
 
     }
 
