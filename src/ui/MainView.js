@@ -62,6 +62,12 @@ export class MainView {
 
         const { view, selectedTask } = state;
 
+        document.getElementById("showTasks")?.addEventListener("click", () => {
+
+            this.callbacks.onShowTasks();
+
+        });
+
         document.getElementById("manageAreas")?.addEventListener("click", () => {
 
             this.callbacks.onShowAreas();
