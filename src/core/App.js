@@ -13,7 +13,6 @@ export class App {
         this.areaService = new AreaService();
 
         this.selectedTask = null;
-
         this.currentView = View.TASKS;
 
         this.mainView = new MainView({
@@ -21,6 +20,17 @@ export class App {
             onCreateTask: (title) => {
 
                 this.taskService.createTask({ title });
+
+                this.render();
+
+            },
+
+            onCreateArea: (name, color) => {
+
+                this.areaService.createArea({
+                    name,
+                    color
+                });
 
                 this.render();
 
@@ -88,11 +98,8 @@ export class App {
         this.mainView.render({
 
             view: this.currentView,
-
             tasks: this.taskService.getAllTasks(),
-
             selectedTask: this.selectedTask,
-
             areas: this.areaService.getAllAreas()
 
         });
