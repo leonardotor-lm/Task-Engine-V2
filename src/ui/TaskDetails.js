@@ -1,6 +1,6 @@
 export class TaskDetails {
 
-    render(task, areas)
+    render(task, areas) {
     
         if (!task) {
 
