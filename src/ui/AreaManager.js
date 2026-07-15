@@ -28,36 +28,49 @@ export class AreaManager {
 
                 <hr>
 
-                <ul>
+                <ul class="areaList">
         `;
 
         for (const area of areas) {
 
             html += `
-                <li data-id="${area.id}">
+                <li class="areaItem" data-id="${area.id}">
 
-                    <span
-                        style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            border-radius:50%;
-                            background:${area.color};
-                            margin-right:8px;">
-                    </span>
+                    <div>
 
-                    ${area.name}
+                        <span
+                            style="
+                                display:inline-block;
+                                width:12px;
+                                height:12px;
+                                border-radius:50%;
+                                background:${area.color};
+                                margin-right:8px;">
+                        </span>
 
-                    <button class="editArea" data-id="${area.id}">
-                        Editar
-                    </button>
+                        <strong>${area.name}</strong>
 
-                    <button class="deleteArea" data-id="${area.id}">
-                        Eliminar
-                    </button>
+                    </div>
+
+                    <div>
+
+                        <button
+                            class="editArea"
+                            data-id="${area.id}">
+                            Editar
+                        </button>
+
+                        <button
+                            class="deleteArea"
+                            data-id="${area.id}">
+                            Eliminar
+                        </button>
+
+                    </div>
 
                 </li>
             `;
+
         }
 
         html += `
