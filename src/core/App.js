@@ -1,15 +1,20 @@
 import { Config } from "./Config.js";
-import { MainView } from "../ui/MainView.js";
 import { TaskService } from "./TaskService.js";
+import { AreaService } from "./AreaService.js";
+import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
+import { View } from "./View.js";
 
 export class App {
 
     constructor() {
 
         this.taskService = new TaskService();
+        this.areaService = new AreaService();
 
         this.selectedTask = null;
+
+        this.currentView = View.TASKS;
 
         this.mainView = new MainView({
 
@@ -35,6 +40,22 @@ export class App {
 
                 this.render();
 
+            },
+
+            onShowTasks: () => {
+
+                this.currentView = View.TASKS;
+
+                this.render();
+
+            },
+
+            onShowAreas: () => {
+
+                this.currentView = View.AREAS;
+
+                this.render();
+
             }
 
         });
@@ -43,30 +64,38 @@ export class App {
 
     start() {
 
-    console.log(`${Config.APP_NAME} v${Config.VERSION}`);
+        console.log(`${Config.APP_NAME} v${Config.VERSION}`);
 
-    if (this.taskService.getAllTasks().length === 0) {
+        if (this.taskService.getAllTasks().length === 0) {
 
-        this.taskService.createTask({
-            title: "Preparar clase de Literatura",
-            priority: Priority.HIGH
-        });
+            this.taskService.createTask({
+                title: "Preparar clase de Literatura",
+                priority: Priority.HIGH
+            });
 
-        this.taskService.createTask({
-            title: "Corregir evaluaciones"
-        });
+            this.taskService.createTask({
+                title: "Corregir evaluaciones"
+            });
+
+        }
+
+        this.render();
 
     }
 
-    this.render();
-
-}
     render() {
 
-        this.mainView.render(
-            this.taskService.getAllTasks(),
-            this.selectedTask
-        );
+        this.mainView.render({
+
+            view: this.currentView,
+
+            tasks: this.taskService.getAllTasks(),
+
+            selectedTask: this.selectedTask,
+
+            areas: this.areaService.getAllAreas()
+
+        });
 
     }
 
