@@ -25,17 +25,6 @@ export class App {
 
             },
 
-            onCreateArea: (name, color) => {
-
-                this.areaService.createArea({
-                    name,
-                    color
-                });
-
-                this.render();
-
-            },
-
             onToggleTask: (id) => {
 
                 this.taskService.toggleTask(id);
@@ -47,6 +36,25 @@ export class App {
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
+            onCreateArea: (name, color) => {
+
+                this.areaService.createArea({
+                    name,
+                    color
+                });
+
+                this.render();
+
+            },
+
+            onDeleteArea: (id) => {
+
+                this.areaService.deleteArea(id);
 
                 this.render();
 
