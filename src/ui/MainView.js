@@ -1,6 +1,8 @@
 import { Sidebar } from "./Sidebar.js";
 import { TaskList } from "./TaskList.js";
 import { TaskDetails } from "./TaskDetails.js";
+import { AreaManager } from "./AreaManager.js";
+import { View } from "../core/View.js";
 
 export class MainView {
 
@@ -11,66 +13,96 @@ export class MainView {
         this.sidebar = new Sidebar();
         this.taskList = new TaskList();
         this.taskDetails = new TaskDetails();
+        this.areaManager = new AreaManager();
 
     }
 
-    render(tasks = [], selectedTask = null) {
+    render(state) {
 
-        document.getElementById("app").innerHTML = `
+        const {
+
+            view,
+            tasks,
+            selectedTask,
+            areas
+
+        } = state;
+
+        const app = document.getElementById("app");
+
+        let center;
+
+        if (view === View.AREAS) {
+
+            center = this.areaManager.render(areas);
+
+        } else {
+
+            center = this.taskList.render(tasks);
+
+        }
+
+        app.innerHTML = `
             <div class="layout">
 
                 ${this.sidebar.render()}
 
-                ${this.taskList.render(tasks)}
+                ${center}
 
                 ${this.taskDetails.render(selectedTask)}
 
             </div>
         `;
 
-        this.bindEvents(selectedTask);
+        this.bindEvents(state);
 
     }
 
-    bindEvents(selectedTask) {
+    bindEvents(state) {
 
-        document.getElementById("taskForm").addEventListener("submit", e => {
+        const { view, selectedTask } = state;
 
-            e.preventDefault();
+        document.getElementById("manageAreas")?.addEventListener("click", () => {
 
-            const input = document.getElementById("taskTitle");
-
-            const title = input.value.trim();
-
-            if (!title) return;
-
-            this.callbacks.onCreateTask(title);
+            this.callbacks.onShowAreas();
 
         });
 
-        document.querySelectorAll(".task").forEach(item => {
+        if (view === View.TASKS) {
 
-            item.addEventListener("click", () => {
+            document.getElementById("taskForm")?.addEventListener("submit", e => {
 
-                this.callbacks.onSelectTask(item.dataset.id);
+                e.preventDefault();
 
-            });
+                const input = document.getElementById("taskTitle");
 
-        });
+                const title = input.value.trim();
 
-        if (selectedTask) {
+                if (!title) return;
 
-            document.getElementById("toggleTask").addEventListener("click", () => {
-
-                this.callbacks.onToggleTask(selectedTask.id);
+                this.callbacks.onCreateTask(title);
 
             });
 
-            document.getElementById("editTask").addEventListener("click", () => {
+            document.querySelectorAll(".task").forEach(item => {
 
-                alert("Próximamente");
+                item.addEventListener("click", () => {
+
+                    this.callbacks.onSelectTask(item.dataset.id);
+
+                });
 
             });
+
+            if (selectedTask) {
+
+                document.getElementById("toggleTask")?.addEventListener("click", () => {
+
+                    this.callbacks.onToggleTask(selectedTask.id);
+
+                });
+
+            }
 
         }
 
