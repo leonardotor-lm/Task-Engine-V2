@@ -1,7 +1,7 @@
 export class TaskDetails {
 
-    render(task) {
-
+    render(task, areas)
+    
         if (!task) {
 
             return `
