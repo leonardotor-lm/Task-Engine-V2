@@ -33,17 +33,17 @@ export class MainView {
             : this.taskList.render(tasks);
 
         app.innerHTML = `
-            <div class="layout">
+    <div class="layout">
 
-                ${this.sidebar.render()}
+        ${this.sidebar.render()}
 
-                ${center}
+        ${center}
 
-                this.taskDetails.render(selectedTask, areas);
-                
-            </div>
-        `;
+        ${this.taskDetails.render(selectedTask, areas)}
 
+    </div>
+`;
+        
         this.bindEvents(state);
 
     }
