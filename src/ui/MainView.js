@@ -26,24 +26,22 @@ export class MainView {
             areas
         } = state;
 
-        const app = document.getElementById("app");
-
         const center = view === View.AREAS
             ? this.areaManager.render(areas)
             : this.taskList.render(tasks);
 
-        app.innerHTML = `
-    <div class="layout">
+        document.getElementById("app").innerHTML = `
+            <div class="layout">
 
-        ${this.sidebar.render()}
+                ${this.sidebar.render()}
 
-        ${center}
+                ${center}
 
-        ${this.taskDetails.render(selectedTask, areas)}
+                ${this.taskDetails.render(selectedTask, areas)}
 
-    </div>
-`;
-        
+            </div>
+        `;
+
         this.bindEvents(state);
 
     }
@@ -114,6 +112,16 @@ export class MainView {
                 if (!name) return;
 
                 this.callbacks.onCreateArea(name, color);
+
+            });
+
+            document.querySelectorAll(".deleteArea").forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    this.callbacks.onDeleteArea(button.dataset.id);
+
+                });
 
             });
 
