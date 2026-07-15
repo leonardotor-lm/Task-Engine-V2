@@ -20,27 +20,17 @@ export class MainView {
     render(state) {
 
         const {
-
             view,
             tasks,
             selectedTask,
             areas
-
         } = state;
 
         const app = document.getElementById("app");
 
-        let center;
-
-        if (view === View.AREAS) {
-
-            center = this.areaManager.render(areas);
-
-        } else {
-
-            center = this.taskList.render(tasks);
-
-        }
+        const center = view === View.AREAS
+            ? this.areaManager.render(areas)
+            : this.taskList.render(tasks);
 
         app.innerHTML = `
             <div class="layout">
@@ -109,6 +99,23 @@ export class MainView {
                 });
 
             }
+
+        }
+
+        if (view === View.AREAS) {
+
+            document.getElementById("areaForm")?.addEventListener("submit", e => {
+
+                e.preventDefault();
+
+                const name = document.getElementById("areaName").value.trim();
+                const color = document.getElementById("areaColor").value;
+
+                if (!name) return;
+
+                this.callbacks.onCreateArea(name, color);
+
+            });
 
         }
 
