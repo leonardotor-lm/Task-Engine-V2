@@ -1,7 +1,7 @@
 import { Sidebar } from "./Sidebar.js";
 import { TaskList } from "./TaskList.js";
 import { TaskDetails } from "./TaskDetails.js";
-import { AreaManager } from "./AreaManager.js";
+import { EntityManager } from "./EntityManager.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
 
@@ -14,7 +14,7 @@ export class MainView {
         this.sidebar = new Sidebar();
         this.taskList = new TaskList();
         this.taskDetails = new TaskDetails();
-        this.areaManager = new AreaManager();
+        this.entityManager = new EntityManager();
 
     }
 
@@ -28,7 +28,7 @@ export class MainView {
         } = state;
 
         const center = view === View.AREAS
-            ? this.areaManager.render(areas)
+            ? this.entityManager.render("Áreas", areas)
             : this.taskList.render(tasks);
 
         document.getElementById("app").innerHTML = `
@@ -103,12 +103,12 @@ export class MainView {
 
         if (view === View.AREAS) {
 
-            document.getElementById("areaForm")?.addEventListener("submit", e => {
+            document.getElementById("entityForm")?.addEventListener("submit", e => {
 
                 e.preventDefault();
 
-                const name = document.getElementById("areaName").value.trim();
-                const color = document.getElementById("areaColor").value;
+                const name = document.getElementById("entityName").value.trim();
+                const color = document.getElementById("entityColor").value;
 
                 if (!name) return;
 
@@ -116,7 +116,7 @@ export class MainView {
 
             });
 
-            document.querySelectorAll(".deleteArea").forEach(button => {
+            document.querySelectorAll(".deleteEntity").forEach(button => {
 
                 button.addEventListener("click", () => {
 
@@ -130,7 +130,7 @@ export class MainView {
 
             });
 
-            document.querySelectorAll(".editArea").forEach(button => {
+            document.querySelectorAll(".editEntity").forEach(button => {
 
                 button.addEventListener("click", () => {
 
