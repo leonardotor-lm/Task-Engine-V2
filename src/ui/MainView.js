@@ -48,7 +48,7 @@ export class MainView {
 
     bindEvents(state) {
 
-        const { view, selectedTask } = state;
+        const { view, selectedTask, areas } = state;
 
         document.getElementById("showTasks")?.addEventListener("click", () => {
 
@@ -120,6 +120,28 @@ export class MainView {
                 button.addEventListener("click", () => {
 
                     this.callbacks.onDeleteArea(button.dataset.id);
+
+                });
+
+            });
+
+            document.querySelectorAll(".editArea").forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const area = areas.find(a => a.id === button.dataset.id);
+
+                    if (!area) return;
+
+                    const nuevoNombre = prompt("Nombre del área:", area.name);
+
+                    if (nuevoNombre === null) return;
+
+                    const nombre = nuevoNombre.trim();
+
+                    if (!nombre) return;
+
+                    this.callbacks.onUpdateArea(area.id, nombre);
 
                 });
 
