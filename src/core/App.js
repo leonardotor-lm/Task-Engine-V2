@@ -52,6 +52,16 @@ export class App {
 
             },
 
+            onUpdateArea: (id, name) => {
+
+                this.areaService.updateArea(id, {
+                    name
+                });
+
+                this.render();
+
+            },
+
             onDeleteArea: (id) => {
 
                 this.areaService.deleteArea(id);
