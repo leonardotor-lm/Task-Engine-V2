@@ -3,6 +3,7 @@ import { TaskList } from "./TaskList.js";
 import { TaskDetails } from "./TaskDetails.js";
 import { AreaManager } from "./AreaManager.js";
 import { View } from "../core/View.js";
+import { Dialog } from "../components/Dialog.js";
 
 export class MainView {
 
@@ -119,7 +120,11 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    this.callbacks.onDeleteArea(button.dataset.id);
+                    if (Dialog.confirm("¿Eliminar esta área?")) {
+
+                        this.callbacks.onDeleteArea(button.dataset.id);
+
+                    }
 
                 });
 
@@ -133,13 +138,12 @@ export class MainView {
 
                     if (!area) return;
 
-                    const nuevoNombre = prompt("Nombre del área:", area.name);
+                    const nombre = Dialog.prompt(
+                        "Nombre del área:",
+                        area.name
+                    );
 
-                    if (nuevoNombre === null) return;
-
-                    const nombre = nuevoNombre.trim();
-
-                    if (!nombre) return;
+                    if (nombre === null || nombre === "") return;
 
                     this.callbacks.onUpdateArea(area.id, nombre);
 
