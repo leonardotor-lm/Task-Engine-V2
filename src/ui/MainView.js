@@ -1,7 +1,6 @@
 import { Sidebar } from "./Sidebar.js";
-import { TaskList } from "./TaskList.js";
 import { TaskDetails } from "./TaskDetails.js";
-import { EntityManager } from "./EntityManager.js";
+import { ViewRouter } from "./ViewRouter.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
 
@@ -12,31 +11,24 @@ export class MainView {
         this.callbacks = callbacks;
 
         this.sidebar = new Sidebar();
-        this.taskList = new TaskList();
         this.taskDetails = new TaskDetails();
-        this.entityManager = new EntityManager();
+        this.viewRouter = new ViewRouter();
 
     }
 
     render(state) {
 
         const {
-            view,
-            tasks,
             selectedTask,
             areas
         } = state;
-
-        const center = view === View.AREAS
-            ? this.entityManager.render("Áreas", areas)
-            : this.taskList.render(tasks);
 
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
                 ${this.sidebar.render()}
 
-                ${center}
+                ${this.viewRouter.render(state)}
 
                 ${this.taskDetails.render(selectedTask, areas)}
 
