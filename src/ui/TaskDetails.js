@@ -1,7 +1,7 @@
 export class TaskDetails {
 
     render(task, areas) {
-    
+
         if (!task) {
 
             return `
@@ -18,18 +18,29 @@ export class TaskDetails {
 
                 <h3>Detalle</h3>
 
-                <p><strong>${task.title}</strong></p>
+                <label>Título</label>
 
-                <p>${task.description || "Sin descripción"}</p>
+                <input
+                    id="taskTitleEdit"
+                    type="text"
+                    value="${task.title}">
+
+                <label>Descripción</label>
+
+                <textarea
+                    id="taskDescriptionEdit"
+                    rows="6">${task.description ?? ""}</textarea>
+
+                <hr>
+
+                <button id="saveTask">
+                    Guardar cambios
+                </button>
 
                 <button id="toggleTask">
                     ${task.isCompleted()
                         ? "Marcar pendiente"
                         : "Completar"}
-                </button>
-
-                <button id="editTask">
-                    Editar
                 </button>
 
             </aside>
