@@ -71,6 +71,14 @@ export class App {
 
             onDeleteArea: (id) => {
 
+                if (this.taskService.hasTasksInArea(id)) {
+
+                    throw new Error(
+                        "No se puede eliminar el área porque está asignada a una o más tareas."
+                    );
+
+                }
+
                 this.areaService.deleteArea(id);
 
                 this.render();

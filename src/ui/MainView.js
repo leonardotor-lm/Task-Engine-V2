@@ -91,14 +91,21 @@ export class MainView {
 
                 document.getElementById("saveTask")?.addEventListener("click", () => {
 
-                    const title = document.getElementById("taskTitleEdit").value.trim();
+                    const title = document
+                        .getElementById("taskTitleEdit")
+                        .value
+                        .trim();
 
-                    const description = document.getElementById("taskDescriptionEdit").value.trim();
+                    const description = document
+                        .getElementById("taskDescriptionEdit")
+                        .value
+                        .trim();
 
-                    const areaId = document.getElementById("taskArea").value || null;
+                    const areaId =
+                        document.getElementById("taskArea").value || null;
 
                     if (!title) return;
-                                    
+
                     this.callbacks.onUpdateTask(selectedTask.id, {
 
                         title,
@@ -119,8 +126,13 @@ export class MainView {
 
                 e.preventDefault();
 
-                const name = document.getElementById("entityName").value.trim();
-                const color = document.getElementById("entityColor").value;
+                const name = document
+                    .getElementById("entityName")
+                    .value
+                    .trim();
+
+                const color =
+                    document.getElementById("entityColor").value;
 
                 if (!name) return;
 
@@ -132,9 +144,17 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    if (Dialog.confirm("¿Eliminar esta área?")) {
+                    if (!Dialog.confirm("¿Eliminar esta área?")) {
+                        return;
+                    }
+
+                    try {
 
                         this.callbacks.onDeleteArea(button.dataset.id);
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
 
                     }
 
@@ -146,7 +166,9 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    const area = areas.find(a => a.id === button.dataset.id);
+                    const area = areas.find(
+                        area => area.id === button.dataset.id
+                    );
 
                     if (!area) return;
 
