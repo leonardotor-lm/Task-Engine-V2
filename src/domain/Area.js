@@ -4,7 +4,13 @@ export class Area {
 
         this.id = data.id ?? crypto.randomUUID();
 
-        this.name = (data.name ?? "").trim();
+        const name = (data.name ?? "").trim();
+
+        if (!name) {
+            throw new Error("El nombre del área no puede estar vacío.");
+        }
+
+        this.name = name;
 
         this.color = data.color ?? "#3b82f6";
 

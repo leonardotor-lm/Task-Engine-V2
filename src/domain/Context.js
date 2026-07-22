@@ -4,7 +4,13 @@ export class Context {
 
         this.id = data.id ?? crypto.randomUUID();
 
-        this.name = (data.name ?? "").trim();
+        const name = (data.name ?? "").trim();
+
+        if (!name) {
+            throw new Error("El nombre del contexto no puede estar vacío.");
+        }
+
+        this.name = name;
 
         this.color = data.color ?? "#22c55e";
 
