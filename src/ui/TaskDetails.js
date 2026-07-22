@@ -1,6 +1,6 @@
 export class TaskDetails {
 
-    render(task, areas) {
+    render(task, areas = []) {
 
         if (!task) {
 
@@ -12,6 +12,16 @@ export class TaskDetails {
             `;
 
         }
+
+        const options = areas.map(area => `
+
+            <option
+                value="${area.id}"
+                ${task.areaId === area.id ? "selected" : ""}>
+                ${area.name}
+            </option>
+
+        `).join("");
 
         return `
             <aside class="details">
@@ -30,6 +40,18 @@ export class TaskDetails {
                 <textarea
                     id="taskDescriptionEdit"
                     rows="6">${task.description ?? ""}</textarea>
+
+                <label>Área</label>
+
+                <select id="taskArea">
+
+                    <option value="">
+                        Sin área
+                    </option>
+
+                    ${options}
+
+                </select>
 
                 <hr>
 
