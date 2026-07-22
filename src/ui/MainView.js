@@ -98,12 +98,7 @@ export class MainView {
                     const areaId = document.getElementById("taskArea").value || null;
 
                     if (!title) return;
-                                    console.log({
-                    title,
-                    description,
-                    areaId
-                });
-
+                                    
                     this.callbacks.onUpdateTask(selectedTask.id, {
 
                         title,
