@@ -2,20 +2,28 @@ import { TaskRepository } from "../infrastructure/TaskRepository.js";
 
 export class TaskService {
 
-    constructor() {
-        this.repository = new TaskRepository();
+    constructor(repository = new TaskRepository()) {
+
+        this.repository = repository;
+
     }
 
     createTask(data) {
+
         return this.repository.add(data);
+
     }
 
     getAllTasks() {
+
         return this.repository.getAll();
+
     }
 
     getTaskById(id) {
+
         return this.repository.getById(id);
+
     }
 
     updateTask(id, data) {
@@ -35,7 +43,17 @@ export class TaskService {
     }
 
     toggleTask(id) {
+
         return this.repository.toggleComplete(id);
+
+    }
+
+    hasTasksInArea(areaId) {
+
+        return this.repository
+            .getAll()
+            .some(task => task.areaId === areaId);
+
     }
 
 }
