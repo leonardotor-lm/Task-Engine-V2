@@ -84,8 +84,18 @@ export class Task {
         if (data.description !== undefined)
             this.description = data.description;
 
-        if (data.areaId !== undefined)
-            this.areaId = data.areaId;
+       if (data.areaId !== undefined) {
+
+    this.areaId = data.areaId;
+
+    if (
+        this.status === TaskStatus.INBOX &&
+        this.areaId !== null
+    ) {
+        this.status = TaskStatus.PENDING;
+    }
+
+}
 
         if (data.contextId !== undefined)
             this.contextId = data.contextId;
