@@ -89,6 +89,23 @@ export class MainView {
 
                 });
 
+                document.getElementById("saveTask")?.addEventListener("click", () => {
+
+                    const title = document.getElementById("taskTitleEdit").value.trim();
+
+                    const description = document.getElementById("taskDescriptionEdit").value.trim();
+
+                    if (!title) return;
+
+                    this.callbacks.onUpdateTask(selectedTask.id, {
+
+                        title,
+                        description
+
+                    });
+
+                });
+
             }
 
         }
