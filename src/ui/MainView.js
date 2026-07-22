@@ -95,12 +95,15 @@ export class MainView {
 
                     const description = document.getElementById("taskDescriptionEdit").value.trim();
 
+                    const areaId = document.getElementById("taskArea").value || null;
+
                     if (!title) return;
 
                     this.callbacks.onUpdateTask(selectedTask.id, {
 
                         title,
-                        description
+                        description,
+                        areaId
 
                     });
 
