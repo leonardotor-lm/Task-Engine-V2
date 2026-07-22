@@ -7,7 +7,13 @@ export class Task {
 
         this.id = data.id ?? crypto.randomUUID();
 
-        this.title = (data.title ?? "").trim();
+        const title = (data.title ?? "").trim();
+
+        if (!title) {
+            throw new Error("El título no puede estar vacío.");
+        }
+
+        this.title = title;
 
         this.description = data.description ?? "";
 
@@ -96,7 +102,6 @@ export class Task {
             }
 
         }
-
 
         if (data.contextId !== undefined)
             this.contextId = data.contextId;
