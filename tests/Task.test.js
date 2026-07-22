@@ -47,3 +47,14 @@ test("completar y reabrir una tarea conserva un estado válido", () => {
     assert.equal(task.completedAt, null);
 
 });
+
+test("no permite crear una tarea sin título", () => {
+
+    assert.throws(
+        () => new Task({ title: "   " }),
+        {
+            message: "El título no puede estar vacío."
+        }
+    );
+
+});
