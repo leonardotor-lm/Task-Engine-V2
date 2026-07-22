@@ -1,43 +1,49 @@
-import { Task } from "../domain/Task.js";
-import { Priority } from "../domain/Priority.js";
+import test from "node:test";
+import assert from "node:assert/strict";
 
-export function runTaskTests() {
+import { Task } from "../src/domain/Task.js";
+import { TaskStatus } from "../src/domain/TaskStatus.js";
 
-    console.group("=== TASK TESTS ===");
+test("una tarea nueva comienza en INBOX", () => {
 
     const task = new Task({
-
-        title: "Preparar clase de Literatura",
-
-        description: "Leer los cuentos y preparar actividades.",
-
-        priority: Priority.HIGH,
-
-        dueDate: "2026-07-20"
-
+        title: "Preparar clase"
     });
 
-    console.log("1. Tarea creada");
-    console.log(task);
+    assert.equal(task.status, TaskStatus.INBOX);
+
+});
+
+test("asignar un área cambia una tarea INBOX a PENDING", () => {
+
+    const task = new Task({
+        title: "Preparar clase"
+    });
+
+    task.update({
+        areaId: "area-1"
+    });
+
+    assert.equal(task.areaId, "area-1");
+    assert.equal(task.status, TaskStatus.PENDING);
+
+});
+
+test("completar y reabrir una tarea conserva un estado válido", () => {
+
+    const task = new Task({
+        title: "Preparar clase",
+        status: TaskStatus.PENDING
+    });
 
     task.complete();
 
-    console.log("2. Tarea completada");
-    console.log(task);
-
-    task.postpone("2026-07-25");
-
-    console.log("3. Tarea pospuesta");
-    console.log(task);
+    assert.equal(task.status, TaskStatus.COMPLETED);
+    assert.notEqual(task.completedAt, null);
 
     task.restore();
 
-    console.log("4. Tarea restaurada");
-    console.log(task);
+    assert.equal(task.status, TaskStatus.PENDING);
+    assert.equal(task.completedAt, null);
 
-    console.log("5. JSON");
-    console.log(task.toJSON());
-
-    console.groupEnd();
-
-}
+});
