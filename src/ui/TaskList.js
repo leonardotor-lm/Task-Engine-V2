@@ -43,81 +43,97 @@ export class TaskList {
                 <h2>${escapeHtml(title)}</h2>
 
                 ${form}
-
-                <ul class="taskList">
         `;
 
-        for (const task of tasks) {
-
-            const area = areasById.get(task.areaId);
-
-            const context = contextsById.get(task.contextId);
-
-            const priority = PriorityOptions.find(
-                option => option.value === task.priority
-            );
-
-            const metadata = [];
-
-            if (task.dueDate) {
-
-                metadata.push(
-                    `Fecha: ${this.formatDate(task.dueDate)}`
-                );
-
-            }
-
-            if (area) {
-
-                metadata.push(
-                    `Área: ${area.name}`
-                );
-
-            }
-
-            if (context) {
-
-                metadata.push(
-                    `Contexto: ${context.name}`
-                );
-
-            }
-
-            if (priority && priority.value !== 0) {
-
-                metadata.push(
-                    `Prioridad: ${priority.label}`
-                );
-
-            }
-
-            const metadataHtml = metadata.length > 0
-                ? `
-                    <small class="taskMeta">
-                        ${escapeHtml(metadata.join(" · "))}
-                    </small>
-                `
-                : "";
+        if (tasks.length === 0) {
 
             html += `
-                <li
-                    class="task"
-                    data-id="${escapeHtml(task.id)}">
+                <p class="emptyState">
+                    No hay tareas para mostrar en esta vista.
+                </p>
+            `;
 
-                    <span class="taskTitle">
-                        ${escapeHtml(task.title)}
-                    </span>
+        } else {
 
-                    ${metadataHtml}
+            html += `
+                <ul class="taskList">
+            `;
 
-                </li>
+            for (const task of tasks) {
+
+                const area = areasById.get(task.areaId);
+
+                const context = contextsById.get(task.contextId);
+
+                const priority = PriorityOptions.find(
+                    option => option.value === task.priority
+                );
+
+                const metadata = [];
+
+                if (task.dueDate) {
+
+                    metadata.push(
+                        `Fecha: ${this.formatDate(task.dueDate)}`
+                    );
+
+                }
+
+                if (area) {
+
+                    metadata.push(
+                        `Área: ${area.name}`
+                    );
+
+                }
+
+                if (context) {
+
+                    metadata.push(
+                        `Contexto: ${context.name}`
+                    );
+
+                }
+
+                if (priority && priority.value !== 0) {
+
+                    metadata.push(
+                        `Prioridad: ${priority.label}`
+                    );
+
+                }
+
+                const metadataHtml = metadata.length > 0
+                    ? `
+                        <small class="taskMeta">
+                            ${escapeHtml(metadata.join(" · "))}
+                        </small>
+                    `
+                    : "";
+
+                html += `
+                    <li
+                        class="task"
+                        data-id="${escapeHtml(task.id)}">
+
+                        <span class="taskTitle">
+                            ${escapeHtml(task.title)}
+                        </span>
+
+                        ${metadataHtml}
+
+                    </li>
+                `;
+
+            }
+
+            html += `
+                </ul>
             `;
 
         }
 
         html += `
-                </ul>
-
             </main>
         `;
 
