@@ -1,4 +1,5 @@
 import { TaskRepository } from "../infrastructure/TaskRepository.js";
+import { TaskStatus } from "../domain/TaskStatus.js";
 
 export class TaskService {
 
@@ -61,6 +62,64 @@ export class TaskService {
         return this.repository
             .getAll()
             .some(task => task.contextId === contextId);
+
+    }
+
+    getInboxTasks() {
+
+        return this.repository
+            .getAll()
+            .filter(task => task.status === TaskStatus.INBOX);
+
+    }
+
+    getTodayTasks(today) {
+
+        return this.repository
+            .getAll()
+            .filter(task => {
+
+                return (
+                    this.isActiveTask(task) &&
+                    task.dueDate !== null &&
+                    task.dueDate <= today
+                );
+
+            });
+
+    }
+
+    getUpcomingTasks(today) {
+
+        return this.repository
+            .getAll()
+            .filter(task => {
+
+                return (
+                    this.isActiveTask(task) &&
+                    task.dueDate !== null &&
+                    task.dueDate > today
+                );
+
+            });
+
+    }
+
+    getAllActiveTasks() {
+
+        return this.repository
+            .getAll()
+            .filter(task => this.isActiveTask(task));
+
+    }
+
+    isActiveTask(task) {
+
+        return (
+            task.status !== TaskStatus.COMPLETED &&
+            task.status !== TaskStatus.ARCHIVED &&
+            task.status !== TaskStatus.DELETED
+        );
 
     }
 
