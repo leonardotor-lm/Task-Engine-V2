@@ -81,6 +81,38 @@ export class TaskService {
 
     }
 
+    restoreArchivedTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        task.restoreFromArchive();
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
+    restoreDeletedTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        task.restoreFromTrash();
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     hasTasksInArea(areaId) {
 
         return this.repository
@@ -142,6 +174,22 @@ export class TaskService {
         return this.repository
             .getAll()
             .filter(task => this.isActiveTask(task));
+
+    }
+
+    getArchivedTasks() {
+
+        return this.repository
+            .getAll()
+            .filter(task => task.status === TaskStatus.ARCHIVED);
+
+    }
+
+    getDeletedTasks() {
+
+        return this.repository
+            .getAll()
+            .filter(task => task.status === TaskStatus.DELETED);
 
     }
 
