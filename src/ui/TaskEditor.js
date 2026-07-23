@@ -113,6 +113,14 @@ export class TaskEditor {
                         : "Completar"}
                 </button>
 
+                <button id="archiveTask">
+                    Archivar
+                </button>
+
+                <button id="deleteTask">
+                    Eliminar
+                </button>
+
             </aside>
         `;
 
