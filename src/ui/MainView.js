@@ -69,6 +69,18 @@ export class MainView {
             this.callbacks.onShowAll();
         });
 
+        document.getElementById("showCompleted")?.addEventListener("click", () => {
+            this.callbacks.onShowCompleted();
+        });
+
+        document.getElementById("showArchived")?.addEventListener("click", () => {
+            this.callbacks.onShowArchived();
+        });
+
+        document.getElementById("showTrash")?.addEventListener("click", () => {
+            this.callbacks.onShowTrash();
+        });
+
         document.getElementById("manageAreas")?.addEventListener("click", () => {
             this.callbacks.onShowAreas();
         });
@@ -78,10 +90,15 @@ export class MainView {
         });
 
         const taskViews = [
+
             View.INBOX,
             View.TODAY,
             View.UPCOMING,
-            View.ALL
+            View.ALL,
+            View.COMPLETED,
+            View.ARCHIVED,
+            View.TRASH
+
         ];
 
         if (taskViews.includes(view)) {
@@ -113,6 +130,10 @@ export class MainView {
                     this.callbacks.onToggleTask(selectedTask.id);
                 });
 
+                document.getElementById("reopenTask")?.addEventListener("click", () => {
+                    this.callbacks.onToggleTask(selectedTask.id);
+                });
+
                 document.getElementById("archiveTask")?.addEventListener("click", () => {
 
                     if (!Dialog.confirm("¿Archivar esta tarea?")) {
@@ -130,6 +151,18 @@ export class MainView {
                     }
 
                     this.callbacks.onDeleteTask(selectedTask.id);
+
+                });
+
+                document.getElementById("restoreArchivedTask")?.addEventListener("click", () => {
+
+                    this.callbacks.onRestoreArchivedTask(selectedTask.id);
+
+                });
+
+                document.getElementById("restoreDeletedTask")?.addEventListener("click", () => {
+
+                    this.callbacks.onRestoreDeletedTask(selectedTask.id);
 
                 });
 

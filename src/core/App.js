@@ -41,7 +41,7 @@ export class App {
 
                 this.taskService.toggleTask(id);
 
-                this.selectedTask = this.taskService.getTaskById(id);
+                this.selectedTask = null;
 
                 this.render();
 
@@ -60,6 +60,26 @@ export class App {
             onDeleteTask: (id) => {
 
                 this.taskService.deleteTask(id);
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onRestoreArchivedTask: (id) => {
+
+                this.taskService.restoreArchivedTask(id);
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onRestoreDeletedTask: (id) => {
+
+                this.taskService.restoreDeletedTask(id);
 
                 this.selectedTask = null;
 
@@ -171,6 +191,30 @@ export class App {
 
             },
 
+            onShowCompleted: () => {
+
+                this.currentView = View.COMPLETED;
+
+                this.render();
+
+            },
+
+            onShowArchived: () => {
+
+                this.currentView = View.ARCHIVED;
+
+                this.render();
+
+            },
+
+            onShowTrash: () => {
+
+                this.currentView = View.TRASH;
+
+                this.render();
+
+            },
+
             onShowAreas: () => {
 
                 this.currentView = View.AREAS;
@@ -247,6 +291,18 @@ export class App {
             case View.ALL:
 
                 return this.taskService.getAllActiveTasks();
+
+            case View.COMPLETED:
+
+                return this.taskService.getCompletedTasks();
+
+            case View.ARCHIVED:
+
+                return this.taskService.getArchivedTasks();
+
+            case View.TRASH:
+
+                return this.taskService.getDeletedTasks();
 
             case View.INBOX:
             default:
