@@ -1,3 +1,5 @@
+import { escapeHtml } from "./escapeHtml.js";
+
 export class TaskDetails {
 
     render(task, areas = []) {
@@ -16,9 +18,9 @@ export class TaskDetails {
         const options = areas.map(area => `
 
             <option
-                value="${area.id}"
+                value="${escapeHtml(area.id)}"
                 ${task.areaId === area.id ? "selected" : ""}>
-                ${area.name}
+                ${escapeHtml(area.name)}
             </option>
 
         `).join("");
@@ -33,13 +35,13 @@ export class TaskDetails {
                 <input
                     id="taskTitleEdit"
                     type="text"
-                    value="${task.title}">
+                    value="${escapeHtml(task.title)}">
 
                 <label>Descripción</label>
 
                 <textarea
                     id="taskDescriptionEdit"
-                    rows="6">${task.description ?? ""}</textarea>
+                    rows="6">${escapeHtml(task.description)}</textarea>
 
                 <label>Área</label>
 

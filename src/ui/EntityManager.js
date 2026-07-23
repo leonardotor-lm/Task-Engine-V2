@@ -1,3 +1,5 @@
+import { escapeHtml } from "./escapeHtml.js";
+
 export class EntityManager {
 
     render(title, entities = []) {
@@ -5,7 +7,7 @@ export class EntityManager {
         let html = `
             <main class="content">
 
-                <h2>${title}</h2>
+                <h2>${escapeHtml(title)}</h2>
 
                 <form id="entityForm">
 
@@ -34,7 +36,9 @@ export class EntityManager {
         for (const entity of entities) {
 
             html += `
-                <li class="entityItem" data-id="${entity.id}">
+                <li
+                    class="entityItem"
+                    data-id="${escapeHtml(entity.id)}">
 
                     <div>
 
@@ -44,11 +48,11 @@ export class EntityManager {
                                 width:12px;
                                 height:12px;
                                 border-radius:50%;
-                                background:${entity.color};
+                                background:${escapeHtml(entity.color)};
                                 margin-right:8px;">
                         </span>
 
-                        <strong>${entity.name}</strong>
+                        <strong>${escapeHtml(entity.name)}</strong>
 
                     </div>
 
@@ -56,13 +60,13 @@ export class EntityManager {
 
                         <button
                             class="editEntity"
-                            data-id="${entity.id}">
+                            data-id="${escapeHtml(entity.id)}">
                             Editar
                         </button>
 
                         <button
                             class="deleteEntity"
-                            data-id="${entity.id}">
+                            data-id="${escapeHtml(entity.id)}">
                             Eliminar
                         </button>
 

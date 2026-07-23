@@ -1,3 +1,5 @@
+import { escapeHtml } from "./escapeHtml.js";
+
 export class TaskList {
 
     render(tasks) {
@@ -31,10 +33,12 @@ export class TaskList {
             html += `
                 <li
                     class="task"
-                    data-id="${task.id}"
-                    style="${completed ? "text-decoration:line-through;color:gray;" : ""}">
+                    data-id="${escapeHtml(task.id)}"
+                    style="${completed
+                        ? "text-decoration:line-through;color:gray;"
+                        : ""}">
 
-                    ${task.title}
+                    ${escapeHtml(task.title)}
 
                 </li>
             `;
