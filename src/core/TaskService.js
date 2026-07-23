@@ -177,6 +177,14 @@ export class TaskService {
 
     }
 
+    getCompletedTasks() {
+
+        return this.repository
+            .getAll()
+            .filter(task => task.status === TaskStatus.COMPLETED);
+
+    }
+
     getArchivedTasks() {
 
         return this.repository
