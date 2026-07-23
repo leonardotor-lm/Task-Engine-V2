@@ -19,6 +19,7 @@ export class MainView {
     render(state) {
 
         const {
+            view,
             selectedTask,
             areas,
             contexts
@@ -27,7 +28,7 @@ export class MainView {
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
-                ${this.sidebar.render()}
+                ${this.sidebar.render(view)}
 
                 ${this.viewRouter.render(state)}
 
