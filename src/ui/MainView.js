@@ -54,58 +54,43 @@ export class MainView {
         } = state;
 
         document.getElementById("showInbox")?.addEventListener("click", () => {
-
             this.callbacks.onShowInbox();
-
         });
 
         document.getElementById("showToday")?.addEventListener("click", () => {
-
             this.callbacks.onShowToday();
-
         });
 
         document.getElementById("showUpcoming")?.addEventListener("click", () => {
-
             this.callbacks.onShowUpcoming();
-
         });
 
         document.getElementById("showAll")?.addEventListener("click", () => {
-
             this.callbacks.onShowAll();
-
         });
 
         document.getElementById("manageAreas")?.addEventListener("click", () => {
-
             this.callbacks.onShowAreas();
-
         });
 
         document.getElementById("manageContexts")?.addEventListener("click", () => {
-
             this.callbacks.onShowContexts();
-
         });
 
         const taskViews = [
-
             View.INBOX,
             View.TODAY,
             View.UPCOMING,
             View.ALL
-
         ];
 
         if (taskViews.includes(view)) {
 
-            document.getElementById("taskForm")?.addEventListener("submit", e => {
+            document.getElementById("taskForm")?.addEventListener("submit", event => {
 
-                e.preventDefault();
+                event.preventDefault();
 
                 const input = document.getElementById("taskTitle");
-
                 const title = input.value.trim();
 
                 if (!title) return;
@@ -117,9 +102,7 @@ export class MainView {
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {
-
                     this.callbacks.onSelectTask(item.dataset.id);
-
                 });
 
             });
@@ -127,8 +110,26 @@ export class MainView {
             if (selectedTask) {
 
                 document.getElementById("toggleTask")?.addEventListener("click", () => {
-
                     this.callbacks.onToggleTask(selectedTask.id);
+                });
+
+                document.getElementById("archiveTask")?.addEventListener("click", () => {
+
+                    if (!Dialog.confirm("¿Archivar esta tarea?")) {
+                        return;
+                    }
+
+                    this.callbacks.onArchiveTask(selectedTask.id);
+
+                });
+
+                document.getElementById("deleteTask")?.addEventListener("click", () => {
+
+                    if (!Dialog.confirm("¿Mover esta tarea a la papelera?")) {
+                        return;
+                    }
+
+                    this.callbacks.onDeleteTask(selectedTask.id);
 
                 });
 
@@ -191,9 +192,9 @@ export class MainView {
                 ? "área"
                 : "contexto";
 
-            document.getElementById("entityForm")?.addEventListener("submit", e => {
+            document.getElementById("entityForm")?.addEventListener("submit", event => {
 
-                e.preventDefault();
+                event.preventDefault();
 
                 const name = document
                     .getElementById("entityName")
@@ -206,13 +207,9 @@ export class MainView {
                 if (!name) return;
 
                 if (isAreaView) {
-
                     this.callbacks.onCreateArea(name, color);
-
                 } else {
-
                     this.callbacks.onCreateContext(name, color);
-
                 }
 
             });
@@ -228,13 +225,9 @@ export class MainView {
                     try {
 
                         if (isAreaView) {
-
                             this.callbacks.onDeleteArea(button.dataset.id);
-
                         } else {
-
                             this.callbacks.onDeleteContext(button.dataset.id);
-
                         }
 
                     } catch (error) {
@@ -265,13 +258,9 @@ export class MainView {
                     if (name === null || name === "") return;
 
                     if (isAreaView) {
-
                         this.callbacks.onUpdateArea(entity.id, name);
-
                     } else {
-
                         this.callbacks.onUpdateContext(entity.id, name);
-
                     }
 
                 });

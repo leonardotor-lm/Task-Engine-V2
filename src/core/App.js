@@ -47,6 +47,26 @@ export class App {
 
             },
 
+            onArchiveTask: (id) => {
+
+                this.taskService.archiveTask(id);
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onDeleteTask: (id) => {
+
+                this.taskService.deleteTask(id);
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
