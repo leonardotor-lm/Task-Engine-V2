@@ -133,6 +133,26 @@ export class Task {
 
     }
 
+    reopen() {
+
+        if (!this.isCompleted()) {
+            throw new Error("La tarea no está completada.");
+        }
+
+        this.status = TaskStatus.PENDING;
+
+        this.completedAt = null;
+
+        this.touch();
+
+    }
+
+    restore() {
+
+        return this.reopen();
+
+    }
+
     archive() {
 
         if (this.isDeleted()) {
@@ -140,6 +160,18 @@ export class Task {
         }
 
         this.status = TaskStatus.ARCHIVED;
+
+        this.touch();
+
+    }
+
+    restoreFromArchive() {
+
+        if (!this.isArchived()) {
+            throw new Error("La tarea no está archivada.");
+        }
+
+        this.status = TaskStatus.PENDING;
 
         this.touch();
 
@@ -153,15 +185,13 @@ export class Task {
 
     }
 
-    restore() {
+    restoreFromTrash() {
 
-        if (this.isDeleted()) {
-            throw new Error("No se puede restaurar una tarea eliminada.");
+        if (!this.isDeleted()) {
+            throw new Error("La tarea no está eliminada.");
         }
 
         this.status = TaskStatus.PENDING;
-
-        this.completedAt = null;
 
         this.touch();
 
