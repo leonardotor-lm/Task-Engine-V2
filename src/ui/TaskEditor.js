@@ -1,6 +1,7 @@
+import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
 
-export class TaskDetails {
+export class TaskEditor {
 
     render(task, areas = []) {
 
@@ -8,14 +9,14 @@ export class TaskDetails {
 
             return `
                 <aside class="details">
-                    <h3>Detalle</h3>
+                    <h3>Editor</h3>
                     <p>Seleccioná una tarea.</p>
                 </aside>
             `;
 
         }
 
-        const options = areas.map(area => `
+        const areaOptions = areas.map(area => `
 
             <option
                 value="${escapeHtml(area.id)}"
@@ -25,10 +26,20 @@ export class TaskDetails {
 
         `).join("");
 
+        const priorityOptions = PriorityOptions.map(option => `
+
+            <option
+                value="${option.value}"
+                ${task.priority === option.value ? "selected" : ""}>
+                ${escapeHtml(option.label)}
+            </option>
+
+        `).join("");
+
         return `
             <aside class="details">
 
-                <h3>Detalle</h3>
+                <h3>Editor</h3>
 
                 <label>Título</label>
 
@@ -51,8 +62,14 @@ export class TaskDetails {
                         Sin área
                     </option>
 
-                    ${options}
+                    ${areaOptions}
 
+                </select>
+
+                <label>Prioridad</label>
+
+                <select id="taskPriority">
+                    ${priorityOptions}
                 </select>
 
                 <hr>

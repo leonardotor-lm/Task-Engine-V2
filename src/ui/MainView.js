@@ -1,5 +1,5 @@
 import { Sidebar } from "./Sidebar.js";
-import { TaskDetails } from "./TaskDetails.js";
+import { TaskEditor } from "./TaskEditor.js";
 import { ViewRouter } from "./ViewRouter.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
@@ -11,7 +11,7 @@ export class MainView {
         this.callbacks = callbacks;
 
         this.sidebar = new Sidebar();
-        this.taskDetails = new TaskDetails();
+        this.taskEditor = new TaskEditor();
         this.viewRouter = new ViewRouter();
 
     }
@@ -30,7 +30,7 @@ export class MainView {
 
                 ${this.viewRouter.render(state)}
 
-                ${this.taskDetails.render(selectedTask, areas)}
+                ${this.taskEditor.render(selectedTask, areas)}
 
             </div>
         `;
@@ -104,13 +104,18 @@ export class MainView {
                     const areaId =
                         document.getElementById("taskArea").value || null;
 
+                    const priority = Number(
+                        document.getElementById("taskPriority").value
+                    );
+
                     if (!title) return;
 
                     this.callbacks.onUpdateTask(selectedTask.id, {
 
                         title,
                         description,
-                        areaId
+                        areaId,
+                        priority
 
                     });
 
