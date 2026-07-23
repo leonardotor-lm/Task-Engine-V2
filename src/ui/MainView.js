@@ -20,7 +20,8 @@ export class MainView {
 
         const {
             selectedTask,
-            areas
+            areas,
+            contexts
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -30,7 +31,11 @@ export class MainView {
 
                 ${this.viewRouter.render(state)}
 
-                ${this.taskEditor.render(selectedTask, areas)}
+                ${this.taskEditor.render(
+                    selectedTask,
+                    areas,
+                    contexts
+                )}
 
             </div>
         `;
@@ -115,6 +120,9 @@ export class MainView {
                     const areaId =
                         document.getElementById("taskArea").value || null;
 
+                    const contextId =
+                        document.getElementById("taskContext").value || null;
+
                     const priority = Number(
                         document.getElementById("taskPriority").value
                     );
@@ -129,6 +137,7 @@ export class MainView {
                         title,
                         description,
                         areaId,
+                        contextId,
                         priority,
                         dueDate
 

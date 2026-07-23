@@ -3,7 +3,7 @@ import { escapeHtml } from "./escapeHtml.js";
 
 export class TaskEditor {
 
-    render(task, areas = []) {
+    render(task, areas = [], contexts = []) {
 
         if (!task) {
 
@@ -22,6 +22,16 @@ export class TaskEditor {
                 value="${escapeHtml(area.id)}"
                 ${task.areaId === area.id ? "selected" : ""}>
                 ${escapeHtml(area.name)}
+            </option>
+
+        `).join("");
+
+        const contextOptions = contexts.map(context => `
+
+            <option
+                value="${escapeHtml(context.id)}"
+                ${task.contextId === context.id ? "selected" : ""}>
+                ${escapeHtml(context.name)}
             </option>
 
         `).join("");
@@ -63,6 +73,18 @@ export class TaskEditor {
                     </option>
 
                     ${areaOptions}
+
+                </select>
+
+                <label>Contexto</label>
+
+                <select id="taskContext">
+
+                    <option value="">
+                        Sin contexto
+                    </option>
+
+                    ${contextOptions}
 
                 </select>
 
