@@ -2,13 +2,10 @@ import { escapeHtml } from "./escapeHtml.js";
 
 export class TaskList {
 
-    render(tasks) {
+    render(tasks, title, allowCreate = false) {
 
-        let html = `
-            <main class="content">
-
-                <h2>Mis tareas</h2>
-
+        const form = allowCreate
+            ? `
                 <form id="taskForm">
 
                     <input
@@ -22,6 +19,15 @@ export class TaskList {
                     </button>
 
                 </form>
+            `
+            : "";
+
+        let html = `
+            <main class="content">
+
+                <h2>${escapeHtml(title)}</h2>
+
+                ${form}
 
                 <ul>
         `;

@@ -1,6 +1,12 @@
 export const View = Object.freeze({
 
-    TASKS: "tasks",
+    INBOX: "inbox",
+
+    TODAY: "today",
+
+    UPCOMING: "upcoming",
+
+    ALL: "all",
 
     AREAS: "areas",
 

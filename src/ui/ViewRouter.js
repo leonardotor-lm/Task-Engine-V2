@@ -15,6 +15,27 @@ export class ViewRouter {
 
         switch (state.view) {
 
+            case View.TODAY:
+
+                return this.taskList.render(
+                    state.tasks,
+                    "Hoy y atrasadas"
+                );
+
+            case View.UPCOMING:
+
+                return this.taskList.render(
+                    state.tasks,
+                    "Próximas"
+                );
+
+            case View.ALL:
+
+                return this.taskList.render(
+                    state.tasks,
+                    "Todas"
+                );
+
             case View.AREAS:
 
                 return this.entityManager.render(
@@ -29,11 +50,13 @@ export class ViewRouter {
                     state.contexts
                 );
 
-            case View.TASKS:
+            case View.INBOX:
             default:
 
                 return this.taskList.render(
-                    state.tasks
+                    state.tasks,
+                    "Inbox",
+                    true
                 );
 
         }
