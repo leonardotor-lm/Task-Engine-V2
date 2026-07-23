@@ -56,4 +56,12 @@ export class TaskService {
 
     }
 
+    hasTasksInContext(contextId) {
+
+        return this.repository
+            .getAll()
+            .some(task => task.contextId === contextId);
+
+    }
+
 }
