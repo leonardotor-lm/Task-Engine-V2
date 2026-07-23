@@ -15,7 +15,7 @@ export class App {
         this.contextService = new ContextService();
 
         this.selectedTask = null;
-        this.currentView = View.TASKS;
+        this.currentView = View.INBOX;
 
         this.mainView = new MainView({
 
@@ -119,9 +119,33 @@ export class App {
 
             },
 
-            onShowTasks: () => {
+            onShowInbox: () => {
 
-                this.currentView = View.TASKS;
+                this.currentView = View.INBOX;
+
+                this.render();
+
+            },
+
+            onShowToday: () => {
+
+                this.currentView = View.TODAY;
+
+                this.render();
+
+            },
+
+            onShowUpcoming: () => {
+
+                this.currentView = View.UPCOMING;
+
+                this.render();
+
+            },
+
+            onShowAll: () => {
+
+                this.currentView = View.ALL;
 
                 this.render();
 
@@ -168,12 +192,57 @@ export class App {
 
     }
 
+    getTodayString() {
+
+        const today = new Date();
+
+        const year = today.getFullYear();
+
+        const month = String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+        const day = String(
+            today.getDate()
+        ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+
+    }
+
+    getVisibleTasks() {
+
+        const today = this.getTodayString();
+
+        switch (this.currentView) {
+
+            case View.TODAY:
+
+                return this.taskService.getTodayTasks(today);
+
+            case View.UPCOMING:
+
+                return this.taskService.getUpcomingTasks(today);
+
+            case View.ALL:
+
+                return this.taskService.getAllActiveTasks();
+
+            case View.INBOX:
+            default:
+
+                return this.taskService.getInboxTasks();
+
+        }
+
+    }
+
     render() {
 
         this.mainView.render({
 
             view: this.currentView,
-            tasks: this.taskService.getAllTasks(),
+            tasks: this.getVisibleTasks(),
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts()

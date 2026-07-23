@@ -53,9 +53,27 @@ export class MainView {
             contexts
         } = state;
 
-        document.getElementById("showTasks")?.addEventListener("click", () => {
+        document.getElementById("showInbox")?.addEventListener("click", () => {
 
-            this.callbacks.onShowTasks();
+            this.callbacks.onShowInbox();
+
+        });
+
+        document.getElementById("showToday")?.addEventListener("click", () => {
+
+            this.callbacks.onShowToday();
+
+        });
+
+        document.getElementById("showUpcoming")?.addEventListener("click", () => {
+
+            this.callbacks.onShowUpcoming();
+
+        });
+
+        document.getElementById("showAll")?.addEventListener("click", () => {
+
+            this.callbacks.onShowAll();
 
         });
 
@@ -71,7 +89,16 @@ export class MainView {
 
         });
 
-        if (view === View.TASKS) {
+        const taskViews = [
+
+            View.INBOX,
+            View.TODAY,
+            View.UPCOMING,
+            View.ALL
+
+        ];
+
+        if (taskViews.includes(view)) {
 
             document.getElementById("taskForm")?.addEventListener("submit", e => {
 
