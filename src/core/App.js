@@ -1,6 +1,7 @@
 import { Config } from "./Config.js";
 import { TaskService } from "./TaskService.js";
 import { AreaService } from "./AreaService.js";
+import { ContextService } from "./ContextService.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
@@ -11,6 +12,7 @@ export class App {
 
         this.taskService = new TaskService();
         this.areaService = new AreaService();
+        this.contextService = new ContextService();
 
         this.selectedTask = null;
         this.currentView = View.TASKS;
@@ -85,6 +87,38 @@ export class App {
 
             },
 
+            onCreateContext: (name, color) => {
+
+                this.contextService.createContext({ name, color });
+
+                this.render();
+
+            },
+
+            onUpdateContext: (id, name) => {
+
+                this.contextService.updateContext(id, { name });
+
+                this.render();
+
+            },
+
+            onDeleteContext: (id) => {
+
+                if (this.taskService.hasTasksInContext(id)) {
+
+                    throw new Error(
+                        "No se puede eliminar el contexto porque está asignado a una o más tareas."
+                    );
+
+                }
+
+                this.contextService.deleteContext(id);
+
+                this.render();
+
+            },
+
             onShowTasks: () => {
 
                 this.currentView = View.TASKS;
@@ -96,6 +130,14 @@ export class App {
             onShowAreas: () => {
 
                 this.currentView = View.AREAS;
+
+                this.render();
+
+            },
+
+            onShowContexts: () => {
+
+                this.currentView = View.CONTEXTS;
 
                 this.render();
 
@@ -133,7 +175,8 @@ export class App {
             view: this.currentView,
             tasks: this.taskService.getAllTasks(),
             selectedTask: this.selectedTask,
-            areas: this.areaService.getAllAreas()
+            areas: this.areaService.getAllAreas(),
+            contexts: this.contextService.getAllContexts()
 
         });
 

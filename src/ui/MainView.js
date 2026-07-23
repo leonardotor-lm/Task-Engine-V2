@@ -41,7 +41,12 @@ export class MainView {
 
     bindEvents(state) {
 
-        const { view, selectedTask, areas } = state;
+        const {
+            view,
+            selectedTask,
+            areas,
+            contexts
+        } = state;
 
         document.getElementById("showTasks")?.addEventListener("click", () => {
 
@@ -52,6 +57,12 @@ export class MainView {
         document.getElementById("manageAreas")?.addEventListener("click", () => {
 
             this.callbacks.onShowAreas();
+
+        });
+
+        document.getElementById("manageContexts")?.addEventListener("click", () => {
+
+            this.callbacks.onShowContexts();
 
         });
 
@@ -129,7 +140,20 @@ export class MainView {
 
         }
 
-        if (view === View.AREAS) {
+        if (
+            view === View.AREAS ||
+            view === View.CONTEXTS
+        ) {
+
+            const isAreaView = view === View.AREAS;
+
+            const entities = isAreaView
+                ? areas
+                : contexts;
+
+            const entityName = isAreaView
+                ? "área"
+                : "contexto";
 
             document.getElementById("entityForm")?.addEventListener("submit", e => {
 
@@ -145,7 +169,15 @@ export class MainView {
 
                 if (!name) return;
 
-                this.callbacks.onCreateArea(name, color);
+                if (isAreaView) {
+
+                    this.callbacks.onCreateArea(name, color);
+
+                } else {
+
+                    this.callbacks.onCreateContext(name, color);
+
+                }
 
             });
 
@@ -153,13 +185,21 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    if (!Dialog.confirm("¿Eliminar esta área?")) {
+                    if (!Dialog.confirm(`¿Eliminar este ${entityName}?`)) {
                         return;
                     }
 
                     try {
 
-                        this.callbacks.onDeleteArea(button.dataset.id);
+                        if (isAreaView) {
+
+                            this.callbacks.onDeleteArea(button.dataset.id);
+
+                        } else {
+
+                            this.callbacks.onDeleteContext(button.dataset.id);
+
+                        }
 
                     } catch (error) {
 
@@ -175,20 +215,28 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    const area = areas.find(
-                        area => area.id === button.dataset.id
+                    const entity = entities.find(
+                        entity => entity.id === button.dataset.id
                     );
 
-                    if (!area) return;
+                    if (!entity) return;
 
-                    const nombre = Dialog.prompt(
-                        "Nombre del área:",
-                        area.name
+                    const name = Dialog.prompt(
+                        `Nombre del ${entityName}:`,
+                        entity.name
                     );
 
-                    if (nombre === null || nombre === "") return;
+                    if (name === null || name === "") return;
 
-                    this.callbacks.onUpdateArea(area.id, nombre);
+                    if (isAreaView) {
+
+                        this.callbacks.onUpdateArea(entity.id, name);
+
+                    } else {
+
+                        this.callbacks.onUpdateContext(entity.id, name);
+
+                    }
 
                 });
 
