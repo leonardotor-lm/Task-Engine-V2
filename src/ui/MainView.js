@@ -27,7 +27,7 @@ export class MainView {
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
-                ${this.sidebar.render()}
+                ${this.sidebar.render(view)}
 
                 ${this.viewRouter.render(state)}
 
