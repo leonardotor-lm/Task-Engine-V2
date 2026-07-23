@@ -81,6 +81,26 @@ export class TaskService {
 
     }
 
+    permanentlyDeleteTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (task.status !== TaskStatus.DELETED) {
+            throw new Error(
+                "Sólo se puede eliminar definitivamente una tarea que esté en la papelera."
+            );
+        }
+
+        this.repository.remove(id);
+
+        return task;
+
+    }
+
     restoreArchivedTask(id) {
 
         const task = this.repository.getById(id);
