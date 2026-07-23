@@ -1,6 +1,16 @@
+import { View } from "../core/View.js";
+
 export class Sidebar {
 
-    render() {
+    render(activeView) {
+
+        const buttonClass = view => {
+
+            return activeView === view
+                ? "sidebarButton active"
+                : "sidebarButton";
+
+        };
 
         return `
             <aside class="sidebar">
@@ -9,43 +19,61 @@ export class Sidebar {
 
                 <nav>
 
-                    <button id="showInbox">
+                    <button
+                        id="showInbox"
+                        class="${buttonClass(View.INBOX)}">
                         📥 Inbox
                     </button>
 
-                    <button id="showToday">
+                    <button
+                        id="showToday"
+                        class="${buttonClass(View.TODAY)}">
                         📅 Hoy
                     </button>
 
-                    <button id="showUpcoming">
+                    <button
+                        id="showUpcoming"
+                        class="${buttonClass(View.UPCOMING)}">
                         📆 Próximas
                     </button>
 
-                    <button id="showAll">
+                    <button
+                        id="showAll"
+                        class="${buttonClass(View.ALL)}">
                         📋 Todas
                     </button>
 
                     <hr>
 
-                    <button id="showCompleted">
+                    <button
+                        id="showCompleted"
+                        class="${buttonClass(View.COMPLETED)}">
                         ✅ Completadas
                     </button>
 
-                    <button id="showArchived">
+                    <button
+                        id="showArchived"
+                        class="${buttonClass(View.ARCHIVED)}">
                         🗄️ Archivadas
                     </button>
 
-                    <button id="showTrash">
+                    <button
+                        id="showTrash"
+                        class="${buttonClass(View.TRASH)}">
                         🗑️ Papelera
                     </button>
 
                     <hr>
 
-                    <button id="manageAreas">
+                    <button
+                        id="manageAreas"
+                        class="${buttonClass(View.AREAS)}">
                         ⚙️ Áreas
                     </button>
 
-                    <button id="manageContexts">
+                    <button
+                        id="manageContexts"
+                        class="${buttonClass(View.CONTEXTS)}">
                         ⚙️ Contextos
                     </button>
 
