@@ -30,6 +30,25 @@ body {
     gap: 8px;
 }
 
+.sidebarButton {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidebarButton:hover {
+    background: #f1f5f9;
+}
+
+.sidebarButton.active {
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
 .taskList {
     padding: 0;
     list-style: none;
@@ -54,4 +73,9 @@ body {
     margin-top: 4px;
     color: #666;
     font-size: 12px;
+}
+
+.emptyState {
+    margin-top: 24px;
+    color: #64748b;
 }
