@@ -19,6 +19,7 @@ export class MainView {
     render(state) {
 
         const {
+            view,
             selectedTask,
             areas,
             contexts
