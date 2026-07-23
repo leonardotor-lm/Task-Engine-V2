@@ -11,49 +11,67 @@ export class ViewRouter {
 
     }
 
+    renderTaskList(
+        state,
+        title,
+        allowCreate = false
+    ) {
+
+        return this.taskList.render(
+
+            state.tasks,
+            title,
+            allowCreate,
+            state.areas,
+            state.contexts
+
+        );
+
+    }
+
     render(state) {
 
         switch (state.view) {
 
             case View.TODAY:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Hoy y atrasadas"
                 );
 
             case View.UPCOMING:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Próximas"
                 );
 
             case View.ALL:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Todas"
                 );
 
             case View.COMPLETED:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Completadas"
                 );
 
             case View.ARCHIVED:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Archivadas"
                 );
 
             case View.TRASH:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Papelera"
                 );
 
@@ -74,8 +92,8 @@ export class ViewRouter {
             case View.INBOX:
             default:
 
-                return this.taskList.render(
-                    state.tasks,
+                return this.renderTaskList(
+                    state,
                     "Inbox",
                     true
                 );

@@ -1,8 +1,15 @@
+import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
 
 export class TaskList {
 
-    render(tasks, title, allowCreate = false) {
+    render(
+        tasks,
+        title,
+        allowCreate = false,
+        areas = [],
+        contexts = []
+    ) {
 
         const form = allowCreate
             ? `
@@ -22,6 +29,14 @@ export class TaskList {
             `
             : "";
 
+        const areasById = new Map(
+            areas.map(area => [area.id, area])
+        );
+
+        const contextsById = new Map(
+            contexts.map(context => [context.id, context])
+        );
+
         let html = `
             <main class="content">
 
@@ -29,22 +44,71 @@ export class TaskList {
 
                 ${form}
 
-                <ul>
+                <ul class="taskList">
         `;
 
         for (const task of tasks) {
 
-            const completed = task.status === "COMPLETED";
+            const area = areasById.get(task.areaId);
+
+            const context = contextsById.get(task.contextId);
+
+            const priority = PriorityOptions.find(
+                option => option.value === task.priority
+            );
+
+            const metadata = [];
+
+            if (task.dueDate) {
+
+                metadata.push(
+                    `Fecha: ${this.formatDate(task.dueDate)}`
+                );
+
+            }
+
+            if (area) {
+
+                metadata.push(
+                    `Área: ${area.name}`
+                );
+
+            }
+
+            if (context) {
+
+                metadata.push(
+                    `Contexto: ${context.name}`
+                );
+
+            }
+
+            if (priority && priority.value !== 0) {
+
+                metadata.push(
+                    `Prioridad: ${priority.label}`
+                );
+
+            }
+
+            const metadataHtml = metadata.length > 0
+                ? `
+                    <small class="taskMeta">
+                        ${escapeHtml(metadata.join(" · "))}
+                    </small>
+                `
+                : "";
 
             html += `
                 <li
                     class="task"
-                    data-id="${escapeHtml(task.id)}"
-                    style="${completed
-                        ? "text-decoration:line-through;color:gray;"
-                        : ""}">
+                    data-id="${escapeHtml(task.id)}">
 
-                    ${escapeHtml(task.title)}
+                    <span class="taskTitle">
+                        ${escapeHtml(task.title)}
+                    </span>
+
+                    ${metadataHtml}
 
                 </li>
             `;
@@ -58,6 +122,18 @@ export class TaskList {
         `;
 
         return html;
+
+    }
+
+    formatDate(date) {
+
+        const [
+            year,
+            month,
+            day
+        ] = date.split("-");
+
+        return `${day}/${month}/${year}`;
 
     }
 

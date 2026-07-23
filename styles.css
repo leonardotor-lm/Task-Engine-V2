@@ -30,11 +30,28 @@ body {
     gap: 8px;
 }
 
+.taskList {
+    padding: 0;
+    list-style: none;
+}
+
 .task {
     cursor: pointer;
-    padding: 6px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
 }
 
 .task:hover {
     background: #f5f5f5;
+}
+
+.taskTitle {
+    display: block;
+}
+
+.taskMeta {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+    font-size: 12px;
 }
