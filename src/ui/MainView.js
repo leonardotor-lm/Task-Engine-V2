@@ -108,6 +108,9 @@ export class MainView {
                         document.getElementById("taskPriority").value
                     );
 
+                    const dueDate =
+                        document.getElementById("taskDueDate").value || null;
+
                     if (!title) return;
 
                     this.callbacks.onUpdateTask(selectedTask.id, {
@@ -115,7 +118,8 @@ export class MainView {
                         title,
                         description,
                         areaId,
-                        priority
+                        priority,
+                        dueDate
 
                     });
 

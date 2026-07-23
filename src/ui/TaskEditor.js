@@ -72,6 +72,13 @@ export class TaskEditor {
                     ${priorityOptions}
                 </select>
 
+                <label>Fecha de vencimiento</label>
+
+                <input
+                    id="taskDueDate"
+                    type="date"
+                    value="${escapeHtml(task.dueDate)}">
+
                 <hr>
 
                 <button id="saveTask">
