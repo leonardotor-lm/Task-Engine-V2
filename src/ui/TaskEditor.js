@@ -16,6 +16,19 @@ export class TaskEditor {
 
         }
 
+        const isCompleted = task.isCompleted();
+        const isArchived = task.isArchived();
+        const isDeleted = task.isDeleted();
+
+        const isLocked =
+            isCompleted ||
+            isArchived ||
+            isDeleted;
+
+        const disabled = isLocked
+            ? "disabled"
+            : "";
+
         const areaOptions = areas.map(area => `
 
             <option
@@ -46,6 +59,58 @@ export class TaskEditor {
 
         `).join("");
 
+        let actions = "";
+
+        if (isCompleted) {
+
+            actions = `
+                <button id="reopenTask">
+                    Marcar pendiente
+                </button>
+            `;
+
+        } else if (isArchived) {
+
+            actions = `
+                <button id="restoreArchivedTask">
+                    Restaurar
+                </button>
+
+                <button id="deleteTask">
+                    Mover a la papelera
+                </button>
+            `;
+
+        } else if (isDeleted) {
+
+            actions = `
+                <button id="restoreDeletedTask">
+                    Restaurar
+                </button>
+            `;
+
+        } else {
+
+            actions = `
+                <button id="saveTask">
+                    Guardar cambios
+                </button>
+
+                <button id="toggleTask">
+                    Completar
+                </button>
+
+                <button id="archiveTask">
+                    Archivar
+                </button>
+
+                <button id="deleteTask">
+                    Eliminar
+                </button>
+            `;
+
+        }
+
         return `
             <aside class="details">
 
@@ -56,17 +121,21 @@ export class TaskEditor {
                 <input
                     id="taskTitleEdit"
                     type="text"
-                    value="${escapeHtml(task.title)}">
+                    value="${escapeHtml(task.title)}"
+                    ${disabled}>
 
                 <label>Descripción</label>
 
                 <textarea
                     id="taskDescriptionEdit"
-                    rows="6">${escapeHtml(task.description)}</textarea>
+                    rows="6"
+                    ${disabled}>${escapeHtml(task.description)}</textarea>
 
                 <label>Área</label>
 
-                <select id="taskArea">
+                <select
+                    id="taskArea"
+                    ${disabled}>
 
                     <option value="">
                         Sin área
@@ -78,7 +147,9 @@ export class TaskEditor {
 
                 <label>Contexto</label>
 
-                <select id="taskContext">
+                <select
+                    id="taskContext"
+                    ${disabled}>
 
                     <option value="">
                         Sin contexto
@@ -90,7 +161,9 @@ export class TaskEditor {
 
                 <label>Prioridad</label>
 
-                <select id="taskPriority">
+                <select
+                    id="taskPriority"
+                    ${disabled}>
                     ${priorityOptions}
                 </select>
 
@@ -99,27 +172,12 @@ export class TaskEditor {
                 <input
                     id="taskDueDate"
                     type="date"
-                    value="${escapeHtml(task.dueDate)}">
+                    value="${escapeHtml(task.dueDate)}"
+                    ${disabled}>
 
                 <hr>
 
-                <button id="saveTask">
-                    Guardar cambios
-                </button>
-
-                <button id="toggleTask">
-                    ${task.isCompleted()
-                        ? "Marcar pendiente"
-                        : "Completar"}
-                </button>
-
-                <button id="archiveTask">
-                    Archivar
-                </button>
-
-                <button id="deleteTask">
-                    Eliminar
-                </button>
+                ${actions}
 
             </aside>
         `;
