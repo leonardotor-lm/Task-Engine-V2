@@ -49,6 +49,38 @@ export class TaskService {
 
     }
 
+    archiveTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        task.archive();
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
+    deleteTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        task.delete();
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     hasTasksInArea(areaId) {
 
         return this.repository
