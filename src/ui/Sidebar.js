@@ -27,6 +27,20 @@ export class Sidebar {
 
                     <hr>
 
+                    <button id="showCompleted">
+                        ✅ Completadas
+                    </button>
+
+                    <button id="showArchived">
+                        🗄️ Archivadas
+                    </button>
+
+                    <button id="showTrash">
+                        🗑️ Papelera
+                    </button>
+
+                    <hr>
+
                     <button id="manageAreas">
                         ⚙️ Áreas
                     </button>

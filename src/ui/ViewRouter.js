@@ -36,6 +36,27 @@ export class ViewRouter {
                     "Todas"
                 );
 
+            case View.COMPLETED:
+
+                return this.taskList.render(
+                    state.tasks,
+                    "Completadas"
+                );
+
+            case View.ARCHIVED:
+
+                return this.taskList.render(
+                    state.tasks,
+                    "Archivadas"
+                );
+
+            case View.TRASH:
+
+                return this.taskList.render(
+                    state.tasks,
+                    "Papelera"
+                );
+
             case View.AREAS:
 
                 return this.entityManager.render(
