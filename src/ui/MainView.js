@@ -167,6 +167,18 @@ export class MainView {
 
                 });
 
+                document.getElementById("permanentlyDeleteTask")?.addEventListener("click", () => {
+
+                    if (!Dialog.confirm(
+                        "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea?"
+                    )) {
+                        return;
+                    }
+
+                    this.callbacks.onPermanentlyDeleteTask(selectedTask.id);
+
+                });
+
                 document.getElementById("saveTask")?.addEventListener("click", () => {
 
                     const title = document
