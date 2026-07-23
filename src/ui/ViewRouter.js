@@ -16,13 +16,22 @@ export class ViewRouter {
         switch (state.view) {
 
             case View.AREAS:
+
                 return this.entityManager.render(
                     "Áreas",
                     state.areas
                 );
 
+            case View.CONTEXTS:
+
+                return this.entityManager.render(
+                    "Contextos",
+                    state.contexts
+                );
+
             case View.TASKS:
             default:
+
                 return this.taskList.render(
                     state.tasks
                 );

@@ -31,6 +31,10 @@ export class Sidebar {
                         ⚙️ Áreas
                     </button>
 
+                    <button id="manageContexts">
+                        ⚙️ Contextos
+                    </button>
+
                 </nav>
 
             </aside>

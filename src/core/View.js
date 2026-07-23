@@ -2,6 +2,8 @@ export const View = Object.freeze({
 
     TASKS: "tasks",
 
-    AREAS: "areas"
+    AREAS: "areas",
+
+    CONTEXTS: "contexts"
 
 });
