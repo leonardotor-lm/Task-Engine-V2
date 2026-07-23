@@ -87,6 +87,10 @@ export class TaskEditor {
                 <button id="restoreDeletedTask">
                     Restaurar
                 </button>
+
+                <button id="permanentlyDeleteTask">
+                    Eliminar definitivamente
+                </button>
             `;
 
         } else {
