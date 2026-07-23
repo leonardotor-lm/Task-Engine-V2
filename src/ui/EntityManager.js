@@ -29,57 +29,73 @@ export class EntityManager {
                 </form>
 
                 <hr>
-
-                <ul class="entityList">
         `;
 
-        for (const entity of entities) {
+        if (entities.length === 0) {
 
             html += `
-                <li
-                    class="entityItem"
-                    data-id="${escapeHtml(entity.id)}">
+                <p class="emptyState">
+                    No hay elementos para mostrar en esta vista.
+                </p>
+            `;
 
-                    <div>
+        } else {
 
-                        <span
-                            style="
-                                display:inline-block;
-                                width:12px;
-                                height:12px;
-                                border-radius:50%;
-                                background:${escapeHtml(entity.color)};
-                                margin-right:8px;">
-                        </span>
+            html += `
+                <ul class="entityList">
+            `;
 
-                        <strong>${escapeHtml(entity.name)}</strong>
+            for (const entity of entities) {
 
-                    </div>
+                html += `
+                    <li
+                        class="entityItem"
+                        data-id="${escapeHtml(entity.id)}">
 
-                    <div>
+                        <div>
 
-                        <button
-                            class="editEntity"
-                            data-id="${escapeHtml(entity.id)}">
-                            Editar
-                        </button>
+                            <span
+                                style="
+                                    display:inline-block;
+                                    width:12px;
+                                    height:12px;
+                                    border-radius:50%;
+                                    background:${escapeHtml(entity.color)};
+                                    margin-right:8px;">
+                            </span>
 
-                        <button
-                            class="deleteEntity"
-                            data-id="${escapeHtml(entity.id)}">
-                            Eliminar
-                        </button>
+                            <strong>${escapeHtml(entity.name)}</strong>
 
-                    </div>
+                        </div>
 
-                </li>
+                        <div>
+
+                            <button
+                                class="editEntity"
+                                data-id="${escapeHtml(entity.id)}">
+                                Editar
+                            </button>
+
+                            <button
+                                class="deleteEntity"
+                                data-id="${escapeHtml(entity.id)}">
+                                Eliminar
+                            </button>
+
+                        </div>
+
+                    </li>
+                `;
+
+            }
+
+            html += `
+                </ul>
             `;
 
         }
 
         html += `
-                </ul>
-
             </main>
         `;
 
