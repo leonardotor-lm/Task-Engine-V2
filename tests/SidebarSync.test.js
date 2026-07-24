@@ -7,7 +7,9 @@ import { Sidebar } from "../src/ui/Sidebar.js";
 function renderSync({
     configured = false,
     url = "",
-    revision = 0
+    revision = 0,
+    pendingChanges = false,
+    lastSuccess = ""
 } = {}) {
 
     return new Sidebar().render(
@@ -21,7 +23,9 @@ function renderSync({
         false,
         configured,
         url,
-        revision
+        revision,
+        pendingChanges,
+        lastSuccess
     );
 
 }
@@ -45,12 +49,39 @@ test("muestra acciones y revisión cuando está conectada", () => {
         revision: 4
     });
 
-    assert.match(html, /Conectada · rev. 4/);
+    assert.match(html, /Sincronizada · rev. 4/);
     assert.match(html, /id="pushToCloud"/);
     assert.match(html, /id="pullFromCloud"/);
     assert.match(
         html,
         /id="clearSyncConfig"/
+    );
+
+});
+
+test("destaca cambios locales pendientes", () => {
+
+    const html = renderSync({
+        configured: true,
+        revision: 4,
+        pendingChanges: true,
+        lastSuccess:
+            "2026-07-24T15:00:00.000Z"
+    });
+
+    assert.match(
+        html,
+        /Cambios pendientes · rev. 4/
+    );
+
+    assert.match(
+        html,
+        /class="syncStatus pending"/
+    );
+
+    assert.match(
+        html,
+        /Última sincronización:/
     );
 
 });
