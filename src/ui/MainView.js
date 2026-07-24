@@ -502,48 +502,37 @@ export class MainView {
             });
 
             document.getElementById(
-                "applyBulkPriority"
+                "applyBulkChanges"
             )?.addEventListener("click", () => {
 
-                try {
-
-                    const priority = Number(
-                        document.getElementById(
-                            "bulkPriority"
-                        ).value
-                    );
-
-                    const count =
-                        this.callbacks
-                            .onBulkUpdateTasks({
-                                priority
-                            });
-
-                    Dialog.alert(
-                        `Prioridad actualizada en ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "applyBulkDueDate"
-            )?.addEventListener("click", () => {
+                const priorityValue =
+                    document.getElementById(
+                        "bulkPriority"
+                    ).value;
 
                 const dueDate = document
                     .getElementById(
                         "bulkDueDate"
                     ).value;
 
-                if (!dueDate) {
+                const changes = {};
+
+                if (priorityValue !== "") {
+                    changes.priority =
+                        Number(priorityValue);
+                }
+
+                if (dueDate) {
+                    changes.dueDate = dueDate;
+                }
+
+                if (
+                    Object.keys(changes)
+                        .length === 0
+                ) {
 
                     Dialog.alert(
-                        "Elegí una fecha para las tareas seleccionadas."
+                        "Elegí al menos un cambio para aplicar."
                     );
 
                     return;
@@ -555,11 +544,11 @@ export class MainView {
                     const count =
                         this.callbacks
                             .onBulkUpdateTasks({
-                                dueDate
+                                ...changes
                             });
 
                     Dialog.alert(
-                        `Fecha actualizada en ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                        `Cambios aplicados en ${count} ${count === 1 ? "tarea" : "tareas"}.`
                     );
 
                 } catch (error) {
