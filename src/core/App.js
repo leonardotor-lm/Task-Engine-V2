@@ -307,6 +307,54 @@ export class App {
 
             },
 
+            onBulkCompleteTasks: () => {
+
+                const updated =
+                    this.taskService
+                        .completeTasks(
+                            [...this.selectedTaskIds]
+                        );
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return updated.length;
+
+            },
+
+            onBulkArchiveTasks: () => {
+
+                const updated =
+                    this.taskService
+                        .archiveTasks(
+                            [...this.selectedTaskIds]
+                        );
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return updated.length;
+
+            },
+
+            onBulkDeleteTasks: () => {
+
+                const updated =
+                    this.taskService
+                        .deleteTasks(
+                            [...this.selectedTaskIds]
+                        );
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return updated.length;
+
+            },
+
             onCreateArea: (name, color) => {
 
                 this.areaService.createArea({ name, color });

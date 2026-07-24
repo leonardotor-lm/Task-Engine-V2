@@ -595,6 +595,90 @@ export class MainView {
 
             });
 
+            document.getElementById(
+                "bulkCompleteTasks"
+            )?.addEventListener("click", () => {
+
+                if (!Dialog.confirm(
+                    "¿Completar todas las tareas seleccionadas?"
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkCompleteTasks();
+
+                    Dialog.alert(
+                        `Se completaron ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
+            document.getElementById(
+                "bulkArchiveTasks"
+            )?.addEventListener("click", () => {
+
+                if (!Dialog.confirm(
+                    "¿Archivar todas las tareas seleccionadas?"
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkArchiveTasks();
+
+                    Dialog.alert(
+                        `Se archivaron ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
+            document.getElementById(
+                "bulkDeleteTasks"
+            )?.addEventListener("click", () => {
+
+                if (!Dialog.confirm(
+                    "¿Enviar a la papelera las tareas seleccionadas? Las subtareas descendientes también serán enviadas."
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkDeleteTasks();
+
+                    Dialog.alert(
+                        `Se enviaron ${count} ${count === 1 ? "tarea" : "tareas"} a la papelera.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {

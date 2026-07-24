@@ -78,6 +78,21 @@ test("muestra las herramientas cuando hay una selección", () => {
 
     assert.match(
         html,
+        /id="bulkCompleteTasks"/
+    );
+
+    assert.match(
+        html,
+        /id="bulkArchiveTasks"/
+    );
+
+    assert.match(
+        html,
+        /id="bulkDeleteTasks"/
+    );
+
+    assert.match(
+        html,
         /class="task [^"]*bulkSelectedTask/
     );
 

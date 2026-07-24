@@ -171,6 +171,210 @@ export class TaskService {
 
     }
 
+    getBulkActiveTasks(ids) {
+
+        const uniqueIds = [
+            ...new Set(ids)
+        ];
+
+        if (uniqueIds.length === 0) {
+            throw new Error(
+                "Seleccioná al menos una tarea."
+            );
+        }
+
+        const tasks = uniqueIds.map(
+            id => this.repository.getById(id)
+        );
+
+        if (tasks.some(task => !task)) {
+            throw new Error(
+                "Una de las tareas seleccionadas ya no existe."
+            );
+        }
+
+        if (
+            tasks.some(
+                task => !this.isActiveTask(task)
+            )
+        ) {
+            throw new Error(
+                "La acción masiva sólo admite tareas activas."
+            );
+        }
+
+        return tasks;
+
+    }
+
+    validateSelectedTrees(tasks, action) {
+
+        const selectedIds = new Set(
+            tasks.map(task => task.id)
+        );
+
+        for (const task of tasks) {
+
+            const missingDescendant =
+                this.getDescendants(task.id)
+                    .find(descendant =>
+                        this.isActiveTask(descendant) &&
+                        !selectedIds.has(
+                            descendant.id
+                        )
+                    );
+
+            if (missingDescendant) {
+                throw new Error(
+                    `Para ${action} una tarea principal, seleccioná también todas sus subtareas activas.`
+                );
+            }
+
+        }
+
+    }
+
+    completeTasks(ids) {
+
+        const tasks =
+            this.getBulkActiveTasks(ids);
+
+        this.validateSelectedTrees(
+            tasks,
+            "completar"
+        );
+
+        const completedTasks =
+            tasks.map(task => {
+
+                const copy = new Task(
+                    task.toJSON()
+                );
+
+                copy.complete();
+
+                return copy;
+
+            });
+
+        const replacements = new Map(
+            completedTasks.map(
+                task => [task.id, task]
+            )
+        );
+
+        const nextRecurringTasks =
+            completedTasks
+                .filter(task => task.recurrence)
+                .map(task => new Task({
+                    title: task.title,
+                    description: task.description,
+                    status: TaskStatus.PENDING,
+                    areaId: task.areaId,
+                    contextId: task.contextId,
+                    priority: task.priority,
+                    tagIds: [...task.tagIds],
+                    parentTaskId: null,
+                    recurrenceId:
+                        task.recurrenceId,
+                    recurrence: task.recurrence,
+                    dueDate:
+                        getNextRecurrenceDate(
+                            task.dueDate,
+                            task.recurrence
+                        )
+                }));
+
+        this.repository.replaceAll([
+            ...this.repository
+                .getAll()
+                .map(task =>
+                    replacements.get(task.id) ??
+                    task
+                ),
+            ...nextRecurringTasks
+        ]);
+
+        return completedTasks;
+
+    }
+
+    archiveTasks(ids) {
+
+        const tasks =
+            this.getBulkActiveTasks(ids);
+
+        this.validateSelectedTrees(
+            tasks,
+            "archivar"
+        );
+
+        const archivedTasks =
+            tasks.map(task => {
+
+                const copy = new Task(
+                    task.toJSON()
+                );
+
+                copy.archive();
+
+                return copy;
+
+            });
+
+        this.repository.updateMany(
+            archivedTasks
+        );
+
+        return archivedTasks;
+
+    }
+
+    deleteTasks(ids) {
+
+        const roots =
+            this.getBulkActiveTasks(ids);
+
+        const tasksById = new Map();
+
+        for (const root of roots) {
+
+            tasksById.set(root.id, root);
+
+            for (
+                const descendant of
+                this.getDescendants(root.id)
+            ) {
+                tasksById.set(
+                    descendant.id,
+                    descendant
+                );
+            }
+
+        }
+
+        const deletedTasks = [
+            ...tasksById.values()
+        ].map(task => {
+
+            const copy = new Task(
+                task.toJSON()
+            );
+
+            copy.delete();
+
+            return copy;
+
+        });
+
+        this.repository.updateMany(
+            deletedTasks
+        );
+
+        return deletedTasks;
+
+    }
+
     toggleTask(id) {
 
         const task = this.repository.getById(id);

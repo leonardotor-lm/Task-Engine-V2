@@ -414,6 +414,29 @@ export class TaskList {
                     Aplicar cambios
                 </button>
 
+                <div class="bulkStateActions">
+
+                    <button
+                        id="bulkCompleteTasks"
+                        type="button">
+                        Completar
+                    </button>
+
+                    <button
+                        id="bulkArchiveTasks"
+                        type="button">
+                        Archivar
+                    </button>
+
+                    <button
+                        id="bulkDeleteTasks"
+                        type="button"
+                        class="dangerAction">
+                        Enviar a papelera
+                    </button>
+
+                </div>
+
                 <button
                     id="clearBulkSelection"
                     type="button"
