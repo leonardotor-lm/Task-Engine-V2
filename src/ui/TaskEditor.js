@@ -1,5 +1,6 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { RecurrenceFrequency } from "../domain/Recurrence.js";
 
 export class TaskEditor {
 
@@ -83,6 +84,36 @@ export class TaskEditor {
                 value="${option.value}"
                 ${task.priority === option.value ? "selected" : ""}>
                 ${escapeHtml(option.label)}
+            </option>
+
+        `).join("");
+
+        const recurrenceOptions = [
+            {
+                value: "",
+                label: "Sin recurrencia"
+            },
+            {
+                value: RecurrenceFrequency.DAILY,
+                label: "Diaria"
+            },
+            {
+                value: RecurrenceFrequency.WEEKLY,
+                label: "Semanal"
+            },
+            {
+                value: RecurrenceFrequency.MONTHLY,
+                label: "Mensual"
+            }
+        ].map(option => `
+
+            <option
+                value="${option.value}"
+                ${task.recurrence === option.value ||
+                    (!task.recurrence && option.value === "")
+                        ? "selected"
+                        : ""}>
+                ${option.label}
             </option>
 
         `).join("");
@@ -266,6 +297,14 @@ export class TaskEditor {
                     type="date"
                     value="${escapeHtml(task.dueDate)}"
                     ${disabled}>
+
+                <label>Repetir</label>
+
+                <select
+                    id="taskRecurrence"
+                    ${disabled}>
+                    ${recurrenceOptions}
+                </select>
 
                 <section class="subtaskSection">
 
