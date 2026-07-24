@@ -184,6 +184,14 @@ export class TaskList {
                     MONTHLY: "Mensual"
                 };
 
+                if (task.postponements.length > 0) {
+
+                    metadata.push(
+                        `Pospuesta: ${task.postponements.length} ${task.postponements.length === 1 ? "vez" : "veces"}`
+                    );
+
+                }
+
                 if (task.recurrence) {
 
                     metadata.push(
