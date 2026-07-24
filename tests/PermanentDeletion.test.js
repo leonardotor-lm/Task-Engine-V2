@@ -15,6 +15,14 @@ function createFixture(status = TaskStatus.DELETED) {
 
     const repository = {
 
+        getAll() {
+
+            return removedId === null
+                ? [task]
+                : [];
+
+        },
+
         getById(id) {
 
             return id === task.id
