@@ -5,6 +5,7 @@ import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
+import { createSyncFingerprint } from "./SyncFingerprint.js";
 import { SyncConfig } from "../infrastructure/SyncConfig.js";
 import { CloudGateway } from "../infrastructure/CloudGateway.js";
 import { MainView } from "../ui/MainView.js";
@@ -646,6 +647,11 @@ export class App {
             this.taskSort
         );
 
+        const syncFingerprint =
+            createSyncFingerprint(
+                this.backupService.createBackup()
+            );
+
         this.mainView.render({
 
             view: this.currentView,
@@ -666,6 +672,12 @@ export class App {
                 this.syncConfig.get().url,
             syncRevision:
                 this.syncConfig.getRevision(),
+            syncPendingChanges:
+                this.syncConfig.hasPendingChanges(
+                    syncFingerprint
+                ),
+            syncLastSuccess:
+                this.syncConfig.getLastSuccess(),
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),
