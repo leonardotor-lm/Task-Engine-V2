@@ -6,7 +6,10 @@ import { TaskList } from "../src/ui/TaskList.js";
 
 function render({
     selectedTaskIds = new Set(),
-    enabled = true
+    enabled = true,
+    areas = [],
+    contexts = [],
+    tags = []
 } = {}) {
 
     const task = new Task({
@@ -18,9 +21,9 @@ function render({
         [task],
         "Inbox",
         true,
-        [],
-        [],
-        [],
+        areas,
+        contexts,
+        tags,
         "",
         new Set(),
         false,
@@ -77,6 +80,34 @@ test("muestra las herramientas cuando hay una selección", () => {
         html,
         /class="task [^"]*bulkSelectedTask/
     );
+
+});
+
+test("muestra área, contexto y etiquetas en la barra masiva", () => {
+
+    const html = render({
+        selectedTaskIds:
+            new Set(["task-1"]),
+        areas: [{
+            id: "area-1",
+            name: "Trabajo"
+        }],
+        contexts: [{
+            id: "context-1",
+            name: "Computadora"
+        }],
+        tags: [{
+            id: "tag-1",
+            name: "Importante"
+        }]
+    });
+
+    assert.match(html, /id="bulkArea"/);
+    assert.match(html, /Trabajo/);
+    assert.match(html, /id="bulkContext"/);
+    assert.match(html, /Computadora/);
+    assert.match(html, /id="bulkTags"/);
+    assert.match(html, /Importante/);
 
 });
 

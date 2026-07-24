@@ -515,6 +515,23 @@ export class MainView {
                         "bulkDueDate"
                     ).value;
 
+                const areaValue = document
+                    .getElementById(
+                        "bulkArea"
+                    ).value;
+
+                const contextValue = document
+                    .getElementById(
+                        "bulkContext"
+                    ).value;
+
+                const addTagIds = [
+                    ...document
+                        .querySelectorAll(
+                            ".bulkTagCheckbox:checked"
+                        )
+                ].map(checkbox => checkbox.value);
+
                 const changes = {};
 
                 if (priorityValue !== "") {
@@ -524,6 +541,25 @@ export class MainView {
 
                 if (dueDate) {
                     changes.dueDate = dueDate;
+                }
+
+                if (areaValue !== "") {
+                    changes.areaId =
+                        areaValue === "__CLEAR__"
+                            ? null
+                            : areaValue;
+                }
+
+                if (contextValue !== "") {
+                    changes.contextId =
+                        contextValue === "__CLEAR__"
+                            ? null
+                            : contextValue;
+                }
+
+                if (addTagIds.length > 0) {
+                    changes.addTagIds =
+                        addTagIds;
                 }
 
                 if (
