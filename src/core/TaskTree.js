@@ -1,4 +1,4 @@
-export function flattenTaskTree(tasks) {
+export function flattenTaskTree(tasks, expandedTaskIds = null) {
 
     const tasksById = new Map(
         tasks.map(task => [task.id, task])
@@ -43,6 +43,12 @@ export function flattenTaskTree(tasks) {
         result.push({ task, depth });
 
         const children = childrenByParent.get(task.id) ?? [];
+
+        const isExpanded =
+            expandedTaskIds === null ||
+            expandedTaskIds.has(task.id);
+
+        if (!isExpanded) return;
 
         for (const child of children) {
             visit(child, depth + 1);
