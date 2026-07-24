@@ -63,6 +63,12 @@ export class SyncConfig {
             token: this.validateToken(token)
         };
 
+        const current = this.get();
+
+        const connectionChanged =
+            current.url !== configuration.url ||
+            current.token !== configuration.token;
+
         this.storage.setItem(
             SYNC_URL_KEY,
             configuration.url
@@ -73,7 +79,9 @@ export class SyncConfig {
             configuration.token
         );
 
-        this.clearRevision();
+        if (connectionChanged) {
+            this.clearRevision();
+        }
 
         return configuration;
 
