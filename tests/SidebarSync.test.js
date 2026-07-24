@@ -9,7 +9,9 @@ function renderSync({
     url = "",
     revision = 0,
     pendingChanges = false,
-    lastSuccess = ""
+    lastSuccess = "",
+    remoteRevision = null,
+    remoteUpdateAvailable = false
 } = {}) {
 
     return new Sidebar().render(
@@ -25,7 +27,9 @@ function renderSync({
         url,
         revision,
         pendingChanges,
-        lastSuccess
+        lastSuccess,
+        remoteRevision,
+        remoteUpdateAvailable
     );
 
 }
@@ -82,6 +86,44 @@ test("destaca cambios locales pendientes", () => {
     assert.match(
         html,
         /Última sincronización:/
+    );
+
+});
+
+test("avisa cuando existe una revisión remota nueva", () => {
+
+    const html = renderSync({
+        configured: true,
+        revision: 4,
+        remoteRevision: 6,
+        remoteUpdateAvailable: true
+    });
+
+    assert.match(
+        html,
+        /Actualización disponible · rev. 6/
+    );
+
+    assert.match(
+        html,
+        /class="syncStatus remote"/
+    );
+
+});
+
+test("avisa si coinciden cambios locales y remotos", () => {
+
+    const html = renderSync({
+        configured: true,
+        revision: 4,
+        pendingChanges: true,
+        remoteRevision: 6,
+        remoteUpdateAvailable: true
+    });
+
+    assert.match(
+        html,
+        /Cambios locales y remotos · nube rev. 6/
     );
 
 });

@@ -130,6 +130,32 @@ export class SyncEngine {
 
     }
 
+    async checkRemoteRevision() {
+
+        const connection =
+            this.ensureConfigured();
+
+        const response = await this.gateway.load(
+            connection
+        );
+
+        const remoteRevision =
+            this.validateRevision(
+                response.revision
+            );
+
+        const localRevision =
+            this.config.getRevision();
+
+        return {
+            localRevision,
+            remoteRevision,
+            updateAvailable:
+                remoteRevision > localRevision
+        };
+
+    }
+
     async pull() {
 
         const connection =

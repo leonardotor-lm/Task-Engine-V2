@@ -17,7 +17,9 @@ export class Sidebar {
         syncUrl = "",
         syncRevision = 0,
         syncPendingChanges = false,
-        syncLastSuccess = ""
+        syncLastSuccess = "",
+        syncRemoteRevision = null,
+        syncRemoteUpdateAvailable = false
     ) {
 
         const buttonClass = view => {
@@ -234,25 +236,40 @@ export class Sidebar {
             `
             : "";
 
+        const syncStatusClass =
+            !syncConfigured
+                ? "disconnected"
+                : syncRemoteUpdateAvailable
+                    ? "remote"
+                    : syncPendingChanges
+                        ? "pending"
+                        : "configured";
+
+        const syncStatusText =
+            !syncConfigured
+                ? "Sin configurar"
+                : syncRemoteUpdateAvailable &&
+                    syncPendingChanges
+                    ? `Cambios locales y remotos · nube rev. ${syncRemoteRevision}`
+                    : syncRemoteUpdateAvailable
+                        ? `Actualización disponible · rev. ${syncRemoteRevision}`
+                        : syncPendingChanges
+                            ? `Cambios pendientes · rev. ${syncRevision}`
+                            : `Sincronizada · rev. ${syncRevision}`;
+
         const syncTools = `
             <details
                 class="syncTools"
-                ${!syncConfigured || syncPendingChanges
+                ${!syncConfigured ||
+                    syncPendingChanges ||
+                    syncRemoteUpdateAvailable
                     ? "open"
                     : ""}>
 
                 <summary>
                     Sincronización
-                    <span class="syncStatus ${!syncConfigured
-                        ? "disconnected"
-                        : syncPendingChanges
-                            ? "pending"
-                            : "configured"}">
-                        ${!syncConfigured
-                            ? "Sin configurar"
-                            : syncPendingChanges
-                                ? `Cambios pendientes · rev. ${syncRevision}`
-                                : `Sincronizada · rev. ${syncRevision}`}
+                    <span class="syncStatus ${syncStatusClass}">
+                        ${syncStatusText}
                     </span>
                 </summary>
 
