@@ -25,7 +25,8 @@ export class ViewRouter {
             state.areas,
             state.contexts,
             state.tags,
-            state.searchQuery
+            state.searchQuery,
+            state.expandedTaskIds
 
         );
 
