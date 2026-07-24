@@ -310,14 +310,11 @@ export class TaskList {
                     <select
                         id="bulkPriority"
                         aria-label="Prioridad para las tareas seleccionadas">
+                        <option value="">
+                            No cambiar prioridad
+                        </option>
                         ${priorityOptions}
                     </select>
-
-                    <button
-                        id="applyBulkPriority"
-                        type="button">
-                        Aplicar prioridad
-                    </button>
 
                 </div>
 
@@ -328,13 +325,13 @@ export class TaskList {
                         type="date"
                         aria-label="Fecha para las tareas seleccionadas">
 
-                    <button
-                        id="applyBulkDueDate"
-                        type="button">
-                        Aplicar fecha
-                    </button>
-
                 </div>
+
+                <button
+                    id="applyBulkChanges"
+                    type="button">
+                    Aplicar cambios
+                </button>
 
                 <button
                     id="clearBulkSelection"
