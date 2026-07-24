@@ -48,6 +48,7 @@ function entity(id, overrides = {}) {
         version: 1,
         updatedAt:
             "2026-07-24T10:00:00.000Z",
+        status: overrides.status ?? "PENDING",
         ...overrides
     };
 
@@ -161,6 +162,31 @@ test("acepta relaciones válidas entre todas las colecciones", () => {
                 ]
             })
         )
+    );
+
+});
+
+test("rechaza ciclos en la jerarquía de tareas", () => {
+
+    const backend = loadBackend();
+
+    assert.throws(
+        () => backend.validateSnapshot_(
+            snapshot({
+                tasks: [
+                    entity("task-1", {
+                        parentTaskId: "task-2",
+                        tagIds: []
+                    }),
+                    entity("task-2", {
+                        parentTaskId: "task-1",
+                        tagIds: []
+                    })
+                ]
+            })
+        ),
+        error =>
+            error.code === "INVALID_TASK_TREE"
     );
 
 });
