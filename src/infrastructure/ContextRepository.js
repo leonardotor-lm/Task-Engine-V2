@@ -77,4 +77,14 @@ export class ContextRepository {
 
     }
 
+
+
+    replaceAll(contexts) {
+
+        this.contexts = [...contexts];
+
+        this.save();
+
+    }
+
 }

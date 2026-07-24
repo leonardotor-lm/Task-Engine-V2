@@ -3,6 +3,7 @@ import { TaskService } from "./TaskService.js";
 import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
+import { BackupService } from "./BackupService.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
@@ -23,6 +24,13 @@ export class App {
         this.areaService = new AreaService();
         this.contextService = new ContextService();
         this.tagService = new TagService();
+
+        this.backupService = new BackupService({
+            taskRepository: this.taskService.repository,
+            areaRepository: this.areaService.repository,
+            contextRepository: this.contextService.repository,
+            tagRepository: this.tagService.repository
+        });
 
         this.selectedTask = null;
         this.currentView = View.INBOX;
@@ -319,6 +327,47 @@ export class App {
 
             },
 
+            onExportBackup: () => {
+
+                return this.backupService.exportBackup();
+
+            },
+
+            onImportBackup: (json) => {
+
+                const data =
+                    this.backupService.importBackup(json);
+
+                this.resetTransientState();
+                this.render();
+
+                return {
+                    tasks: data.tasks.length,
+                    areas: data.areas.length,
+                    contexts: data.contexts.length,
+                    tags: data.tags.length
+                };
+
+            },
+
+            onRestoreLastImportBackup: () => {
+
+                const data =
+                    this.backupService
+                        .restoreLastImportBackup();
+
+                this.resetTransientState();
+                this.render();
+
+                return {
+                    tasks: data.tasks.length,
+                    areas: data.areas.length,
+                    contexts: data.contexts.length,
+                    tags: data.tags.length
+                };
+
+            },
+
             onShowInbox: () => {
 
                 this.currentView = View.INBOX;
@@ -419,6 +468,23 @@ export class App {
         }
 
         this.render();
+
+    }
+
+    resetTransientState() {
+
+        this.selectedTask = null;
+        this.currentView = View.INBOX;
+        this.searchQuery = "";
+        this.taskFilters = {
+            areaId: "",
+            contextId: "",
+            tagId: "",
+            priority: "",
+            due: ""
+        };
+        this.taskSort = TaskSort.MANUAL;
+        this.expandedTaskIds.clear();
 
     }
 
@@ -525,6 +591,8 @@ export class App {
                 this.taskFilters
             ),
             taskSort: this.taskSort,
+            canRestoreBackup:
+                this.backupService.hasLastImportBackup(),
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

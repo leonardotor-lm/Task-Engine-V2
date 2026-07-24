@@ -77,4 +77,14 @@ remove(id) {
 
 }
     
+
+
+    replaceAll(areas) {
+
+        this.areas = [...areas];
+
+        this.save();
+
+    }
+
 }
