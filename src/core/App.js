@@ -6,7 +6,7 @@ import { TagService } from "./TagService.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
-import { filterTasksByQuery } from "./TaskSearch.js";
+import { filterTaskTreeByQuery } from "./TaskSearch.js";
 
 export class App {
 
@@ -20,6 +20,7 @@ export class App {
         this.selectedTask = null;
         this.currentView = View.INBOX;
         this.searchQuery = "";
+        this.expandedTaskIds = new Set();
 
         this.mainView = new MainView({
 
@@ -34,6 +35,8 @@ export class App {
             onCreateSubtask: (parentId, title) => {
 
                 this.taskService.createSubtask(parentId, title);
+
+                this.expandedTaskIds.add(parentId);
 
                 this.selectedTask =
                     this.taskService.getTaskById(parentId);
@@ -127,6 +130,18 @@ export class App {
                 this.searchQuery = "";
 
                 this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onToggleTaskExpansion: (id) => {
+
+                if (this.expandedTaskIds.has(id)) {
+                    this.expandedTaskIds.delete(id);
+                } else {
+                    this.expandedTaskIds.add(id);
+                }
 
                 this.render();
 
@@ -393,8 +408,26 @@ export class App {
 
     render() {
 
-        const visibleTasks = filterTasksByQuery(
-            this.getVisibleTasks(),
+        const activeViews = [
+            View.INBOX,
+            View.TODAY,
+            View.UPCOMING,
+            View.ALL
+        ];
+
+        let visibleTasks = this.getVisibleTasks();
+
+        if (activeViews.includes(this.currentView)) {
+
+            visibleTasks =
+                this.taskService.includeCompletedDescendants(
+                    visibleTasks
+                );
+
+        }
+
+        visibleTasks = filterTaskTreeByQuery(
+            visibleTasks,
             this.searchQuery
         );
 
@@ -403,6 +436,7 @@ export class App {
             view: this.currentView,
             tasks: visibleTasks,
             allTasks: this.taskService.getAllTasks(),
+            expandedTaskIds: this.expandedTaskIds,
             searchQuery: this.searchQuery,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
