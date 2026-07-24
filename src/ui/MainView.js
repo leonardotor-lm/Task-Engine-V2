@@ -23,6 +23,7 @@ export class MainView {
             selectedTask,
             areas,
             contexts,
+            tags,
             searchQuery
         } = state;
 
@@ -36,7 +37,8 @@ export class MainView {
                 ${this.taskEditor.render(
                     selectedTask,
                     areas,
-                    contexts
+                    contexts,
+                    tags
                 )}
 
             </div>
@@ -52,7 +54,8 @@ export class MainView {
             view,
             selectedTask,
             areas,
-            contexts
+            contexts,
+            tags
         } = state;
 
         document.getElementById("taskSearchForm")?.addEventListener("submit", event => {
@@ -107,6 +110,10 @@ export class MainView {
 
         document.getElementById("manageContexts")?.addEventListener("click", () => {
             this.callbacks.onShowContexts();
+        });
+
+        document.getElementById("manageTags")?.addEventListener("click", () => {
+            this.callbacks.onShowTags();
         });
 
         const taskViews = [
@@ -223,6 +230,10 @@ export class MainView {
                     const dueDate =
                         document.getElementById("taskDueDate").value || null;
 
+                    const tagIds = Array
+                        .from(document.querySelectorAll(".taskTag:checked"))
+                        .map(input => input.value);
+
                     if (!title) return;
 
                     this.callbacks.onUpdateTask(selectedTask.id, {
@@ -232,7 +243,8 @@ export class MainView {
                         areaId,
                         contextId,
                         priority,
-                        dueDate
+                        dueDate,
+                        tagIds
 
                     });
 
@@ -244,18 +256,37 @@ export class MainView {
 
         if (
             view === View.AREAS ||
-            view === View.CONTEXTS
+            view === View.CONTEXTS ||
+            view === View.TAGS
         ) {
 
-            const isAreaView = view === View.AREAS;
+            const config = {
 
-            const entities = isAreaView
-                ? areas
-                : contexts;
+                [View.AREAS]: {
+                    entities: areas,
+                    name: "área",
+                    create: this.callbacks.onCreateArea,
+                    update: this.callbacks.onUpdateArea,
+                    remove: this.callbacks.onDeleteArea
+                },
 
-            const entityName = isAreaView
-                ? "área"
-                : "contexto";
+                [View.CONTEXTS]: {
+                    entities: contexts,
+                    name: "contexto",
+                    create: this.callbacks.onCreateContext,
+                    update: this.callbacks.onUpdateContext,
+                    remove: this.callbacks.onDeleteContext
+                },
+
+                [View.TAGS]: {
+                    entities: tags,
+                    name: "etiqueta",
+                    create: this.callbacks.onCreateTag,
+                    update: this.callbacks.onUpdateTag,
+                    remove: this.callbacks.onDeleteTag
+                }
+
+            }[view];
 
             document.getElementById("entityForm")?.addEventListener("submit", event => {
 
@@ -271,11 +302,7 @@ export class MainView {
 
                 if (!name) return;
 
-                if (isAreaView) {
-                    this.callbacks.onCreateArea(name, color);
-                } else {
-                    this.callbacks.onCreateContext(name, color);
-                }
+                config.create(name, color);
 
             });
 
@@ -283,17 +310,13 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    if (!Dialog.confirm(`¿Eliminar este ${entityName}?`)) {
+                    if (!Dialog.confirm(`¿Eliminar esta ${config.name}?`)) {
                         return;
                     }
 
                     try {
 
-                        if (isAreaView) {
-                            this.callbacks.onDeleteArea(button.dataset.id);
-                        } else {
-                            this.callbacks.onDeleteContext(button.dataset.id);
-                        }
+                        config.remove(button.dataset.id);
 
                     } catch (error) {
 
@@ -309,31 +332,26 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    const entity = entities.find(
+                    const entity = config.entities.find(
                         entity => entity.id === button.dataset.id
                     );
 
                     if (!entity) return;
 
                     const name = Dialog.prompt(
-                        `Nombre del ${entityName}:`,
+                        `Nombre de la ${config.name}:`,
                         entity.name
                     );
 
                     if (name === null || name === "") return;
 
-                    if (isAreaView) {
-                        this.callbacks.onUpdateArea(entity.id, name);
-                    } else {
-                        this.callbacks.onUpdateContext(entity.id, name);
-                    }
+                    config.update(entity.id, name);
 
                 });
 
             });
 
         }
-
     }
 
 }
