@@ -57,6 +57,7 @@ export class App {
         };
         this.taskSort = TaskSort.MANUAL;
         this.expandedTaskIds = new Set();
+        this.selectedTaskIds = new Set();
         this.syncRemoteRevision = null;
         this.syncRemoteUpdateAvailable = false;
         this.syncCheckInProgress = false;
@@ -255,6 +256,46 @@ export class App {
                 this.selectedTask = this.taskService.getTaskById(id);
 
                 this.render();
+
+            },
+
+            onToggleBulkSelection: (
+                id,
+                selected
+            ) => {
+
+                if (selected) {
+                    this.selectedTaskIds.add(id);
+                } else {
+                    this.selectedTaskIds.delete(id);
+                }
+
+                this.render();
+
+            },
+
+            onClearBulkSelection: () => {
+
+                this.selectedTaskIds.clear();
+
+                this.render();
+
+            },
+
+            onBulkUpdateTasks: (data) => {
+
+                const updated =
+                    this.taskService.updateTasks(
+                        [...this.selectedTaskIds],
+                        data
+                    );
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+
+                this.render();
+
+                return updated.length;
 
             },
 
@@ -638,6 +679,7 @@ export class App {
         };
         this.taskSort = TaskSort.MANUAL;
         this.expandedTaskIds.clear();
+        this.selectedTaskIds.clear();
 
     }
 
@@ -732,6 +774,43 @@ export class App {
             this.taskSort
         );
 
+        const bulkViews = [
+            View.INBOX,
+            View.TODAY,
+            View.UPCOMING,
+            View.ALL
+        ];
+
+        const bulkSelectionEnabled =
+            bulkViews.includes(
+                this.currentView
+            );
+
+        if (bulkSelectionEnabled) {
+
+            const visibleActiveIds = new Set(
+                visibleTasks
+                    .filter(
+                        task =>
+                            !task.isCompleted()
+                    )
+                    .map(task => task.id)
+            );
+
+            this.selectedTaskIds = new Set(
+                [...this.selectedTaskIds]
+                    .filter(
+                        id =>
+                            visibleActiveIds.has(id)
+                    )
+            );
+
+        } else {
+
+            this.selectedTaskIds.clear();
+
+        }
+
         const syncFingerprint =
             createSyncFingerprint(
                 this.backupService.createBackup()
@@ -749,6 +828,9 @@ export class App {
                 this.taskFilters
             ),
             taskSort: this.taskSort,
+            selectedTaskIds:
+                this.selectedTaskIds,
+            bulkSelectionEnabled,
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),
             syncConfigured:
