@@ -208,3 +208,40 @@ test("no reabre una instancia recurrente ya completada", () => {
     );
 
 });
+
+test("saltea una ocurrencia sin completar ni duplicar la tarea", () => {
+
+    const fixture = createFixture({
+        recurrence: RecurrenceFrequency.WEEKLY,
+        recurrenceId: "series-1"
+    });
+
+    const result = fixture.service.skipRecurringTask(
+        "task-1"
+    );
+
+    assert.equal(result.status, TaskStatus.PENDING);
+    assert.equal(result.dueDate, "2026-07-31");
+    assert.equal(result.recurrenceId, "series-1");
+    assert.equal(
+        result.recurrence,
+        RecurrenceFrequency.WEEKLY
+    );
+    assert.equal(fixture.getTasks().length, 1);
+
+});
+
+test("no permite saltear una tarea que no es recurrente", () => {
+
+    const fixture = createFixture();
+
+    assert.throws(
+        () => fixture.service.skipRecurringTask(
+            "task-1"
+        ),
+        {
+            message: "Sólo se puede saltear una tarea recurrente activa."
+        }
+    );
+
+});
