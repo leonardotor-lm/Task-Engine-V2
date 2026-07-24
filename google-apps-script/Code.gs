@@ -603,7 +603,22 @@ function validateTaskReferences_(
     ids
 ) {
 
+    var validStatuses = {
+        INBOX: true,
+        PENDING: true,
+        COMPLETED: true,
+        ARCHIVED: true,
+        DELETED: true
+    };
+
     tasks.forEach(function(task) {
+
+        if (!validStatuses[task.status]) {
+            throw protocolError_(
+                "INVALID_TASK_STATUS",
+                "Una tarea contiene un estado inválido."
+            );
+        }
 
         if (
             task.parentTaskId &&
@@ -652,6 +667,35 @@ function validateTaskReferences_(
             }
 
         });
+
+    });
+
+    var tasksById = {};
+
+    tasks.forEach(function(task) {
+        tasksById[task.id] = task;
+    });
+
+    tasks.forEach(function(task) {
+
+        var visited = {};
+        var current = task;
+
+        while (current && current.parentTaskId) {
+
+            if (visited[current.id]) {
+                throw protocolError_(
+                    "INVALID_TASK_TREE",
+                    "La jerarquía de tareas contiene un ciclo."
+                );
+            }
+
+            visited[current.id] = true;
+
+            current =
+                tasksById[current.parentTaskId];
+
+        }
 
     });
 
