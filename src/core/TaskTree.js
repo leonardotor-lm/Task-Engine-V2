@@ -32,6 +32,26 @@ export function flattenTaskTree(tasks, expandedTaskIds = null) {
 
     });
 
+    const rootedTaskIds = new Set();
+
+    const markAsRooted = task => {
+
+        if (rootedTaskIds.has(task.id)) return;
+
+        rootedTaskIds.add(task.id);
+
+        const children = childrenByParent.get(task.id) ?? [];
+
+        for (const child of children) {
+            markAsRooted(child);
+        }
+
+    };
+
+    for (const root of roots) {
+        markAsRooted(root);
+    }
+
     const result = [];
     const visited = new Set();
 
@@ -61,7 +81,11 @@ export function flattenTaskTree(tasks, expandedTaskIds = null) {
     }
 
     for (const task of tasks) {
-        visit(task, 0);
+
+        if (!rootedTaskIds.has(task.id)) {
+            visit(task, 0);
+        }
+
     }
 
     return result;
