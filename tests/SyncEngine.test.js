@@ -502,6 +502,74 @@ test("no anuncia actualización si las revisiones coinciden", async () => {
 
 });
 
+test("sobrescribe la nube solo después de leer su revisión actual", async () => {
+
+    const calls = [];
+
+    const config = {
+        isConfigured: () => true,
+        get: () => ({
+            url: "https://example.com/exec",
+            token: "abc"
+        }),
+        setRevision: revision => {
+            calls.push(["revision", revision]);
+        },
+        markSynchronized: fingerprint => {
+            calls.push(["fingerprint", fingerprint]);
+        }
+    };
+
+    const backupService = {
+        createBackup: () => backup(),
+        parseAndValidate: json =>
+            JSON.parse(json).data
+    };
+
+    const gateway = {
+        async load() {
+            calls.push(["load"]);
+
+            return {
+                revision: 8,
+                data: backup()
+            };
+        },
+        async save(data) {
+            calls.push([
+                "save",
+                data.baseRevision
+            ]);
+
+            return {
+                revision: 9
+            };
+        }
+    };
+
+    const engine = new SyncEngine({
+        backupService,
+        config,
+        gateway
+    });
+
+    const result =
+        await engine.overwriteRemote();
+
+    assert.deepEqual(
+        calls.slice(0, 3),
+        [
+            ["load"],
+            ["save", 8],
+            ["revision", 9]
+        ]
+    );
+
+    assert.equal(result.revision, 9);
+    assert.equal(result.summary.tasks, 1);
+
+});
+
 test("descarga, valida e importa antes de guardar la revisión", async () => {
 
     const calls = [];
