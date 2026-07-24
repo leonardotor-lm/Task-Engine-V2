@@ -10,6 +10,10 @@ import {
     filterTaskTreeByCriteria,
     hasActiveTaskFilters
 } from "./TaskFilters.js";
+import {
+    TaskSort,
+    sortTaskTree
+} from "./TaskSorting.js";
 
 export class App {
 
@@ -30,6 +34,7 @@ export class App {
             priority: "",
             due: ""
         };
+        this.taskSort = TaskSort.MANUAL;
         this.expandedTaskIds = new Set();
 
         this.mainView = new MainView({
@@ -186,6 +191,16 @@ export class App {
                     priority: "",
                     due: ""
                 };
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onChangeTaskSort: (sort) => {
+
+                this.taskSort = sort;
 
                 this.selectedTask = null;
 
@@ -493,6 +508,11 @@ export class App {
             }
         );
 
+        visibleTasks = sortTaskTree(
+            visibleTasks,
+            this.taskSort
+        );
+
         this.mainView.render({
 
             view: this.currentView,
@@ -504,6 +524,7 @@ export class App {
             filtersActive: hasActiveTaskFilters(
                 this.taskFilters
             ),
+            taskSort: this.taskSort,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

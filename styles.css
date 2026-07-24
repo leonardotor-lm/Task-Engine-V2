@@ -271,3 +271,23 @@ body {
     padding: 6px;
     cursor: pointer;
 }
+
+
+.taskSorting {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.taskSorting label {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.taskSorting select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 7px;
+}

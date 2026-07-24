@@ -26,7 +26,8 @@ export class MainView {
             contexts,
             tags,
             searchQuery,
-            taskFilters
+            taskFilters,
+            taskSort
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -38,7 +39,8 @@ export class MainView {
                     areas,
                     contexts,
                     tags,
-                    taskFilters
+                    taskFilters,
+                    taskSort
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -114,6 +116,14 @@ export class MainView {
         document.getElementById("clearTaskFilters")?.addEventListener("click", () => {
 
             this.callbacks.onClearTaskFilters();
+
+        });
+
+        document.getElementById("taskSort")?.addEventListener("change", event => {
+
+            this.callbacks.onChangeTaskSort(
+                event.target.value
+            );
 
         });
 
