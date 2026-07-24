@@ -79,3 +79,25 @@ body {
     margin-top: 24px;
     color: #64748b;
 }
+
+.taskSearch {
+    margin-bottom: 16px;
+}
+
+.taskSearch input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px;
+}
+
+.taskSearchActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.taskSearchActions button {
+    flex: 1;
+    padding: 6px;
+    cursor: pointer;
+}

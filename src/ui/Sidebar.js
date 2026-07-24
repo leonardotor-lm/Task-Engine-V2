@@ -1,8 +1,9 @@
 import { View } from "../core/View.js";
+import { escapeHtml } from "./escapeHtml.js";
 
 export class Sidebar {
 
-    render(activeView) {
+    render(activeView, searchQuery = "") {
 
         const buttonClass = view => {
 
@@ -16,6 +17,35 @@ export class Sidebar {
             <aside class="sidebar">
 
                 <h3>Task Engine</h3>
+
+                <form id="taskSearchForm" class="taskSearch">
+
+                    <input
+                        id="taskSearchInput"
+                        type="search"
+                        value="${escapeHtml(searchQuery)}"
+                        placeholder="Buscar tareas"
+                        autocomplete="off">
+
+                    <div class="taskSearchActions">
+
+                        <button type="submit">
+                            Buscar
+                        </button>
+
+                        ${searchQuery
+                            ? `
+                                <button
+                                    id="clearTaskSearch"
+                                    type="button">
+                                    Limpiar
+                                </button>
+                            `
+                            : ""}
+
+                    </div>
+
+                </form>
 
                 <nav>
 

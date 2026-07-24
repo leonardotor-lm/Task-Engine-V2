@@ -8,7 +8,8 @@ export class TaskList {
         title,
         allowCreate = false,
         areas = [],
-        contexts = []
+        contexts = [],
+        searchQuery = ""
     ) {
 
         const form = allowCreate
@@ -49,7 +50,9 @@ export class TaskList {
 
             html += `
                 <p class="emptyState">
-                    No hay tareas para mostrar en esta vista.
+                    ${searchQuery
+                        ? "No se encontraron tareas que coincidan con la búsqueda."
+                        : "No hay tareas para mostrar en esta vista."}
                 </p>
             `;
 
