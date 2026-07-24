@@ -16,6 +16,8 @@ export const View = Object.freeze({
 
     AREAS: "areas",
 
-    CONTEXTS: "contexts"
+    CONTEXTS: "contexts",
+
+    TAGS: "tags"
 
 });
