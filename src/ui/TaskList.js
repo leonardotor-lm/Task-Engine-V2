@@ -15,7 +15,8 @@ export class TaskList {
         expandedTaskIds = new Set(),
         filtersActive = false,
         selectedTaskIds = new Set(),
-        bulkSelectionEnabled = false
+        bulkSelectionEnabled = false,
+        bulkActionMode = null
     ) {
 
         const form = allowCreate
@@ -81,7 +82,8 @@ export class TaskList {
                         selectedTaskIds.size,
                         areas,
                         contexts,
-                        tags
+                        tags,
+                        bulkActionMode
                     )
                     : ""}
 
@@ -243,7 +245,10 @@ export class TaskList {
                             ${toggleHtml}
 
                             ${bulkSelectionEnabled &&
-                                !task.isCompleted()
+                                this.isBulkSelectable(
+                                    task,
+                                    bulkActionMode
+                                )
                                 ? `
                                     <input
                                         type="checkbox"
@@ -289,12 +294,78 @@ export class TaskList {
 
     }
 
+    isBulkSelectable(task, mode) {
+
+        switch (mode) {
+
+            case "ACTIVE":
+                return !task.isCompleted();
+
+            case "COMPLETED":
+                return (
+                    task.isCompleted() &&
+                    !task.recurrence
+                );
+
+            case "ARCHIVED":
+                return task.isArchived();
+
+            case "TRASH":
+                return task.isDeleted();
+
+            default:
+                return false;
+
+        }
+
+    }
+
     renderBulkToolbar(
         selectedCount,
         areas,
         contexts,
-        tags
+        tags,
+        bulkActionMode
     ) {
+
+        if (bulkActionMode !== "ACTIVE") {
+
+            const actionLabels = {
+                COMPLETED:
+                    "Reactivar selección",
+                ARCHIVED:
+                    "Restaurar selección",
+                TRASH:
+                    "Restaurar selección"
+            };
+
+            return `
+                <section class="bulkToolbar">
+
+                    <strong>
+                        ${selectedCount}
+                        ${selectedCount === 1
+                            ? "tarea seleccionada"
+                            : "tareas seleccionadas"}
+                    </strong>
+
+                    <button
+                        id="bulkRestoreTasks"
+                        type="button">
+                        ${actionLabels[bulkActionMode]}
+                    </button>
+
+                    <button
+                        id="clearBulkSelection"
+                        type="button"
+                        class="secondaryAction">
+                        Cancelar selección
+                    </button>
+
+                </section>
+            `;
+
+        }
 
         const priorityOptions =
             PriorityOptions.map(option => `
