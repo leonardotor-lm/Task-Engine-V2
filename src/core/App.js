@@ -87,6 +87,16 @@ export class App {
 
             },
 
+            onPermanentlyDeleteTask: (id) => {
+
+                this.taskService.permanentlyDeleteTask(id);
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
