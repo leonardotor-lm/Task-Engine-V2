@@ -92,6 +92,34 @@ body {
     gap: 6px;
 }
 
+.bulkTagControl {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bulkTagControl > span,
+.bulkTagControl small {
+    color: #475569;
+    font-size: 11px;
+}
+
+.bulkTagOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 150px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.bulkTagOption {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
 .bulkToolbar select,
 .bulkToolbar input,
 .bulkToolbar button {
