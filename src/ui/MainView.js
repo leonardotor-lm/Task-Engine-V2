@@ -22,13 +22,14 @@ export class MainView {
             view,
             selectedTask,
             areas,
-            contexts
+            contexts,
+            searchQuery
         } = state;
 
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
-                ${this.sidebar.render(view)}
+                ${this.sidebar.render(view, searchQuery)}
 
                 ${this.viewRouter.render(state)}
 
@@ -53,6 +54,24 @@ export class MainView {
             areas,
             contexts
         } = state;
+
+        document.getElementById("taskSearchForm")?.addEventListener("submit", event => {
+
+            event.preventDefault();
+
+            const query = document
+                .getElementById("taskSearchInput")
+                .value;
+
+            this.callbacks.onSearchTasks(query);
+
+        });
+
+        document.getElementById("clearTaskSearch")?.addEventListener("click", () => {
+
+            this.callbacks.onClearSearch();
+
+        });
 
         document.getElementById("showInbox")?.addEventListener("click", () => {
             this.callbacks.onShowInbox();
