@@ -429,6 +429,79 @@ test("sube la copia local con la revisión conocida", async () => {
 
 });
 
+test("detecta una revisión remota sin importar datos", async () => {
+
+    let imported = false;
+
+    const engine = new SyncEngine({
+        backupService: {
+            importBackup() {
+                imported = true;
+            }
+        },
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "abc"
+            }),
+            getRevision: () => 3
+        },
+        gateway: {
+            async load() {
+                return {
+                    revision: 5,
+                    data: backup()
+                };
+            }
+        }
+    });
+
+    const status =
+        await engine.checkRemoteRevision();
+
+    assert.deepEqual(status, {
+        localRevision: 3,
+        remoteRevision: 5,
+        updateAvailable: true
+    });
+
+    assert.equal(imported, false);
+
+});
+
+test("no anuncia actualización si las revisiones coinciden", async () => {
+
+    const engine = new SyncEngine({
+        backupService: {},
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "abc"
+            }),
+            getRevision: () => 5
+        },
+        gateway: {
+            async load() {
+                return {
+                    revision: 5,
+                    data: backup()
+                };
+            }
+        }
+    });
+
+    const status =
+        await engine.checkRemoteRevision();
+
+    assert.equal(
+        status.updateAvailable,
+        false
+    );
+
+});
+
 test("descarga, valida e importa antes de guardar la revisión", async () => {
 
     const calls = [];
