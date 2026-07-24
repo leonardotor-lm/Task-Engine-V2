@@ -98,7 +98,13 @@ export class TaskService {
 
     }
 
-    updateTasks(ids, data) {
+    updateTasks(
+        ids,
+        data,
+        {
+            addTagIds = []
+        } = {}
+    ) {
 
         const uniqueIds = [
             ...new Set(ids)
@@ -136,7 +142,22 @@ export class TaskService {
                 task.toJSON()
             );
 
-            copy.update(data);
+            const changes = {
+                ...data
+            };
+
+            if (addTagIds.length > 0) {
+
+                changes.tagIds = [
+                    ...new Set([
+                        ...copy.tagIds,
+                        ...addTagIds
+                    ])
+                ];
+
+            }
+
+            copy.update(changes);
 
             return copy;
 
