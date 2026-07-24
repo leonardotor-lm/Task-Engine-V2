@@ -284,10 +284,18 @@ export class App {
 
             onBulkUpdateTasks: (data) => {
 
+                const {
+                    addTagIds = [],
+                    ...taskData
+                } = data;
+
                 const updated =
                     this.taskService.updateTasks(
                         [...this.selectedTaskIds],
-                        data
+                        taskData,
+                        {
+                            addTagIds
+                        }
                     );
 
                 this.selectedTaskIds.clear();
