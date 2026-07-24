@@ -25,13 +25,21 @@ export class MainView {
             areas,
             contexts,
             tags,
-            searchQuery
+            searchQuery,
+            taskFilters
         } = state;
 
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
-                ${this.sidebar.render(view, searchQuery)}
+                ${this.sidebar.render(
+                    view,
+                    searchQuery,
+                    areas,
+                    contexts,
+                    tags,
+                    taskFilters
+                )}
 
                 ${this.viewRouter.render(state)}
 
@@ -76,6 +84,36 @@ export class MainView {
         document.getElementById("clearTaskSearch")?.addEventListener("click", () => {
 
             this.callbacks.onClearSearch();
+
+        });
+
+        document.getElementById("taskFilterForm")?.addEventListener("submit", event => {
+
+            event.preventDefault();
+
+            this.callbacks.onApplyTaskFilters({
+                areaId: document
+                    .getElementById("filterArea")
+                    .value,
+                contextId: document
+                    .getElementById("filterContext")
+                    .value,
+                tagId: document
+                    .getElementById("filterTag")
+                    .value,
+                priority: document
+                    .getElementById("filterPriority")
+                    .value,
+                due: document
+                    .getElementById("filterDue")
+                    .value
+            });
+
+        });
+
+        document.getElementById("clearTaskFilters")?.addEventListener("click", () => {
+
+            this.callbacks.onClearTaskFilters();
 
         });
 
