@@ -265,6 +265,7 @@ export class MainView {
                 [View.AREAS]: {
                     entities: areas,
                     name: "área",
+                    prompt: "Nombre del área:",
                     create: this.callbacks.onCreateArea,
                     update: this.callbacks.onUpdateArea,
                     remove: this.callbacks.onDeleteArea
@@ -273,6 +274,7 @@ export class MainView {
                 [View.CONTEXTS]: {
                     entities: contexts,
                     name: "contexto",
+                    prompt: "Nombre del contexto:",
                     create: this.callbacks.onCreateContext,
                     update: this.callbacks.onUpdateContext,
                     remove: this.callbacks.onDeleteContext
@@ -281,6 +283,7 @@ export class MainView {
                 [View.TAGS]: {
                     entities: tags,
                     name: "etiqueta",
+                    prompt: "Nombre de la etiqueta:",
                     create: this.callbacks.onCreateTag,
                     update: this.callbacks.onUpdateTag,
                     remove: this.callbacks.onDeleteTag
@@ -310,7 +313,11 @@ export class MainView {
 
                 button.addEventListener("click", () => {
 
-                    if (!Dialog.confirm(`¿Eliminar esta ${config.name}?`)) {
+                    const article = config.name === "contexto"
+                        ? "este"
+                        : "esta";
+
+                    if (!Dialog.confirm(`¿Eliminar ${article} ${config.name}?`)) {
                         return;
                     }
 
@@ -339,7 +346,7 @@ export class MainView {
                     if (!entity) return;
 
                     const name = Dialog.prompt(
-                        `Nombre de la ${config.name}:`,
+                        config.prompt,
                         entity.name
                     );
 
