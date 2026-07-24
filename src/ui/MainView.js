@@ -27,7 +27,8 @@ export class MainView {
             tags,
             searchQuery,
             taskFilters,
-            taskSort
+            taskSort,
+            canRestoreBackup
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -40,7 +41,8 @@ export class MainView {
                     contexts,
                     tags,
                     taskFilters,
-                    taskSort
+                    taskSort,
+                    canRestoreBackup
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -60,6 +62,43 @@ export class MainView {
 
     }
 
+    downloadBackup(json) {
+
+        const blob = new Blob(
+            [json],
+            { type: "application/json" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        const date = new Date()
+            .toISOString()
+            .slice(0, 10);
+
+        link.href = url;
+        link.download =
+            `task-engine-backup-${date}.json`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+    }
+
+    backupSummary(data) {
+
+        return [
+            `${data.tasks} tareas`,
+            `${data.areas} áreas`,
+            `${data.contexts} contextos`,
+            `${data.tags} etiquetas`
+        ].join(", ");
+
+    }
+
     bindEvents(state) {
 
         const {
@@ -70,6 +109,81 @@ export class MainView {
             contexts,
             tags
         } = state;
+
+        document.getElementById("exportBackup")?.addEventListener("click", () => {
+
+            try {
+
+                this.downloadBackup(
+                    this.callbacks.onExportBackup()
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
+
+        document.getElementById("importBackup")?.addEventListener("change", async event => {
+
+            const file = event.target.files[0];
+
+            if (!file) return;
+
+            if (!Dialog.confirm(
+                "La importación reemplazará los datos actuales. Se guardará una copia para poder deshacerla. ¿Continuar?"
+            )) {
+
+                event.target.value = "";
+                return;
+
+            }
+
+            try {
+
+                const data = this.callbacks.onImportBackup(
+                    await file.text()
+                );
+
+                Dialog.alert(
+                    `Importación completada: ${this.backupSummary(data)}.`
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
+
+        document.getElementById("restoreLastImportBackup")?.addEventListener("click", () => {
+
+            if (!Dialog.confirm(
+                "¿Restaurar los datos anteriores a la última importación?"
+            )) {
+                return;
+            }
+
+            try {
+
+                const data =
+                    this.callbacks
+                        .onRestoreLastImportBackup();
+
+                Dialog.alert(
+                    `Copia anterior restaurada: ${this.backupSummary(data)}.`
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
 
         document.getElementById("taskSearchForm")?.addEventListener("submit", event => {
 
