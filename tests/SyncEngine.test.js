@@ -141,6 +141,71 @@ test("rechaza URL sin HTTPS y token vacío", () => {
 
 });
 
+test("detecta cambios pendientes y registra la última sincronización", () => {
+
+    const storage = new MemoryStorage();
+    const config = new SyncConfig(storage);
+
+    config.save({
+        url: "https://example.com/exec",
+        token: "token"
+    });
+
+    assert.equal(
+        config.hasPendingChanges("fingerprint-1"),
+        true
+    );
+
+    config.markSynchronized(
+        "fingerprint-1",
+        "2026-07-24T15:00:00.000Z"
+    );
+
+    assert.equal(
+        config.hasPendingChanges("fingerprint-1"),
+        false
+    );
+
+    assert.equal(
+        config.hasPendingChanges("fingerprint-2"),
+        true
+    );
+
+    assert.equal(
+        config.getLastSuccess(),
+        "2026-07-24T15:00:00.000Z"
+    );
+
+});
+
+test("cambiar la conexión limpia el estado sincronizado", () => {
+
+    const config = new SyncConfig(
+        new MemoryStorage()
+    );
+
+    config.save({
+        url: "https://example.com/exec",
+        token: "token"
+    });
+
+    config.setRevision(3);
+    config.markSynchronized(
+        "fingerprint",
+        "2026-07-24T15:00:00.000Z"
+    );
+
+    config.save({
+        url: "https://other.example.com/exec",
+        token: "other-token"
+    });
+
+    assert.equal(config.getRevision(), 0);
+    assert.equal(config.getFingerprint(), "");
+    assert.equal(config.getLastSuccess(), "");
+
+});
+
 test("persiste y valida la revisión remota", () => {
 
     const storage = new MemoryStorage();
