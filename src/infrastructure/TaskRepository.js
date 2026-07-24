@@ -97,4 +97,14 @@ export class TaskRepository {
 
     }
 
+
+
+    replaceAll(tasks) {
+
+        this.tasks = [...tasks];
+
+        this.save();
+
+    }
+
 }
