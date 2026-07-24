@@ -467,6 +467,109 @@ export class MainView {
 
             });
 
+            document.querySelectorAll(
+                ".bulkTaskCheckbox"
+            ).forEach(checkbox => {
+
+                checkbox.addEventListener(
+                    "click",
+                    event =>
+                        event.stopPropagation()
+                );
+
+                checkbox.addEventListener(
+                    "change",
+                    () => {
+
+                        this.callbacks
+                            .onToggleBulkSelection(
+                                checkbox.dataset.id,
+                                checkbox.checked
+                            );
+
+                    }
+                );
+
+            });
+
+            document.getElementById(
+                "clearBulkSelection"
+            )?.addEventListener("click", () => {
+
+                this.callbacks
+                    .onClearBulkSelection();
+
+            });
+
+            document.getElementById(
+                "applyBulkPriority"
+            )?.addEventListener("click", () => {
+
+                try {
+
+                    const priority = Number(
+                        document.getElementById(
+                            "bulkPriority"
+                        ).value
+                    );
+
+                    const count =
+                        this.callbacks
+                            .onBulkUpdateTasks({
+                                priority
+                            });
+
+                    Dialog.alert(
+                        `Prioridad actualizada en ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
+            document.getElementById(
+                "applyBulkDueDate"
+            )?.addEventListener("click", () => {
+
+                const dueDate = document
+                    .getElementById(
+                        "bulkDueDate"
+                    ).value;
+
+                if (!dueDate) {
+
+                    Dialog.alert(
+                        "Elegí una fecha para las tareas seleccionadas."
+                    );
+
+                    return;
+
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkUpdateTasks({
+                                dueDate
+                            });
+
+                    Dialog.alert(
+                        `Fecha actualizada en ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {
