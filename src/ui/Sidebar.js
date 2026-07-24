@@ -107,6 +107,12 @@ export class Sidebar {
                         ⚙️ Contextos
                     </button>
 
+                    <button
+                        id="manageTags"
+                        class="${buttonClass(View.TAGS)}">
+                        🏷️ Etiquetas
+                    </button>
+
                 </nav>
 
             </aside>
