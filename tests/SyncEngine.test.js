@@ -86,6 +86,34 @@ test("guarda URL y token usando las claves acordadas", () => {
 
 });
 
+test("conserva la revisión si la conexión no cambia", () => {
+
+    const storage = new MemoryStorage();
+    const config = new SyncConfig(storage);
+
+    config.save({
+        url: "https://example.com/exec",
+        token: "token"
+    });
+
+    config.setRevision(8);
+
+    config.save({
+        url: "https://example.com/exec",
+        token: "token"
+    });
+
+    assert.equal(config.getRevision(), 8);
+
+    config.save({
+        url: "https://other.example.com/exec",
+        token: "otro-token"
+    });
+
+    assert.equal(config.getRevision(), 0);
+
+});
+
 test("rechaza URL sin HTTPS y token vacío", () => {
 
     const config = new SyncConfig(
@@ -126,6 +154,38 @@ test("persiste y valida la revisión remota", () => {
     assert.throws(
         () => config.setRevision(-1),
         /revisión/
+    );
+
+});
+
+test("invoca fetch con el contexto global del navegador", async () => {
+
+    let receivedContext;
+
+    const fetchFn = async function() {
+
+        receivedContext = this;
+
+        return response({
+            ok: true,
+            revision: 0,
+            data: null
+        });
+
+    };
+
+    const gateway = new CloudGateway({
+        fetchFn
+    });
+
+    await gateway.load({
+        url: "https://example.com/exec",
+        token: "abc"
+    });
+
+    assert.equal(
+        receivedContext,
+        globalThis
     );
 
 });

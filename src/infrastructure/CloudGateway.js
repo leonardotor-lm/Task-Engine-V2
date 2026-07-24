@@ -53,10 +53,14 @@ export class CloudGateway {
 
         try {
 
-            response = await this.fetchFn(url, {
-                ...options,
-                signal: controller.signal
-            });
+            response = await this.fetchFn.call(
+                globalThis,
+                url,
+                {
+                    ...options,
+                    signal: controller.signal
+                }
+            );
 
         } catch (error) {
 
@@ -66,8 +70,12 @@ export class CloudGateway {
                 );
             }
 
+            const detail = error?.message
+                ? `: ${error.message}`
+                : "";
+
             throw new Error(
-                "No se pudo conectar con el servicio de sincronización."
+                `No se pudo conectar con el servicio de sincronización${detail}.`
             );
 
         } finally {

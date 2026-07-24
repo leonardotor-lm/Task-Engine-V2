@@ -12,7 +12,10 @@ export class Sidebar {
         tags = [],
         taskFilters = {},
         taskSort = "MANUAL",
-        canRestoreBackup = false
+        canRestoreBackup = false,
+        syncConfigured = false,
+        syncUrl = "",
+        syncRevision = 0
     ) {
 
         const buttonClass = view => {
@@ -229,6 +232,84 @@ export class Sidebar {
             `
             : "";
 
+        const syncTools = `
+            <details
+                class="syncTools"
+                ${syncConfigured ? "" : "open"}>
+
+                <summary>
+                    Sincronización
+                    <span class="syncStatus ${syncConfigured
+                        ? "configured"
+                        : "disconnected"}">
+                        ${syncConfigured
+                            ? `Conectada · rev. ${syncRevision}`
+                            : "Sin configurar"}
+                    </span>
+                </summary>
+
+                <form id="syncConfigForm">
+
+                    <label for="syncUrl">
+                        URL de Apps Script
+                    </label>
+
+                    <input
+                        id="syncUrl"
+                        type="url"
+                        value="${escapeHtml(syncUrl)}"
+                        placeholder="https://script.google.com/.../exec"
+                        autocomplete="off"
+                        required>
+
+                    <label for="syncToken">
+                        Token privado
+                    </label>
+
+                    <input
+                        id="syncToken"
+                        type="password"
+                        placeholder="${syncConfigured
+                            ? "Dejar vacío para conservarlo"
+                            : "Token de sincronización"}"
+                        autocomplete="new-password">
+
+                    <button type="submit">
+                        Guardar conexión
+                    </button>
+
+                </form>
+
+                ${syncConfigured
+                    ? `
+                        <div class="syncActions">
+
+                            <button
+                                id="pushToCloud"
+                                type="button">
+                                Subir a la nube
+                            </button>
+
+                            <button
+                                id="pullFromCloud"
+                                type="button">
+                                Descargar de la nube
+                            </button>
+
+                            <button
+                                id="clearSyncConfig"
+                                type="button"
+                                class="secondaryAction">
+                                Quitar conexión
+                            </button>
+
+                        </div>
+                    `
+                    : ""}
+
+            </details>
+        `;
+
         const backupTools = `
             <details class="backupTools">
 
@@ -306,6 +387,8 @@ export class Sidebar {
                 ${filters}
 
                 ${sorting}
+
+                ${syncTools}
 
                 ${backupTools}
 

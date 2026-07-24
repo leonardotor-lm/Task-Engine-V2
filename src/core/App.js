@@ -4,6 +4,9 @@ import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
 import { BackupService } from "./BackupService.js";
+import { SyncEngine } from "./SyncEngine.js";
+import { SyncConfig } from "../infrastructure/SyncConfig.js";
+import { CloudGateway } from "../infrastructure/CloudGateway.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
@@ -30,6 +33,14 @@ export class App {
             areaRepository: this.areaService.repository,
             contextRepository: this.contextService.repository,
             tagRepository: this.tagService.repository
+        });
+
+        this.syncConfig = new SyncConfig();
+
+        this.syncEngine = new SyncEngine({
+            backupService: this.backupService,
+            config: this.syncConfig,
+            gateway: new CloudGateway()
         });
 
         this.selectedTask = null;
@@ -327,6 +338,62 @@ export class App {
 
             },
 
+            onSaveSyncConfig: ({
+                url,
+                token
+            }) => {
+
+                const current =
+                    this.syncConfig.get();
+
+                const nextUrl =
+                    this.syncConfig.validateUrl(url);
+
+                const savedToken =
+                    nextUrl === current.url
+                        ? current.token
+                        : "";
+
+                this.syncConfig.save({
+                    url: nextUrl,
+                    token: token || savedToken
+                });
+
+                this.render();
+
+            },
+
+            onClearSyncConfig: () => {
+
+                this.syncConfig.clear();
+
+                this.render();
+
+            },
+
+            onPushToCloud: async () => {
+
+                const result =
+                    await this.syncEngine.push();
+
+                this.render();
+
+                return result;
+
+            },
+
+            onPullFromCloud: async () => {
+
+                const result =
+                    await this.syncEngine.pull();
+
+                this.resetTransientState();
+                this.render();
+
+                return result;
+
+            },
+
             onExportBackup: () => {
 
                 return this.backupService.exportBackup();
@@ -593,6 +660,12 @@ export class App {
             taskSort: this.taskSort,
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),
+            syncConfigured:
+                this.syncConfig.isConfigured(),
+            syncUrl:
+                this.syncConfig.get().url,
+            syncRevision:
+                this.syncConfig.getRevision(),
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

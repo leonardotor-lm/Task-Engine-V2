@@ -28,7 +28,10 @@ export class MainView {
             searchQuery,
             taskFilters,
             taskSort,
-            canRestoreBackup
+            canRestoreBackup,
+            syncConfigured,
+            syncUrl,
+            syncRevision
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -42,7 +45,10 @@ export class MainView {
                     tags,
                     taskFilters,
                     taskSort,
-                    canRestoreBackup
+                    canRestoreBackup,
+                    syncConfigured,
+                    syncUrl,
+                    syncRevision
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -109,6 +115,107 @@ export class MainView {
             contexts,
             tags
         } = state;
+
+        document.getElementById("syncConfigForm")?.addEventListener("submit", event => {
+
+            event.preventDefault();
+
+            try {
+
+                this.callbacks.onSaveSyncConfig({
+                    url: document
+                        .getElementById("syncUrl")
+                        .value,
+                    token: document
+                        .getElementById("syncToken")
+                        .value
+                });
+
+                Dialog.alert(
+                    "Conexión de sincronización guardada."
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
+
+        document.getElementById("clearSyncConfig")?.addEventListener("click", () => {
+
+            if (!Dialog.confirm(
+                "¿Quitar la conexión? Los datos locales no se eliminarán."
+            )) {
+                return;
+            }
+
+            this.callbacks.onClearSyncConfig();
+
+        });
+
+        document.getElementById("pushToCloud")?.addEventListener("click", async () => {
+
+            if (!Dialog.confirm(
+                "¿Subir el estado local completo a Google Sheets?"
+            )) {
+                return;
+            }
+
+            try {
+
+                const result =
+                    await this.callbacks
+                        .onPushToCloud();
+
+                Dialog.alert(
+                    `Subida completada en la revisión ${result.revision}: ${this.backupSummary(result.summary)}.`
+                );
+
+            } catch (error) {
+
+                if (error.name === "SyncConflictError") {
+
+                    Dialog.alert(
+                        "La nube contiene cambios más recientes. No se sobrescribió nada. Descargá primero la versión de la nube."
+                    );
+
+                } else {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            }
+
+        });
+
+        document.getElementById("pullFromCloud")?.addEventListener("click", async () => {
+
+            if (!Dialog.confirm(
+                "La descarga reemplazará los datos locales y guardará una copia para poder deshacerla. ¿Continuar?"
+            )) {
+                return;
+            }
+
+            try {
+
+                const result =
+                    await this.callbacks
+                        .onPullFromCloud();
+
+                Dialog.alert(
+                    `Descarga completada desde la revisión ${result.revision}: ${this.backupSummary(result.summary)}.`
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
 
         document.getElementById("exportBackup")?.addEventListener("click", () => {
 
