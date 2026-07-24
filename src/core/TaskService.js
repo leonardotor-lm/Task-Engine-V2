@@ -149,6 +149,14 @@ export class TaskService {
 
     }
 
+    hasTasksWithTag(tagId) {
+
+        return this.repository
+            .getAll()
+            .some(task => task.tagIds.includes(tagId));
+
+    }
+
     getInboxTasks() {
 
         return this.repository
