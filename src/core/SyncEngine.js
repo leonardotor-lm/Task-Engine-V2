@@ -98,12 +98,14 @@ export class SyncEngine {
         const connection =
             this.ensureConfigured();
 
+        const backup =
+            this.backupService.createBackup();
+
         const response = await this.gateway.save({
             ...connection,
             baseRevision:
                 this.config.getRevision(),
-            data:
-                this.backupService.createBackup()
+            data: backup
         });
 
         const revision = this.validateRevision(
@@ -117,10 +119,7 @@ export class SyncEngine {
             summary: this.summarize(
                 this.backupService
                     .parseAndValidate(
-                        JSON.stringify(
-                            this.backupService
-                                .createBackup()
-                        )
+                        JSON.stringify(backup)
                     )
             )
         };
