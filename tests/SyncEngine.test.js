@@ -158,6 +158,38 @@ test("persiste y valida la revisión remota", () => {
 
 });
 
+test("invoca fetch con el contexto global del navegador", async () => {
+
+    let receivedContext;
+
+    const fetchFn = async function() {
+
+        receivedContext = this;
+
+        return response({
+            ok: true,
+            revision: 0,
+            data: null
+        });
+
+    };
+
+    const gateway = new CloudGateway({
+        fetchFn
+    });
+
+    await gateway.load({
+        url: "https://example.com/exec",
+        token: "abc"
+    });
+
+    assert.equal(
+        receivedContext,
+        globalThis
+    );
+
+});
+
 test("la descarga envía acción y token en la URL", async () => {
 
     let request;
