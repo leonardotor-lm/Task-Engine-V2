@@ -9,6 +9,7 @@ export class TaskList {
         allowCreate = false,
         areas = [],
         contexts = [],
+        tags = [],
         searchQuery = ""
     ) {
 
@@ -36,6 +37,10 @@ export class TaskList {
 
         const contextsById = new Map(
             contexts.map(context => [context.id, context])
+        );
+
+        const tagsById = new Map(
+            tags.map(tag => [tag.id, tag])
         );
 
         let html = `
@@ -94,6 +99,20 @@ export class TaskList {
 
                     metadata.push(
                         `Contexto: ${context.name}`
+                    );
+
+                }
+
+                const taskTags = task.tagIds
+                    .map(tagId => tagsById.get(tagId))
+                    .filter(Boolean);
+
+                if (taskTags.length > 0) {
+
+                    metadata.push(
+                        `Etiquetas: ${taskTags
+                            .map(tag => tag.name)
+                            .join(", ")}`
                     );
 
                 }
