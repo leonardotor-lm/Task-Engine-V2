@@ -16,6 +16,19 @@ export class Context {
 
         this.order = data.order ?? 0;
 
+        const version = data.version ?? 1;
+
+        if (
+            !Number.isInteger(version) ||
+            version < 1
+        ) {
+            throw new Error(
+                "La versión de la contexto es inválida."
+            );
+        }
+
+        this.version = version;
+
         this.createdAt = data.createdAt ?? new Date().toISOString();
 
         this.updatedAt = data.updatedAt ?? this.createdAt;
@@ -23,6 +36,8 @@ export class Context {
     }
 
     touch() {
+
+        this.version += 1;
 
         this.updatedAt = new Date().toISOString();
 
@@ -62,6 +77,7 @@ export class Context {
             name: this.name,
             color: this.color,
             order: this.order,
+            version: this.version,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
 

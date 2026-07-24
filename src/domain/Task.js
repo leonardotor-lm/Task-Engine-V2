@@ -40,6 +40,19 @@ export class Task {
 
         this.manualOrder = data.manualOrder ?? 0;
 
+        const version = data.version ?? 1;
+
+        if (
+            !Number.isInteger(version) ||
+            version < 1
+        ) {
+            throw new Error(
+                "La versión de la tarea es inválida."
+            );
+        }
+
+        this.version = version;
+
         this.createdAt = data.createdAt ?? new Date().toISOString();
 
         this.updatedAt = data.updatedAt ?? this.createdAt;
@@ -81,6 +94,8 @@ export class Task {
     }
 
     touch() {
+
+        this.version += 1;
 
         this.updatedAt = new Date().toISOString();
 
@@ -328,6 +343,7 @@ export class Task {
 
             manualOrder: this.manualOrder,
 
+            version: this.version,
             createdAt: this.createdAt,
 
             updatedAt: this.updatedAt,
