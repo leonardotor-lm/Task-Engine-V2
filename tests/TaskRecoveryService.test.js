@@ -24,6 +24,12 @@ function createFixture() {
         id: "deleted-1",
         status: TaskStatus.DELETED,
 
+        isDeleted() {
+
+            return this.status === TaskStatus.DELETED;
+
+        },
+
         restoreFromTrash() {
 
             this.status = TaskStatus.PENDING;
