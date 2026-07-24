@@ -75,7 +75,7 @@ export class TaskService {
         const nextRecurrence =
             data.recurrence !== undefined
                 ? data.recurrence
-                : task.recurrence;
+                : (task.recurrence ?? null);
 
         if (
             nextRecurrence !== null &&
