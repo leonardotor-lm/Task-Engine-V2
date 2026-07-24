@@ -101,3 +101,30 @@ body {
     padding: 6px;
     cursor: pointer;
 }
+
+.tagField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 12px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.tagOption {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tagColor {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.emptyTagMessage {
+    color: #64748b;
+    font-size: 13px;
+}
