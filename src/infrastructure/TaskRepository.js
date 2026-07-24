@@ -69,6 +69,36 @@ export class TaskRepository {
 
     }
 
+    updateMany(tasks) {
+
+        const replacements = new Map(
+            tasks.map(task => [
+                task.id,
+                task
+            ])
+        );
+
+        if (
+            replacements.size !== tasks.length ||
+            [...replacements.keys()].some(
+                id => !this.getById(id)
+            )
+        ) {
+            throw new Error(
+                "No se pudieron actualizar todas las tareas."
+            );
+        }
+
+        this.tasks = this.tasks.map(
+            task =>
+                replacements.get(task.id) ??
+                task
+        );
+
+        this.save();
+
+    }
+
     remove(id) {
 
         this.tasks = this.tasks.filter(task => task.id !== id);
