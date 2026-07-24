@@ -219,7 +219,11 @@ export class TaskList {
                             ${toggleHtml}
 
                             <span class="taskTitle">
-                                ${depth > 0 ? "↳ " : ""}${escapeHtml(task.title)}
+                                ${depth > 0 ? "↳ " : ""}
+                                ${task.recurrence
+                                    ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
+                                    : ""}
+                                ${escapeHtml(task.title)}
                             </span>
 
                             ${progressHtml}
