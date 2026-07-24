@@ -6,7 +6,10 @@ import { TagService } from "./TagService.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
-import { filterTaskTreeByQuery } from "./TaskSearch.js";
+import {
+    filterTaskTreeByCriteria,
+    hasActiveTaskFilters
+} from "./TaskFilters.js";
 
 export class App {
 
@@ -20,6 +23,13 @@ export class App {
         this.selectedTask = null;
         this.currentView = View.INBOX;
         this.searchQuery = "";
+        this.taskFilters = {
+            areaId: "",
+            contextId: "",
+            tagId: "",
+            priority: "",
+            due: ""
+        };
         this.expandedTaskIds = new Set();
 
         this.mainView = new MainView({
@@ -150,6 +160,32 @@ export class App {
             onClearSearch: () => {
 
                 this.searchQuery = "";
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onApplyTaskFilters: (filters) => {
+
+                this.taskFilters = { ...filters };
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onClearTaskFilters: () => {
+
+                this.taskFilters = {
+                    areaId: "",
+                    contextId: "",
+                    tagId: "",
+                    priority: "",
+                    due: ""
+                };
 
                 this.selectedTask = null;
 
@@ -448,9 +484,13 @@ export class App {
 
         }
 
-        visibleTasks = filterTaskTreeByQuery(
+        visibleTasks = filterTaskTreeByCriteria(
             visibleTasks,
-            this.searchQuery
+            {
+                query: this.searchQuery,
+                filters: this.taskFilters,
+                today: this.getTodayString()
+            }
         );
 
         this.mainView.render({
@@ -460,6 +500,10 @@ export class App {
             allTasks: this.taskService.getAllTasks(),
             expandedTaskIds: this.expandedTaskIds,
             searchQuery: this.searchQuery,
+            taskFilters: this.taskFilters,
+            filtersActive: hasActiveTaskFilters(
+                this.taskFilters
+            ),
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

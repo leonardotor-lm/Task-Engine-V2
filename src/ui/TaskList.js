@@ -12,7 +12,8 @@ export class TaskList {
         contexts = [],
         tags = [],
         searchQuery = "",
-        expandedTaskIds = new Set()
+        expandedTaskIds = new Set(),
+        filtersActive = false
     ) {
 
         const form = allowCreate
@@ -62,7 +63,9 @@ export class TaskList {
 
         const visibleRows = flattenTaskTree(
             tasks,
-            searchQuery ? null : expandedTaskIds
+            searchQuery || filtersActive
+                ? null
+                : expandedTaskIds
         );
 
         let html = `
@@ -77,8 +80,8 @@ export class TaskList {
 
             html += `
                 <p class="emptyState">
-                    ${searchQuery
-                        ? "No se encontraron tareas que coincidan con la búsqueda."
+                    ${searchQuery || filtersActive
+                        ? "No se encontraron tareas que coincidan con los criterios."
                         : "No hay tareas para mostrar en esta vista."}
                 </p>
             `;
@@ -104,6 +107,7 @@ export class TaskList {
 
                 const isExpanded =
                     Boolean(searchQuery) ||
+                    filtersActive ||
                     expandedTaskIds.has(task.id);
 
                 const toggleHtml = hasSubtasks
