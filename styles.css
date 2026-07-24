@@ -195,3 +195,15 @@ body {
     color: #64748b;
     text-decoration: line-through;
 }
+
+.recurrenceIndicator {
+    margin: 0 0 12px;
+    color: #7c3aed;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.recurrenceIcon {
+    color: #7c3aed;
+    font-weight: 700;
+}
