@@ -467,6 +467,98 @@ export class MainView {
 
             });
 
+            document.querySelectorAll(
+                ".bulkTaskCheckbox"
+            ).forEach(checkbox => {
+
+                checkbox.addEventListener(
+                    "click",
+                    event =>
+                        event.stopPropagation()
+                );
+
+                checkbox.addEventListener(
+                    "change",
+                    () => {
+
+                        this.callbacks
+                            .onToggleBulkSelection(
+                                checkbox.dataset.id,
+                                checkbox.checked
+                            );
+
+                    }
+                );
+
+            });
+
+            document.getElementById(
+                "clearBulkSelection"
+            )?.addEventListener("click", () => {
+
+                this.callbacks
+                    .onClearBulkSelection();
+
+            });
+
+            document.getElementById(
+                "applyBulkChanges"
+            )?.addEventListener("click", () => {
+
+                const priorityValue =
+                    document.getElementById(
+                        "bulkPriority"
+                    ).value;
+
+                const dueDate = document
+                    .getElementById(
+                        "bulkDueDate"
+                    ).value;
+
+                const changes = {};
+
+                if (priorityValue !== "") {
+                    changes.priority =
+                        Number(priorityValue);
+                }
+
+                if (dueDate) {
+                    changes.dueDate = dueDate;
+                }
+
+                if (
+                    Object.keys(changes)
+                        .length === 0
+                ) {
+
+                    Dialog.alert(
+                        "Elegí al menos un cambio para aplicar."
+                    );
+
+                    return;
+
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkUpdateTasks({
+                                ...changes
+                            });
+
+                    Dialog.alert(
+                        `Cambios aplicados en ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {
