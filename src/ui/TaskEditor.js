@@ -118,6 +118,20 @@ export class TaskEditor {
 
         `).join("");
 
+        const recurrenceLabels = {
+            [RecurrenceFrequency.DAILY]: "Diaria",
+            [RecurrenceFrequency.WEEKLY]: "Semanal",
+            [RecurrenceFrequency.MONTHLY]: "Mensual"
+        };
+
+        const recurrenceIndicator = task.recurrence
+            ? `
+                <p class="recurrenceIndicator">
+                    ↻ Recurrente: ${recurrenceLabels[task.recurrence]}
+                </p>
+            `
+            : "";
+
         const directSubtasks = allTasks.filter(item => {
 
             if (item.parentTaskId !== task.id) {
@@ -222,6 +236,14 @@ export class TaskEditor {
                 <button id="deleteTask">
                     Eliminar
                 </button>
+
+                ${task.recurrence
+                    ? `
+                        <button id="skipRecurringTask">
+                            Saltear esta vez
+                        </button>
+                    `
+                    : ""}
             `;
 
         }
@@ -230,6 +252,8 @@ export class TaskEditor {
             <aside class="details">
 
                 <h3>Editor</h3>
+
+                ${recurrenceIndicator}
 
                 <label>Título</label>
 
