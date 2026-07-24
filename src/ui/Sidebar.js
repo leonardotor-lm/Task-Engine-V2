@@ -10,7 +10,8 @@ export class Sidebar {
         areas = [],
         contexts = [],
         tags = [],
-        taskFilters = {}
+        taskFilters = {},
+        taskSort = "MANUAL"
     ) {
 
         const buttonClass = view => {
@@ -171,6 +172,62 @@ export class Sidebar {
             `
             : "";
 
+        const sorting = taskViews.includes(activeView)
+            ? `
+                <div class="taskSorting">
+
+                    <label for="taskSort">
+                        Ordenar por
+                    </label>
+
+                    <select id="taskSort">
+
+                        <option
+                            value="MANUAL"
+                            ${taskSort === "MANUAL"
+                                ? "selected"
+                                : ""}>
+                            Orden manual
+                        </option>
+
+                        <option
+                            value="DUE_DATE"
+                            ${taskSort === "DUE_DATE"
+                                ? "selected"
+                                : ""}>
+                            Vencimiento próximo
+                        </option>
+
+                        <option
+                            value="PRIORITY"
+                            ${taskSort === "PRIORITY"
+                                ? "selected"
+                                : ""}>
+                            Prioridad
+                        </option>
+
+                        <option
+                            value="CREATED_NEWEST"
+                            ${taskSort === "CREATED_NEWEST"
+                                ? "selected"
+                                : ""}>
+                            Más recientes
+                        </option>
+
+                        <option
+                            value="CREATED_OLDEST"
+                            ${taskSort === "CREATED_OLDEST"
+                                ? "selected"
+                                : ""}>
+                            Más antiguas
+                        </option>
+
+                    </select>
+
+                </div>
+            `
+            : "";
+
         return `
             <aside class="sidebar">
 
@@ -206,6 +263,8 @@ export class Sidebar {
                 </form>
 
                 ${filters}
+
+                ${sorting}
 
                 <nav>
 
