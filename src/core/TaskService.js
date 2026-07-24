@@ -15,6 +15,36 @@ export class TaskService {
 
     }
 
+    createSubtask(parentId, title) {
+
+        const parent = this.repository.getById(parentId);
+
+        if (!parent) {
+            throw new Error("La tarea principal no existe.");
+        }
+
+        if (!this.isActiveTask(parent)) {
+            throw new Error(
+                "No se pueden agregar subtareas a esta tarea."
+            );
+        }
+
+        return this.repository.add({
+            title,
+            parentTaskId: parent.id,
+            status: parent.status
+        });
+
+    }
+
+    getDirectSubtasks(parentId) {
+
+        return this.repository
+            .getAll()
+            .filter(task => task.parentTaskId === parentId);
+
+    }
+
     getAllTasks() {
 
         return this.repository.getAll();
