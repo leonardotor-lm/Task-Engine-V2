@@ -1,0 +1,66 @@
+export class Tag {
+
+    constructor(data = {}) {
+
+        this.id = data.id ?? crypto.randomUUID();
+
+        const name = (data.name ?? "").trim();
+
+        if (!name) {
+            throw new Error("El nombre de la etiqueta no puede estar vacío.");
+        }
+
+        this.name = name;
+        this.color = data.color ?? "#a855f7";
+        this.order = data.order ?? 0;
+        this.createdAt = data.createdAt ?? new Date().toISOString();
+        this.updatedAt = data.updatedAt ?? this.createdAt;
+
+    }
+
+    touch() {
+
+        this.updatedAt = new Date().toISOString();
+
+    }
+
+    update(data = {}) {
+
+        if (data.name !== undefined) {
+
+            const name = data.name.trim();
+
+            if (!name) {
+                throw new Error("El nombre de la etiqueta no puede estar vacío.");
+            }
+
+            this.name = name;
+
+        }
+
+        if (data.color !== undefined) {
+            this.color = data.color;
+        }
+
+        if (data.order !== undefined) {
+            this.order = data.order;
+        }
+
+        this.touch();
+
+    }
+
+    toJSON() {
+
+        return {
+            id: this.id,
+            name: this.name,
+            color: this.color,
+            order: this.order,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt
+        };
+
+    }
+
+}
