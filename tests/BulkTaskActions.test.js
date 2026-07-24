@@ -210,3 +210,126 @@ test("completar una recurrente genera la siguiente instancia", () => {
     );
 
 });
+
+test("reactiva una tarea completada con sus subtareas", () => {
+
+    const {
+        parent,
+        child,
+        repository
+    } = tree();
+
+    parent.complete();
+    child.complete();
+
+    const service =
+        new TaskService(repository);
+
+    const restored =
+        service.reopenCompletedTrees([
+            parent.id
+        ]);
+
+    assert.equal(restored.length, 2);
+
+    assert.ok(
+        repository.getAll().every(
+            task =>
+                task.status ===
+                TaskStatus.PENDING
+        )
+    );
+
+    assert.equal(repository.writes, 1);
+
+});
+
+test("restaura un árbol archivado seleccionando sólo la raíz", () => {
+
+    const {
+        parent,
+        child,
+        repository
+    } = tree();
+
+    parent.archive();
+    child.archive();
+
+    const service =
+        new TaskService(repository);
+
+    const restored =
+        service.restoreArchivedTrees([
+            parent.id
+        ]);
+
+    assert.equal(restored.length, 2);
+
+    assert.ok(
+        repository.getAll().every(
+            task =>
+                task.status ===
+                TaskStatus.PENDING
+        )
+    );
+
+});
+
+test("restaura desde papelera una raíz con sus descendientes", () => {
+
+    const {
+        parent,
+        child,
+        repository
+    } = tree();
+
+    parent.delete();
+    child.delete();
+
+    const service =
+        new TaskService(repository);
+
+    const restored =
+        service.restoreDeletedTrees([
+            parent.id
+        ]);
+
+    assert.equal(restored.length, 2);
+
+    assert.ok(
+        repository.getAll().every(
+            task =>
+                task.status ===
+                TaskStatus.INBOX
+        )
+    );
+
+});
+
+test("no reactiva una instancia recurrente completada", () => {
+
+    const recurring = new Task({
+        id: "recurring-completed",
+        title: "Revisar agenda",
+        dueDate: "2026-07-24",
+        recurrence: "DAILY"
+    });
+
+    recurring.complete();
+
+    const repository =
+        new MemoryRepository([recurring]);
+
+    const service =
+        new TaskService(repository);
+
+    assert.throws(
+        () => service.reopenCompletedTrees([
+            recurring.id
+        ]),
+        /recurrentes/
+    );
+
+    assert.equal(repository.writes, 0);
+
+});
