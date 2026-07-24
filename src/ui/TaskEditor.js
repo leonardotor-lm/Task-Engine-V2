@@ -1,5 +1,6 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { RecurrenceFrequency } from "../domain/Recurrence.js";
 
 export class TaskEditor {
 
@@ -86,6 +87,50 @@ export class TaskEditor {
             </option>
 
         `).join("");
+
+        const recurrenceOptions = [
+            {
+                value: "",
+                label: "Sin recurrencia"
+            },
+            {
+                value: RecurrenceFrequency.DAILY,
+                label: "Diaria"
+            },
+            {
+                value: RecurrenceFrequency.WEEKLY,
+                label: "Semanal"
+            },
+            {
+                value: RecurrenceFrequency.MONTHLY,
+                label: "Mensual"
+            }
+        ].map(option => `
+
+            <option
+                value="${option.value}"
+                ${task.recurrence === option.value ||
+                    (!task.recurrence && option.value === "")
+                        ? "selected"
+                        : ""}>
+                ${option.label}
+            </option>
+
+        `).join("");
+
+        const recurrenceLabels = {
+            [RecurrenceFrequency.DAILY]: "Diaria",
+            [RecurrenceFrequency.WEEKLY]: "Semanal",
+            [RecurrenceFrequency.MONTHLY]: "Mensual"
+        };
+
+        const recurrenceIndicator = task.recurrence
+            ? `
+                <p class="recurrenceIndicator">
+                    ↻ Recurrente: ${recurrenceLabels[task.recurrence]}
+                </p>
+            `
+            : "";
 
         const directSubtasks = allTasks.filter(item => {
 
@@ -191,6 +236,14 @@ export class TaskEditor {
                 <button id="deleteTask">
                     Eliminar
                 </button>
+
+                ${task.recurrence
+                    ? `
+                        <button id="skipRecurringTask">
+                            Saltear esta vez
+                        </button>
+                    `
+                    : ""}
             `;
 
         }
@@ -199,6 +252,8 @@ export class TaskEditor {
             <aside class="details">
 
                 <h3>Editor</h3>
+
+                ${recurrenceIndicator}
 
                 <label>Título</label>
 
@@ -266,6 +321,14 @@ export class TaskEditor {
                     type="date"
                     value="${escapeHtml(task.dueDate)}"
                     ${disabled}>
+
+                <label>Repetir</label>
+
+                <select
+                    id="taskRecurrence"
+                    ${disabled}>
+                    ${recurrenceOptions}
+                </select>
 
                 <section class="subtaskSection">
 

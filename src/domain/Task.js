@@ -1,5 +1,6 @@
 import { TaskStatus } from "./TaskStatus.js";
 import { Priority } from "./Priority.js";
+import { isValidRecurrenceFrequency } from "./Recurrence.js";
 
 export class Task {
 
@@ -47,7 +48,35 @@ export class Task {
 
         this.dueDate = data.dueDate ?? null;
 
+        this.validateRecurrence(
+            this.recurrence,
+            this.dueDate
+        );
+
+        if (
+            this.recurrence !== null &&
+            this.recurrenceId === null
+        ) {
+            this.recurrenceId = crypto.randomUUID();
+        }
+
         this.postponements = data.postponements ?? [];
+
+    }
+
+    validateRecurrence(recurrence, dueDate) {
+
+        if (recurrence === null) return;
+
+        if (!isValidRecurrenceFrequency(recurrence)) {
+            throw new Error("Frecuencia de recurrencia inválida.");
+        }
+
+        if (!dueDate) {
+            throw new Error(
+                "La recurrencia necesita una fecha de vencimiento."
+            );
+        }
 
     }
 
@@ -76,6 +105,21 @@ export class Task {
     }
 
     update(data = {}) {
+
+        const nextRecurrence =
+            data.recurrence !== undefined
+                ? data.recurrence
+                : this.recurrence;
+
+        const nextDueDate =
+            data.dueDate !== undefined
+                ? data.dueDate
+                : this.dueDate;
+
+        this.validateRecurrence(
+            nextRecurrence,
+            nextDueDate
+        );
 
         if (data.title !== undefined) {
 
@@ -116,6 +160,22 @@ export class Task {
 
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
+
+        if (data.recurrence !== undefined) {
+
+            this.recurrence = data.recurrence;
+
+            if (this.recurrence === null) {
+
+                this.recurrenceId = null;
+
+            } else if (this.recurrenceId === null) {
+
+                this.recurrenceId = crypto.randomUUID();
+
+            }
+
+        }
 
         this.touch();
 

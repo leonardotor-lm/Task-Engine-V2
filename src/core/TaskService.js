@@ -1,5 +1,6 @@
 import { TaskRepository } from "../infrastructure/TaskRepository.js";
 import { TaskStatus } from "../domain/TaskStatus.js";
+import { getNextRecurrenceDate } from "../domain/Recurrence.js";
 
 export class TaskService {
 
@@ -26,6 +27,12 @@ export class TaskService {
         if (!this.isActiveTask(parent)) {
             throw new Error(
                 "No se pueden agregar subtareas a esta tarea."
+            );
+        }
+
+        if (parent.recurrence) {
+            throw new Error(
+                "No se pueden agregar subtareas a una tarea recurrente."
             );
         }
 
@@ -65,6 +72,23 @@ export class TaskService {
             return null;
         }
 
+        const nextRecurrence =
+            data.recurrence !== undefined
+                ? data.recurrence
+                : (task.recurrence ?? null);
+
+        if (
+            nextRecurrence !== null &&
+            (
+                task.parentTaskId !== null ||
+                this.getDescendants(id).length > 0
+            )
+        ) {
+            throw new Error(
+                "La recurrencia sólo puede aplicarse a tareas sin subtareas."
+            );
+        }
+
         task.update(data);
 
         this.repository.update(task);
@@ -83,6 +107,12 @@ export class TaskService {
 
         if (task.isCompleted()) {
 
+            if (task.recurrence) {
+                throw new Error(
+                    "No se puede reabrir una instancia recurrente completada. Editá la siguiente instancia."
+                );
+            }
+
             task.reopen();
 
         } else {
@@ -96,6 +126,67 @@ export class TaskService {
             task.complete();
 
         }
+
+        this.repository.update(task);
+
+        if (task.isCompleted() && task.recurrence) {
+            this.createNextRecurringTask(task);
+        }
+
+        return task;
+
+    }
+
+    createNextRecurringTask(task) {
+
+        const nextDueDate = getNextRecurrenceDate(
+            task.dueDate,
+            task.recurrence
+        );
+
+        return this.repository.add({
+
+            title: task.title,
+            description: task.description,
+            status: TaskStatus.PENDING,
+            areaId: task.areaId,
+            contextId: task.contextId,
+            priority: task.priority,
+            tagIds: [...task.tagIds],
+            parentTaskId: null,
+            recurrenceId: task.recurrenceId,
+            recurrence: task.recurrence,
+            dueDate: nextDueDate
+
+        });
+
+    }
+
+    skipRecurringTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (
+            !this.isActiveTask(task) ||
+            !task.recurrence
+        ) {
+            throw new Error(
+                "Sólo se puede saltear una tarea recurrente activa."
+            );
+        }
+
+        const nextDueDate = getNextRecurrenceDate(
+            task.dueDate,
+            task.recurrence
+        );
+
+        task.update({
+            dueDate: nextDueDate
+        });
 
         this.repository.update(task);
 

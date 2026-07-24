@@ -211,7 +211,39 @@ export class MainView {
                 });
 
                 document.getElementById("reopenTask")?.addEventListener("click", () => {
-                    this.callbacks.onToggleTask(selectedTask.id);
+
+                    try {
+
+                        this.callbacks.onToggleTask(selectedTask.id);
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+                document.getElementById("skipRecurringTask")?.addEventListener("click", () => {
+
+                    if (!Dialog.confirm(
+                        "¿Saltear esta vez y avanzar a la próxima fecha?"
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks.onSkipRecurringTask(
+                            selectedTask.id
+                        );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
                 });
 
                 document.getElementById("archiveTask")?.addEventListener("click", () => {
@@ -309,19 +341,31 @@ export class MainView {
                         .from(document.querySelectorAll(".taskTag:checked"))
                         .map(input => input.value);
 
+                    const recurrence =
+                        document.getElementById("taskRecurrence").value || null;
+
                     if (!title) return;
 
-                    this.callbacks.onUpdateTask(selectedTask.id, {
+                    try {
 
-                        title,
-                        description,
-                        areaId,
-                        contextId,
-                        priority,
-                        dueDate,
-                        tagIds
+                        this.callbacks.onUpdateTask(selectedTask.id, {
 
-                    });
+                            title,
+                            description,
+                            areaId,
+                            contextId,
+                            priority,
+                            dueDate,
+                            tagIds,
+                            recurrence
+
+                        });
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
 
                 });
 

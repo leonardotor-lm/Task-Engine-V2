@@ -178,6 +178,20 @@ export class TaskList {
 
                 }
 
+                const recurrenceLabels = {
+                    DAILY: "Diaria",
+                    WEEKLY: "Semanal",
+                    MONTHLY: "Mensual"
+                };
+
+                if (task.recurrence) {
+
+                    metadata.push(
+                        `Repetición: ${recurrenceLabels[task.recurrence]}`
+                    );
+
+                }
+
                 if (priority && priority.value !== 0) {
 
                     metadata.push(
@@ -205,7 +219,11 @@ export class TaskList {
                             ${toggleHtml}
 
                             <span class="taskTitle">
-                                ${depth > 0 ? "↳ " : ""}${escapeHtml(task.title)}
+                                ${depth > 0 ? "↳ " : ""}
+                                ${task.recurrence
+                                    ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
+                                    : ""}
+                                ${escapeHtml(task.title)}
                             </span>
 
                             ${progressHtml}
