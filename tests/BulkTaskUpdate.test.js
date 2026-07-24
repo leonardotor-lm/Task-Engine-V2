@@ -114,6 +114,39 @@ test("asigna una fecha a varias tareas", () => {
 
 });
 
+test("aplica prioridad y fecha en una sola operación", () => {
+
+    const {
+        repository,
+        service
+    } = setup();
+
+    service.updateTasks(
+        ["task-1", "task-2"],
+        {
+            priority: Priority.CRITICAL,
+            dueDate: "2026-08-15"
+        }
+    );
+
+    for (const task of repository.getAll()) {
+        assert.equal(
+            task.priority,
+            Priority.CRITICAL
+        );
+        assert.equal(
+            task.dueDate,
+            "2026-08-15"
+        );
+    }
+
+    assert.equal(
+        repository.batchWrites,
+        1
+    );
+
+});
+
 test("no modifica ninguna tarea si falta una selección", () => {
 
     const {
