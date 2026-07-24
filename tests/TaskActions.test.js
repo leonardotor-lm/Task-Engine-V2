@@ -29,6 +29,12 @@ function createFixture() {
 
     const repository = {
 
+        getAll() {
+
+            return [task];
+
+        },
+
         getById(id) {
 
             return id === task.id
