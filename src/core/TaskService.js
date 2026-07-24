@@ -162,6 +162,38 @@ export class TaskService {
 
     }
 
+    skipRecurringTask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (
+            !this.isActiveTask(task) ||
+            !task.recurrence
+        ) {
+            throw new Error(
+                "Sólo se puede saltear una tarea recurrente activa."
+            );
+        }
+
+        const nextDueDate = getNextRecurrenceDate(
+            task.dueDate,
+            task.recurrence
+        );
+
+        task.update({
+            dueDate: nextDueDate
+        });
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     archiveTask(id) {
 
         const task = this.repository.getById(id);
