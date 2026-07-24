@@ -24,6 +24,7 @@ export class ViewRouter {
             allowCreate,
             state.areas,
             state.contexts,
+            state.tags,
             state.searchQuery
 
         );
@@ -88,6 +89,13 @@ export class ViewRouter {
                 return this.entityManager.render(
                     "Contextos",
                     state.contexts
+                );
+
+            case View.TAGS:
+
+                return this.entityManager.render(
+                    "Etiquetas",
+                    state.tags
                 );
 
             case View.INBOX:

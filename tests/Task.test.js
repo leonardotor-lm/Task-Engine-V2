@@ -58,3 +58,21 @@ test("no permite crear una tarea sin título", () => {
     );
 
 });
+
+test("asigna múltiples etiquetas a una tarea", () => {
+
+    const task = new Task({
+        title: "Preparar clase"
+    });
+
+    task.update({
+        tagIds: ["tag-1", "tag-2"]
+    });
+
+    assert.deepEqual(task.tagIds, ["tag-1", "tag-2"]);
+
+    const data = task.toJSON();
+
+    assert.deepEqual(data.tagIds, ["tag-1", "tag-2"]);
+
+});

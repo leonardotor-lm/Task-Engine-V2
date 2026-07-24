@@ -2,6 +2,7 @@ import { Config } from "./Config.js";
 import { TaskService } from "./TaskService.js";
 import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
+import { TagService } from "./TagService.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
@@ -14,6 +15,7 @@ export class App {
         this.taskService = new TaskService();
         this.areaService = new AreaService();
         this.contextService = new ContextService();
+        this.tagService = new TagService();
 
         this.selectedTask = null;
         this.currentView = View.INBOX;
@@ -191,6 +193,33 @@ export class App {
 
             },
 
+            onCreateTag: (name, color) => {
+
+                this.tagService.createTag({ name, color });
+                this.render();
+
+            },
+
+            onUpdateTag: (id, name) => {
+
+                this.tagService.updateTag(id, { name });
+                this.render();
+
+            },
+
+            onDeleteTag: (id) => {
+
+                if (this.taskService.hasTasksWithTag(id)) {
+                    throw new Error(
+                        "No se puede eliminar la etiqueta porque está asignada a una o más tareas."
+                    );
+                }
+
+                this.tagService.deleteTag(id);
+                this.render();
+
+            },
+
             onShowInbox: () => {
 
                 this.currentView = View.INBOX;
@@ -258,7 +287,13 @@ export class App {
             onShowContexts: () => {
 
                 this.currentView = View.CONTEXTS;
+                this.render();
 
+            },
+
+            onShowTags: () => {
+
+                this.currentView = View.TAGS;
                 this.render();
 
             }
@@ -359,7 +394,8 @@ export class App {
             searchQuery: this.searchQuery,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
-            contexts: this.contextService.getAllContexts()
+            contexts: this.contextService.getAllContexts(),
+            tags: this.tagService.getAllTags()
 
         });
 
