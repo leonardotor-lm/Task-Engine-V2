@@ -13,7 +13,9 @@ export class TaskList {
         tags = [],
         searchQuery = "",
         expandedTaskIds = new Set(),
-        filtersActive = false
+        filtersActive = false,
+        selectedTaskIds = new Set(),
+        bulkSelectionEnabled = false
     ) {
 
         const form = allowCreate
@@ -72,6 +74,13 @@ export class TaskList {
             <main class="content">
 
                 <h2>${escapeHtml(title)}</h2>
+
+                ${bulkSelectionEnabled &&
+                    selectedTaskIds.size > 0
+                    ? this.renderBulkToolbar(
+                        selectedTaskIds.size
+                    )
+                    : ""}
 
                 ${form}
         `;
@@ -222,13 +231,27 @@ export class TaskList {
 
                 html += `
                     <li
-                        class="task ${depth > 0 ? "subtask" : ""} ${task.isCompleted() ? "completedTask" : ""}"
+                        class="task ${depth > 0 ? "subtask" : ""} ${task.isCompleted() ? "completedTask" : ""} ${selectedTaskIds.has(task.id) ? "bulkSelectedTask" : ""}"
                         style="--task-depth:${depth}"
                         data-id="${escapeHtml(task.id)}">
 
                         <div class="taskHeader">
 
                             ${toggleHtml}
+
+                            ${bulkSelectionEnabled &&
+                                !task.isCompleted()
+                                ? `
+                                    <input
+                                        type="checkbox"
+                                        class="bulkTaskCheckbox"
+                                        data-id="${escapeHtml(task.id)}"
+                                        aria-label="Seleccionar ${escapeHtml(task.title)}"
+                                        ${selectedTaskIds.has(task.id)
+                                            ? "checked"
+                                            : ""}>
+                                `
+                                : ""}
 
                             <span class="taskTitle">
                                 ${depth > 0 ? "↳ " : ""}
@@ -260,6 +283,68 @@ export class TaskList {
         `;
 
         return html;
+
+    }
+
+    renderBulkToolbar(selectedCount) {
+
+        const priorityOptions =
+            PriorityOptions.map(option => `
+                <option value="${option.value}">
+                    ${escapeHtml(option.label)}
+                </option>
+            `).join("");
+
+        return `
+            <section class="bulkToolbar">
+
+                <strong>
+                    ${selectedCount}
+                    ${selectedCount === 1
+                        ? "tarea seleccionada"
+                        : "tareas seleccionadas"}
+                </strong>
+
+                <div class="bulkControl">
+
+                    <select
+                        id="bulkPriority"
+                        aria-label="Prioridad para las tareas seleccionadas">
+                        ${priorityOptions}
+                    </select>
+
+                    <button
+                        id="applyBulkPriority"
+                        type="button">
+                        Aplicar prioridad
+                    </button>
+
+                </div>
+
+                <div class="bulkControl">
+
+                    <input
+                        id="bulkDueDate"
+                        type="date"
+                        aria-label="Fecha para las tareas seleccionadas">
+
+                    <button
+                        id="applyBulkDueDate"
+                        type="button">
+                        Aplicar fecha
+                    </button>
+
+                </div>
+
+                <button
+                    id="clearBulkSelection"
+                    type="button"
+                    class="secondaryAction">
+                    Cancelar selección
+                </button>
+
+            </section>
+        `;
 
     }
 
