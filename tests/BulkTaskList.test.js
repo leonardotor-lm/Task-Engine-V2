@@ -41,7 +41,7 @@ test("muestra una casilla para seleccionar tareas activas", () => {
 
     assert.doesNotMatch(
         html,
-        /id="applyBulkPriority"/
+        /id="applyBulkChanges"/
     );
 
 });
@@ -60,10 +60,15 @@ test("muestra las herramientas cuando hay una selección", () => {
 
     assert.match(
         html,
+        /id="applyBulkChanges"/
+    );
+
+    assert.doesNotMatch(
+        html,
         /id="applyBulkPriority"/
     );
 
-    assert.match(
+    assert.doesNotMatch(
         html,
         /id="applyBulkDueDate"/
     );
