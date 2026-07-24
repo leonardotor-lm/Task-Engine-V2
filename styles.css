@@ -128,3 +128,39 @@ body {
     color: #64748b;
     font-size: 13px;
 }
+
+.task.subtask {
+    padding-left: calc(10px + (var(--task-depth) * 22px));
+    border-left: 2px solid #dbeafe;
+}
+
+.subtaskSection {
+    margin-top: 18px;
+}
+
+.editorSubtaskList {
+    padding-left: 18px;
+}
+
+.subtaskLink {
+    border: 0;
+    background: transparent;
+    color: #1d4ed8;
+    cursor: pointer;
+    text-align: left;
+}
+
+.subtaskLink:hover {
+    text-decoration: underline;
+}
+
+.subtaskForm {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.subtaskForm input {
+    min-width: 0;
+    flex: 1;
+}
