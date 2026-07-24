@@ -53,7 +53,10 @@ function backup() {
         version: 1,
         exportedAt: "2026-07-24T10:00:00.000Z",
         data: {
-            tasks: [{ id: "task-1" }],
+            tasks: [{
+                id: "task-1",
+                version: 1
+            }],
             areas: [],
             contexts: [],
             tags: []
@@ -135,6 +138,71 @@ test("rechaza URL sin HTTPS y token vacío", () => {
         }),
         /token/
     );
+
+});
+
+test("detecta cambios pendientes y registra la última sincronización", () => {
+
+    const storage = new MemoryStorage();
+    const config = new SyncConfig(storage);
+
+    config.save({
+        url: "https://example.com/exec",
+        token: "token"
+    });
+
+    assert.equal(
+        config.hasPendingChanges("fingerprint-1"),
+        true
+    );
+
+    config.markSynchronized(
+        "fingerprint-1",
+        "2026-07-24T15:00:00.000Z"
+    );
+
+    assert.equal(
+        config.hasPendingChanges("fingerprint-1"),
+        false
+    );
+
+    assert.equal(
+        config.hasPendingChanges("fingerprint-2"),
+        true
+    );
+
+    assert.equal(
+        config.getLastSuccess(),
+        "2026-07-24T15:00:00.000Z"
+    );
+
+});
+
+test("cambiar la conexión limpia el estado sincronizado", () => {
+
+    const config = new SyncConfig(
+        new MemoryStorage()
+    );
+
+    config.save({
+        url: "https://example.com/exec",
+        token: "token"
+    });
+
+    config.setRevision(3);
+    config.markSynchronized(
+        "fingerprint",
+        "2026-07-24T15:00:00.000Z"
+    );
+
+    config.save({
+        url: "https://other.example.com/exec",
+        token: "other-token"
+    });
+
+    assert.equal(config.getRevision(), 0);
+    assert.equal(config.getFingerprint(), "");
+    assert.equal(config.getLastSuccess(), "");
 
 });
 
@@ -320,6 +388,9 @@ test("sube la copia local con la revisión conocida", async () => {
         getRevision: () => 3,
         setRevision: revision => {
             calls.push(["revision", revision]);
+        },
+        markSynchronized: fingerprint => {
+            calls.push(["fingerprint", fingerprint]);
         }
     };
 
@@ -371,6 +442,9 @@ test("descarga, valida e importa antes de guardar la revisión", async () => {
         }),
         setRevision: revision => {
             calls.push(["revision", revision]);
+        },
+        markSynchronized: fingerprint => {
+            calls.push(["fingerprint", fingerprint]);
         }
     };
 
@@ -407,7 +481,18 @@ test("descarga, valida e importa antes de guardar la revisión", async () => {
     assert.deepEqual(calls, [
         ["validate"],
         ["import", "task-engine-v2-backup"],
-        ["revision", 7]
+        ["revision", 7],
+        ["fingerprint",
+            JSON.stringify({
+                tasks: [{
+                    id: "task-1",
+                    version: 1
+                }],
+                areas: [],
+                contexts: [],
+                tags: []
+            })
+        ]
     ]);
 
 });

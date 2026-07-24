@@ -15,7 +15,9 @@ export class Sidebar {
         canRestoreBackup = false,
         syncConfigured = false,
         syncUrl = "",
-        syncRevision = 0
+        syncRevision = 0,
+        syncPendingChanges = false,
+        syncLastSuccess = ""
     ) {
 
         const buttonClass = view => {
@@ -235,16 +237,22 @@ export class Sidebar {
         const syncTools = `
             <details
                 class="syncTools"
-                ${syncConfigured ? "" : "open"}>
+                ${!syncConfigured || syncPendingChanges
+                    ? "open"
+                    : ""}>
 
                 <summary>
                     Sincronización
-                    <span class="syncStatus ${syncConfigured
-                        ? "configured"
-                        : "disconnected"}">
-                        ${syncConfigured
-                            ? `Conectada · rev. ${syncRevision}`
-                            : "Sin configurar"}
+                    <span class="syncStatus ${!syncConfigured
+                        ? "disconnected"
+                        : syncPendingChanges
+                            ? "pending"
+                            : "configured"}">
+                        ${!syncConfigured
+                            ? "Sin configurar"
+                            : syncPendingChanges
+                                ? `Cambios pendientes · rev. ${syncRevision}`
+                                : `Sincronizada · rev. ${syncRevision}`}
                     </span>
                 </summary>
 
@@ -282,6 +290,15 @@ export class Sidebar {
 
                 ${syncConfigured
                     ? `
+                        <p class="syncLastSuccess">
+                            Última sincronización:
+                            ${syncLastSuccess
+                                ? this.formatSyncDate(
+                                    syncLastSuccess
+                                )
+                                : "todavía no registrada"}
+                        </p>
+
                         <div class="syncActions">
 
                             <button
@@ -462,6 +479,25 @@ export class Sidebar {
 
             </aside>
         `;
+
+    }
+
+
+    formatSyncDate(value) {
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return "fecha inválida";
+        }
+
+        return new Intl.DateTimeFormat(
+            "es-AR",
+            {
+                dateStyle: "short",
+                timeStyle: "short"
+            }
+        ).format(date);
 
     }
 

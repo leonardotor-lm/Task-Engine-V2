@@ -1,4 +1,5 @@
 import { SyncConflictError } from "../infrastructure/CloudGateway.js";
+import { createSyncFingerprint } from "./SyncFingerprint.js";
 
 export class SyncEngine {
 
@@ -113,6 +114,9 @@ export class SyncEngine {
         );
 
         this.config.setRevision(revision);
+        this.config.markSynchronized(
+            createSyncFingerprint(backup)
+        );
 
         return {
             revision,
@@ -155,6 +159,11 @@ export class SyncEngine {
         );
 
         this.config.setRevision(revision);
+        this.config.markSynchronized(
+            createSyncFingerprint(
+                response.data
+            )
+        );
 
         return {
             revision,
