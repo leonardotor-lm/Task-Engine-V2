@@ -65,6 +65,17 @@ export class App {
 
             },
 
+            onSkipRecurringTask: (id) => {
+
+                this.taskService.skipRecurringTask(id);
+
+                this.selectedTask =
+                    this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
             onArchiveTask: (id) => {
 
                 this.taskService.archiveTask(id);
