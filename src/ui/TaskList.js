@@ -78,7 +78,10 @@ export class TaskList {
                 ${bulkSelectionEnabled &&
                     selectedTaskIds.size > 0
                     ? this.renderBulkToolbar(
-                        selectedTaskIds.size
+                        selectedTaskIds.size,
+                        areas,
+                        contexts,
+                        tags
                     )
                     : ""}
 
@@ -286,13 +289,43 @@ export class TaskList {
 
     }
 
-    renderBulkToolbar(selectedCount) {
+    renderBulkToolbar(
+        selectedCount,
+        areas,
+        contexts,
+        tags
+    ) {
 
         const priorityOptions =
             PriorityOptions.map(option => `
                 <option value="${option.value}">
                     ${escapeHtml(option.label)}
                 </option>
+            `).join("");
+
+        const areaOptions =
+            areas.map(area => `
+                <option value="${escapeHtml(area.id)}">
+                    ${escapeHtml(area.name)}
+                </option>
+            `).join("");
+
+        const contextOptions =
+            contexts.map(context => `
+                <option value="${escapeHtml(context.id)}">
+                    ${escapeHtml(context.name)}
+                </option>
+            `).join("");
+
+        const tagOptions =
+            tags.map(tag => `
+                <label class="bulkTagOption">
+                    <input
+                        type="checkbox"
+                        class="bulkTagCheckbox"
+                        value="${escapeHtml(tag.id)}">
+                    ${escapeHtml(tag.name)}
+                </label>
             `).join("");
 
         return `
@@ -324,6 +357,54 @@ export class TaskList {
                         id="bulkDueDate"
                         type="date"
                         aria-label="Fecha para las tareas seleccionadas">
+
+                </div>
+
+                <div class="bulkControl">
+
+                    <select
+                        id="bulkArea"
+                        aria-label="Área para las tareas seleccionadas">
+                        <option value="">
+                            No cambiar área
+                        </option>
+                        <option value="__CLEAR__">
+                            Quitar área
+                        </option>
+                        ${areaOptions}
+                    </select>
+
+                    <select
+                        id="bulkContext"
+                        aria-label="Contexto para las tareas seleccionadas">
+                        <option value="">
+                            No cambiar contexto
+                        </option>
+                        <option value="__CLEAR__">
+                            Quitar contexto
+                        </option>
+                        ${contextOptions}
+                    </select>
+
+                </div>
+
+                <div class="bulkTagControl">
+
+                    <span>
+                        Agregar etiquetas
+                    </span>
+
+                    <div
+                        id="bulkTags"
+                        class="bulkTagOptions">
+                        ${tags.length > 0
+                            ? tagOptions
+                            : `
+                                <small>
+                                    No hay etiquetas disponibles.
+                                </small>
+                            `}
+                    </div>
 
                 </div>
 
