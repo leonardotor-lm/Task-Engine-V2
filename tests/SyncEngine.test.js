@@ -53,7 +53,10 @@ function backup() {
         version: 1,
         exportedAt: "2026-07-24T10:00:00.000Z",
         data: {
-            tasks: [{ id: "task-1" }],
+            tasks: [{
+                id: "task-1",
+                version: 1
+            }],
             areas: [],
             contexts: [],
             tags: []
@@ -320,6 +323,9 @@ test("sube la copia local con la revisión conocida", async () => {
         getRevision: () => 3,
         setRevision: revision => {
             calls.push(["revision", revision]);
+        },
+        markSynchronized: fingerprint => {
+            calls.push(["fingerprint", fingerprint]);
         }
     };
 
@@ -371,6 +377,9 @@ test("descarga, valida e importa antes de guardar la revisión", async () => {
         }),
         setRevision: revision => {
             calls.push(["revision", revision]);
+        },
+        markSynchronized: fingerprint => {
+            calls.push(["fingerprint", fingerprint]);
         }
     };
 
@@ -407,7 +416,18 @@ test("descarga, valida e importa antes de guardar la revisión", async () => {
     assert.deepEqual(calls, [
         ["validate"],
         ["import", "task-engine-v2-backup"],
-        ["revision", 7]
+        ["revision", 7],
+        ["fingerprint",
+            JSON.stringify({
+                tasks: [{
+                    id: "task-1",
+                    version: 1
+                }],
+                areas: [],
+                contexts: [],
+                tags: []
+            })
+        ]
     ]);
 
 });
