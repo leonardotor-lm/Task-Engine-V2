@@ -73,4 +73,14 @@ export class TagRepository {
 
     }
 
+
+
+    replaceAll(tags) {
+
+        this.tags = [...tags];
+
+        this.save();
+
+    }
+
 }
