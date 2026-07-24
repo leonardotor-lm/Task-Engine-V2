@@ -56,6 +56,8 @@ export class App {
         };
         this.taskSort = TaskSort.MANUAL;
         this.expandedTaskIds = new Set();
+        this.syncRemoteRevision = null;
+        this.syncRemoteUpdateAvailable = false;
 
         this.mainView = new MainView({
 
@@ -361,12 +363,15 @@ export class App {
                 });
 
                 this.render();
+                this.checkRemoteStatus();
 
             },
 
             onClearSyncConfig: () => {
 
                 this.syncConfig.clear();
+                this.syncRemoteRevision = null;
+                this.syncRemoteUpdateAvailable = false;
 
                 this.render();
 
@@ -377,6 +382,10 @@ export class App {
                 const result =
                     await this.syncEngine.push();
 
+                this.syncRemoteRevision =
+                    result.revision;
+                this.syncRemoteUpdateAvailable =
+                    false;
                 this.render();
 
                 return result;
@@ -388,6 +397,10 @@ export class App {
                 const result =
                     await this.syncEngine.pull();
 
+                this.syncRemoteRevision =
+                    result.revision;
+                this.syncRemoteUpdateAvailable =
+                    false;
                 this.resetTransientState();
                 this.render();
 
@@ -536,6 +549,43 @@ export class App {
         }
 
         this.render();
+        this.checkRemoteStatus();
+
+    }
+
+    async checkRemoteStatus() {
+
+        if (!this.syncConfig.isConfigured()) {
+
+            this.syncRemoteRevision = null;
+            this.syncRemoteUpdateAvailable = false;
+
+            return;
+
+        }
+
+        try {
+
+            const status =
+                await this.syncEngine
+                    .checkRemoteRevision();
+
+            this.syncRemoteRevision =
+                status.remoteRevision;
+
+            this.syncRemoteUpdateAvailable =
+                status.updateAvailable;
+
+            this.render();
+
+        } catch (error) {
+
+            console.warn(
+                "No se pudo comprobar la revisión remota.",
+                error
+            );
+
+        }
 
     }
 
@@ -678,6 +728,10 @@ export class App {
                 ),
             syncLastSuccess:
                 this.syncConfig.getLastSuccess(),
+            syncRemoteRevision:
+                this.syncRemoteRevision,
+            syncRemoteUpdateAvailable:
+                this.syncRemoteUpdateAvailable,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),
