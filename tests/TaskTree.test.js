@@ -71,3 +71,46 @@ test("no entra en un ciclo infinito con datos dañados", () => {
     assert.equal(result.length, 2);
 
 });
+
+test("mantiene las ramas contraídas cuando no están expandidas", () => {
+
+    const tasks = [
+        {
+            id: "parent",
+            parentTaskId: null
+        },
+        {
+            id: "child",
+            parentTaskId: "parent"
+        },
+        {
+            id: "grandchild",
+            parentTaskId: "child"
+        }
+    ];
+
+    assert.deepEqual(
+        flattenTaskTree(
+            tasks,
+            new Set()
+        ).map(item => item.task.id),
+        ["parent"]
+    );
+
+    assert.deepEqual(
+        flattenTaskTree(
+            tasks,
+            new Set(["parent"])
+        ).map(item => item.task.id),
+        ["parent", "child"]
+    );
+
+    assert.deepEqual(
+        flattenTaskTree(
+            tasks,
+            new Set(["parent", "child"])
+        ).map(item => item.task.id),
+        ["parent", "child", "grandchild"]
+    );
+
+});
