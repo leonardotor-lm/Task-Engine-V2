@@ -408,6 +408,22 @@ export class App {
 
             },
 
+            onOverwriteCloud: async () => {
+
+                const result =
+                    await this.syncEngine
+                        .overwriteRemote();
+
+                this.syncRemoteRevision =
+                    result.revision;
+                this.syncRemoteUpdateAvailable =
+                    false;
+                this.render();
+
+                return result;
+
+            },
+
             onExportBackup: () => {
 
                 return this.backupService.exportBackup();
