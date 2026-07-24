@@ -33,7 +33,9 @@ export class MainView {
             syncUrl,
             syncRevision,
             syncPendingChanges,
-            syncLastSuccess
+            syncLastSuccess,
+            syncRemoteRevision,
+            syncRemoteUpdateAvailable
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -52,7 +54,9 @@ export class MainView {
                     syncUrl,
                     syncRevision,
                     syncPendingChanges,
-                    syncLastSuccess
+                    syncLastSuccess,
+                    syncRemoteRevision,
+                    syncRemoteUpdateAvailable
                 )}
 
                 ${this.viewRouter.render(state)}
