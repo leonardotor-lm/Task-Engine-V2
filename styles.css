@@ -164,3 +164,34 @@ body {
     min-width: 0;
     flex: 1;
 }
+
+.taskHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggleSubtasks {
+    width: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: #475569;
+}
+
+.toggleSubtasksSpacer {
+    display: inline-block;
+    width: 22px;
+}
+
+.subtaskProgress {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.completedTask .taskTitle,
+.completedSubtaskLink {
+    color: #64748b;
+    text-decoration: line-through;
+}

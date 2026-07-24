@@ -154,6 +154,20 @@ export class MainView {
 
             });
 
+            document.querySelectorAll(".toggleSubtasks").forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    this.callbacks.onToggleTaskExpansion(
+                        button.dataset.id
+                    );
+
+                });
+
+            });
+
             if (selectedTask) {
 
                 document.getElementById("subtaskForm")?.addEventListener("submit", event => {

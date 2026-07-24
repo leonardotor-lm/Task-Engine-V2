@@ -106,7 +106,7 @@ export class TaskEditor {
                         <li>
                             <button
                                 type="button"
-                                class="subtaskLink"
+                                class="subtaskLink ${subtask.isCompleted() ? "completedSubtaskLink" : ""}"
                                 data-id="${escapeHtml(subtask.id)}">
                                 ${subtask.isCompleted() ? "✓ " : ""}
                                 ${escapeHtml(subtask.title)}

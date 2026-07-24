@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
     filterTasksByQuery,
+    filterTaskTreeByQuery,
     normalizeSearchText
 } from "../src/core/TaskSearch.js";
 
@@ -66,5 +67,32 @@ test("devuelve una lista vacía cuando no hay coincidencias", () => {
     const result = filterTasksByQuery(tasks, "inexistente");
 
     assert.deepEqual(result, []);
+
+});
+
+test("conserva los ancestros de una subtarea encontrada", () => {
+
+    const tree = [
+        {
+            id: "parent",
+            parentTaskId: null,
+            title: "Preparar clase",
+            description: ""
+        },
+        {
+            id: "child",
+            parentTaskId: "parent",
+            title: "Buscar bibliografía",
+            description: ""
+        }
+    ];
+
+    assert.deepEqual(
+        filterTaskTreeByQuery(
+            tree,
+            "bibliografia"
+        ).map(task => task.id),
+        ["parent", "child"]
+    );
 
 });

@@ -27,3 +27,48 @@ export function filterTasksByQuery(tasks, query) {
     });
 
 }
+
+export function filterTaskTreeByQuery(tasks, query) {
+
+    const normalizedQuery = normalizeSearchText(query);
+
+    if (!normalizedQuery) {
+        return [...tasks];
+    }
+
+    const tasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
+
+    const includedIds = new Set();
+
+    for (const task of tasks) {
+
+        const searchableText = normalizeSearchText(
+            `${task.title ?? ""} ${task.description ?? ""}`
+        );
+
+        if (!searchableText.includes(normalizedQuery)) {
+            continue;
+        }
+
+        let currentTask = task;
+
+        while (
+            currentTask &&
+            !includedIds.has(currentTask.id)
+        ) {
+
+            includedIds.add(currentTask.id);
+
+            currentTask = tasksById.get(
+                currentTask.parentTaskId
+            );
+
+        }
+
+    }
+
+    return tasks.filter(task => includedIds.has(task.id));
+
+}

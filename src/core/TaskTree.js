@@ -1,4 +1,4 @@
-export function flattenTaskTree(tasks) {
+export function flattenTaskTree(tasks, expandedTaskIds = null) {
 
     const tasksById = new Map(
         tasks.map(task => [task.id, task])
@@ -32,6 +32,26 @@ export function flattenTaskTree(tasks) {
 
     });
 
+    const rootedTaskIds = new Set();
+
+    const markAsRooted = task => {
+
+        if (rootedTaskIds.has(task.id)) return;
+
+        rootedTaskIds.add(task.id);
+
+        const children = childrenByParent.get(task.id) ?? [];
+
+        for (const child of children) {
+            markAsRooted(child);
+        }
+
+    };
+
+    for (const root of roots) {
+        markAsRooted(root);
+    }
+
     const result = [];
     const visited = new Set();
 
@@ -44,6 +64,12 @@ export function flattenTaskTree(tasks) {
 
         const children = childrenByParent.get(task.id) ?? [];
 
+        const isExpanded =
+            expandedTaskIds === null ||
+            expandedTaskIds.has(task.id);
+
+        if (!isExpanded) return;
+
         for (const child of children) {
             visit(child, depth + 1);
         }
@@ -55,7 +81,11 @@ export function flattenTaskTree(tasks) {
     }
 
     for (const task of tasks) {
-        visit(task, 0);
+
+        if (!rootedTaskIds.has(task.id)) {
+            visit(task, 0);
+        }
+
     }
 
     return result;

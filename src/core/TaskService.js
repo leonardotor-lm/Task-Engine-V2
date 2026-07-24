@@ -280,6 +280,42 @@ export class TaskService {
 
     }
 
+    includeCompletedDescendants(tasks) {
+
+        const allTasks = this.repository.getAll();
+        const includedIds = new Set(
+            tasks.map(task => task.id)
+        );
+
+        let changed = true;
+
+        while (changed) {
+
+            changed = false;
+
+            for (const task of allTasks) {
+
+                if (
+                    task.status === TaskStatus.COMPLETED &&
+                    includedIds.has(task.parentTaskId) &&
+                    !includedIds.has(task.id)
+                ) {
+
+                    includedIds.add(task.id);
+                    changed = true;
+
+                }
+
+            }
+
+        }
+
+        return allTasks.filter(
+            task => includedIds.has(task.id)
+        );
+
+    }
+
     getInboxTasks() {
 
         return this.repository
