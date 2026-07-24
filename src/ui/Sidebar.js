@@ -11,7 +11,8 @@ export class Sidebar {
         contexts = [],
         tags = [],
         taskFilters = {},
-        taskSort = "MANUAL"
+        taskSort = "MANUAL",
+        canRestoreBackup = false
     ) {
 
         const buttonClass = view => {
@@ -228,6 +229,46 @@ export class Sidebar {
             `
             : "";
 
+        const backupTools = `
+            <details class="backupTools">
+
+                <summary>Copia de seguridad</summary>
+
+                <div class="backupActions">
+
+                    <button
+                        id="exportBackup"
+                        type="button">
+                        Descargar copia
+                    </button>
+
+                    <label
+                        class="importBackupButton"
+                        for="importBackup">
+                        Importar copia
+                    </label>
+
+                    <input
+                        id="importBackup"
+                        class="visuallyHidden"
+                        type="file"
+                        accept=".json,application/json">
+
+                    ${canRestoreBackup
+                        ? `
+                            <button
+                                id="restoreLastImportBackup"
+                                type="button">
+                                Deshacer última importación
+                            </button>
+                        `
+                        : ""}
+
+                </div>
+
+            </details>
+        `;
+
         return `
             <aside class="sidebar">
 
@@ -265,6 +306,8 @@ export class Sidebar {
                 ${filters}
 
                 ${sorting}
+
+                ${backupTools}
 
                 <nav>
 
