@@ -5,6 +5,7 @@ import { ContextService } from "./ContextService.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
+import { filterTasksByQuery } from "./TaskSearch.js";
 
 export class App {
 
@@ -16,6 +17,7 @@ export class App {
 
         this.selectedTask = null;
         this.currentView = View.INBOX;
+        this.searchQuery = "";
 
         this.mainView = new MainView({
 
@@ -90,6 +92,26 @@ export class App {
             onPermanentlyDeleteTask: (id) => {
 
                 this.taskService.permanentlyDeleteTask(id);
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onSearchTasks: (query) => {
+
+                this.searchQuery = query;
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onClearSearch: () => {
+
+                this.searchQuery = "";
 
                 this.selectedTask = null;
 
@@ -325,10 +347,16 @@ export class App {
 
     render() {
 
+        const visibleTasks = filterTasksByQuery(
+            this.getVisibleTasks(),
+            this.searchQuery
+        );
+
         this.mainView.render({
 
             view: this.currentView,
-            tasks: this.getVisibleTasks(),
+            tasks: visibleTasks,
+            searchQuery: this.searchQuery,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts()
