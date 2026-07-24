@@ -31,7 +31,9 @@ export class MainView {
             canRestoreBackup,
             syncConfigured,
             syncUrl,
-            syncRevision
+            syncRevision,
+            syncPendingChanges,
+            syncLastSuccess
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -48,7 +50,9 @@ export class MainView {
                     canRestoreBackup,
                     syncConfigured,
                     syncUrl,
-                    syncRevision
+                    syncRevision,
+                    syncPendingChanges,
+                    syncLastSuccess
                 )}
 
                 ${this.viewRouter.render(state)}
