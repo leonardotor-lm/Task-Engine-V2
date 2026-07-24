@@ -346,9 +346,17 @@ export class App {
                 const current =
                     this.syncConfig.get();
 
+                const nextUrl =
+                    this.syncConfig.validateUrl(url);
+
+                const savedToken =
+                    nextUrl === current.url
+                        ? current.token
+                        : "";
+
                 this.syncConfig.save({
-                    url,
-                    token: token || current.token
+                    url: nextUrl,
+                    token: token || savedToken
                 });
 
                 this.render();
