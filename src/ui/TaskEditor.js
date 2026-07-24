@@ -3,7 +3,7 @@ import { escapeHtml } from "./escapeHtml.js";
 
 export class TaskEditor {
 
-    render(task, areas = [], contexts = []) {
+    render(task, areas = [], contexts = [], tags = []) {
 
         if (!task) {
 
@@ -48,6 +48,34 @@ export class TaskEditor {
             </option>
 
         `).join("");
+
+        const tagOptions = tags.length > 0
+            ? tags.map(tag => `
+
+                <label class="tagOption">
+
+                    <input
+                        class="taskTag"
+                        type="checkbox"
+                        value="${escapeHtml(tag.id)}"
+                        ${task.tagIds.includes(tag.id) ? "checked" : ""}
+                        ${disabled}>
+
+                    <span
+                        class="tagColor"
+                        style="background:${escapeHtml(tag.color)}">
+                    </span>
+
+                    ${escapeHtml(tag.name)}
+
+                </label>
+
+            `).join("")
+            : `
+                <span class="emptyTagMessage">
+                    No hay etiquetas creadas.
+                </span>
+            `;
 
         const priorityOptions = PriorityOptions.map(option => `
 
@@ -162,6 +190,14 @@ export class TaskEditor {
                     ${contextOptions}
 
                 </select>
+
+                <fieldset class="tagField" ${disabled}>
+
+                    <legend>Etiquetas</legend>
+
+                    ${tagOptions}
+
+                </fieldset>
 
                 <label>Prioridad</label>
 
