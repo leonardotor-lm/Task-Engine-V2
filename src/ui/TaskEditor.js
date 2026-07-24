@@ -3,7 +3,7 @@ import { escapeHtml } from "./escapeHtml.js";
 
 export class TaskEditor {
 
-    render(task, areas = [], contexts = [], tags = []) {
+    render(task, areas = [], contexts = [], tags = [], allTasks = []) {
 
         if (!task) {
 
@@ -86,6 +86,50 @@ export class TaskEditor {
             </option>
 
         `).join("");
+
+        const directSubtasks = allTasks.filter(
+            item => item.parentTaskId === task.id
+        );
+
+        const subtaskItems = directSubtasks.length > 0
+            ? `
+                <ul class="editorSubtaskList">
+                    ${directSubtasks.map(subtask => `
+                        <li>
+                            <button
+                                type="button"
+                                class="subtaskLink"
+                                data-id="${escapeHtml(subtask.id)}">
+                                ${subtask.isCompleted() ? "✓ " : ""}
+                                ${escapeHtml(subtask.title)}
+                            </button>
+                        </li>
+                    `).join("")}
+                </ul>
+            `
+            : `
+                <p class="emptyTagMessage">
+                    No hay subtareas.
+                </p>
+            `;
+
+        const subtaskForm = isLocked
+            ? ""
+            : `
+                <form id="subtaskForm" class="subtaskForm">
+
+                    <input
+                        id="subtaskTitle"
+                        type="text"
+                        placeholder="Nueva subtarea"
+                        autocomplete="off">
+
+                    <button type="submit">
+                        Agregar
+                    </button>
+
+                </form>
+            `;
 
         let actions = "";
 
@@ -214,6 +258,15 @@ export class TaskEditor {
                     type="date"
                     value="${escapeHtml(task.dueDate)}"
                     ${disabled}>
+
+                <section class="subtaskSection">
+
+                    <h4>Subtareas</h4>
+
+                    ${subtaskItems}
+                    ${subtaskForm}
+
+                </section>
 
                 <hr>
 
