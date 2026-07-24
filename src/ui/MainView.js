@@ -224,6 +224,28 @@ export class MainView {
 
                 });
 
+                document.getElementById("skipRecurringTask")?.addEventListener("click", () => {
+
+                    if (!Dialog.confirm(
+                        "¿Saltear esta vez y avanzar a la próxima fecha?"
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks.onSkipRecurringTask(
+                            selectedTask.id
+                        );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
                 document.getElementById("archiveTask")?.addEventListener("click", () => {
 
                     if (!Dialog.confirm("¿Archivar esta tarea?")) {
