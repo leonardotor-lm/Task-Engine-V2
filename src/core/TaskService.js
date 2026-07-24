@@ -107,6 +107,12 @@ export class TaskService {
 
         if (task.isCompleted()) {
 
+            if (task.recurrence) {
+                throw new Error(
+                    "No se puede reabrir una instancia recurrente completada. Editá la siguiente instancia."
+                );
+            }
+
             task.reopen();
 
         } else {
