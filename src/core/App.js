@@ -65,6 +65,17 @@ export class App {
 
             },
 
+            onPostponeTask: (id, newDate) => {
+
+                this.taskService.postponeTask(id, newDate);
+
+                this.selectedTask =
+                    this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
             onSkipRecurringTask: (id) => {
 
                 this.taskService.skipRecurringTask(id);
