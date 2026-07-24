@@ -23,7 +23,8 @@ export class ViewRouter {
             title,
             allowCreate,
             state.areas,
-            state.contexts
+            state.contexts,
+            state.searchQuery
 
         );
 
