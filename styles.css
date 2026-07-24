@@ -228,3 +228,46 @@ body {
     color: #64748b;
     font-size: 13px;
 }
+
+
+.taskFilters {
+    margin-bottom: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.taskFilters summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.taskFilters form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.taskFilters label {
+    color: #475569;
+    font-size: 12px;
+}
+
+.taskFilters select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 6px;
+}
+
+.taskFilterActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.taskFilterActions button {
+    flex: 1;
+    padding: 6px;
+    cursor: pointer;
+}
