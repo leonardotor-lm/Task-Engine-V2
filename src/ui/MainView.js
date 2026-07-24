@@ -121,7 +121,9 @@ export class MainView {
             allTasks,
             areas,
             contexts,
-            tags
+            tags,
+            syncPendingChanges,
+            syncRemoteUpdateAvailable
         } = state;
 
         document.getElementById("syncConfigForm")?.addEventListener("submit", event => {
@@ -201,8 +203,14 @@ export class MainView {
 
         document.getElementById("pullFromCloud")?.addEventListener("click", async () => {
 
+            const conflict =
+                syncPendingChanges &&
+                syncRemoteUpdateAvailable;
+
             if (!Dialog.confirm(
-                "La descarga reemplazará los datos locales y guardará una copia para poder deshacerla. ¿Continuar?"
+                conflict
+                    ? "Hay cambios locales y remotos. Conservar la versión de la nube reemplazará los datos locales, pero guardará una copia para poder deshacerlo. ¿Continuar?"
+                    : "La descarga reemplazará los datos locales y guardará una copia para poder deshacerla. ¿Continuar?"
             )) {
                 return;
             }
@@ -220,6 +228,42 @@ export class MainView {
             } catch (error) {
 
                 Dialog.alert(error.message);
+
+            }
+
+        });
+
+        document.getElementById("overwriteCloud")?.addEventListener("click", async () => {
+
+            if (!Dialog.confirm(
+                "Hay cambios locales y remotos. Conservar la versión local reemplazará en la nube los cambios hechos en otro dispositivo. Esta decisión no se puede deshacer desde la nube. ¿Continuar?"
+            )) {
+                return;
+            }
+
+            try {
+
+                const result =
+                    await this.callbacks
+                        .onOverwriteCloud();
+
+                Dialog.alert(
+                    `Se conservó la versión local en la revisión ${result.revision}: ${this.backupSummary(result.summary)}.`
+                );
+
+            } catch (error) {
+
+                if (error.name === "SyncConflictError") {
+
+                    Dialog.alert(
+                        "La nube volvió a cambiar durante la operación. No se sobrescribió nada. Recargá la aplicación e intentá nuevamente."
+                    );
+
+                } else {
+
+                    Dialog.alert(error.message);
+
+                }
 
             }
 

@@ -318,17 +318,39 @@ export class Sidebar {
 
                         <div class="syncActions">
 
-                            <button
-                                id="pushToCloud"
-                                type="button">
-                                Subir a la nube
-                            </button>
+                            ${syncPendingChanges &&
+                                syncRemoteUpdateAvailable
+                                ? `
+                                    <p class="syncConflictHint">
+                                        Elegí qué versión querés conservar.
+                                    </p>
 
-                            <button
-                                id="pullFromCloud"
-                                type="button">
-                                Descargar de la nube
-                            </button>
+                                    <button
+                                        id="pullFromCloud"
+                                        type="button">
+                                        Conservar versión de la nube
+                                    </button>
+
+                                    <button
+                                        id="overwriteCloud"
+                                        type="button"
+                                        class="dangerAction">
+                                        Conservar versión local
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        id="pushToCloud"
+                                        type="button">
+                                        Subir a la nube
+                                    </button>
+
+                                    <button
+                                        id="pullFromCloud"
+                                        type="button">
+                                        Descargar de la nube
+                                    </button>
+                                `}
 
                             <button
                                 id="clearSyncConfig"
