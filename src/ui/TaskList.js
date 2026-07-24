@@ -1,5 +1,6 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { flattenTaskTree } from "../core/TaskTree.js";
 
 export class TaskList {
 
@@ -67,7 +68,7 @@ export class TaskList {
                 <ul class="taskList">
             `;
 
-            for (const task of tasks) {
+            for (const { task, depth } of flattenTaskTree(tasks)) {
 
                 const area = areasById.get(task.areaId);
 
@@ -135,11 +136,12 @@ export class TaskList {
 
                 html += `
                     <li
-                        class="task"
+                        class="task ${depth > 0 ? "subtask" : ""}"
+                        style="--task-depth:${depth}"
                         data-id="${escapeHtml(task.id)}">
 
                         <span class="taskTitle">
-                            ${escapeHtml(task.title)}
+                            ${depth > 0 ? "↳ " : ""}${escapeHtml(task.title)}
                         </span>
 
                         ${metadataHtml}
