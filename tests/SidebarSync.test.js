@@ -126,6 +126,21 @@ test("avisa si coinciden cambios locales y remotos", () => {
         /Cambios locales y remotos · nube rev. 6/
     );
 
+    assert.match(
+        html,
+        /id="pullFromCloud"[\s\S]*Conservar versión de la nube/
+    );
+
+    assert.match(
+        html,
+        /id="overwriteCloud"[\s\S]*Conservar versión local/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /id="pushToCloud"/
+    );
+
 });
 
 test("no inserta el token guardado en el HTML", () => {
