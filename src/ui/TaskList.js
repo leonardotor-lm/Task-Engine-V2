@@ -11,7 +11,8 @@ export class TaskList {
         areas = [],
         contexts = [],
         tags = [],
-        searchQuery = ""
+        searchQuery = "",
+        expandedTaskIds = new Set()
     ) {
 
         const form = allowCreate
@@ -44,6 +45,26 @@ export class TaskList {
             tags.map(tag => [tag.id, tag])
         );
 
+
+        const childrenByParent = new Map();
+
+        for (const task of tasks) {
+
+            if (!task.parentTaskId) continue;
+
+            const children =
+                childrenByParent.get(task.parentTaskId) ?? [];
+
+            children.push(task);
+            childrenByParent.set(task.parentTaskId, children);
+
+        }
+
+        const visibleRows = flattenTaskTree(
+            tasks,
+            searchQuery ? null : expandedTaskIds
+        );
+
         let html = `
             <main class="content">
 
@@ -68,7 +89,46 @@ export class TaskList {
                 <ul class="taskList">
             `;
 
-            for (const { task, depth } of flattenTaskTree(tasks)) {
+            for (const { task, depth } of visibleRows) {
+
+                const children =
+                    childrenByParent.get(task.id) ?? [];
+
+                const totalSubtasks = children.length;
+
+                const completedSubtasks = children.filter(
+                    child => child.isCompleted()
+                ).length;
+
+                const hasSubtasks = totalSubtasks > 0;
+
+                const isExpanded =
+                    Boolean(searchQuery) ||
+                    expandedTaskIds.has(task.id);
+
+                const toggleHtml = hasSubtasks
+                    ? `
+                        <button
+                            type="button"
+                            class="toggleSubtasks"
+                            data-id="${escapeHtml(task.id)}"
+                            aria-label="${isExpanded
+                                ? "Contraer subtareas"
+                                : "Expandir subtareas"}">
+                            ${isExpanded ? "▼" : "▶"}
+                        </button>
+                    `
+                    : `
+                        <span class="toggleSubtasksSpacer"></span>
+                    `;
+
+                const progressHtml = hasSubtasks
+                    ? `
+                        <span class="subtaskProgress">
+                            (${completedSubtasks}/${totalSubtasks})
+                        </span>
+                    `
+                    : "";
 
                 const area = areasById.get(task.areaId);
 
@@ -136,13 +196,21 @@ export class TaskList {
 
                 html += `
                     <li
-                        class="task ${depth > 0 ? "subtask" : ""}"
+                        class="task ${depth > 0 ? "subtask" : ""} ${task.isCompleted() ? "completedTask" : ""}"
                         style="--task-depth:${depth}"
                         data-id="${escapeHtml(task.id)}">
 
-                        <span class="taskTitle">
-                            ${depth > 0 ? "↳ " : ""}${escapeHtml(task.title)}
-                        </span>
+                        <div class="taskHeader">
+
+                            ${toggleHtml}
+
+                            <span class="taskTitle">
+                                ${depth > 0 ? "↳ " : ""}${escapeHtml(task.title)}
+                            </span>
+
+                            ${progressHtml}
+
+                        </div>
 
                         ${metadataHtml}
 
