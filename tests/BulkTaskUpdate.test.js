@@ -147,6 +147,58 @@ test("aplica prioridad y fecha en una sola operación", () => {
 
 });
 
+test("agrega etiquetas sin borrar las existentes", () => {
+
+    const repository = new MemoryRepository([
+        new Task({
+            id: "task-1",
+            title: "Primera",
+            tagIds: ["tag-existing"]
+        }),
+        new Task({
+            id: "task-2",
+            title: "Segunda"
+        })
+    ]);
+
+    const service =
+        new TaskService(repository);
+
+    service.updateTasks(
+        ["task-1", "task-2"],
+        {
+            areaId: "area-1",
+            contextId: "context-1"
+        },
+        {
+            addTagIds: [
+                "tag-existing",
+                "tag-new"
+            ]
+        }
+    );
+
+    const [first, second] =
+        repository.getAll();
+
+    assert.deepEqual(
+        first.tagIds,
+        ["tag-existing", "tag-new"]
+    );
+
+    assert.deepEqual(
+        second.tagIds,
+        ["tag-existing", "tag-new"]
+    );
+
+    assert.equal(first.areaId, "area-1");
+    assert.equal(
+        second.contextId,
+        "context-1"
+    );
+
+});
+
 test("no modifica ninguna tarea si falta una selección", () => {
 
     const {
