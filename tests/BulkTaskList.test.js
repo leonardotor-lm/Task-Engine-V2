@@ -7,6 +7,7 @@ import { TaskList } from "../src/ui/TaskList.js";
 function render({
     selectedTaskIds = new Set(),
     enabled = true,
+    mode = "ACTIVE",
     areas = [],
     contexts = [],
     tags = []
@@ -28,7 +29,8 @@ function render({
         new Set(),
         false,
         selectedTaskIds,
-        enabled
+        enabled,
+        mode
     );
 
 }
@@ -123,6 +125,47 @@ test("muestra área, contexto y etiquetas en la barra masiva", () => {
     assert.match(html, /Computadora/);
     assert.match(html, /id="bulkTags"/);
     assert.match(html, /Importante/);
+
+});
+
+test("muestra restauración masiva en vistas históricas", () => {
+
+    const archivedTask = new Task({
+        id: "archived",
+        title: "Proyecto archivado"
+    });
+
+    archivedTask.archive();
+
+    const html = new TaskList().render(
+        [archivedTask],
+        "Archivadas",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(),
+        false,
+        new Set(["archived"]),
+        true,
+        "ARCHIVED"
+    );
+
+    assert.match(
+        html,
+        /id="bulkRestoreTasks"/
+    );
+
+    assert.match(
+        html,
+        /Restaurar selección/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /id="applyBulkChanges"/
+    );
 
 });
 
