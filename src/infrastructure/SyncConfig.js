@@ -3,6 +3,10 @@ export const SYNC_TOKEN_KEY =
     "leo_api_key_storage_key";
 export const SYNC_REVISION_KEY =
     "task-engine-v2-sync-revision";
+export const SYNC_FINGERPRINT_KEY =
+    "task-engine-v2-sync-fingerprint";
+export const SYNC_LAST_SUCCESS_KEY =
+    "task-engine-v2-sync-last-success";
 
 export class SyncConfig {
 
@@ -80,7 +84,7 @@ export class SyncConfig {
         );
 
         if (connectionChanged) {
-            this.clearRevision();
+            this.clearSyncState();
         }
 
         return configuration;
@@ -112,7 +116,7 @@ export class SyncConfig {
 
         this.storage.removeItem(SYNC_URL_KEY);
         this.storage.removeItem(SYNC_TOKEN_KEY);
-        this.clearRevision();
+        this.clearSyncState();
 
     }
 
@@ -150,6 +154,87 @@ export class SyncConfig {
 
         this.storage.removeItem(
             SYNC_REVISION_KEY
+        );
+
+    }
+
+    markSynchronized(
+        fingerprint,
+        timestamp = new Date().toISOString()
+    ) {
+
+        if (!fingerprint) {
+            throw new Error(
+                "La huella de sincronización es inválida."
+            );
+        }
+
+        const parsedTimestamp =
+            Date.parse(timestamp);
+
+        if (Number.isNaN(parsedTimestamp)) {
+            throw new Error(
+                "La fecha de sincronización es inválida."
+            );
+        }
+
+        this.storage.setItem(
+            SYNC_FINGERPRINT_KEY,
+            fingerprint
+        );
+
+        this.storage.setItem(
+            SYNC_LAST_SUCCESS_KEY,
+            new Date(parsedTimestamp).toISOString()
+        );
+
+    }
+
+    getFingerprint() {
+
+        return this.storage.getItem(
+            SYNC_FINGERPRINT_KEY
+        ) ?? "";
+
+    }
+
+    getLastSuccess() {
+
+        return this.storage.getItem(
+            SYNC_LAST_SUCCESS_KEY
+        ) ?? "";
+
+    }
+
+    hasPendingChanges(
+        currentFingerprint
+    ) {
+
+        if (!this.isConfigured()) {
+            return false;
+        }
+
+        const synchronizedFingerprint =
+            this.getFingerprint();
+
+        return (
+            !synchronizedFingerprint ||
+            synchronizedFingerprint !==
+                currentFingerprint
+        );
+
+    }
+
+    clearSyncState() {
+
+        this.clearRevision();
+
+        this.storage.removeItem(
+            SYNC_FINGERPRINT_KEY
+        );
+
+        this.storage.removeItem(
+            SYNC_LAST_SUCCESS_KEY
         );
 
     }
