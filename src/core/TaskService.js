@@ -1,4 +1,5 @@
 import { TaskRepository } from "../infrastructure/TaskRepository.js";
+import { Task } from "../domain/Task.js";
 import { TaskStatus } from "../domain/TaskStatus.js";
 import { getNextRecurrenceDate } from "../domain/Recurrence.js";
 
@@ -94,6 +95,58 @@ export class TaskService {
         this.repository.update(task);
 
         return task;
+
+    }
+
+    updateTasks(ids, data) {
+
+        const uniqueIds = [
+            ...new Set(ids)
+        ];
+
+        if (uniqueIds.length === 0) {
+            throw new Error(
+                "Seleccioná al menos una tarea."
+            );
+        }
+
+        const tasks = uniqueIds.map(
+            id => this.repository.getById(id)
+        );
+
+        if (tasks.some(task => !task)) {
+            throw new Error(
+                "Una de las tareas seleccionadas ya no existe."
+            );
+        }
+
+        if (
+            tasks.some(
+                task => !this.isActiveTask(task)
+            )
+        ) {
+            throw new Error(
+                "Sólo se pueden editar en conjunto tareas activas."
+            );
+        }
+
+        const updatedTasks = tasks.map(task => {
+
+            const copy = new Task(
+                task.toJSON()
+            );
+
+            copy.update(data);
+
+            return copy;
+
+        });
+
+        this.repository.updateMany(
+            updatedTasks
+        );
+
+        return updatedTasks;
 
     }
 
