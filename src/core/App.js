@@ -31,6 +31,17 @@ export class App {
 
             },
 
+            onCreateSubtask: (parentId, title) => {
+
+                this.taskService.createSubtask(parentId, title);
+
+                this.selectedTask =
+                    this.taskService.getTaskById(parentId);
+
+                this.render();
+
+            },
+
             onUpdateTask: (id, data) => {
 
                 this.taskService.updateTask(id, data);
@@ -391,6 +402,7 @@ export class App {
 
             view: this.currentView,
             tasks: visibleTasks,
+            allTasks: this.taskService.getAllTasks(),
             searchQuery: this.searchQuery,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),

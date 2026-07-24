@@ -21,6 +21,7 @@ export class MainView {
         const {
             view,
             selectedTask,
+            allTasks,
             areas,
             contexts,
             tags,
@@ -38,7 +39,8 @@ export class MainView {
                     selectedTask,
                     areas,
                     contexts,
-                    tags
+                    tags,
+                    allTasks
                 )}
 
             </div>
@@ -152,6 +154,32 @@ export class MainView {
             });
 
             if (selectedTask) {
+
+                document.getElementById("subtaskForm")?.addEventListener("submit", event => {
+
+                    event.preventDefault();
+
+                    const title = document
+                        .getElementById("subtaskTitle")
+                        .value
+                        .trim();
+
+                    if (!title) return;
+
+                    this.callbacks.onCreateSubtask(
+                        selectedTask.id,
+                        title
+                    );
+
+                });
+
+                document.querySelectorAll(".subtaskLink").forEach(button => {
+
+                    button.addEventListener("click", () => {
+                        this.callbacks.onSelectTask(button.dataset.id);
+                    });
+
+                });
 
                 document.getElementById("toggleTask")?.addEventListener("click", () => {
                     this.callbacks.onToggleTask(selectedTask.id);
