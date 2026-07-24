@@ -224,6 +224,36 @@ export class MainView {
 
                 });
 
+                document.getElementById("postponeTask")?.addEventListener("click", () => {
+
+                    const newDate =
+                        document.getElementById("postponeDate").value;
+
+                    if (!newDate) {
+
+                        Dialog.alert(
+                            "Elegí una nueva fecha para posponer la tarea."
+                        );
+
+                        return;
+
+                    }
+
+                    try {
+
+                        this.callbacks.onPostponeTask(
+                            selectedTask.id,
+                            newDate
+                        );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
                 document.getElementById("skipRecurringTask")?.addEventListener("click", () => {
 
                     if (!Dialog.confirm(

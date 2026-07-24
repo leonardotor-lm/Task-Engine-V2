@@ -162,6 +162,33 @@ export class TaskService {
 
     }
 
+    postponeTask(id, newDate) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (!this.isActiveTask(task)) {
+            throw new Error(
+                "Sólo se puede posponer una tarea activa."
+            );
+        }
+
+        if (task.recurrence) {
+            throw new Error(
+                "Para una tarea recurrente, usá Saltear esta vez."
+            );
+        }
+
+        task.postpone(newDate);
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     skipRecurringTask(id) {
 
         const task = this.repository.getById(id);

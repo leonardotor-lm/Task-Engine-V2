@@ -268,6 +268,18 @@ export class Task {
 
     postpone(newDate) {
 
+        if (!this.dueDate) {
+            throw new Error(
+                "La tarea necesita una fecha antes de poder posponerse."
+            );
+        }
+
+        if (!newDate || newDate <= this.dueDate) {
+            throw new Error(
+                "La nueva fecha debe ser posterior a la fecha actual."
+            );
+        }
+
         this.postponements.push({
 
             from: this.dueDate,

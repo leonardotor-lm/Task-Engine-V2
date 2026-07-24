@@ -132,6 +132,47 @@ export class TaskEditor {
             `
             : "";
 
+        const postponementCount = task.postponements.length;
+
+        const postponementControls = (
+            !isLocked &&
+            task.dueDate &&
+            !task.recurrence
+        )
+            ? `
+                <div class="postponeControls">
+
+                    <label for="postponeDate">
+                        Posponer hasta
+                    </label>
+
+                    <div>
+
+                        <input
+                            id="postponeDate"
+                            type="date">
+
+                        <button
+                            id="postponeTask"
+                            type="button">
+                            Posponer
+                        </button>
+
+                    </div>
+
+                </div>
+            `
+            : "";
+
+        const postponementSummary = postponementCount > 0
+            ? `
+                <p class="postponementSummary">
+                    Pospuesta ${postponementCount}
+                    ${postponementCount === 1 ? "vez" : "veces"}.
+                </p>
+            `
+            : "";
+
         const directSubtasks = allTasks.filter(item => {
 
             if (item.parentTaskId !== task.id) {
@@ -329,6 +370,9 @@ export class TaskEditor {
                     ${disabled}>
                     ${recurrenceOptions}
                 </select>
+
+                ${postponementControls}
+                ${postponementSummary}
 
                 <section class="subtaskSection">
 

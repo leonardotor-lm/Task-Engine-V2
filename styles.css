@@ -207,3 +207,24 @@ body {
     color: #7c3aed;
     font-weight: 700;
 }
+
+.postponeControls,
+.postponementSummary {
+    margin-top: 10px;
+}
+
+.postponeControls > div {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.postponeControls input {
+    flex: 1;
+    min-width: 0;
+}
+
+.postponementSummary {
+    color: #64748b;
+    font-size: 13px;
+}
