@@ -156,6 +156,49 @@ export class SyncEngine {
 
     }
 
+    async overwriteRemote() {
+
+        const connection =
+            this.ensureConfigured();
+
+        const currentRemote =
+            await this.gateway.load(connection);
+
+        const baseRevision =
+            this.validateRevision(
+                currentRemote.revision
+            );
+
+        const backup =
+            this.backupService.createBackup();
+
+        const response = await this.gateway.save({
+            ...connection,
+            baseRevision,
+            data: backup
+        });
+
+        const revision = this.validateRevision(
+            response.revision
+        );
+
+        this.config.setRevision(revision);
+        this.config.markSynchronized(
+            createSyncFingerprint(backup)
+        );
+
+        return {
+            revision,
+            summary: this.summarize(
+                this.backupService
+                    .parseAndValidate(
+                        JSON.stringify(backup)
+                    )
+            )
+        };
+
+    }
+
     async pull() {
 
         const connection =
