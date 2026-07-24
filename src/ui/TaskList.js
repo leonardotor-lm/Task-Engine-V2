@@ -178,6 +178,20 @@ export class TaskList {
 
                 }
 
+                const recurrenceLabels = {
+                    DAILY: "Diaria",
+                    WEEKLY: "Semanal",
+                    MONTHLY: "Mensual"
+                };
+
+                if (task.recurrence) {
+
+                    metadata.push(
+                        `Repetición: ${recurrenceLabels[task.recurrence]}`
+                    );
+
+                }
+
                 if (priority && priority.value !== 0) {
 
                     metadata.push(
