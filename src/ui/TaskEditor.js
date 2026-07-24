@@ -150,8 +150,7 @@ export class TaskEditor {
 
                         <input
                             id="postponeDate"
-                            type="date"
-                            min="${escapeHtml(task.dueDate)}">
+                            type="date">
 
                         <button
                             id="postponeTask"
