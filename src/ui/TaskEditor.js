@@ -87,9 +87,17 @@ export class TaskEditor {
 
         `).join("");
 
-        const directSubtasks = allTasks.filter(
-            item => item.parentTaskId === task.id
-        );
+        const directSubtasks = allTasks.filter(item => {
+
+            if (item.parentTaskId !== task.id) {
+                return false;
+            }
+
+            return isDeleted
+                ? item.isDeleted()
+                : !item.isDeleted();
+
+        });
 
         const subtaskItems = directSubtasks.length > 0
             ? `

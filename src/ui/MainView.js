@@ -55,6 +55,7 @@ export class MainView {
         const {
             view,
             selectedTask,
+            allTasks,
             areas,
             contexts,
             tags
@@ -182,7 +183,17 @@ export class MainView {
                 });
 
                 document.getElementById("toggleTask")?.addEventListener("click", () => {
-                    this.callbacks.onToggleTask(selectedTask.id);
+
+                    try {
+
+                        this.callbacks.onToggleTask(selectedTask.id);
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
                 });
 
                 document.getElementById("reopenTask")?.addEventListener("click", () => {
@@ -195,13 +206,29 @@ export class MainView {
                         return;
                     }
 
-                    this.callbacks.onArchiveTask(selectedTask.id);
+                    try {
+
+                        this.callbacks.onArchiveTask(selectedTask.id);
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
 
                 });
 
                 document.getElementById("deleteTask")?.addEventListener("click", () => {
 
-                    if (!Dialog.confirm("¿Mover esta tarea a la papelera?")) {
+                    const hasSubtasks = allTasks.some(
+                        task => task.parentTaskId === selectedTask.id
+                    );
+
+                    const message = hasSubtasks
+                        ? "¿Mover esta tarea y todas sus subtareas a la papelera?"
+                        : "¿Mover esta tarea a la papelera?";
+
+                    if (!Dialog.confirm(message)) {
                         return;
                     }
 
@@ -223,9 +250,15 @@ export class MainView {
 
                 document.getElementById("permanentlyDeleteTask")?.addEventListener("click", () => {
 
-                    if (!Dialog.confirm(
-                        "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea?"
-                    )) {
+                    const hasSubtasks = allTasks.some(
+                        task => task.parentTaskId === selectedTask.id
+                    );
+
+                    const message = hasSubtasks
+                        ? "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea y todas sus subtareas?"
+                        : "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea?";
+
+                    if (!Dialog.confirm(message)) {
                         return;
                     }
 

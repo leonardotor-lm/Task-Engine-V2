@@ -19,6 +19,8 @@ export class Task {
 
         this.status = data.status ?? TaskStatus.INBOX;
 
+        this.statusBeforeDelete = data.statusBeforeDelete ?? null;
+
         this.areaId = data.areaId ?? null;
 
         this.contextId = data.contextId ?? null;
@@ -179,6 +181,10 @@ export class Task {
 
     delete() {
 
+        if (!this.isDeleted()) {
+            this.statusBeforeDelete = this.status;
+        }
+
         this.status = TaskStatus.DELETED;
 
         this.touch();
@@ -191,7 +197,10 @@ export class Task {
             throw new Error("La tarea no está eliminada.");
         }
 
-        this.status = TaskStatus.PENDING;
+        this.status =
+            this.statusBeforeDelete ?? TaskStatus.PENDING;
+
+        this.statusBeforeDelete = null;
 
         this.touch();
 
@@ -226,6 +235,8 @@ export class Task {
             description: this.description,
 
             status: this.status,
+
+            statusBeforeDelete: this.statusBeforeDelete,
 
             areaId: this.areaId,
 

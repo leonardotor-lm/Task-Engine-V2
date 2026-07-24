@@ -75,7 +75,31 @@ export class TaskService {
 
     toggleTask(id) {
 
-        return this.repository.toggleComplete(id);
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (task.isCompleted()) {
+
+            task.reopen();
+
+        } else {
+
+            if (this.hasActiveDescendants(id)) {
+                throw new Error(
+                    "Completá primero las subtareas pendientes."
+                );
+            }
+
+            task.complete();
+
+        }
+
+        this.repository.update(task);
+
+        return task;
 
     }
 
@@ -85,6 +109,12 @@ export class TaskService {
 
         if (!task) {
             return null;
+        }
+
+        if (this.hasActiveDescendants(id)) {
+            throw new Error(
+                "No se puede archivar una tarea con subtareas activas."
+            );
         }
 
         task.archive();
@@ -103,9 +133,15 @@ export class TaskService {
             return null;
         }
 
-        task.delete();
+        const tree = [
+            task,
+            ...this.getDescendants(id)
+        ];
 
-        this.repository.update(task);
+        for (const item of tree) {
+            item.delete();
+            this.repository.update(item);
+        }
 
         return task;
 
@@ -125,7 +161,14 @@ export class TaskService {
             );
         }
 
-        this.repository.remove(id);
+        const tree = [
+            task,
+            ...this.getDescendants(id)
+        ];
+
+        for (const item of [...tree].reverse()) {
+            this.repository.remove(item.id);
+        }
 
         return task;
 
@@ -155,11 +198,61 @@ export class TaskService {
             return null;
         }
 
-        task.restoreFromTrash();
+        const tree = [
+            task,
+            ...this.getDescendants(id)
+        ];
 
-        this.repository.update(task);
+        for (const item of tree) {
+
+            if (item.isDeleted()) {
+                item.restoreFromTrash();
+                this.repository.update(item);
+            }
+
+        }
 
         return task;
+
+    }
+
+    getDescendants(parentId) {
+
+        const tasks = this.repository.getAll();
+        const descendants = [];
+        const visited = new Set([parentId]);
+        const pendingParentIds = [parentId];
+
+        while (pendingParentIds.length > 0) {
+
+            const currentParentId = pendingParentIds.shift();
+
+            for (const task of tasks) {
+
+                if (
+                    task.parentTaskId === currentParentId &&
+                    !visited.has(task.id)
+                ) {
+
+                    visited.add(task.id);
+                    descendants.push(task);
+                    pendingParentIds.push(task.id);
+
+                }
+
+            }
+
+        }
+
+        return descendants;
+
+    }
+
+    hasActiveDescendants(parentId) {
+
+        return this
+            .getDescendants(parentId)
+            .some(task => this.isActiveTask(task));
 
     }
 
