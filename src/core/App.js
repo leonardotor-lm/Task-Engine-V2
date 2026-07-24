@@ -6,6 +6,7 @@ import { TagService } from "./TagService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
+import { SyncFocusWatcher } from "./SyncFocusWatcher.js";
 import { SyncConfig } from "../infrastructure/SyncConfig.js";
 import { CloudGateway } from "../infrastructure/CloudGateway.js";
 import { MainView } from "../ui/MainView.js";
@@ -58,6 +59,13 @@ export class App {
         this.expandedTaskIds = new Set();
         this.syncRemoteRevision = null;
         this.syncRemoteUpdateAvailable = false;
+        this.syncCheckInProgress = false;
+
+        this.syncFocusWatcher =
+            new SyncFocusWatcher({
+                onFocus: () =>
+                    this.checkRemoteStatus()
+            });
 
         this.mainView = new MainView({
 
@@ -566,6 +574,7 @@ export class App {
 
         this.render();
         this.checkRemoteStatus();
+        this.syncFocusWatcher.start();
 
     }
 
@@ -579,6 +588,12 @@ export class App {
             return;
 
         }
+
+        if (this.syncCheckInProgress) {
+            return;
+        }
+
+        this.syncCheckInProgress = true;
 
         try {
 
@@ -600,6 +615,10 @@ export class App {
                 "No se pudo comprobar la revisión remota.",
                 error
             );
+
+        } finally {
+
+            this.syncCheckInProgress = false;
 
         }
 
