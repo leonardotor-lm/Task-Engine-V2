@@ -355,6 +355,51 @@ export class App {
 
             },
 
+            onBulkRestoreTasks: () => {
+
+                let restored;
+
+                switch (this.currentView) {
+
+                    case View.COMPLETED:
+                        restored =
+                            this.taskService
+                                .reopenCompletedTrees(
+                                    [...this.selectedTaskIds]
+                                );
+                        break;
+
+                    case View.ARCHIVED:
+                        restored =
+                            this.taskService
+                                .restoreArchivedTrees(
+                                    [...this.selectedTaskIds]
+                                );
+                        break;
+
+                    case View.TRASH:
+                        restored =
+                            this.taskService
+                                .restoreDeletedTrees(
+                                    [...this.selectedTaskIds]
+                                );
+                        break;
+
+                    default:
+                        throw new Error(
+                            "Esta vista no admite restauración masiva."
+                        );
+
+                }
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return restored.length;
+
+            },
+
             onCreateArea: (name, color) => {
 
                 this.areaService.createArea({ name, color });
@@ -830,25 +875,53 @@ export class App {
             this.taskSort
         );
 
-        const bulkViews = [
-            View.INBOX,
-            View.TODAY,
-            View.UPCOMING,
-            View.ALL
-        ];
+        const bulkModes = {
+            [View.INBOX]: "ACTIVE",
+            [View.TODAY]: "ACTIVE",
+            [View.UPCOMING]: "ACTIVE",
+            [View.ALL]: "ACTIVE",
+            [View.COMPLETED]: "COMPLETED",
+            [View.ARCHIVED]: "ARCHIVED",
+            [View.TRASH]: "TRASH"
+        };
+
+        const bulkActionMode =
+            bulkModes[this.currentView] ??
+            null;
 
         const bulkSelectionEnabled =
-            bulkViews.includes(
-                this.currentView
-            );
+            bulkActionMode !== null;
 
         if (bulkSelectionEnabled) {
 
-            const visibleActiveIds = new Set(
+            const visibleSelectableIds = new Set(
                 visibleTasks
                     .filter(
-                        task =>
-                            !task.isCompleted()
+                        task => {
+
+                            switch (bulkActionMode) {
+
+                                case "ACTIVE":
+                                    return !task.isCompleted();
+
+                                case "COMPLETED":
+                                    return (
+                                        task.isCompleted() &&
+                                        !task.recurrence
+                                    );
+
+                                case "ARCHIVED":
+                                    return task.isArchived();
+
+                                case "TRASH":
+                                    return task.isDeleted();
+
+                                default:
+                                    return false;
+
+                            }
+
+                        }
                     )
                     .map(task => task.id)
             );
@@ -857,7 +930,7 @@ export class App {
                 [...this.selectedTaskIds]
                     .filter(
                         id =>
-                            visibleActiveIds.has(id)
+                            visibleSelectableIds.has(id)
                     )
             );
 
@@ -887,6 +960,7 @@ export class App {
             selectedTaskIds:
                 this.selectedTaskIds,
             bulkSelectionEnabled,
+            bulkActionMode,
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),
             syncConfigured:
