@@ -833,6 +833,37 @@ export class MainView {
             });
 
             document.getElementById(
+                "emptyTrash"
+            )?.addEventListener("click", () => {
+
+                const count = allTasks.filter(
+                    task => task.isDeleted()
+                ).length;
+
+                if (!Dialog.confirm(
+                    `¿Eliminar definitivamente las ${count} ${count === 1 ? "tarea" : "tareas"} de la papelera? Esta acción no se puede deshacer.`
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const deletedCount =
+                        this.callbacks.onEmptyTrash();
+
+                    Dialog.alert(
+                        `Se vació la papelera: ${deletedCount} ${deletedCount === 1 ? "tarea eliminada" : "tareas eliminadas"} definitivamente.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
+            document.getElementById(
                 "openProjectTaskCreation"
             )?.addEventListener("click", () => {
 

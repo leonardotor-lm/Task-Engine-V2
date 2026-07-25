@@ -453,6 +453,20 @@ export class TaskService {
 
     }
 
+    emptyTrash() {
+
+        const tasks = this.getDeletedTasks();
+
+        for (
+            const task of [...tasks].reverse()
+        ) {
+            this.repository.remove(task.id);
+        }
+
+        return tasks;
+
+    }
+
     reopenCompletedTrees(ids) {
 
         const tasks = this.getTreesByState(

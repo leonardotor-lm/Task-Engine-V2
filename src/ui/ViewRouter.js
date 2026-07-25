@@ -15,7 +15,8 @@ export class ViewRouter {
 
     renderTaskList(
         state,
-        title
+        title,
+        headingActions = ""
     ) {
 
         return this.taskList.render(
@@ -35,7 +36,7 @@ export class ViewRouter {
             state.showTaskMetadata,
             state.today,
             state.allTasks,
-            "",
+            headingActions,
             "Nueva tarea",
             state.inlineSubtaskParentId
 
@@ -90,7 +91,19 @@ export class ViewRouter {
 
                 return this.renderTaskList(
                     state,
-                    "Papelera"
+                    "Papelera",
+                    state.allTasks.some(
+                        task => task.isDeleted()
+                    )
+                        ? `
+                            <button
+                                id="emptyTrash"
+                                type="button"
+                                class="dangerAction">
+                                Vaciar papelera
+                            </button>
+                        `
+                        : ""
                 );
 
             case View.AREAS:
