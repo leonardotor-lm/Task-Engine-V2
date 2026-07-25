@@ -816,6 +816,91 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickPostpone"
+            ).forEach(menu => {
+
+                menu.addEventListener(
+                    "click",
+                    event => event.stopPropagation()
+                );
+
+            });
+
+            document.querySelectorAll(
+                ".quickPostponePreset"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    try {
+
+                        this.callbacks
+                            .onQuickPostponeTask(
+                                button.closest(
+                                    ".quickPostpone"
+                                ).dataset.id,
+                                button.dataset.date
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".applyQuickPostpone"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    const menu = button.closest(
+                        ".quickPostpone"
+                    );
+
+                    const date = menu
+                        .querySelector(
+                            ".quickPostponeDate"
+                        )
+                        .value;
+
+                    if (!date) {
+
+                        Dialog.alert(
+                            "Elegí una fecha."
+                        );
+
+                        return;
+
+                    }
+
+                    try {
+
+                        this.callbacks
+                            .onQuickPostponeTask(
+                                menu.dataset.id,
+                                date
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickAddSubtask"
             ).forEach(button => {
 
