@@ -40,6 +40,7 @@ export class TaskService {
         return this.repository.add({
             title,
             parentTaskId: parent.id,
+            areaId: parent.areaId,
             status: parent.status
         });
 
