@@ -22,7 +22,9 @@ import {
     sortTaskTree
 } from "./TaskSorting.js";
 import {
-    getTaskCreationDefaults
+    getPostCreationView,
+    getTaskCreationDefaults,
+    getTaskCreationView
 } from "./TaskCreationDefaults.js";
 
 export class App {
@@ -80,18 +82,10 @@ export class App {
 
             onOpenTaskCreation: () => {
 
-                const creationViews = [
-                    View.INBOX,
-                    View.TODAY,
-                    View.UPCOMING,
-                    View.ALL
-                ];
-
-                if (!creationViews.includes(
-                    this.currentView
-                )) {
-                    this.currentView = View.TODAY;
-                }
+                this.currentView =
+                    getTaskCreationView(
+                        this.currentView
+                    );
 
                 this.taskCreationOpen = true;
                 this.selectedTask = null;
@@ -116,6 +110,12 @@ export class App {
                             this.getTodayString()
                         )
                     });
+
+                this.currentView =
+                    getPostCreationView(
+                        this.currentView,
+                        task
+                    );
 
                 this.taskCreationOpen = false;
                 this.selectedTask = task;
