@@ -304,6 +304,14 @@ export class App {
 
             },
 
+            onCloseTaskEditor: () => {
+
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
             onToggleTaskMetadata: () => {
 
                 this.taskDisplayPreferences
