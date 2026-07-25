@@ -603,6 +603,16 @@ export class TaskList {
                                                                     `
                                                                     : ""}
 
+                                                                ${task.parentTaskId
+                                                                    ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickDetachSubtask">
+                                                                            Convertir en tarea principal
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
+
                                                                 ${task.dueDate &&
                                                                     !task.recurrence
                                                                     ? `

@@ -819,6 +819,36 @@ export class TaskService {
 
     }
 
+    detachSubtask(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (!this.isActiveTask(task)) {
+            throw new Error(
+                "Sólo se puede independizar una tarea activa."
+            );
+        }
+
+        if (!task.parentTaskId) {
+            throw new Error(
+                "La tarea ya es una tarea principal."
+            );
+        }
+
+        task.update({
+            parentTaskId: null
+        });
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     getProjectDescendants(parentId) {
 
         const project =

@@ -194,6 +194,15 @@ export class App {
 
             },
 
+            onDetachSubtask: (id) => {
+
+                this.taskService.detachSubtask(id);
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onQuickClearDueDate: (id) => {
 
                 this.taskService.updateTask(

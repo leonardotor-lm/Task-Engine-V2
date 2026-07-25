@@ -845,6 +845,38 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickDetachSubtask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    if (!Dialog.confirm(
+                        "¿Convertir esta subtarea en una tarea principal? Conservará sus propias subtareas y propiedades."
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks.onDetachSubtask(
+                            button.closest(
+                                ".quickMoreActions"
+                            ).dataset.id
+                        );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickClearDueDate"
             ).forEach(button => {
 

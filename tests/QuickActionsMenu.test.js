@@ -87,6 +87,34 @@ test("oculta Archivar cuando existen descendientes activos", () => {
 
 });
 
+test("muestra Convertir en tarea principal sólo en subtareas", () => {
+
+    const parent = new Task({
+        id: "project",
+        title: "Proyecto"
+    });
+
+    const child = new Task({
+        id: "child-task",
+        title: "Subtarea",
+        parentTaskId: parent.id
+    });
+
+    const childHtml = render([child]);
+    const parentHtml = render([parent]);
+
+    assert.match(
+        childHtml,
+        /class="quickDetachSubtask"/
+    );
+
+    assert.doesNotMatch(
+        parentHtml,
+        /class="quickDetachSubtask"/
+    );
+
+});
+
 test("muestra Quitar fecha sólo en tareas fechadas no recurrentes", () => {
 
     const dated = new Task({
