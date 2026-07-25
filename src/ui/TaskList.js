@@ -343,19 +343,27 @@ export class TaskList {
                                 `
                                 : ""}
 
-                            <span class="taskTitle">
-                                ${depth > 0 ? "↳ " : ""}
-                                ${task.recurrence
-                                    ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
-                                    : ""}
-                                ${escapeHtml(task.title)}
-                            </span>
+                            <div class="taskBody">
 
-                            ${progressHtml}
+                                <div class="taskTitleLine">
+
+                                    <span class="taskTitle">
+                                        ${depth > 0 ? "↳ " : ""}
+                                        ${task.recurrence
+                                            ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
+                                            : ""}
+                                        ${escapeHtml(task.title)}
+                                    </span>
+
+                                    ${progressHtml}
+
+                                </div>
+
+                                ${metadataHtml}
+
+                            </div>
 
                         </div>
-
-                        ${metadataHtml}
 
                     </li>
                 `;
