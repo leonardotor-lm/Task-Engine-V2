@@ -474,7 +474,8 @@ export class MainView {
             View.ALL,
             View.COMPLETED,
             View.ARCHIVED,
-            View.TRASH
+            View.TRASH,
+            View.PROJECT
 
         ];
 
@@ -778,10 +779,64 @@ export class MainView {
 
             });
 
+            document.getElementById(
+                "closeProjectView"
+            )?.addEventListener("click", () => {
+
+                this.callbacks.onCloseProject();
+
+            });
+
+            document.getElementById(
+                "editProjectTask"
+            )?.addEventListener("click", event => {
+
+                this.callbacks.onEditProjectTask(
+                    event.currentTarget.dataset.id
+                );
+
+            });
+
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {
-                    this.callbacks.onSelectTask(item.dataset.id);
+
+                    const hasSubtasks =
+                        allTasks.some(
+                            task =>
+                                task.parentTaskId ===
+                                item.dataset.id
+                        );
+
+                    if (hasSubtasks) {
+
+                        this.callbacks.onOpenProject(
+                            item.dataset.id
+                        );
+
+                        const content =
+                            document.querySelector(
+                                ".content"
+                            );
+
+                        if (content) {
+                            content.scrollTop = 0;
+                        }
+
+                        window.scrollTo({
+                            top: 0,
+                            left: 0,
+                            behavior: "auto"
+                        });
+
+                        return;
+
+                    }
+
+                    this.callbacks.onSelectTask(
+                        item.dataset.id
+                    );
+
                 });
 
             });

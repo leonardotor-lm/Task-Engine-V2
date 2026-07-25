@@ -55,6 +55,8 @@ export class App {
 
         this.selectedTask = null;
         this.currentView = View.TODAY;
+        this.projectTaskId = null;
+        this.previousProjectView = View.TODAY;
         this.taskCreationOpen = false;
         this.searchQuery = "";
         this.taskFilters = {
@@ -299,6 +301,55 @@ export class App {
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
+            onOpenProject: (id) => {
+
+                const project =
+                    this.taskService.getTaskById(id);
+
+                if (!project) return;
+
+                if (this.currentView !== View.PROJECT) {
+                    this.previousProjectView = this.currentView;
+                }
+
+                this.projectTaskId = id;
+                this.selectedTask = null;
+
+                this.expandedTaskIds.add(id);
+
+                for (
+                    const task of
+                    this.taskService.getDescendants(id)
+                ) {
+                    this.expandedTaskIds.add(task.id);
+                }
+
+                this.currentView = View.PROJECT;
+                this.render();
+
+            },
+
+            onCloseProject: () => {
+
+                this.currentView =
+                    this.previousProjectView ??
+                    View.TODAY;
+
+                this.projectTaskId = null;
+                this.selectedTask = null;
+                this.render();
+
+            },
+
+            onEditProjectTask: (id) => {
+
+                this.selectedTask =
+                    this.taskService.getTaskById(id);
 
                 this.render();
 
@@ -905,6 +956,17 @@ export class App {
 
         switch (this.currentView) {
 
+            case View.PROJECT:
+
+                if (!this.projectTaskId) {
+                    return [];
+                }
+
+                return this.taskService
+                    .getDescendants(
+                        this.projectTaskId
+                    );
+
             case View.TODAY:
 
                 return this.taskService.getTodayTasks(today);
@@ -958,19 +1020,23 @@ export class App {
 
         }
 
-        visibleTasks = filterTaskTreeByCriteria(
-            visibleTasks,
-            {
-                query: this.searchQuery,
-                filters: this.taskFilters,
-                today: this.getTodayString()
-            }
-        );
+        if (this.currentView !== View.PROJECT) {
 
-        visibleTasks = sortTaskTree(
-            visibleTasks,
-            this.taskSort
-        );
+            visibleTasks = filterTaskTreeByCriteria(
+                visibleTasks,
+                {
+                    query: this.searchQuery,
+                    filters: this.taskFilters,
+                    today: this.getTodayString()
+                }
+            );
+
+            visibleTasks = sortTaskTree(
+                visibleTasks,
+                this.taskSort
+            );
+
+        }
 
         const bulkModes = {
             [View.INBOX]: "ACTIVE",
@@ -1046,6 +1112,12 @@ export class App {
         this.mainView.render({
 
             view: this.currentView,
+            projectTask:
+                this.projectTaskId
+                    ? this.taskService.getTaskById(
+                        this.projectTaskId
+                    )
+                    : null,
             taskCreationOpen:
                 this.taskCreationOpen,
             tasks: visibleTasks,

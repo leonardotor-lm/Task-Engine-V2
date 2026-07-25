@@ -1,5 +1,6 @@
 import { TaskList } from "./TaskList.js";
 import { EntityManager } from "./EntityManager.js";
+import { ProjectView } from "./ProjectView.js";
 import { View } from "../core/View.js";
 
 export class ViewRouter {
@@ -8,6 +9,7 @@ export class ViewRouter {
 
         this.taskList = new TaskList();
         this.entityManager = new EntityManager();
+        this.projectView = new ProjectView();
 
     }
 
@@ -41,6 +43,10 @@ export class ViewRouter {
     render(state) {
 
         switch (state.view) {
+
+            case View.PROJECT:
+
+                return this.projectView.render(state);
 
             case View.TODAY:
 

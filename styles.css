@@ -685,6 +685,12 @@ body {
     gap: 12px;
 }
 
+.taskListHeadingActions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .taskMetadataToggle {
     padding: 5px 8px;
     border: 1px solid #cbd5e1;
