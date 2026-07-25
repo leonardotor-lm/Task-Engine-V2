@@ -872,8 +872,51 @@ export class MainView {
 
                     try {
 
-                        this.callbacks
-                            .onDuplicateTask(id);
+                        const duplicatedId =
+                            this.callbacks
+                                .onDuplicateTask(id);
+
+                        if (!duplicatedId) return;
+
+                        let duplicatedTask =
+                            [...document.querySelectorAll(
+                                ".task"
+                            )].find(
+                                task =>
+                                    task.dataset.id ===
+                                    duplicatedId
+                            );
+
+                        if (!duplicatedTask) {
+
+                            this.callbacks
+                                .onRevealTask(
+                                    duplicatedId
+                                );
+
+                            duplicatedTask =
+                                [...document.querySelectorAll(
+                                    ".task"
+                                )].find(
+                                    task =>
+                                        task.dataset.id ===
+                                        duplicatedId
+                                );
+
+                        }
+
+                        if (duplicatedTask) {
+
+                            duplicatedTask.classList.add(
+                                "recentlyDuplicatedTask"
+                            );
+
+                            duplicatedTask.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center"
+                            });
+
+                        }
 
                     } catch (error) {
 
