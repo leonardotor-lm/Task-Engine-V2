@@ -18,3 +18,34 @@ export function getTaskCreationDefaults(
     }
 
 }
+
+export function getTaskCreationView(view) {
+
+    const directViews = [
+        View.INBOX,
+        View.TODAY,
+        View.UPCOMING,
+        View.ALL
+    ];
+
+    return directViews.includes(view)
+        ? view
+        : View.INBOX;
+
+}
+
+export function getPostCreationView(
+    view,
+    task
+) {
+
+    if (
+        view === View.UPCOMING &&
+        !task.dueDate
+    ) {
+        return View.INBOX;
+    }
+
+    return view;
+
+}
