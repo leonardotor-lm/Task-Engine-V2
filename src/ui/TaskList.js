@@ -359,6 +359,26 @@ export class TaskList {
                     !task.recurrence &&
                     Boolean(task.dueDate);
 
+                const canShowQuickMenu =
+                    !bulkSelectionEnabled &&
+                    !task.isCompleted() &&
+                    !task.isArchived() &&
+                    !task.isDeleted();
+
+                const hasActiveDescendants =
+                    allTasks.some(
+                        item =>
+                            item.parentTaskId ===
+                                task.id &&
+                            !item.isCompleted() &&
+                            !item.isArchived() &&
+                            !item.isDeleted()
+                    );
+
+                const canQuickArchive =
+                    canShowQuickMenu &&
+                    !hasActiveDescendants;
+
                 const postponeBaseDate =
                     task.dueDate > today
                         ? task.dueDate
@@ -480,7 +500,8 @@ export class TaskList {
                                     ${progressHtml}
 
                                     ${canAddSubtask ||
-                                        canQuickPostpone
+                                        canQuickPostpone ||
+                                        canShowQuickMenu
                                         ? `
                                             <span class="taskQuickActions">
 
@@ -538,6 +559,48 @@ export class TaskList {
                                                                     type="button"
                                                                     class="applyQuickPostpone">
                                                                     Aplicar
+                                                                </button>
+
+                                                            </div>
+
+                                                        </details>
+                                                    `
+                                                    : ""}
+
+                                                ${canShowQuickMenu
+                                                    ? `
+                                                        <details
+                                                            class="quickMoreActions"
+                                                            data-id="${escapeHtml(task.id)}">
+
+                                                            <summary
+                                                                title="Más acciones"
+                                                                aria-label="Más acciones para ${escapeHtml(task.title)}">
+                                                                ⋯
+                                                            </summary>
+
+                                                            <div class="quickMoreMenu">
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="quickEditTask">
+                                                                    Editar
+                                                                </button>
+
+                                                                ${canQuickArchive
+                                                                    ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickArchiveTask">
+                                                                            Archivar
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="quickDeleteTask destructiveAction">
+                                                                    Enviar a Papelera
                                                                 </button>
 
                                                             </div>
