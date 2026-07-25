@@ -1,5 +1,4 @@
 import { TaskList } from "./TaskList.js";
-import { escapeHtml } from "./escapeHtml.js";
 
 export class ProjectView {
 
@@ -49,7 +48,7 @@ export class ProjectView {
 
         return this.taskList.render(
             state.tasks,
-            `${escapeHtml(project.title)} · ${completed}/${total}`,
+            `${project.title} · ${completed}/${total}`,
             false,
             state.areas,
             state.contexts,
