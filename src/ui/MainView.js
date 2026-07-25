@@ -35,7 +35,8 @@ export class MainView {
             syncPendingChanges,
             syncLastSuccess,
             syncRemoteRevision,
-            syncRemoteUpdateAvailable
+            syncRemoteUpdateAvailable,
+            bulkSelectionMode
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -56,7 +57,8 @@ export class MainView {
                     syncPendingChanges,
                     syncLastSuccess,
                     syncRemoteRevision,
-                    syncRemoteUpdateAvailable
+                    syncRemoteUpdateAvailable,
+                    bulkSelectionMode
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -400,6 +402,14 @@ export class MainView {
 
         });
 
+        document.getElementById(
+            "toggleBulkMode"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onToggleBulkMode();
+
+        });
+
         document.getElementById("showInbox")?.addEventListener("click", () => {
             this.callbacks.onShowInbox();
         });
@@ -464,6 +474,38 @@ export class MainView {
                 if (!title) return;
 
                 this.callbacks.onCreateTask(title);
+
+            });
+
+            document.querySelectorAll(
+                ".taskCompleteCheckbox"
+            ).forEach(checkbox => {
+
+                checkbox.addEventListener(
+                    "click",
+                    event =>
+                        event.stopPropagation()
+                );
+
+                checkbox.addEventListener(
+                    "change",
+                    () => {
+
+                        try {
+
+                            this.callbacks.onToggleTask(
+                                checkbox.dataset.id
+                            );
+
+                        } catch (error) {
+
+                            checkbox.checked = false;
+                            Dialog.alert(error.message);
+
+                        }
+
+                    }
+                );
 
             });
 

@@ -19,7 +19,8 @@ export class Sidebar {
         syncPendingChanges = false,
         syncLastSuccess = "",
         syncRemoteRevision = null,
-        syncRemoteUpdateAvailable = false
+        syncRemoteUpdateAvailable = false,
+        bulkSelectionMode = false
     ) {
 
         const buttonClass = view => {
@@ -443,6 +444,21 @@ export class Sidebar {
                 ${filters}
 
                 ${sorting}
+
+                ${taskViews.includes(activeView)
+                    ? `
+                        <button
+                            id="toggleBulkMode"
+                            type="button"
+                            class="bulkModeButton ${bulkSelectionMode
+                                ? "active"
+                                : ""}">
+                            ${bulkSelectionMode
+                                ? "Salir de selección"
+                                : "Selección múltiple"}
+                        </button>
+                    `
+                    : ""}
 
                 ${syncTools}
 
