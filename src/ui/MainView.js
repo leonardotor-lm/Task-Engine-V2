@@ -816,6 +816,99 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickMoreActions"
+            ).forEach(menu => {
+
+                menu.addEventListener(
+                    "click",
+                    event => event.stopPropagation()
+                );
+
+            });
+
+            document.querySelectorAll(
+                ".quickEditTask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    this.callbacks.onSelectTask(
+                        button.closest(
+                            ".quickMoreActions"
+                        ).dataset.id
+                    );
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".quickArchiveTask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    if (!Dialog.confirm(
+                        "¿Archivar esta tarea?"
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks.onArchiveTask(
+                            button.closest(
+                                ".quickMoreActions"
+                            ).dataset.id
+                        );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".quickDeleteTask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    const id = button.closest(
+                        ".quickMoreActions"
+                    ).dataset.id;
+
+                    const hasSubtasks =
+                        allTasks.some(
+                            task =>
+                                task.parentTaskId === id
+                        );
+
+                    const message = hasSubtasks
+                        ? "¿Mover esta tarea y todas sus subtareas a la papelera?"
+                        : "¿Mover esta tarea a la papelera?";
+
+                    if (!Dialog.confirm(message)) {
+                        return;
+                    }
+
+                    this.callbacks.onDeleteTask(id);
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickPostpone"
             ).forEach(menu => {
 
