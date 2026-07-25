@@ -403,6 +403,14 @@ export class MainView {
         });
 
         document.getElementById(
+            "toggleTaskMetadata"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onToggleTaskMetadata();
+
+        });
+
+        document.getElementById(
             "toggleBulkMode"
         )?.addEventListener("click", () => {
 

@@ -16,7 +16,9 @@ export class TaskList {
         filtersActive = false,
         selectedTaskIds = new Set(),
         bulkSelectionEnabled = false,
-        bulkActionMode = null
+        bulkActionMode = null,
+        showTaskMetadata = true,
+        today = ""
     ) {
 
         const form = allowCreate
@@ -74,7 +76,28 @@ export class TaskList {
         let html = `
             <main class="content">
 
-                <h2>${escapeHtml(title)}</h2>
+                <div class="taskListHeading">
+
+                    <h2>${escapeHtml(title)}</h2>
+
+                    <button
+                        id="toggleTaskMetadata"
+                        type="button"
+                        class="taskMetadataToggle">
+                        ${showTaskMetadata
+                            ? "Ocultar detalles"
+                            : "Mostrar detalles"}
+                    </button>
+
+                </div>
+
+                ${bulkSelectionEnabled
+                    ? `
+                        <p class="bulkModeNotice">
+                            Modo de selección múltiple activo
+                        </p>
+                    `
+                    : ""}
 
                 ${bulkSelectionEnabled &&
                     selectedTaskIds.size > 0
@@ -158,19 +181,58 @@ export class TaskList {
 
                 const metadata = [];
 
-                if (task.dueDate) {
+                if (
+                    priority &&
+                    priority.value !== 0 &&
+                    (
+                        showTaskMetadata ||
+                        priority.value === 4
+                    )
+                ) {
 
                     metadata.push(`
-                        <span class="taskMetaText">
-                            Fecha: ${escapeHtml(
-                                this.formatDate(task.dueDate)
+                        <span
+                            class="priorityIndicator priority-${priority.value}"
+                            title="Prioridad: ${escapeHtml(priority.label)}"
+                            aria-label="Prioridad: ${escapeHtml(priority.label)}">
+                            ⚑
+                        </span>
+                    `);
+
+                }
+
+                const overdue =
+                    task.dueDate &&
+                    this.isOverdue(
+                        task.dueDate,
+                        today
+                    );
+
+                if (
+                    task.dueDate &&
+                    (
+                        showTaskMetadata ||
+                        overdue
+                    )
+                ) {
+
+                    metadata.push(`
+                        <span class="taskDueDate ${overdue ? "overdue" : ""}">
+                            ${escapeHtml(
+                                this.formatSmartDate(
+                                    task.dueDate,
+                                    today
+                                )
                             )}
                         </span>
                     `);
 
                 }
 
-                if (area) {
+                if (
+                    showTaskMetadata &&
+                    area
+                ) {
 
                     metadata.push(
                         this.renderMetadataChip(
@@ -182,7 +244,10 @@ export class TaskList {
 
                 }
 
-                if (context) {
+                if (
+                    showTaskMetadata &&
+                    context
+                ) {
 
                     metadata.push(
                         this.renderMetadataChip(
@@ -198,19 +263,26 @@ export class TaskList {
                     .map(tagId => tagsById.get(tagId))
                     .filter(Boolean);
 
-                for (const tag of taskTags) {
+                if (showTaskMetadata) {
 
-                    metadata.push(
-                        this.renderMetadataChip(
-                            tag.name,
-                            tag.color,
-                            "Etiqueta"
-                        )
-                    );
+                    for (const tag of taskTags) {
+
+                        metadata.push(
+                            this.renderMetadataChip(
+                                tag.name,
+                                tag.color,
+                                "Etiqueta"
+                            )
+                        );
+
+                    }
 
                 }
 
-                if (task.postponements.length > 0) {
+                if (
+                    showTaskMetadata &&
+                    task.postponements.length > 0
+                ) {
 
                     metadata.push(`
                         <span class="taskMetaText">
@@ -219,19 +291,6 @@ export class TaskList {
                             ${task.postponements.length === 1
                                 ? "vez"
                                 : "veces"}
-                        </span>
-                    `);
-
-                }
-
-                if (priority && priority.value !== 0) {
-
-                    metadata.push(`
-                        <span
-                            class="priorityIndicator priority-${priority.value}"
-                            title="Prioridad: ${escapeHtml(priority.label)}"
-                            aria-label="Prioridad: ${escapeHtml(priority.label)}">
-                            ⚑
                         </span>
                     `);
 
@@ -590,7 +649,50 @@ export class TaskList {
 
     }
 
-    formatDate(date) {
+    isOverdue(date, today) {
+
+        return Boolean(
+            today &&
+            date < today
+        );
+
+    }
+
+    formatSmartDate(date, today) {
+
+        const reference =
+            today || this.getTodayString();
+
+        if (date === reference) {
+            return "Hoy";
+        }
+
+        const difference =
+            this.daysBetween(
+                reference,
+                date
+            );
+
+        if (difference === 1) {
+            return "Mañana";
+        }
+
+        if (
+            difference >= 2 &&
+            difference <= 7
+        ) {
+
+            const value = new Date(
+                `${date}T12:00:00`
+            ).toLocaleDateString(
+                "es-AR",
+                { weekday: "long" }
+            );
+
+            return value.charAt(0).toUpperCase() +
+                value.slice(1);
+
+        }
 
         const [
             year,
@@ -598,7 +700,45 @@ export class TaskList {
             day
         ] = date.split("-");
 
-        return `${day}/${month}/${year}`;
+        const currentYear =
+            reference.split("-")[0];
+
+        return year === currentYear
+            ? `${day}/${month}`
+            : `${day}/${month}/${year}`;
+
+    }
+
+    daysBetween(from, to) {
+
+        const fromDate = new Date(
+            `${from}T12:00:00Z`
+        );
+
+        const toDate = new Date(
+            `${to}T12:00:00Z`
+        );
+
+        return Math.round(
+            (toDate - fromDate) /
+            86400000
+        );
+
+    }
+
+    getTodayString() {
+
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+        const day = String(
+            today.getDate()
+        ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
 
     }
 
