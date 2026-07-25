@@ -185,6 +185,24 @@ export class App {
 
             },
 
+            onQuickSkipRecurringTask: (id) => {
+
+                this.taskService.skipRecurringTask(id);
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
+            onQuickEndRecurrence: (id) => {
+
+                this.taskService.endRecurrence(id);
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onSkipRecurringTask: (id) => {
 
                 this.taskService.skipRecurringTask(id);
