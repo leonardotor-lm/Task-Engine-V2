@@ -845,6 +845,33 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickClearDueDate"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    try {
+
+                        this.callbacks
+                            .onQuickClearDueDate(
+                                button.closest(
+                                    ".quickMoreActions"
+                                ).dataset.id
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickSkipRecurringTask"
             ).forEach(button => {
 
