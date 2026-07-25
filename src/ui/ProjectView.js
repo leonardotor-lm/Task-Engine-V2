@@ -75,7 +75,8 @@ export class ProjectView {
             state.today,
             state.allTasks,
             headingActions,
-            "Nueva subtarea"
+            "Nueva subtarea",
+            state.inlineSubtaskParentId
         );
 
     }
