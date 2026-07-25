@@ -100,23 +100,16 @@ test("muestra Convertir en tarea principal sólo en subtareas", () => {
         parentTaskId: parent.id
     });
 
-    const html = render([
-        parent,
-        child
-    ]);
+    const childHtml = render([child]);
+    const parentHtml = render([parent]);
 
     assert.match(
-        html,
+        childHtml,
         /class="quickDetachSubtask"/
     );
 
-    const parentRow = html.slice(
-        html.indexOf('data-id="project"'),
-        html.indexOf('data-id="child-task"')
-    );
-
     assert.doesNotMatch(
-        parentRow,
+        parentHtml,
         /class="quickDetachSubtask"/
     );
 
