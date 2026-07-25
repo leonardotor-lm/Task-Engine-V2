@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 
 import { View } from "../src/core/View.js";
 import {
-    getTaskCreationDefaults
+    getPostCreationView,
+    getTaskCreationDefaults,
+    getTaskCreationView
 } from "../src/core/TaskCreationDefaults.js";
 import { Sidebar } from "../src/ui/Sidebar.js";
 import { TaskList } from "../src/ui/TaskList.js";
@@ -73,6 +75,49 @@ test("la captura rápida puede cancelarse", () => {
     assert.match(
         html,
         /autofocus/
+    );
+
+});
+
+test("crear desde una vista administrativa comienza en Inbox", () => {
+
+    assert.equal(
+        getTaskCreationView(View.AREAS),
+        View.INBOX
+    );
+
+    assert.equal(
+        getTaskCreationView(View.CONTEXTS),
+        View.INBOX
+    );
+
+    assert.equal(
+        getTaskCreationView(View.TAGS),
+        View.INBOX
+    );
+
+});
+
+test("una tarea sin fecha creada en Próximas pasa a Inbox", () => {
+
+    assert.equal(
+        getPostCreationView(
+            View.UPCOMING,
+            { dueDate: null }
+        ),
+        View.INBOX
+    );
+
+});
+
+test("una tarea fechada permanece en Próximas", () => {
+
+    assert.equal(
+        getPostCreationView(
+            View.UPCOMING,
+            { dueDate: "2026-07-26" }
+        ),
+        View.UPCOMING
     );
 
 });
