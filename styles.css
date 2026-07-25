@@ -159,22 +159,38 @@ body {
     color: #94a3b8;
 }
 
-.taskMetaChip {
+.taskMetaEntity {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 7px;
-    border: 1px solid var(--meta-color);
-    border-radius: 999px;
-    background: #fff;
-    color: #334155;
     line-height: 1.3;
 }
 
+.taskMetaArea {
+    gap: 4px;
+    padding: 2px 7px;
+    border-left: 3px solid var(--meta-color);
+    border-radius: 3px;
+    background: #f8fafc;
+    color: #334155;
+}
+
+.taskMetaContext {
+    padding: 1px 6px;
+    border: 1px solid var(--meta-color);
+    border-radius: 999px;
+    color: var(--meta-color);
+    font-weight: 600;
+}
+
+.taskMetaTag {
+    color: var(--meta-color);
+    font-weight: 600;
+}
+
 .taskMetaColor {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
     background: var(--meta-color);
 }
 
