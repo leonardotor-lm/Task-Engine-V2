@@ -30,7 +30,9 @@ export class ViewRouter {
             state.filtersActive,
             state.selectedTaskIds,
             state.bulkSelectionEnabled,
-            state.bulkActionMode
+            state.bulkActionMode,
+            state.showTaskMetadata,
+            state.today
 
         );
 
