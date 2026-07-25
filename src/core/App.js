@@ -21,6 +21,9 @@ import {
     TaskSort,
     sortTaskTree
 } from "./TaskSorting.js";
+import {
+    getTaskCreationDefaults
+} from "./TaskCreationDefaults.js";
 
 export class App {
 
@@ -49,7 +52,8 @@ export class App {
         });
 
         this.selectedTask = null;
-        this.currentView = View.INBOX;
+        this.currentView = View.TODAY;
+        this.taskCreationOpen = false;
         this.searchQuery = "";
         this.taskFilters = {
             areaId: "",
@@ -74,10 +78,47 @@ export class App {
 
         this.mainView = new MainView({
 
+            onOpenTaskCreation: () => {
+
+                const creationViews = [
+                    View.INBOX,
+                    View.TODAY,
+                    View.UPCOMING,
+                    View.ALL
+                ];
+
+                if (!creationViews.includes(
+                    this.currentView
+                )) {
+                    this.currentView = View.TODAY;
+                }
+
+                this.taskCreationOpen = true;
+                this.selectedTask = null;
+                this.render();
+
+            },
+
+            onCancelTaskCreation: () => {
+
+                this.taskCreationOpen = false;
+                this.render();
+
+            },
+
             onCreateTask: (title) => {
 
-                this.taskService.createTask({ title });
+                const task = this.taskService
+                    .createTask({
+                        title,
+                        ...getTaskCreationDefaults(
+                            this.currentView,
+                            this.getTodayString()
+                        )
+                    });
 
+                this.taskCreationOpen = false;
+                this.selectedTask = task;
                 this.render();
 
             },
@@ -815,7 +856,8 @@ export class App {
     resetTransientState() {
 
         this.selectedTask = null;
-        this.currentView = View.INBOX;
+        this.currentView = View.TODAY;
+        this.taskCreationOpen = false;
         this.searchQuery = "";
         this.taskFilters = {
             areaId: "",
@@ -996,6 +1038,8 @@ export class App {
         this.mainView.render({
 
             view: this.currentView,
+            taskCreationOpen:
+                this.taskCreationOpen,
             tasks: visibleTasks,
             allTasks: this.taskService.getAllTasks(),
             expandedTaskIds: this.expandedTaskIds,
