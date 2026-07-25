@@ -89,12 +89,17 @@ test("identifica una tarea padre aunque sus hijos no sean visibles", () => {
 
     assert.match(
         html,
-        /class="hierarchyIcon parentTaskIcon"/
+        /class="subtaskProgress"/
     );
 
     assert.match(
         html,
-        /Contiene subtareas/
+        /\(0\/1\)/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /parentTaskIcon/
     );
 
 });
