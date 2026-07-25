@@ -19,7 +19,8 @@ export class TaskList {
         bulkActionMode = null,
         showTaskMetadata = true,
         today = "",
-        allTasks = tasks
+        allTasks = tasks,
+        headingActions = ""
     ) {
 
         const form = allowCreate
@@ -89,14 +90,20 @@ export class TaskList {
 
                     <h2>${escapeHtml(title)}</h2>
 
-                    <button
-                        id="toggleTaskMetadata"
-                        type="button"
-                        class="taskMetadataToggle">
-                        ${showTaskMetadata
-                            ? "Ocultar detalles"
-                            : "Mostrar detalles"}
-                    </button>
+                    <div class="taskListHeadingActions">
+
+                        ${headingActions}
+
+                        <button
+                            id="toggleTaskMetadata"
+                            type="button"
+                            class="taskMetadataToggle">
+                            ${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}
+                        </button>
+
+                    </div>
 
                 </div>
 
