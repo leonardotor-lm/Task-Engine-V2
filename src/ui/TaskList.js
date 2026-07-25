@@ -20,7 +20,8 @@ export class TaskList {
         showTaskMetadata = true,
         today = "",
         allTasks = tasks,
-        headingActions = ""
+        headingActions = "",
+        creationPlaceholder = "Nueva tarea"
     ) {
 
         const form = allowCreate
@@ -30,7 +31,7 @@ export class TaskList {
                     <input
                         id="taskTitle"
                         type="text"
-                        placeholder="Nueva tarea"
+                        placeholder="${escapeHtml(creationPlaceholder)}"
                         autocomplete="off"
                         autofocus>
 

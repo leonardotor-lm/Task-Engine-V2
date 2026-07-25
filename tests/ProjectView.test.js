@@ -26,6 +26,7 @@ test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
 
     const html = new ProjectView().render({
         projectTask: project,
+        projectTaskCreationOpen: false,
         tasks: [child, grandchild],
         allTasks: [project, child, grandchild],
         areas: [],
@@ -48,6 +49,43 @@ test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
     assert.match(html, /Paso interno/);
     assert.match(html, /id="closeProjectView"/);
     assert.match(html, /id="editProjectTask"/);
+    assert.match(
+        html,
+        /id="openProjectTaskCreation"/
+    );
+
+});
+
+test("abre un formulario contextual para crear una subtarea", () => {
+
+    const project = new Task({
+        id: "project-form",
+        title: "Proyecto"
+    });
+
+    const html = new ProjectView().render({
+        projectTask: project,
+        projectTaskCreationOpen: true,
+        tasks: [],
+        allTasks: [project],
+        areas: [],
+        contexts: [],
+        tags: [],
+        expandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-07-25"
+    });
+
+    assert.match(html, /id="taskForm"/);
+    assert.match(
+        html,
+        /placeholder="Nueva subtarea"/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /id="openProjectTaskCreation"/
+    );
 
 });
 

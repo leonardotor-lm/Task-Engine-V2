@@ -792,6 +792,42 @@ export class TaskService {
 
     }
 
+    getProjectDescendants(parentId) {
+
+        const project =
+            this.repository.getById(parentId);
+
+        if (!project) {
+            return [];
+        }
+
+        const descendants =
+            this.getDescendants(parentId);
+
+        if (project.isDeleted()) {
+
+            return descendants.filter(
+                task => task.isDeleted()
+            );
+
+        }
+
+        if (project.isArchived()) {
+
+            return descendants.filter(
+                task => task.isArchived()
+            );
+
+        }
+
+        return descendants.filter(
+            task =>
+                !task.isDeleted() &&
+                !task.isArchived()
+        );
+
+    }
+
     hasActiveDescendants(parentId) {
 
         return this
