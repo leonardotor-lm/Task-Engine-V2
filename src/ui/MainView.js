@@ -815,6 +815,77 @@ export class MainView {
 
             });
 
+            document.querySelectorAll(
+                ".quickAddSubtask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    this.callbacks.onOpenInlineSubtask(
+                        button.dataset.id
+                    );
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".inlineSubtaskForm"
+            ).forEach(form => {
+
+                form.addEventListener(
+                    "click",
+                    event => event.stopPropagation()
+                );
+
+                form.addEventListener("submit", event => {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const input = form.querySelector(
+                        ".inlineSubtaskTitle"
+                    );
+
+                    const title = input.value.trim();
+
+                    if (!title) return;
+
+                    try {
+
+                        this.callbacks
+                            .onCreateInlineSubtask(
+                                form.dataset.parentId,
+                                title
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".cancelInlineSubtask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    this.callbacks
+                        .onCancelInlineSubtask();
+
+                });
+
+            });
+
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {

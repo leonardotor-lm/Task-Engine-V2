@@ -59,6 +59,7 @@ export class App {
         this.previousProjectView = View.TODAY;
         this.projectHistory = [];
         this.projectTaskCreationOpen = false;
+        this.inlineSubtaskParentId = null;
         this.taskCreationOpen = false;
         this.searchQuery = "";
         this.taskFilters = {
@@ -303,8 +304,45 @@ export class App {
 
             onSelectTask: (id) => {
 
+                this.inlineSubtaskParentId = null;
                 this.selectedTask = this.taskService.getTaskById(id);
 
+                this.render();
+
+            },
+
+            onOpenInlineSubtask: (parentId) => {
+
+                this.inlineSubtaskParentId =
+                    parentId;
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
+            onCancelInlineSubtask: () => {
+
+                this.inlineSubtaskParentId = null;
+                this.render();
+
+            },
+
+            onCreateInlineSubtask: (
+                parentId,
+                title
+            ) => {
+
+                this.taskService.createSubtask(
+                    parentId,
+                    title
+                );
+
+                this.expandedTaskIds.add(
+                    parentId
+                );
+
+                this.inlineSubtaskParentId = null;
                 this.render();
 
             },
@@ -366,6 +404,7 @@ export class App {
 
                 this.projectTaskId = id;
                 this.projectTaskCreationOpen = false;
+                this.inlineSubtaskParentId = null;
                 this.selectedTask = null;
 
                 this.expandedTaskIds.add(id);
@@ -1190,6 +1229,8 @@ export class App {
                 this.projectTaskCreationOpen,
             projectNavigationDepth:
                 this.projectHistory.length,
+            inlineSubtaskParentId:
+                this.inlineSubtaskParentId,
             taskCreationOpen:
                 this.taskCreationOpen,
             tasks: visibleTasks,

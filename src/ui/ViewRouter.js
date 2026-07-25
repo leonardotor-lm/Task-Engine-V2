@@ -34,7 +34,10 @@ export class ViewRouter {
             state.bulkActionMode,
             state.showTaskMetadata,
             state.today,
-            state.allTasks
+            state.allTasks,
+            "",
+            "Nueva tarea",
+            state.inlineSubtaskParentId
 
         );
 
