@@ -200,16 +200,38 @@ export class App {
                     this.taskService
                         .duplicateTaskTree(id);
 
-                if (duplicated) {
-
-                    this.expandedTaskIds.add(
-                        duplicated.root.id
-                    );
-
+                if (!duplicated) {
+                    return null;
                 }
+
+                this.expandedTaskIds.add(
+                    duplicated.root.id
+                );
 
                 this.selectedTask = null;
                 this.render();
+
+                return duplicated.root.id;
+
+            },
+
+            onRevealTask: (id) => {
+
+                this.currentView = View.ALL;
+                this.projectTaskId = null;
+                this.projectHistory = [];
+                this.searchQuery = "";
+                this.taskFilters = {
+                    areaId: "",
+                    contextId: "",
+                    tagId: "",
+                    priority: "",
+                    due: ""
+                };
+                this.selectedTask = null;
+                this.render();
+
+                return id;
 
             },
 
