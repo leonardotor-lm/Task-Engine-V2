@@ -1036,15 +1036,26 @@ h3 {
     margin: 4px 4px 0 0;
 }
 
+@keyframes taskDrawerIn {
+
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+
+}
+
+.taskDrawer {
+    animation:
+        taskDrawerIn
+        180ms
+        ease-out;
+}
+
 @media (max-width: 760px) {
-
-    .layout {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        display: none;
-    }
 
     .taskDrawer {
         width: 100vw;
