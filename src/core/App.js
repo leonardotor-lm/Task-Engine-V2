@@ -57,6 +57,7 @@ export class App {
         this.currentView = View.TODAY;
         this.projectTaskId = null;
         this.previousProjectView = View.TODAY;
+        this.projectHistory = [];
         this.projectTaskCreationOpen = false;
         this.taskCreationOpen = false;
         this.searchQuery = "";
@@ -346,7 +347,21 @@ export class App {
                 if (!project) return;
 
                 if (this.currentView !== View.PROJECT) {
-                    this.previousProjectView = this.currentView;
+
+                    this.previousProjectView =
+                        this.currentView;
+
+                    this.projectHistory = [];
+
+                } else if (
+                    this.projectTaskId &&
+                    this.projectTaskId !== id
+                ) {
+
+                    this.projectHistory.push(
+                        this.projectTaskId
+                    );
+
                 }
 
                 this.projectTaskId = id;
@@ -369,11 +384,30 @@ export class App {
 
             onCloseProject: () => {
 
+                const previousProjectId =
+                    this.projectHistory.pop();
+
+                if (previousProjectId) {
+
+                    this.projectTaskId =
+                        previousProjectId;
+
+                    this.projectTaskCreationOpen =
+                        false;
+
+                    this.selectedTask = null;
+                    this.render();
+
+                    return;
+
+                }
+
                 this.currentView =
                     this.previousProjectView ??
                     View.TODAY;
 
                 this.projectTaskId = null;
+                this.projectHistory = [];
                 this.projectTaskCreationOpen = false;
                 this.selectedTask = null;
                 this.render();
@@ -1154,6 +1188,8 @@ export class App {
                     : null,
             projectTaskCreationOpen:
                 this.projectTaskCreationOpen,
+            projectNavigationDepth:
+                this.projectHistory.length,
             taskCreationOpen:
                 this.taskCreationOpen,
             tasks: visibleTasks,
