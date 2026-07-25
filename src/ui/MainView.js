@@ -1092,24 +1092,94 @@ export class MainView {
 
             });
 
-            document.querySelectorAll(".editEntity").forEach(button => {
+            document.querySelectorAll(
+                ".editEntity"
+            ).forEach(button => {
 
                 button.addEventListener("click", () => {
 
+                    const item = button.closest(
+                        ".entityItem"
+                    );
+
+                    item.querySelector(
+                        ".entityDisplay"
+                    ).hidden = true;
+
+                    const form = item.querySelector(
+                        ".entityEditForm"
+                    );
+
+                    form.hidden = false;
+
+                    form.querySelector(
+                        ".entityEditName"
+                    ).focus();
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".cancelEntityEdit"
+            ).forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const item = button.closest(
+                        ".entityItem"
+                    );
+
+                    item.querySelector(
+                        ".entityEditForm"
+                    ).hidden = true;
+
+                    item.querySelector(
+                        ".entityDisplay"
+                    ).hidden = false;
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".entityEditForm"
+            ).forEach(form => {
+
+                form.addEventListener("submit", event => {
+
+                    event.preventDefault();
+
                     const entity = config.entities.find(
-                        entity => entity.id === button.dataset.id
+                        entity =>
+                            entity.id === form.dataset.id
                     );
 
                     if (!entity) return;
 
-                    const name = Dialog.prompt(
-                        config.prompt,
-                        entity.name
-                    );
+                    const name = form.querySelector(
+                        ".entityEditName"
+                    ).value.trim();
 
-                    if (name === null || name === "") return;
+                    const color = form.querySelector(
+                        ".entityEditColor"
+                    ).value;
 
-                    config.update(entity.id, name);
+                    if (!name) return;
+
+                    try {
+
+                        config.update(
+                            entity.id,
+                            name,
+                            color
+                        );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
 
                 });
 

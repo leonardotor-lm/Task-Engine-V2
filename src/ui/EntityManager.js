@@ -52,37 +52,69 @@ export class EntityManager {
                         class="entityItem"
                         data-id="${escapeHtml(entity.id)}">
 
-                        <div>
+                        <div class="entityDisplay">
 
-                            <span
-                                style="
-                                    display:inline-block;
-                                    width:12px;
-                                    height:12px;
-                                    border-radius:50%;
-                                    background:${escapeHtml(entity.color)};
-                                    margin-right:8px;">
-                            </span>
+                            <div class="entityIdentity">
 
-                            <strong>${escapeHtml(entity.name)}</strong>
+                                <span
+                                    class="entityColorSample"
+                                    style="--entity-color: ${escapeHtml(entity.color)}">
+                                </span>
+
+                                <strong>${escapeHtml(entity.name)}</strong>
+
+                            </div>
+
+                            <div class="entityActions">
+
+                                <button
+                                    type="button"
+                                    class="editEntity"
+                                    data-id="${escapeHtml(entity.id)}">
+                                    Editar
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="deleteEntity"
+                                    data-id="${escapeHtml(entity.id)}">
+                                    Eliminar
+                                </button>
+
+                            </div>
 
                         </div>
 
-                        <div>
+                        <form
+                            class="entityEditForm"
+                            data-id="${escapeHtml(entity.id)}"
+                            hidden>
 
-                            <button
-                                class="editEntity"
-                                data-id="${escapeHtml(entity.id)}">
-                                Editar
+                            <input
+                                class="entityEditName"
+                                type="text"
+                                value="${escapeHtml(entity.name)}"
+                                aria-label="Nombre"
+                                autocomplete="off"
+                                required>
+
+                            <input
+                                class="entityEditColor"
+                                type="color"
+                                value="${escapeHtml(entity.color)}"
+                                aria-label="Color">
+
+                            <button type="submit">
+                                Guardar
                             </button>
 
                             <button
-                                class="deleteEntity"
-                                data-id="${escapeHtml(entity.id)}">
-                                Eliminar
+                                type="button"
+                                class="cancelEntityEdit">
+                                Cancelar
                             </button>
 
-                        </div>
+                        </form>
 
                     </li>
                 `;
