@@ -140,7 +140,7 @@ export class App {
 
                 this.taskService.updateTask(id, data);
 
-                this.selectedTask = this.taskService.getTaskById(id);
+                this.selectedTask = null;
 
                 this.render();
 
