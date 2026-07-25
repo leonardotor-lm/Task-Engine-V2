@@ -498,6 +498,15 @@ export class MainView {
 
                 if (!title) return;
 
+                if (view === View.PROJECT) {
+
+                    this.callbacks
+                        .onCreateProjectSubtask(title);
+
+                    return;
+
+                }
+
                 this.callbacks.onCreateTask(title);
 
             });
@@ -776,6 +785,15 @@ export class MainView {
                     Dialog.alert(error.message);
 
                 }
+
+            });
+
+            document.getElementById(
+                "openProjectTaskCreation"
+            )?.addEventListener("click", () => {
+
+                this.callbacks
+                    .onOpenProjectTaskCreation();
 
             });
 
