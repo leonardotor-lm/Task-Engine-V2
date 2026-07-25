@@ -712,3 +712,206 @@ body {
 .taskDueDate.overdue {
     color: #b42318;
 }
+
+
+/* Prueba visual: interfaz compacta y monoespaciada */
+:root {
+    --ui-font:
+        ui-monospace,
+        "Cascadia Code",
+        "Segoe UI Mono",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.35;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 7px;
+    --task-padding-x: 8px;
+    --compact-gap: 6px;
+}
+
+body {
+    font-family: var(--ui-font);
+    font-size: var(--ui-font-size);
+    line-height: var(--ui-line-height);
+    color: #172033;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+h2,
+h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 1.15rem;
+}
+
+h3 {
+    font-size: 1rem;
+}
+
+.sidebar,
+.details {
+    padding: var(--panel-padding);
+}
+
+.content {
+    padding: var(--content-padding);
+}
+
+.sidebar nav {
+    gap: 4px;
+}
+
+.sidebarButton {
+    padding: 6px 8px;
+}
+
+.taskList {
+    margin: 8px 0 0;
+}
+
+.task {
+    padding:
+        var(--task-padding-y)
+        var(--task-padding-x);
+}
+
+.task.subtask {
+    padding-left:
+        calc(
+            var(--task-padding-x) +
+            (var(--task-depth) * 20px)
+        );
+}
+
+.taskHeader {
+    gap: 5px;
+}
+
+.taskMeta {
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.taskMetaArea {
+    padding: 1px 5px;
+}
+
+.taskMetaContext {
+    padding: 1px 5px;
+}
+
+.priorityIndicator {
+    font-size: 14px;
+}
+
+.bulkToolbar {
+    gap: var(--compact-gap);
+    margin-bottom: 12px;
+    padding: 8px;
+}
+
+.bulkToolbar select,
+.bulkToolbar input,
+.bulkToolbar button {
+    padding: 5px 6px;
+}
+
+.taskSearch,
+.taskFilters,
+.taskSorting,
+.backupTools,
+.syncTools,
+.bulkModeButton {
+    margin-bottom: 12px;
+}
+
+.taskSearch input,
+.taskSorting select,
+.taskFilters select,
+.syncTools input {
+    padding: 6px;
+}
+
+.taskFilters,
+.backupTools,
+.syncTools {
+    padding: 7px;
+}
+
+.taskFilters form,
+.syncTools form,
+.syncActions,
+.backupActions {
+    gap: var(--compact-gap);
+    margin-top: 8px;
+}
+
+.taskSearchActions,
+.taskFilterActions {
+    gap: var(--compact-gap);
+    margin-top: 6px;
+}
+
+.entityItem {
+    padding: 7px 0;
+}
+
+.entityEditName {
+    padding: 5px;
+}
+
+.details label {
+    font-size: 12px;
+}
+
+.details input,
+.details select,
+.details textarea,
+.details button {
+    box-sizing: border-box;
+    padding: 6px;
+}
+
+
+/* Ajuste de alineación dentro de cada tarea */
+.taskHeader {
+    align-items: flex-start;
+}
+
+.taskBody {
+    min-width: 0;
+    flex: 1;
+}
+
+.taskTitleLine {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 17px;
+}
+
+.taskCompleteCheckbox {
+    width: 14px;
+    height: 14px;
+    margin-top: 2px;
+}
+
+.bulkTaskCheckbox,
+.toggleSubtasks,
+.toggleSubtasksSpacer {
+    margin-top: 1px;
+}
