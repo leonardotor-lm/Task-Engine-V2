@@ -115,6 +115,27 @@ export class MainView {
 
     }
 
+    navigateAndResetScroll(callback) {
+
+        callback();
+
+        const content =
+            document.querySelector(
+                ".content"
+            );
+
+        if (content) {
+            content.scrollTop = 0;
+        }
+
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "auto"
+        });
+
+    }
+
     bindEvents(state) {
 
         const {
@@ -426,45 +447,40 @@ export class MainView {
 
         });
 
-        document.getElementById("showInbox")?.addEventListener("click", () => {
-            this.callbacks.onShowInbox();
-        });
+        const navigationActions = [
+            ["showInbox", "onShowInbox"],
+            ["showToday", "onShowToday"],
+            ["showUpcoming", "onShowUpcoming"],
+            ["showAll", "onShowAll"],
+            ["showCompleted", "onShowCompleted"],
+            ["showArchived", "onShowArchived"],
+            ["showTrash", "onShowTrash"],
+            ["manageAreas", "onShowAreas"],
+            ["manageContexts", "onShowContexts"],
+            ["manageTags", "onShowTags"]
+        ];
 
-        document.getElementById("showToday")?.addEventListener("click", () => {
-            this.callbacks.onShowToday();
-        });
+        for (
+            const [
+                elementId,
+                callbackName
+            ] of navigationActions
+        ) {
 
-        document.getElementById("showUpcoming")?.addEventListener("click", () => {
-            this.callbacks.onShowUpcoming();
-        });
+            document.getElementById(
+                elementId
+            )?.addEventListener("click", () => {
 
-        document.getElementById("showAll")?.addEventListener("click", () => {
-            this.callbacks.onShowAll();
-        });
+                this.navigateAndResetScroll(
+                    () =>
+                        this.callbacks[
+                            callbackName
+                        ]()
+                );
 
-        document.getElementById("showCompleted")?.addEventListener("click", () => {
-            this.callbacks.onShowCompleted();
-        });
+            });
 
-        document.getElementById("showArchived")?.addEventListener("click", () => {
-            this.callbacks.onShowArchived();
-        });
-
-        document.getElementById("showTrash")?.addEventListener("click", () => {
-            this.callbacks.onShowTrash();
-        });
-
-        document.getElementById("manageAreas")?.addEventListener("click", () => {
-            this.callbacks.onShowAreas();
-        });
-
-        document.getElementById("manageContexts")?.addEventListener("click", () => {
-            this.callbacks.onShowContexts();
-        });
-
-        document.getElementById("manageTags")?.addEventListener("click", () => {
-            this.callbacks.onShowTags();
-        });
+        }
 
         const taskViews = [
 
