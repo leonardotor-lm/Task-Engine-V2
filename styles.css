@@ -602,3 +602,60 @@ body {
     height: 17px;
     cursor: pointer;
 }
+
+
+.entityList {
+    padding: 0;
+    list-style: none;
+}
+
+.entityItem {
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.entityDisplay,
+.entityEditForm,
+.entityIdentity,
+.entityActions {
+    display: flex;
+    align-items: center;
+}
+
+.entityDisplay {
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.entityIdentity,
+.entityActions,
+.entityEditForm {
+    gap: 8px;
+}
+
+.entityColorSample {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--entity-color);
+}
+
+.entityEditForm[hidden],
+.entityDisplay[hidden] {
+    display: none;
+}
+
+.entityEditForm {
+    flex-wrap: wrap;
+}
+
+.entityEditName {
+    min-width: 180px;
+    padding: 6px;
+}
+
+.entityEditColor {
+    width: 42px;
+    height: 32px;
+    padding: 2px;
+}
