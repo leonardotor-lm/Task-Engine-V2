@@ -210,12 +210,6 @@ export class TaskList {
 
                 }
 
-                const recurrenceLabels = {
-                    DAILY: "Diaria",
-                    WEEKLY: "Semanal",
-                    MONTHLY: "Mensual"
-                };
-
                 if (task.postponements.length > 0) {
 
                     metadata.push(`
@@ -225,19 +219,6 @@ export class TaskList {
                             ${task.postponements.length === 1
                                 ? "vez"
                                 : "veces"}
-                        </span>
-                    `);
-
-                }
-
-                if (task.recurrence) {
-
-                    metadata.push(`
-                        <span class="taskMetaText">
-                            Repetición:
-                            ${escapeHtml(
-                                recurrenceLabels[task.recurrence]
-                            )}
                         </span>
                     `);
 
@@ -558,16 +539,32 @@ export class TaskList {
 
         const safeColor = this.normalizeColor(color);
 
+        const classes = {
+            "Área": "taskMetaArea",
+            "Contexto": "taskMetaContext",
+            "Etiqueta": "taskMetaTag"
+        };
+
+        const prefixes = {
+            "Área": "",
+            "Contexto": "@",
+            "Etiqueta": "#"
+        };
+
         return `
             <span
-                class="taskMetaChip"
+                class="taskMetaEntity ${classes[type]}"
                 title="${escapeHtml(type)}: ${escapeHtml(name)}"
                 style="--meta-color: ${safeColor}">
-                <span
-                    class="taskMetaColor"
-                    aria-hidden="true">
-                </span>
-                ${escapeHtml(name)}
+                ${type === "Área"
+                    ? `
+                        <span
+                            class="taskMetaColor"
+                            aria-hidden="true">
+                        </span>
+                    `
+                    : ""}
+                ${prefixes[type]}${escapeHtml(name)}
             </span>
         `;
 
