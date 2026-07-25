@@ -587,6 +587,22 @@ export class TaskList {
                                                                     Editar
                                                                 </button>
 
+                                                                ${task.recurrence
+                                                                    ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickSkipRecurringTask">
+                                                                            Saltear esta vez
+                                                                        </button>
+
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickEndRecurrence">
+                                                                            Finalizar recurrencia
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
+
                                                                 ${canQuickArchive
                                                                     ? `
                                                                         <button
