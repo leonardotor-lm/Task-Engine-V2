@@ -1243,3 +1243,23 @@ h3 {
 .quickMoreMenu .destructiveAction {
     color: #b91c1c;
 }
+
+
+.quickMoveTaskControl {
+    display: grid;
+    gap: 4px;
+    padding: 4px 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.quickMoveTaskControl label {
+    display: grid;
+    gap: 3px;
+    font-size: 11px;
+}
+
+.quickMoveTarget {
+    width: 100%;
+    min-width: 0;
+}

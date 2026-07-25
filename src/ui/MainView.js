@@ -845,6 +845,58 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickMoveTask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    const menu = button.closest(
+                        ".quickMoreActions"
+                    );
+
+                    const parentId = menu
+                        .querySelector(
+                            ".quickMoveTarget"
+                        )
+                        .value;
+
+                    if (!parentId) {
+
+                        Dialog.alert(
+                            "Elegí un proyecto de destino."
+                        );
+
+                        return;
+
+                    }
+
+                    if (!Dialog.confirm(
+                        "¿Mover esta tarea y todo su árbol al proyecto seleccionado?"
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks
+                            .onMoveTaskToProject(
+                                menu.dataset.id,
+                                parentId
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickDetachSubtask"
             ).forEach(button => {
 

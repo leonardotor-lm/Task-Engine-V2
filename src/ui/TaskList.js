@@ -379,6 +379,36 @@ export class TaskList {
                     canShowQuickMenu &&
                     !hasActiveDescendants;
 
+                const moveTargets =
+                    canShowQuickMenu &&
+                    !task.recurrence
+                        ? allTasks.filter(
+                            candidate =>
+                                candidate.id !== task.id &&
+                                candidate.id !==
+                                    task.parentTaskId &&
+                                !candidate.isCompleted() &&
+                                !candidate.isArchived() &&
+                                !candidate.isDeleted() &&
+                                !candidate.recurrence &&
+                                !this.isDescendantOf(
+                                    candidate.id,
+                                    task.id,
+                                    allTasks
+                                )
+                        )
+                        : [];
+
+                const moveOptions =
+                    moveTargets.map(
+                        candidate => `
+                            <option
+                                value="${escapeHtml(candidate.id)}">
+                                ${escapeHtml(candidate.title)}
+                            </option>
+                        `
+                    ).join("");
+
                 const postponeBaseDate =
                     task.dueDate > today
                         ? task.dueDate
@@ -603,6 +633,32 @@ export class TaskList {
                                                                     `
                                                                     : ""}
 
+                                                                ${moveTargets.length > 0
+                                                                    ? `
+                                                                        <div class="quickMoveTaskControl">
+
+                                                                            <label>
+                                                                                Mover a otro proyecto
+
+                                                                                <select class="quickMoveTarget">
+                                                                                    <option value="">
+                                                                                        Elegir proyecto
+                                                                                    </option>
+
+                                                                                    ${moveOptions}
+                                                                                </select>
+                                                                            </label>
+
+                                                                            <button
+                                                                                type="button"
+                                                                                class="quickMoveTask">
+                                                                                Mover
+                                                                            </button>
+
+                                                                        </div>
+                                                                    `
+                                                                    : ""}
+
                                                                 ${task.parentTaskId
                                                                     ? `
                                                                         <button
@@ -676,6 +732,46 @@ export class TaskList {
         `;
 
         return html;
+
+    }
+
+    isDescendantOf(
+        taskId,
+        ancestorId,
+        tasks
+    ) {
+
+        const tasksById = new Map(
+            tasks.map(
+                task => [task.id, task]
+            )
+        );
+
+        const visited = new Set();
+        let current =
+            tasksById.get(taskId);
+
+        while (
+            current?.parentTaskId &&
+            !visited.has(current.id)
+        ) {
+
+            if (
+                current.parentTaskId ===
+                ancestorId
+            ) {
+                return true;
+            }
+
+            visited.add(current.id);
+
+            current = tasksById.get(
+                current.parentTaskId
+            );
+
+        }
+
+        return false;
 
     }
 
