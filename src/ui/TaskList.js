@@ -868,6 +868,17 @@ export class TaskList {
                         ${actionLabels[bulkActionMode]}
                     </button>
 
+                    ${bulkActionMode === "TRASH"
+                        ? `
+                            <button
+                                id="bulkPermanentlyDeleteTasks"
+                                type="button"
+                                class="dangerAction">
+                                Eliminar definitivamente
+                            </button>
+                        `
+                        : ""}
+
                     <button
                         id="clearBulkSelection"
                         type="button"

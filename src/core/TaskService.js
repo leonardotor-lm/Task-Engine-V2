@@ -434,6 +434,25 @@ export class TaskService {
 
     }
 
+    permanentlyDeleteTasks(ids) {
+
+        const tasks = this.getTreesByState(
+            ids,
+            task =>
+                task.isDeleted(),
+            "Sólo se pueden eliminar definitivamente tareas de la papelera."
+        );
+
+        for (
+            const task of [...tasks].reverse()
+        ) {
+            this.repository.remove(task.id);
+        }
+
+        return tasks;
+
+    }
+
     reopenCompletedTrees(ids) {
 
         const tasks = this.getTreesByState(

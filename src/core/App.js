@@ -701,6 +701,22 @@ export class App {
 
             },
 
+            onBulkPermanentlyDeleteTasks: () => {
+
+                const deleted =
+                    this.taskService
+                        .permanentlyDeleteTasks(
+                            [...this.selectedTaskIds]
+                        );
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return deleted.length;
+
+            },
+
             onBulkRestoreTasks: () => {
 
                 let restored;
