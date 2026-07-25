@@ -160,16 +160,24 @@ export class TaskList {
 
                 if (task.dueDate) {
 
-                    metadata.push(
-                        `Fecha: ${this.formatDate(task.dueDate)}`
-                    );
+                    metadata.push(`
+                        <span class="taskMetaText">
+                            Fecha: ${escapeHtml(
+                                this.formatDate(task.dueDate)
+                            )}
+                        </span>
+                    `);
 
                 }
 
                 if (area) {
 
                     metadata.push(
-                        `Área: ${area.name}`
+                        this.renderMetadataChip(
+                            area.name,
+                            area.color,
+                            "Área"
+                        )
                     );
 
                 }
@@ -177,7 +185,11 @@ export class TaskList {
                 if (context) {
 
                     metadata.push(
-                        `Contexto: ${context.name}`
+                        this.renderMetadataChip(
+                            context.name,
+                            context.color,
+                            "Contexto"
+                        )
                     );
 
                 }
@@ -186,12 +198,14 @@ export class TaskList {
                     .map(tagId => tagsById.get(tagId))
                     .filter(Boolean);
 
-                if (taskTags.length > 0) {
+                for (const tag of taskTags) {
 
                     metadata.push(
-                        `Etiquetas: ${taskTags
-                            .map(tag => tag.name)
-                            .join(", ")}`
+                        this.renderMetadataChip(
+                            tag.name,
+                            tag.color,
+                            "Etiqueta"
+                        )
                     );
 
                 }
@@ -204,33 +218,49 @@ export class TaskList {
 
                 if (task.postponements.length > 0) {
 
-                    metadata.push(
-                        `Pospuesta: ${task.postponements.length} ${task.postponements.length === 1 ? "vez" : "veces"}`
-                    );
+                    metadata.push(`
+                        <span class="taskMetaText">
+                            Pospuesta:
+                            ${task.postponements.length}
+                            ${task.postponements.length === 1
+                                ? "vez"
+                                : "veces"}
+                        </span>
+                    `);
 
                 }
 
                 if (task.recurrence) {
 
-                    metadata.push(
-                        `Repetición: ${recurrenceLabels[task.recurrence]}`
-                    );
+                    metadata.push(`
+                        <span class="taskMetaText">
+                            Repetición:
+                            ${escapeHtml(
+                                recurrenceLabels[task.recurrence]
+                            )}
+                        </span>
+                    `);
 
                 }
 
                 if (priority && priority.value !== 0) {
 
-                    metadata.push(
-                        `Prioridad: ${priority.label}`
-                    );
+                    metadata.push(`
+                        <span
+                            class="priorityIndicator priority-${priority.value}"
+                            title="Prioridad: ${escapeHtml(priority.label)}"
+                            aria-label="Prioridad: ${escapeHtml(priority.label)}">
+                            ⚑
+                        </span>
+                    `);
 
                 }
 
                 const metadataHtml = metadata.length > 0
                     ? `
-                        <small class="taskMeta">
-                            ${escapeHtml(metadata.join(" · "))}
-                        </small>
+                        <div class="taskMeta">
+                            ${metadata.join("")}
+                        </div>
                     `
                     : "";
 
@@ -517,6 +547,37 @@ export class TaskList {
 
             </section>
         `;
+
+    }
+
+    renderMetadataChip(
+        name,
+        color,
+        type
+    ) {
+
+        const safeColor = this.normalizeColor(color);
+
+        return `
+            <span
+                class="taskMetaChip"
+                title="${escapeHtml(type)}: ${escapeHtml(name)}"
+                style="--meta-color: ${safeColor}">
+                <span
+                    class="taskMetaColor"
+                    aria-hidden="true">
+                </span>
+                ${escapeHtml(name)}
+            </span>
+        `;
+
+    }
+
+    normalizeColor(color) {
+
+        return /^#[0-9a-f]{6}$/i.test(color ?? "")
+            ? color
+            : "#64748b";
 
     }
 
