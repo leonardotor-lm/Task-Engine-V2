@@ -87,6 +87,34 @@ test("oculta Archivar cuando existen descendientes activos", () => {
 
 });
 
+test("muestra Quitar fecha sólo en tareas fechadas no recurrentes", () => {
+
+    const dated = new Task({
+        id: "dated",
+        title: "Con fecha",
+        dueDate: "2026-07-25"
+    });
+
+    const undated = new Task({
+        id: "undated",
+        title: "Sin fecha"
+    });
+
+    const datedHtml = render([dated]);
+    const undatedHtml = render([undated]);
+
+    assert.match(
+        datedHtml,
+        /class="quickClearDueDate"/
+    );
+
+    assert.doesNotMatch(
+        undatedHtml,
+        /class="quickClearDueDate"/
+    );
+
+});
+
 test("muestra acciones de recurrencia sólo cuando corresponde", () => {
 
     const recurring = new Task({
@@ -106,6 +134,11 @@ test("muestra acciones de recurrencia sólo cuando corresponde", () => {
     assert.match(
         html,
         /class="quickEndRecurrence"/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /class="quickClearDueDate"/
     );
 
 });
