@@ -194,6 +194,26 @@ export class App {
 
             },
 
+            onMoveTaskToProject: (
+                id,
+                parentId
+            ) => {
+
+                this.taskService
+                    .moveTaskToProject(
+                        id,
+                        parentId
+                    );
+
+                this.expandedTaskIds.add(
+                    parentId
+                );
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onDetachSubtask: (id) => {
 
                 this.taskService.detachSubtask(id);
