@@ -44,12 +44,22 @@ export class ProjectView {
                 data-id="${project.id}">
                 Editar proyecto
             </button>
+
+            ${state.projectTaskCreationOpen
+                ? ""
+                : `
+                    <button
+                        id="openProjectTaskCreation"
+                        type="button">
+                        Agregar subtarea
+                    </button>
+                `}
         `;
 
         return this.taskList.render(
             state.tasks,
             `${project.title} · ${completed}/${total}`,
-            false,
+            state.projectTaskCreationOpen,
             state.areas,
             state.contexts,
             state.tags,
@@ -62,7 +72,8 @@ export class ProjectView {
             state.showTaskMetadata,
             state.today,
             state.allTasks,
-            headingActions
+            headingActions,
+            "Nueva subtarea"
         );
 
     }
