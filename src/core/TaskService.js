@@ -819,6 +819,70 @@ export class TaskService {
 
     }
 
+    moveTaskToProject(
+        id,
+        parentId
+    ) {
+
+        const task = this.repository.getById(id);
+        const parent =
+            this.repository.getById(parentId);
+
+        if (!task || !parent) {
+            throw new Error(
+                "La tarea o el proyecto de destino no existe."
+            );
+        }
+
+        if (
+            !this.isActiveTask(task) ||
+            !this.isActiveTask(parent)
+        ) {
+            throw new Error(
+                "Sólo se pueden reorganizar tareas activas."
+            );
+        }
+
+        if (task.id === parent.id) {
+            throw new Error(
+                "Una tarea no puede contenerse a sí misma."
+            );
+        }
+
+        if (task.parentTaskId === parent.id) {
+            throw new Error(
+                "La tarea ya pertenece a ese proyecto."
+            );
+        }
+
+        if (task.recurrence || parent.recurrence) {
+            throw new Error(
+                "Las tareas recurrentes no pueden formar parte de una jerarquía."
+            );
+        }
+
+        if (
+            this.getDescendants(task.id)
+                .some(
+                    descendant =>
+                        descendant.id === parent.id
+                )
+        ) {
+            throw new Error(
+                "No se puede mover una tarea dentro de uno de sus descendientes."
+            );
+        }
+
+        task.update({
+            parentTaskId: parent.id
+        });
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     detachSubtask(id) {
 
         const task = this.repository.getById(id);
