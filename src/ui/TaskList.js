@@ -389,16 +389,6 @@ export class TaskList {
                                                 </span>
                                             `
                                             : ""}
-                                        ${hasAnySubtasks
-                                            ? `
-                                                <span
-                                                    class="hierarchyIcon parentTaskIcon"
-                                                    title="Contiene subtareas"
-                                                    aria-label="Contiene subtareas">
-                                                    ▦
-                                                </span>
-                                            `
-                                            : ""}
                                         ${task.recurrence
                                             ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
                                             : ""}
