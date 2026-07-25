@@ -1085,6 +1085,9 @@ h3 {
 
 
 .taskQuickActions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     margin-left: auto;
     opacity: 0;
     pointer-events: none;
@@ -1134,4 +1137,55 @@ h3 {
         pointer-events: auto;
     }
 
+}
+
+
+.quickPostpone {
+    position: relative;
+}
+
+.quickPostpone > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    padding: 1px 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    color: #475569;
+    cursor: pointer;
+    font-weight: 700;
+    list-style: none;
+}
+
+.quickPostpone > summary::-webkit-details-marker {
+    display: none;
+}
+
+.quickPostpone > summary:hover,
+.quickPostpone > summary:focus-visible {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.quickPostponeMenu {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    right: 0;
+    display: grid;
+    min-width: 190px;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgb(15 23 42 / 14%);
+}
+
+.quickPostponeMenu label {
+    display: grid;
+    gap: 3px;
+    font-size: 11px;
 }
