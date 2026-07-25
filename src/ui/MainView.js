@@ -778,10 +778,49 @@ export class MainView {
 
             });
 
+            document.getElementById(
+                "closeProjectView"
+            )?.addEventListener("click", () => {
+
+                this.callbacks.onCloseProject();
+
+            });
+
+            document.getElementById(
+                "editProjectTask"
+            )?.addEventListener("click", event => {
+
+                this.callbacks.onEditProjectTask(
+                    event.currentTarget.dataset.id
+                );
+
+            });
+
             document.querySelectorAll(".task").forEach(item => {
 
                 item.addEventListener("click", () => {
-                    this.callbacks.onSelectTask(item.dataset.id);
+
+                    const hasSubtasks =
+                        allTasks.some(
+                            task =>
+                                task.parentTaskId ===
+                                item.dataset.id
+                        );
+
+                    if (hasSubtasks) {
+
+                        this.callbacks.onOpenProject(
+                            item.dataset.id
+                        );
+
+                        return;
+
+                    }
+
+                    this.callbacks.onSelectTask(
+                        item.dataset.id
+                    );
+
                 });
 
             });
