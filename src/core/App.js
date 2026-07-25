@@ -9,6 +9,7 @@ import { createSyncFingerprint } from "./SyncFingerprint.js";
 import { SyncFocusWatcher } from "./SyncFocusWatcher.js";
 import { SyncConfig } from "../infrastructure/SyncConfig.js";
 import { CloudGateway } from "../infrastructure/CloudGateway.js";
+import { TaskDisplayPreferences } from "../infrastructure/TaskDisplayPreferences.js";
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
@@ -38,6 +39,8 @@ export class App {
         });
 
         this.syncConfig = new SyncConfig();
+        this.taskDisplayPreferences =
+            new TaskDisplayPreferences();
 
         this.syncEngine = new SyncEngine({
             backupService: this.backupService,
@@ -255,6 +258,15 @@ export class App {
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
+            onToggleTaskMetadata: () => {
+
+                this.taskDisplayPreferences
+                    .toggleMetadata();
 
                 this.render();
 
@@ -999,6 +1011,10 @@ export class App {
                 this.bulkSelectionMode,
             bulkSelectionEnabled,
             bulkActionMode,
+            showTaskMetadata:
+                this.taskDisplayPreferences
+                    .isMetadataVisible(),
+            today: this.getTodayString(),
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),
             syncConfigured:
