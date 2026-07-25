@@ -18,7 +18,8 @@ export class TaskList {
         bulkSelectionEnabled = false,
         bulkActionMode = null,
         showTaskMetadata = true,
-        today = ""
+        today = "",
+        allTasks = tasks
     ) {
 
         const form = allowCreate
@@ -139,16 +140,38 @@ export class TaskList {
 
             for (const { task, depth } of visibleRows) {
 
-                const children =
+                const visibleChildren =
                     childrenByParent.get(task.id) ?? [];
 
-                const totalSubtasks = children.length;
+                const allChildren = allTasks.filter(
+                    item => {
 
-                const completedSubtasks = children.filter(
-                    child => child.isCompleted()
-                ).length;
+                        if (
+                            item.parentTaskId !== task.id
+                        ) {
+                            return false;
+                        }
 
-                const hasSubtasks = totalSubtasks > 0;
+                        return task.isDeleted()
+                            ? item.isDeleted()
+                            : !item.isDeleted();
+
+                    }
+                );
+
+                const totalSubtasks =
+                    allChildren.length;
+
+                const completedSubtasks =
+                    allChildren.filter(
+                        child => child.isCompleted()
+                    ).length;
+
+                const hasSubtasks =
+                    visibleChildren.length > 0;
+
+                const hasAnySubtasks =
+                    totalSubtasks > 0;
 
                 const isExpanded =
                     Boolean(searchQuery) ||
@@ -171,7 +194,7 @@ export class TaskList {
                         <span class="toggleSubtasksSpacer"></span>
                     `;
 
-                const progressHtml = hasSubtasks
+                const progressHtml = hasAnySubtasks
                     ? `
                         <span class="subtaskProgress">
                             (${completedSubtasks}/${totalSubtasks})
@@ -356,7 +379,16 @@ export class TaskList {
                                 <div class="taskTitleLine">
 
                                     <span class="taskTitle">
-                                        ${depth > 0 ? "↳ " : ""}
+                                        ${task.parentTaskId
+                                            ? `
+                                                <span
+                                                    class="hierarchyIcon childTaskIcon"
+                                                    title="Subtarea"
+                                                    aria-label="Subtarea">
+                                                    ↳
+                                                </span>
+                                            `
+                                            : ""}
                                         ${task.recurrence
                                             ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
                                             : ""}
