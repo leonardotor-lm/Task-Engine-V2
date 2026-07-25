@@ -194,6 +194,25 @@ export class App {
 
             },
 
+            onDuplicateTask: (id) => {
+
+                const duplicated =
+                    this.taskService
+                        .duplicateTaskTree(id);
+
+                if (duplicated) {
+
+                    this.expandedTaskIds.add(
+                        duplicated.root.id
+                    );
+
+                }
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onMoveTaskToProject: (
                 id,
                 parentId
