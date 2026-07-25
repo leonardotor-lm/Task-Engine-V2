@@ -255,6 +255,18 @@ export class TaskList {
 
                             ${toggleHtml}
 
+                            ${!bulkSelectionEnabled &&
+                                bulkActionMode === "ACTIVE" &&
+                                !task.isCompleted()
+                                ? `
+                                    <input
+                                        type="checkbox"
+                                        class="taskCompleteCheckbox"
+                                        data-id="${escapeHtml(task.id)}"
+                                        aria-label="Completar ${escapeHtml(task.title)}">
+                                `
+                                : ""}
+
                             ${bulkSelectionEnabled &&
                                 this.isBulkSelectable(
                                     task,
