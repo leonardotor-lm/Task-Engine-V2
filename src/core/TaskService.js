@@ -615,6 +615,33 @@ export class TaskService {
 
     }
 
+    endRecurrence(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (
+            !this.isActiveTask(task) ||
+            !task.recurrence
+        ) {
+            throw new Error(
+                "Sólo se puede finalizar una recurrencia activa."
+            );
+        }
+
+        task.update({
+            recurrence: null
+        });
+
+        this.repository.update(task);
+
+        return task;
+
+    }
+
     skipRecurringTask(id) {
 
         const task = this.repository.getById(id);
