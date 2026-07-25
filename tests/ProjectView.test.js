@@ -89,6 +89,34 @@ test("abre un formulario contextual para crear una subtarea", () => {
 
 });
 
+test("indica cuando Volver regresa a un proyecto anterior", () => {
+
+    const project = new Task({
+        id: "nested-project",
+        title: "Subproyecto"
+    });
+
+    const html = new ProjectView().render({
+        projectTask: project,
+        projectTaskCreationOpen: false,
+        projectNavigationDepth: 1,
+        tasks: [],
+        allTasks: [project],
+        areas: [],
+        contexts: [],
+        tags: [],
+        expandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-07-25"
+    });
+
+    assert.match(
+        html,
+        /Volver al proyecto anterior/
+    );
+
+});
+
 test("la vista PROJECT forma parte de las vistas disponibles", () => {
 
     assert.equal(
