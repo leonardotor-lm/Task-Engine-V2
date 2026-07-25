@@ -1063,3 +1063,20 @@ h3 {
     }
 
 }
+
+
+.hierarchyIcon {
+    display: inline-block;
+    margin-right: 3px;
+    color: #64748b;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.childTaskIcon {
+    color: #2563eb;
+}
+
+.parentTaskIcon {
+    color: #475569;
+}
