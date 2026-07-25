@@ -412,6 +412,13 @@ export class Sidebar {
 
                 <h3>Task Engine</h3>
 
+                <button
+                    id="openTaskCreation"
+                    type="button"
+                    class="newTaskButton">
+                    ＋ Nueva tarea
+                </button>
+
                 <form id="taskSearchForm" class="taskSearch">
 
                     <input

@@ -13,15 +13,14 @@ export class ViewRouter {
 
     renderTaskList(
         state,
-        title,
-        allowCreate = false
+        title
     ) {
 
         return this.taskList.render(
 
             state.tasks,
             title,
-            allowCreate,
+            state.taskCreationOpen,
             state.areas,
             state.contexts,
             state.tags,
@@ -110,8 +109,7 @@ export class ViewRouter {
 
                 return this.renderTaskList(
                     state,
-                    "Inbox",
-                    true
+                    "Inbox"
                 );
 
         }

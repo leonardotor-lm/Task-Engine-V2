@@ -403,6 +403,14 @@ export class MainView {
         });
 
         document.getElementById(
+            "openTaskCreation"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onOpenTaskCreation();
+
+        });
+
+        document.getElementById(
             "toggleTaskMetadata"
         )?.addEventListener("click", () => {
 
@@ -471,6 +479,14 @@ export class MainView {
         ];
 
         if (taskViews.includes(view)) {
+
+            document.getElementById(
+                "cancelTaskCreation"
+            )?.addEventListener("click", () => {
+
+                this.callbacks.onCancelTaskCreation();
+
+            });
 
             document.getElementById("taskForm")?.addEventListener("submit", event => {
 
