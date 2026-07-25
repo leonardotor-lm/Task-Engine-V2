@@ -375,6 +375,153 @@ export class TaskService {
 
     }
 
+    getTreesByState(
+        ids,
+        predicate,
+        errorMessage
+    ) {
+
+        const uniqueIds = [
+            ...new Set(ids)
+        ];
+
+        if (uniqueIds.length === 0) {
+            throw new Error(
+                "Seleccioná al menos una tarea."
+            );
+        }
+
+        const roots = uniqueIds.map(
+            id => this.repository.getById(id)
+        );
+
+        if (
+            roots.some(
+                task =>
+                    !task ||
+                    !predicate(task)
+            )
+        ) {
+            throw new Error(errorMessage);
+        }
+
+        const tasksById = new Map();
+
+        for (const root of roots) {
+
+            tasksById.set(root.id, root);
+
+            for (
+                const descendant of
+                this.getDescendants(root.id)
+            ) {
+
+                if (predicate(descendant)) {
+                    tasksById.set(
+                        descendant.id,
+                        descendant
+                    );
+                }
+
+            }
+
+        }
+
+        return [
+            ...tasksById.values()
+        ];
+
+    }
+
+    reopenCompletedTrees(ids) {
+
+        const tasks = this.getTreesByState(
+            ids,
+            task =>
+                task.isCompleted(),
+            "Sólo se pueden reactivar tareas completadas."
+        );
+
+        if (
+            tasks.some(task => task.recurrence)
+        ) {
+            throw new Error(
+                "Las instancias recurrentes completadas no pueden reactivarse."
+            );
+        }
+
+        const restored = tasks.map(task => {
+
+            const copy = new Task(
+                task.toJSON()
+            );
+
+            copy.reopen();
+
+            return copy;
+
+        });
+
+        this.repository.updateMany(restored);
+
+        return restored;
+
+    }
+
+    restoreArchivedTrees(ids) {
+
+        const tasks = this.getTreesByState(
+            ids,
+            task =>
+                task.isArchived(),
+            "Sólo se pueden restaurar tareas archivadas."
+        );
+
+        const restored = tasks.map(task => {
+
+            const copy = new Task(
+                task.toJSON()
+            );
+
+            copy.restoreFromArchive();
+
+            return copy;
+
+        });
+
+        this.repository.updateMany(restored);
+
+        return restored;
+
+    }
+
+    restoreDeletedTrees(ids) {
+
+        const tasks = this.getTreesByState(
+            ids,
+            task =>
+                task.isDeleted(),
+            "Sólo se pueden restaurar tareas de la papelera."
+        );
+
+        const restored = tasks.map(task => {
+
+            const copy = new Task(
+                task.toJSON()
+            );
+
+            copy.restoreFromTrash();
+
+            return copy;
+
+        });
+
+        this.repository.updateMany(restored);
+
+        return restored;
+
+    }
+
     toggleTask(id) {
 
         const task = this.repository.getById(id);

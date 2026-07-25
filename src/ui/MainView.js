@@ -502,6 +502,39 @@ export class MainView {
             });
 
             document.getElementById(
+                "bulkRestoreTasks"
+            )?.addEventListener("click", () => {
+
+                const action =
+                    view === View.COMPLETED
+                        ? "reactivar"
+                        : "restaurar";
+
+                if (!Dialog.confirm(
+                    `¿${action === "reactivar" ? "Reactivar" : "Restaurar"} las tareas seleccionadas y sus subtareas?`
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkRestoreTasks();
+
+                    Dialog.alert(
+                        `Se ${action === "reactivar" ? "reactivaron" : "restauraron"} ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
+            document.getElementById(
                 "applyBulkChanges"
             )?.addEventListener("click", () => {
 

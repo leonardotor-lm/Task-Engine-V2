@@ -29,7 +29,8 @@ export class ViewRouter {
             state.expandedTaskIds,
             state.filtersActive,
             state.selectedTaskIds,
-            state.bulkSelectionEnabled
+            state.bulkSelectionEnabled,
+            state.bulkActionMode
 
         );
 
