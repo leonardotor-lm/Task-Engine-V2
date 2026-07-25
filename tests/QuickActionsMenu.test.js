@@ -87,6 +87,29 @@ test("oculta Archivar cuando existen descendientes activos", () => {
 
 });
 
+test("muestra acciones de recurrencia sólo cuando corresponde", () => {
+
+    const recurring = new Task({
+        id: "recurring",
+        title: "Tarea diaria",
+        dueDate: "2026-07-25",
+        recurrence: "DAILY"
+    });
+
+    const html = render([recurring]);
+
+    assert.match(
+        html,
+        /class="quickSkipRecurringTask"/
+    );
+
+    assert.match(
+        html,
+        /class="quickEndRecurrence"/
+    );
+
+});
+
 test("no muestra el menú contextual en una tarea completada", () => {
 
     const task = new Task({
