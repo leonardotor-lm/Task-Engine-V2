@@ -845,6 +845,47 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickDuplicateTask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    const id = button.closest(
+                        ".quickMoreActions"
+                    ).dataset.id;
+
+                    const hasSubtasks =
+                        allTasks.some(
+                            task =>
+                                task.parentTaskId === id
+                        );
+
+                    const message = hasSubtasks
+                        ? "¿Duplicar esta tarea y todo su árbol como un proyecto nuevo?"
+                        : "¿Duplicar esta tarea?";
+
+                    if (!Dialog.confirm(message)) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks
+                            .onDuplicateTask(id);
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickMoveTask"
             ).forEach(button => {
 

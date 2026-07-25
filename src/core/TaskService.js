@@ -819,6 +819,93 @@ export class TaskService {
 
     }
 
+    duplicateTaskTree(id) {
+
+        const root = this.repository.getById(id);
+
+        if (!root) {
+            return null;
+        }
+
+        if (!this.isActiveTask(root)) {
+            throw new Error(
+                "Sólo se puede duplicar una tarea activa."
+            );
+        }
+
+        const sourceTasks = [
+            root,
+            ...this.getProjectDescendants(id)
+        ];
+
+        if (
+            sourceTasks.some(
+                task => task.recurrence
+            )
+        ) {
+            throw new Error(
+                "Las tareas recurrentes no pueden duplicarse."
+            );
+        }
+
+        const copiesBySourceId = new Map();
+        const copies = [];
+
+        for (const source of sourceTasks) {
+
+            const copiedParentId =
+                source.id === root.id
+                    ? null
+                    : copiesBySourceId
+                        .get(source.parentTaskId)
+                        ?.id ?? null;
+
+            const copy = new Task({
+                title:
+                    source.id === root.id
+                        ? `Copia de ${source.title}`
+                        : source.title,
+                description: source.description,
+                status: TaskStatus.PENDING,
+                areaId: source.areaId,
+                contextId: source.contextId,
+                priority: source.priority,
+                tagIds: [...source.tagIds],
+                attachments:
+                    source.attachments.map(
+                        attachment => ({
+                            ...attachment
+                        })
+                    ),
+                parentTaskId: copiedParentId,
+                recurrenceId: null,
+                recurrence: null,
+                manualOrder: source.manualOrder,
+                dueDate: source.dueDate,
+                postponements: []
+            });
+
+            copiesBySourceId.set(
+                source.id,
+                copy
+            );
+
+            copies.push(copy);
+
+        }
+
+        this.repository.replaceAll([
+            ...this.repository.getAll(),
+            ...copies
+        ]);
+
+        return {
+            root: copies[0],
+            tasks: copies
+        };
+
+    }
+
     moveTaskToProject(
         id,
         parentId
