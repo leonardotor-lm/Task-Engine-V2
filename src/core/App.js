@@ -421,9 +421,16 @@ export class App {
 
             },
 
-            onUpdateArea: (id, name) => {
+            onUpdateArea: (
+                id,
+                name,
+                color
+            ) => {
 
-                this.areaService.updateArea(id, { name });
+                this.areaService.updateArea(
+                    id,
+                    { name, color }
+                );
 
                 this.render();
 
@@ -453,9 +460,16 @@ export class App {
 
             },
 
-            onUpdateContext: (id, name) => {
+            onUpdateContext: (
+                id,
+                name,
+                color
+            ) => {
 
-                this.contextService.updateContext(id, { name });
+                this.contextService.updateContext(
+                    id,
+                    { name, color }
+                );
 
                 this.render();
 
@@ -484,9 +498,16 @@ export class App {
 
             },
 
-            onUpdateTag: (id, name) => {
+            onUpdateTag: (
+                id,
+                name,
+                color
+            ) => {
 
-                this.tagService.updateTag(id, { name });
+                this.tagService.updateTag(
+                    id,
+                    { name, color }
+                );
                 this.render();
 
             },
