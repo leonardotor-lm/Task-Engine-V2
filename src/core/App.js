@@ -194,6 +194,20 @@ export class App {
 
             },
 
+            onQuickClearDueDate: (id) => {
+
+                this.taskService.updateTask(
+                    id,
+                    {
+                        dueDate: null
+                    }
+                );
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onQuickEndRecurrence: (id) => {
 
                 this.taskService.endRecurrence(id);

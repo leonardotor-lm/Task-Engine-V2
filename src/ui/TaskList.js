@@ -603,6 +603,17 @@ export class TaskList {
                                                                     `
                                                                     : ""}
 
+                                                                ${task.dueDate &&
+                                                                    !task.recurrence
+                                                                    ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickClearDueDate">
+                                                                            Quitar fecha
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
+
                                                                 ${canQuickArchive
                                                                     ? `
                                                                         <button
