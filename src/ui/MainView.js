@@ -805,6 +805,34 @@ export class MainView {
             });
 
             document.getElementById(
+                "bulkPermanentlyDeleteTasks"
+            )?.addEventListener("click", () => {
+
+                if (!Dialog.confirm(
+                    "¿Eliminar definitivamente las tareas seleccionadas y sus subtareas? Esta acción no se puede deshacer."
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const count =
+                        this.callbacks
+                            .onBulkPermanentlyDeleteTasks();
+
+                    Dialog.alert(
+                        `Se eliminaron definitivamente ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            });
+
+            document.getElementById(
                 "openProjectTaskCreation"
             )?.addEventListener("click", () => {
 
