@@ -238,3 +238,188 @@ test("reemplaza completar por seleccionar en modo múltiple", () => {
     );
 
 });
+
+test("ordena prioridad fecha área contexto y etiquetas", () => {
+
+    const task = new Task({
+        id: "task-metadata-order",
+        title: "Orden visual",
+        priority: Priority.HIGH,
+        dueDate: "2026-08-20",
+        areaId: "area-order",
+        contextId: "context-order",
+        tagIds: ["tag-order"]
+    });
+
+    const html = new TaskList().render(
+        [task],
+        "Todas",
+        false,
+        [{
+            id: "area-order",
+            name: "Área",
+            color: "#3b82f6"
+        }],
+        [{
+            id: "context-order",
+            name: "Contexto",
+            color: "#22c55e"
+        }],
+        [{
+            id: "tag-order",
+            name: "Etiqueta",
+            color: "#a855f7"
+        }],
+        "",
+        new Set(),
+        false,
+        new Set(),
+        false,
+        "ACTIVE",
+        true,
+        "2026-07-25"
+    );
+
+    const positions = [
+        html.indexOf("priorityIndicator"),
+        html.indexOf("taskDueDate"),
+        html.indexOf("taskMetaArea"),
+        html.indexOf("taskMetaContext"),
+        html.indexOf("taskMetaTag")
+    ];
+
+    assert.ok(
+        positions.every(position => position >= 0)
+    );
+
+    assert.deepEqual(
+        [...positions].sort((a, b) => a - b),
+        positions
+    );
+
+});
+
+test("abrevia las fechas según su proximidad", () => {
+
+    const list = new TaskList();
+
+    assert.equal(
+        list.formatSmartDate(
+            "2026-07-25",
+            "2026-07-25"
+        ),
+        "Hoy"
+    );
+
+    assert.equal(
+        list.formatSmartDate(
+            "2026-07-26",
+            "2026-07-25"
+        ),
+        "Mañana"
+    );
+
+    assert.equal(
+        list.formatSmartDate(
+            "2026-08-20",
+            "2026-07-25"
+        ),
+        "20/08"
+    );
+
+    assert.equal(
+        list.formatSmartDate(
+            "2027-01-10",
+            "2026-07-25"
+        ),
+        "10/01/2027"
+    );
+
+});
+
+test("el modo reducido conserva sólo alertas importantes", () => {
+
+    const task = new Task({
+        id: "task-compact",
+        title: "Alerta visible",
+        priority: Priority.CRITICAL,
+        dueDate: "2026-07-24",
+        areaId: "area-hidden",
+        tagIds: ["tag-hidden"]
+    });
+
+    const html = new TaskList().render(
+        [task],
+        "Todas",
+        false,
+        [{
+            id: "area-hidden",
+            name: "Área oculta",
+            color: "#3b82f6"
+        }],
+        [],
+        [{
+            id: "tag-hidden",
+            name: "Etiqueta oculta",
+            color: "#a855f7"
+        }],
+        "",
+        new Set(),
+        false,
+        new Set(),
+        false,
+        "ACTIVE",
+        false,
+        "2026-07-25"
+    );
+
+    assert.match(
+        html,
+        /priority-4/
+    );
+
+    assert.match(
+        html,
+        /taskDueDate overdue/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /taskMetaArea/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /taskMetaTag/
+    );
+
+});
+
+test("avisa cuando la selección múltiple está activa", () => {
+
+    const task = new Task({
+        id: "task-mode-notice",
+        title: "Seleccionar"
+    });
+
+    const html = new TaskList().render(
+        [task],
+        "Todas",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(),
+        false,
+        new Set(),
+        true,
+        "ACTIVE"
+    );
+
+    assert.match(
+        html,
+        /Modo de selección múltiple activo/
+    );
+
+});
