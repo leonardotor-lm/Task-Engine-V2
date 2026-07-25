@@ -717,6 +717,19 @@ export class App {
 
             },
 
+            onEmptyTrash: () => {
+
+                const deleted =
+                    this.taskService.emptyTrash();
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return deleted.length;
+
+            },
+
             onBulkRestoreTasks: () => {
 
                 let restored;
