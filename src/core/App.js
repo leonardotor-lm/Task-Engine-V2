@@ -997,7 +997,7 @@ export class App {
                 }
 
                 return this.taskService
-                    .getDescendants(
+                    .getProjectDescendants(
                         this.projectTaskId
                     );
 
