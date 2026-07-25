@@ -169,3 +169,71 @@ test("la recurrencia se representa sólo con el icono", () => {
     );
 
 });
+
+test("muestra la casilla de completar fuera del modo múltiple", () => {
+
+    const task = new Task({
+        id: "task-complete-control",
+        title: "Completar desde la lista"
+    });
+
+    const html = new TaskList().render(
+        [task],
+        "Inbox",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(),
+        false,
+        new Set(),
+        false,
+        "ACTIVE"
+    );
+
+    assert.match(
+        html,
+        /class="taskCompleteCheckbox"/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /class="bulkTaskCheckbox"/
+    );
+
+});
+
+test("reemplaza completar por seleccionar en modo múltiple", () => {
+
+    const task = new Task({
+        id: "task-bulk-control",
+        title: "Editar en lote"
+    });
+
+    const html = new TaskList().render(
+        [task],
+        "Inbox",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(),
+        false,
+        new Set(),
+        true,
+        "ACTIVE"
+    );
+
+    assert.match(
+        html,
+        /class="bulkTaskCheckbox"/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /class="taskCompleteCheckbox"/
+    );
+
+});
