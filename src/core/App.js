@@ -162,6 +162,18 @@ export class App {
 
             },
 
+            onQuickPostponeTask: (id, newDate) => {
+
+                this.taskService.postponeTask(
+                    id,
+                    newDate
+                );
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onPostponeTask: (id, newDate) => {
 
                 this.taskService.postponeTask(id, newDate);
