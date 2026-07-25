@@ -57,6 +57,7 @@ export class App {
         this.currentView = View.TODAY;
         this.projectTaskId = null;
         this.previousProjectView = View.TODAY;
+        this.projectTaskCreationOpen = false;
         this.taskCreationOpen = false;
         this.searchQuery = "";
         this.taskFilters = {
@@ -98,6 +99,7 @@ export class App {
             onCancelTaskCreation: () => {
 
                 this.taskCreationOpen = false;
+                this.projectTaskCreationOpen = false;
                 this.render();
 
             },
@@ -306,6 +308,36 @@ export class App {
 
             },
 
+            onOpenProjectTaskCreation: () => {
+
+                if (!this.projectTaskId) return;
+
+                this.projectTaskCreationOpen = true;
+                this.selectedTask = null;
+                this.render();
+
+            },
+
+            onCreateProjectSubtask: (title) => {
+
+                if (!this.projectTaskId) return;
+
+                const subtask =
+                    this.taskService.createSubtask(
+                        this.projectTaskId,
+                        title
+                    );
+
+                this.expandedTaskIds.add(
+                    this.projectTaskId
+                );
+
+                this.projectTaskCreationOpen = false;
+                this.selectedTask = subtask;
+                this.render();
+
+            },
+
             onOpenProject: (id) => {
 
                 const project =
@@ -318,6 +350,7 @@ export class App {
                 }
 
                 this.projectTaskId = id;
+                this.projectTaskCreationOpen = false;
                 this.selectedTask = null;
 
                 this.expandedTaskIds.add(id);
@@ -341,6 +374,7 @@ export class App {
                     View.TODAY;
 
                 this.projectTaskId = null;
+                this.projectTaskCreationOpen = false;
                 this.selectedTask = null;
                 this.render();
 
@@ -1118,6 +1152,8 @@ export class App {
                         this.projectTaskId
                     )
                     : null,
+            projectTaskCreationOpen:
+                this.projectTaskCreationOpen,
             taskCreationOpen:
                 this.taskCreationOpen,
             tasks: visibleTasks,
