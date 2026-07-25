@@ -18,7 +18,7 @@ function renderTask(task, entities = {}) {
 
 }
 
-test("muestra área, contexto y etiquetas como chips de color", () => {
+test("diferencia visualmente área, contexto y etiquetas", () => {
 
     const task = new Task({
         id: "task-visual",
@@ -46,9 +46,29 @@ test("muestra área, contexto y etiquetas como chips de color", () => {
         }]
     });
 
-    assert.equal(
-        (html.match(/class="taskMetaChip"/g) ?? []).length,
-        3
+    assert.match(
+        html,
+        /class="taskMetaEntity taskMetaArea"/
+    );
+
+    assert.match(
+        html,
+        /class="taskMetaEntity taskMetaContext"/
+    );
+
+    assert.match(
+        html,
+        /class="taskMetaEntity taskMetaTag"/
+    );
+
+    assert.match(
+        html,
+        /@Escuela/
+    );
+
+    assert.match(
+        html,
+        /#Urgente/
     );
 
     assert.match(
@@ -119,6 +139,33 @@ test("usa un color seguro cuando el dato no es válido", () => {
     assert.doesNotMatch(
         html,
         /red; color: transparent/
+    );
+
+});
+
+test("la recurrencia se representa sólo con el icono", () => {
+
+    const task = new Task({
+        id: "task-recurring",
+        title: "Planificar semana",
+        recurrence: "WEEKLY"
+    });
+
+    const html = renderTask(task);
+
+    assert.match(
+        html,
+        /class="recurrenceIcon"/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /Repetición:/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /Semanal/
     );
 
 });
