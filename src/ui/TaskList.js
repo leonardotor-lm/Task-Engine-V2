@@ -29,10 +29,18 @@ export class TaskList {
                         id="taskTitle"
                         type="text"
                         placeholder="Nueva tarea"
-                        autocomplete="off">
+                        autocomplete="off"
+                        autofocus>
 
                     <button type="submit">
                         Agregar
+                    </button>
+
+                    <button
+                        id="cancelTaskCreation"
+                        type="button"
+                        class="secondaryAction">
+                        Cancelar
                     </button>
 
                 </form>
