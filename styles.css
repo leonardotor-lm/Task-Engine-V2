@@ -885,3 +885,33 @@ h3 {
     box-sizing: border-box;
     padding: 6px;
 }
+
+
+/* Ajuste de alineación dentro de cada tarea */
+.taskHeader {
+    align-items: flex-start;
+}
+
+.taskBody {
+    min-width: 0;
+    flex: 1;
+}
+
+.taskTitleLine {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 17px;
+}
+
+.taskCompleteCheckbox {
+    width: 14px;
+    height: 14px;
+    margin-top: 2px;
+}
+
+.bulkTaskCheckbox,
+.toggleSubtasks,
+.toggleSubtasksSpacer {
+    margin-top: 1px;
+}
