@@ -21,7 +21,8 @@ export class TaskList {
         today = "",
         allTasks = tasks,
         headingActions = "",
-        creationPlaceholder = "Nueva tarea"
+        creationPlaceholder = "Nueva tarea",
+        inlineSubtaskParentId = null
     ) {
 
         const form = allowCreate
@@ -343,6 +344,42 @@ export class TaskList {
                     `
                     : "";
 
+                const canAddSubtask =
+                    !bulkSelectionEnabled &&
+                    !task.isCompleted() &&
+                    !task.isArchived() &&
+                    !task.isDeleted() &&
+                    !task.recurrence;
+
+                const inlineSubtaskForm =
+                    inlineSubtaskParentId === task.id
+                        ? `
+                            <form
+                                class="inlineSubtaskForm"
+                                data-parent-id="${escapeHtml(task.id)}">
+
+                                <input
+                                    class="inlineSubtaskTitle"
+                                    type="text"
+                                    placeholder="Nueva subtarea"
+                                    autocomplete="off"
+                                    aria-label="Título de la nueva subtarea"
+                                    autofocus>
+
+                                <button type="submit">
+                                    Agregar
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="cancelInlineSubtask secondaryAction">
+                                    Cancelar
+                                </button>
+
+                            </form>
+                        `
+                        : "";
+
                 html += `
                     <li
                         class="task ${depth > 0 ? "subtask" : ""} ${task.isCompleted() ? "completedTask" : ""} ${selectedTaskIds.has(task.id) ? "bulkSelectedTask" : ""}"
@@ -405,6 +442,23 @@ export class TaskList {
 
                                     ${progressHtml}
 
+                                    ${canAddSubtask
+                                        ? `
+                                            <span class="taskQuickActions">
+
+                                                <button
+                                                    type="button"
+                                                    class="quickAddSubtask"
+                                                    data-id="${escapeHtml(task.id)}"
+                                                    title="Agregar subtarea"
+                                                    aria-label="Agregar subtarea a ${escapeHtml(task.title)}">
+                                                    +
+                                                </button>
+
+                                            </span>
+                                        `
+                                        : ""}
+
                                 </div>
 
                                 ${metadataHtml}
@@ -412,6 +466,8 @@ export class TaskList {
                             </div>
 
                         </div>
+
+                        ${inlineSubtaskForm}
 
                     </li>
                 `;
