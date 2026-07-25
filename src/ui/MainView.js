@@ -845,6 +845,72 @@ export class MainView {
             });
 
             document.querySelectorAll(
+                ".quickSkipRecurringTask"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    if (!Dialog.confirm(
+                        "¿Saltear esta instancia y avanzar a la próxima fecha?"
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks
+                            .onQuickSkipRecurringTask(
+                                button.closest(
+                                    ".quickMoreActions"
+                                ).dataset.id
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".quickEndRecurrence"
+            ).forEach(button => {
+
+                button.addEventListener("click", event => {
+
+                    event.stopPropagation();
+
+                    if (!Dialog.confirm(
+                        "¿Finalizar la recurrencia? La tarea conservará su fecha actual, pero dejará de repetirse."
+                    )) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks
+                            .onQuickEndRecurrence(
+                                button.closest(
+                                    ".quickMoreActions"
+                                ).dataset.id
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(error.message);
+
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
                 ".quickArchiveTask"
             ).forEach(button => {
 
