@@ -351,6 +351,43 @@ export class TaskList {
                     !task.isDeleted() &&
                     !task.recurrence;
 
+                const canQuickPostpone =
+                    !bulkSelectionEnabled &&
+                    !task.isCompleted() &&
+                    !task.isArchived() &&
+                    !task.isDeleted() &&
+                    !task.recurrence &&
+                    Boolean(task.dueDate);
+
+                const postponeBaseDate =
+                    task.dueDate > today
+                        ? task.dueDate
+                        : today;
+
+                const postponeOneDay =
+                    canQuickPostpone
+                        ? this.addDays(
+                            postponeBaseDate,
+                            1
+                        )
+                        : "";
+
+                const postponeOneWeek =
+                    canQuickPostpone
+                        ? this.addDays(
+                            postponeBaseDate,
+                            7
+                        )
+                        : "";
+
+                const minimumPostponeDate =
+                    canQuickPostpone
+                        ? this.addDays(
+                            task.dueDate,
+                            1
+                        )
+                        : "";
+
                 const inlineSubtaskForm =
                     inlineSubtaskParentId === task.id
                         ? `
@@ -442,18 +479,72 @@ export class TaskList {
 
                                     ${progressHtml}
 
-                                    ${canAddSubtask
+                                    ${canAddSubtask ||
+                                        canQuickPostpone
                                         ? `
                                             <span class="taskQuickActions">
 
-                                                <button
-                                                    type="button"
-                                                    class="quickAddSubtask"
-                                                    data-id="${escapeHtml(task.id)}"
-                                                    title="Agregar subtarea"
-                                                    aria-label="Agregar subtarea a ${escapeHtml(task.title)}">
-                                                    +
-                                                </button>
+                                                ${canAddSubtask
+                                                    ? `
+                                                        <button
+                                                            type="button"
+                                                            class="quickAddSubtask"
+                                                            data-id="${escapeHtml(task.id)}"
+                                                            title="Agregar subtarea"
+                                                            aria-label="Agregar subtarea a ${escapeHtml(task.title)}">
+                                                            +
+                                                        </button>
+                                                    `
+                                                    : ""}
+
+                                                ${canQuickPostpone
+                                                    ? `
+                                                        <details
+                                                            class="quickPostpone"
+                                                            data-id="${escapeHtml(task.id)}">
+
+                                                            <summary
+                                                                title="Posponer"
+                                                                aria-label="Posponer ${escapeHtml(task.title)}">
+                                                                ◷
+                                                            </summary>
+
+                                                            <div class="quickPostponeMenu">
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="quickPostponePreset"
+                                                                    data-date="${postponeOneDay}">
+                                                                    Posponer 1 día
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="quickPostponePreset"
+                                                                    data-date="${postponeOneWeek}">
+                                                                    Posponer 1 semana
+                                                                </button>
+
+                                                                <label>
+                                                                    Elegir fecha
+
+                                                                    <input
+                                                                        type="date"
+                                                                        class="quickPostponeDate"
+                                                                        min="${minimumPostponeDate}">
+                                                                </label>
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="applyQuickPostpone">
+                                                                    Aplicar
+                                                                </button>
+
+                                                            </div>
+
+                                                        </details>
+                                                    `
+                                                    : ""}
 
                                             </span>
                                         `
@@ -485,6 +576,28 @@ export class TaskList {
         `;
 
         return html;
+
+    }
+
+    addDays(dateString, days) {
+
+        const date = new Date(
+            `${dateString}T12:00:00`
+        );
+
+        date.setDate(
+            date.getDate() + days
+        );
+
+        const year = date.getFullYear();
+        const month = String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+        const day = String(
+            date.getDate()
+        ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
 
     }
 
