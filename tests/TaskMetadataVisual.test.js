@@ -148,6 +148,7 @@ test("la recurrencia se representa sólo con el icono", () => {
     const task = new Task({
         id: "task-recurring",
         title: "Planificar semana",
+        dueDate: "2026-07-25",
         recurrence: "WEEKLY"
     });
 
