@@ -14,6 +14,14 @@ export class TaskEditor {
         const isArchived = task.isArchived();
         const isDeleted = task.isDeleted();
 
+        if (isArchived) {
+            return this.renderArchivedPanel(task);
+        }
+
+        if (isDeleted) {
+            return this.renderDeletedPanel(task);
+        }
+
         const isLocked =
             isCompleted ||
             isArchived ||
@@ -393,6 +401,91 @@ export class TaskEditor {
                 <hr>
 
                 ${actions}
+
+            </aside>
+        `;
+
+    }
+
+
+    renderArchivedPanel(task) {
+
+        return `
+            <aside
+                class="details taskDrawer recoveryPanel"
+                aria-label="Acciones para tarea archivada">
+
+                <div class="taskEditorHeader">
+
+                    <h3>Archivada</h3>
+
+                    <button
+                        id="closeTaskEditor"
+                        type="button"
+                        aria-label="Cerrar panel"
+                        title="Cerrar panel">
+                        ×
+                    </button>
+
+                </div>
+
+                <p class="recoveryTaskTitle">
+                    ${escapeHtml(task.title)}
+                </p>
+
+                <p>
+                    Esta tarea no puede editarse mientras permanezca archivada.
+                </p>
+
+                <button id="restoreArchivedTask">
+                    Reactivar
+                </button>
+
+                <button id="deleteTask">
+                    Enviar a Papelera
+                </button>
+
+            </aside>
+        `;
+
+    }
+
+    renderDeletedPanel(task) {
+
+        return `
+            <aside
+                class="details taskDrawer recoveryPanel"
+                aria-label="Acciones para tarea borrada">
+
+                <div class="taskEditorHeader">
+
+                    <h3>Papelera</h3>
+
+                    <button
+                        id="closeTaskEditor"
+                        type="button"
+                        aria-label="Cerrar panel"
+                        title="Cerrar panel">
+                        ×
+                    </button>
+
+                </div>
+
+                <p class="recoveryTaskTitle">
+                    ${escapeHtml(task.title)}
+                </p>
+
+                <p>
+                    Esta tarea fue enviada a Papelera.
+                </p>
+
+                <button id="restoreDeletedTask">
+                    Restaurar
+                </button>
+
+                <button id="permanentlyDeleteTask">
+                    Eliminar definitivamente
+                </button>
 
             </aside>
         `;
