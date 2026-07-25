@@ -802,6 +802,14 @@ export class MainView {
 
             if (selectedTask) {
 
+                document.getElementById(
+                    "closeTaskEditor"
+                )?.addEventListener("click", () => {
+
+                    this.callbacks.onCloseTaskEditor();
+
+                });
+
                 document.getElementById("subtaskForm")?.addEventListener("submit", event => {
 
                     event.preventDefault();

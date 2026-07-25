@@ -140,7 +140,7 @@ export class App {
 
                 this.taskService.updateTask(id, data);
 
-                this.selectedTask = this.taskService.getTaskById(id);
+                this.selectedTask = null;
 
                 this.render();
 
@@ -299,6 +299,14 @@ export class App {
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
+            onCloseTaskEditor: () => {
+
+                this.selectedTask = null;
 
                 this.render();
 

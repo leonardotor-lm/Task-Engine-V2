@@ -954,3 +954,112 @@ h3 {
 #taskForm .secondaryAction {
     color: #64748b;
 }
+
+
+/* Editor desplegable */
+.layout {
+    grid-template-columns:
+        220px
+        minmax(0, 1fr);
+    position: relative;
+}
+
+.taskDrawer {
+    position: fixed;
+    z-index: 20;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    width: min(
+        480px,
+        calc(100vw - 220px)
+    );
+    overflow-y: auto;
+    border-left: 1px solid #cbd5e1;
+    background: #fff;
+    box-shadow:
+        -12px 0 30px
+        rgb(15 23 42 / 14%);
+}
+
+.taskEditorHeader {
+    position: sticky;
+    z-index: 2;
+    top: -12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: -12px -12px 12px;
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fff;
+}
+
+.taskEditorHeader h3 {
+    margin: 0;
+}
+
+#closeTaskEditor {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    background: #fff;
+    color: #475569;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#closeTaskEditor:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.taskDrawer > label {
+    display: block;
+    margin: 9px 0 4px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.taskDrawer > input,
+.taskDrawer > select,
+.taskDrawer > textarea {
+    width: 100%;
+}
+
+.taskDrawer > button {
+    margin: 4px 4px 0 0;
+}
+
+@keyframes taskDrawerIn {
+
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+
+}
+
+.taskDrawer {
+    animation:
+        taskDrawerIn
+        180ms
+        ease-out;
+}
+
+@media (max-width: 760px) {
+
+    .taskDrawer {
+        width: 100vw;
+        border-left: 0;
+    }
+
+}
