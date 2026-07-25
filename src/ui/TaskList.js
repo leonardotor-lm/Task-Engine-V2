@@ -633,6 +633,16 @@ export class TaskList {
                                                                     `
                                                                     : ""}
 
+                                                                ${!task.recurrence
+                                                                    ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickDuplicateTask">
+                                                                            Duplicar
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
+
                                                                 ${moveTargets.length > 0
                                                                     ? `
                                                                         <div class="quickMoveTaskControl">
