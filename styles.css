@@ -571,3 +571,34 @@ body {
     border-color: #b42318;
     color: #b42318;
 }
+
+
+.bulkModeButton {
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #334155;
+    cursor: pointer;
+}
+
+.bulkModeButton:hover {
+    background: #f8fafc;
+}
+
+.bulkModeButton.active {
+    border-color: #2563eb;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.taskCompleteCheckbox {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
