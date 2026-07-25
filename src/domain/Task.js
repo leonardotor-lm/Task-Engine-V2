@@ -164,6 +164,9 @@ export class Task {
 
         }
 
+        if (data.parentTaskId !== undefined)
+            this.parentTaskId = data.parentTaskId;
+
         if (data.contextId !== undefined)
             this.contextId = data.contextId;
 
