@@ -474,7 +474,8 @@ export class MainView {
             View.ALL,
             View.COMPLETED,
             View.ARCHIVED,
-            View.TRASH
+            View.TRASH,
+            View.PROJECT
 
         ];
 
