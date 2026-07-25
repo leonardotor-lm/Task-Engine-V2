@@ -58,6 +58,7 @@ export class App {
         this.taskSort = TaskSort.MANUAL;
         this.expandedTaskIds = new Set();
         this.selectedTaskIds = new Set();
+        this.bulkSelectionMode = false;
         this.syncRemoteRevision = null;
         this.syncRemoteUpdateAvailable = false;
         this.syncCheckInProgress = false;
@@ -254,6 +255,18 @@ export class App {
             onSelectTask: (id) => {
 
                 this.selectedTask = this.taskService.getTaskById(id);
+
+                this.render();
+
+            },
+
+            onToggleBulkMode: () => {
+
+                this.bulkSelectionMode =
+                    !this.bulkSelectionMode;
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
 
                 this.render();
 
@@ -781,6 +794,7 @@ export class App {
         this.taskSort = TaskSort.MANUAL;
         this.expandedTaskIds.clear();
         this.selectedTaskIds.clear();
+        this.bulkSelectionMode = false;
 
     }
 
@@ -890,6 +904,7 @@ export class App {
             null;
 
         const bulkSelectionEnabled =
+            this.bulkSelectionMode &&
             bulkActionMode !== null;
 
         if (bulkSelectionEnabled) {
@@ -959,6 +974,8 @@ export class App {
             taskSort: this.taskSort,
             selectedTaskIds:
                 this.selectedTaskIds,
+            bulkSelectionMode:
+                this.bulkSelectionMode,
             bulkSelectionEnabled,
             bulkActionMode,
             canRestoreBackup:
