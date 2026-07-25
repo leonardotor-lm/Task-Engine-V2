@@ -34,7 +34,9 @@ export class ProjectView {
                 id="closeProjectView"
                 type="button"
                 class="secondaryAction">
-                Volver
+                ${state.projectNavigationDepth > 0
+                    ? "Volver al proyecto anterior"
+                    : "Volver"}
             </button>
 
             <button
