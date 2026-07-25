@@ -7,14 +7,7 @@ export class TaskEditor {
     render(task, areas = [], contexts = [], tags = [], allTasks = []) {
 
         if (!task) {
-
-            return `
-                <aside class="details">
-                    <h3>Editor</h3>
-                    <p>Seleccioná una tarea.</p>
-                </aside>
-            `;
-
+            return "";
         }
 
         const isCompleted = task.isCompleted();
@@ -290,9 +283,23 @@ export class TaskEditor {
         }
 
         return `
-            <aside class="details">
+            <aside
+                class="details taskDrawer"
+                aria-label="Editor de tarea">
 
-                <h3>Editor</h3>
+                <div class="taskEditorHeader">
+
+                    <h3>Editor</h3>
+
+                    <button
+                        id="closeTaskEditor"
+                        type="button"
+                        aria-label="Cerrar editor"
+                        title="Cerrar editor">
+                        ×
+                    </button>
+
+                </div>
 
                 ${recurrenceIndicator}
 
