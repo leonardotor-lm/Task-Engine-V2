@@ -5,7 +5,10 @@ var TASK_ENGINE_SETTINGS = Object.freeze({
     META_SHEET: "TaskEngineMeta",
     BACKUP_FORMAT: "task-engine-v2-backup",
     BACKUP_VERSION: 1,
-    MAX_PAYLOAD_LENGTH: 45000
+    MAX_PAYLOAD_LENGTH: 45000,
+    MAX_REQUEST_LENGTH: 5000000,
+    RATE_LIMIT_WINDOW_SECONDS: 60,
+    MAX_REQUESTS_PER_WINDOW: 120
 });
 
 function setupTaskEngine() {
@@ -43,6 +46,7 @@ function handleRequest_(event, method) {
                 : {};
 
         authorize_(event, body);
+        enforceRateLimit_();
 
         var action =
             body.action ||
@@ -79,6 +83,11 @@ function handleRequest_(event, method) {
         );
 
     } catch (error) {
+
+        logRejectedRequest_(
+            error,
+            method
+        );
 
         return jsonResponse_({
             ok: false,
@@ -139,16 +148,117 @@ function authorize_(event, body) {
 
 }
 
-function parseRequestBody_(event) {
+function enforceRateLimit_() {
+
+    var cache =
+        CacheService.getScriptCache();
+
+    var windowNumber = Math.floor(
+        Date.now() /
+        (
+            TASK_ENGINE_SETTINGS
+                .RATE_LIMIT_WINDOW_SECONDS *
+            1000
+        )
+    );
+
+    var key =
+        "task-engine-sync-rate-" +
+        windowNumber;
+
+    var lock = LockService.getScriptLock();
+
+    if (!lock.tryLock(1000)) {
+        throw protocolError_(
+            "SERVER_BUSY",
+            "El servidor está ocupado. Intentá nuevamente."
+        );
+    }
 
     try {
 
-        return JSON.parse(
-            event.postData &&
-            event.postData.contents
-                ? event.postData.contents
-                : ""
+        var count = Number(
+            cache.get(key) || 0
         );
+
+        if (
+            count >=
+            TASK_ENGINE_SETTINGS
+                .MAX_REQUESTS_PER_WINDOW
+        ) {
+            throw protocolError_(
+                "RATE_LIMITED",
+                "Se realizaron demasiadas solicitudes. Esperá un momento e intentá nuevamente."
+            );
+        }
+
+        cache.put(
+            key,
+            String(count + 1),
+            TASK_ENGINE_SETTINGS
+                .RATE_LIMIT_WINDOW_SECONDS +
+                5
+        );
+
+    } finally {
+
+        lock.releaseLock();
+
+    }
+
+}
+
+function logRejectedRequest_(
+    error,
+    method
+) {
+
+    var loggedCodes = {
+        UNAUTHORIZED: true,
+        INVALID_JSON: true,
+        INVALID_ACTION: true,
+        REQUEST_TOO_LARGE: true,
+        RATE_LIMITED: true
+    };
+
+    if (!loggedCodes[error.code]) {
+        return;
+    }
+
+    console.warn(
+        JSON.stringify({
+            event:
+                "sync_request_rejected",
+            code: error.code,
+            method: method
+        })
+    );
+
+}
+
+function parseRequestBody_(event) {
+
+    var contents =
+        event &&
+        event.postData &&
+        event.postData.contents
+            ? event.postData.contents
+            : "";
+
+    if (
+        contents.length >
+        TASK_ENGINE_SETTINGS
+            .MAX_REQUEST_LENGTH
+    ) {
+        throw protocolError_(
+            "REQUEST_TOO_LARGE",
+            "La solicitud supera el tamaño permitido."
+        );
+    }
+
+    try {
+
+        return JSON.parse(contents);
 
     } catch (error) {
 
