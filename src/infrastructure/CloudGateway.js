@@ -28,7 +28,12 @@ export class CloudGateway {
 
     buildUrl(baseUrl) {
 
-        return new URL(baseUrl).toString();
+        const url = new URL(baseUrl);
+
+        url.searchParams.delete("token");
+        url.searchParams.delete("action");
+
+        return url.toString();
 
     }
 
