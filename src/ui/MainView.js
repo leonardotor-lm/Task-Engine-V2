@@ -44,6 +44,30 @@ export class MainView {
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
+                <header class="mobileHeader">
+
+                    <button
+                        id="toggleMobileMenu"
+                        type="button"
+                        class="mobileMenuButton"
+                        aria-controls="appSidebar"
+                        aria-expanded="false"
+                        aria-label="Abrir navegación">
+                        ☰
+                    </button>
+
+                    <strong>Task Engine</strong>
+
+                </header>
+
+                <button
+                    id="mobileMenuBackdrop"
+                    type="button"
+                    class="mobileMenuBackdrop"
+                    aria-label="Cerrar navegación"
+                    tabindex="-1">
+                </button>
+
                 ${this.sidebar.render(
                     view,
                     searchQuery,
@@ -152,6 +176,51 @@ export class MainView {
             syncPendingChanges,
             syncRemoteUpdateAvailable
         } = state;
+
+        const layout =
+            document.querySelector(".layout");
+
+        const mobileMenuButton =
+            document.getElementById(
+                "toggleMobileMenu"
+            );
+
+        const closeMobileMenu = () => {
+
+            layout?.classList.remove(
+                "mobileMenuOpen"
+            );
+
+            mobileMenuButton?.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        };
+
+        mobileMenuButton?.addEventListener(
+            "click",
+            () => {
+
+                const isOpen =
+                    layout?.classList.toggle(
+                        "mobileMenuOpen"
+                    );
+
+                mobileMenuButton.setAttribute(
+                    "aria-expanded",
+                    String(Boolean(isOpen))
+                );
+
+            }
+        );
+
+        document.getElementById(
+            "mobileMenuBackdrop"
+        )?.addEventListener(
+            "click",
+            closeMobileMenu
+        );
 
         document.getElementById("syncConfigForm")?.addEventListener("submit", event => {
 
