@@ -17,6 +17,9 @@ export class MainView {
         this.taskSwipeController =
             new TaskSwipeController();
 
+        this.mobileHistoryInitialized =
+            false;
+
     }
 
     render(state) {
@@ -181,9 +184,7 @@ export class MainView {
             "taskEngineMobileGuard";
 
         if (
-            !window.history.state?.[
-                guardKey
-            ]
+            !this.mobileHistoryInitialized
         ) {
 
             window.history.replaceState(
@@ -198,6 +199,9 @@ export class MainView {
                 { [guardKey]: true },
                 ""
             );
+
+            this.mobileHistoryInitialized =
+                true;
 
         }
 
