@@ -20,7 +20,9 @@ export class Sidebar {
         syncLastSuccess = "",
         syncRemoteRevision = null,
         syncRemoteUpdateAvailable = false,
-        bulkSelectionMode = false
+        bulkSelectionMode = false,
+        syncInProgress = false,
+        syncLastError = null
     ) {
 
         const buttonClass = view => {
@@ -237,33 +239,48 @@ export class Sidebar {
             `
             : "";
 
+        const syncConflict =
+            syncRemoteUpdateAvailable &&
+            syncPendingChanges;
+
         const syncStatusClass =
             !syncConfigured
                 ? "disconnected"
-                : syncRemoteUpdateAvailable
-                    ? "remote"
-                    : syncPendingChanges
-                        ? "pending"
-                        : "configured";
+                : syncLastError
+                    ? "error"
+                    : syncInProgress
+                        ? "syncing"
+                        : syncConflict
+                            ? "conflict"
+                            : syncRemoteUpdateAvailable
+                                ? "remote"
+                                : syncPendingChanges
+                                    ? "pending"
+                                    : "configured";
 
         const syncStatusText =
             !syncConfigured
                 ? "Sin configurar"
-                : syncRemoteUpdateAvailable &&
-                    syncPendingChanges
-                    ? `Cambios locales y remotos · nube rev. ${syncRemoteRevision}`
-                    : syncRemoteUpdateAvailable
-                        ? `Actualización disponible · rev. ${syncRemoteRevision}`
-                        : syncPendingChanges
-                            ? `Cambios pendientes · rev. ${syncRevision}`
-                            : `Sincronizada · rev. ${syncRevision}`;
+                : syncLastError
+                    ? "Error de sincronización"
+                    : syncInProgress
+                        ? "Sincronizando…"
+                        : syncConflict
+                            ? `Conflicto · nube rev. ${syncRemoteRevision}`
+                            : syncRemoteUpdateAvailable
+                                ? `Actualización disponible · rev. ${syncRemoteRevision}`
+                                : syncPendingChanges
+                                    ? `Cambios pendientes · rev. ${syncRevision}`
+                                    : `Sincronizada · rev. ${syncRevision}`;
 
         const syncTools = `
             <details
                 class="syncTools"
                 ${!syncConfigured ||
                     syncPendingChanges ||
-                    syncRemoteUpdateAvailable
+                    syncRemoteUpdateAvailable ||
+                    syncInProgress ||
+                    syncLastError
                     ? "open"
                     : ""}>
 
@@ -273,6 +290,16 @@ export class Sidebar {
                         ${syncStatusText}
                     </span>
                 </summary>
+
+                ${syncLastError
+                    ? `
+                        <p
+                            class="syncErrorHint"
+                            title="${escapeHtml(syncLastError)}">
+                            Los cambios continúan guardados localmente. La aplicación volverá a intentarlo después de un nuevo cambio o al recuperar el foco.
+                        </p>
+                    `
+                    : ""}
 
                 <form id="syncConfigForm">
 
