@@ -1519,6 +1519,10 @@ h3 {
     .task {
         position: relative;
         touch-action: pan-y;
+    }
+
+    .task.swipingRight,
+    .task.swipingLeft {
         will-change: transform;
     }
 
