@@ -7,6 +7,10 @@ import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
 import { SyncFocusWatcher } from "./SyncFocusWatcher.js";
+import {
+    AutomaticSyncAction,
+    getAutomaticSyncAction
+} from "./AutomaticSyncPolicy.js";
 import { SyncConfig } from "../infrastructure/SyncConfig.js";
 import { CloudGateway } from "../infrastructure/CloudGateway.js";
 import { TaskDisplayPreferences } from "../infrastructure/TaskDisplayPreferences.js";
@@ -76,6 +80,10 @@ export class App {
         this.syncRemoteRevision = null;
         this.syncRemoteUpdateAvailable = false;
         this.syncCheckInProgress = false;
+        this.autoSyncInProgress = false;
+        this.autoSyncTimer = null;
+        this.autoSyncScheduledFingerprint = null;
+        this.autoSyncBlockedFingerprint = null;
 
         this.syncFocusWatcher =
             new SyncFocusWatcher({
@@ -903,10 +911,16 @@ export class App {
                         ? current.token
                         : "";
 
+                this.cancelAutomaticSync();
+
                 this.syncConfig.save({
                     url: nextUrl,
                     token: token || savedToken
                 });
+
+                this.syncRemoteRevision = null;
+                this.syncRemoteUpdateAvailable =
+                    false;
 
                 this.render();
                 this.checkRemoteStatus();
@@ -914,6 +928,8 @@ export class App {
             },
 
             onClearSyncConfig: () => {
+
+                this.cancelAutomaticSync();
 
                 this.syncConfig.clear();
                 this.syncRemoteRevision = null;
@@ -924,6 +940,8 @@ export class App {
             },
 
             onPushToCloud: async () => {
+
+                this.cancelAutomaticSync();
 
                 const result =
                     await this.syncEngine.push();
@@ -940,6 +958,8 @@ export class App {
 
             onPullFromCloud: async () => {
 
+                this.cancelAutomaticSync();
+
                 const result =
                     await this.syncEngine.pull();
 
@@ -955,6 +975,8 @@ export class App {
             },
 
             onOverwriteCloud: async () => {
+
+                this.cancelAutomaticSync();
 
                 const result =
                     await this.syncEngine
@@ -1086,6 +1108,152 @@ export class App {
 
     }
 
+    getCurrentSyncFingerprint() {
+
+        return createSyncFingerprint(
+            this.backupService.createBackup()
+        );
+
+    }
+
+    resolveAutomaticSyncAction(
+        fingerprint =
+            this.getCurrentSyncFingerprint()
+    ) {
+
+        return getAutomaticSyncAction({
+            configured:
+                this.syncConfig.isConfigured(),
+            remoteChecked:
+                this.syncRemoteRevision !== null,
+            localPending:
+                this.syncConfig.hasPendingChanges(
+                    fingerprint
+                ),
+            remoteUpdateAvailable:
+                this.syncRemoteUpdateAvailable,
+            inProgress:
+                this.autoSyncInProgress
+        });
+
+    }
+
+    cancelAutomaticSync() {
+
+        if (this.autoSyncTimer !== null) {
+            clearTimeout(this.autoSyncTimer);
+        }
+
+        this.autoSyncTimer = null;
+        this.autoSyncScheduledFingerprint =
+            null;
+
+    }
+
+    scheduleAutomaticSync(fingerprint) {
+
+        const action =
+            this.resolveAutomaticSyncAction(
+                fingerprint
+            );
+
+        if (
+            action !==
+                AutomaticSyncAction.PUSH ||
+            fingerprint ===
+                this.autoSyncBlockedFingerprint
+        ) {
+            if (
+                action !==
+                AutomaticSyncAction.PUSH
+            ) {
+                this.cancelAutomaticSync();
+            }
+
+            return;
+        }
+
+        if (
+            this.autoSyncTimer !== null &&
+            this.autoSyncScheduledFingerprint ===
+                fingerprint
+        ) {
+            return;
+        }
+
+        this.cancelAutomaticSync();
+
+        this.autoSyncScheduledFingerprint =
+            fingerprint;
+
+        this.autoSyncTimer = setTimeout(
+            () =>
+                this.runAutomaticPush(
+                    fingerprint
+                ),
+            1500
+        );
+
+    }
+
+    async runAutomaticPush(fingerprint) {
+
+        this.autoSyncTimer = null;
+        this.autoSyncScheduledFingerprint =
+            null;
+
+        if (
+            this.resolveAutomaticSyncAction(
+                this.getCurrentSyncFingerprint()
+            ) !== AutomaticSyncAction.PUSH
+        ) {
+            return;
+        }
+
+        this.autoSyncInProgress = true;
+
+        try {
+
+            const result =
+                await this.syncEngine.push();
+
+            this.syncRemoteRevision =
+                result.revision;
+            this.syncRemoteUpdateAvailable =
+                false;
+            this.autoSyncBlockedFingerprint =
+                null;
+
+        } catch (error) {
+
+            this.autoSyncBlockedFingerprint =
+                fingerprint;
+
+            if (
+                this.syncEngine.isConflict(
+                    error
+                )
+            ) {
+                this.syncRemoteRevision =
+                    error.remoteRevision;
+                this.syncRemoteUpdateAvailable =
+                    true;
+            } else {
+                console.warn(
+                    "No se pudo sincronizar automáticamente.",
+                    error
+                );
+            }
+
+        } finally {
+
+            this.autoSyncInProgress = false;
+            this.render();
+
+        }
+
+    }
+
     start() {
 
         console.log(`${Config.APP_NAME} v${Config.VERSION}`);
@@ -1113,6 +1281,7 @@ export class App {
 
         if (!this.syncConfig.isConfigured()) {
 
+            this.cancelAutomaticSync();
             this.syncRemoteRevision = null;
             this.syncRemoteUpdateAvailable = false;
 
@@ -1120,7 +1289,10 @@ export class App {
 
         }
 
-        if (this.syncCheckInProgress) {
+        if (
+            this.syncCheckInProgress ||
+            this.autoSyncInProgress
+        ) {
             return;
         }
 
@@ -1134,21 +1306,46 @@ export class App {
 
             this.syncRemoteRevision =
                 status.remoteRevision;
-
             this.syncRemoteUpdateAvailable =
                 status.updateAvailable;
+            this.autoSyncBlockedFingerprint =
+                null;
+
+            const action =
+                this.resolveAutomaticSyncAction();
+
+            if (
+                action ===
+                AutomaticSyncAction.PULL
+            ) {
+
+                this.autoSyncInProgress = true;
+
+                const result =
+                    await this.syncEngine.pull();
+
+                this.syncRemoteRevision =
+                    result.revision;
+                this.syncRemoteUpdateAvailable =
+                    false;
+                this.resetTransientState();
+
+            }
 
             this.render();
 
         } catch (error) {
 
             console.warn(
-                "No se pudo comprobar la revisión remota.",
+                "No se pudo comprobar o descargar la revisión remota.",
                 error
             );
 
+            this.render();
+
         } finally {
 
+            this.autoSyncInProgress = false;
             this.syncCheckInProgress = false;
 
         }
@@ -1348,9 +1545,7 @@ export class App {
         }
 
         const syncFingerprint =
-            createSyncFingerprint(
-                this.backupService.createBackup()
-            );
+            this.getCurrentSyncFingerprint();
 
         this.mainView.render({
 
@@ -1412,6 +1607,10 @@ export class App {
             tags: this.tagService.getAllTags()
 
         });
+
+        this.scheduleAutomaticSync(
+            syncFingerprint
+        );
 
     }
 
