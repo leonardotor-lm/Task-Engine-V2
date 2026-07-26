@@ -36,6 +36,8 @@ export class MainView {
             syncLastSuccess,
             syncRemoteRevision,
             syncRemoteUpdateAvailable,
+            syncInProgress,
+            syncLastError,
             bulkSelectionMode
         } = state;
 
@@ -58,7 +60,9 @@ export class MainView {
                     syncLastSuccess,
                     syncRemoteRevision,
                     syncRemoteUpdateAvailable,
-                    bulkSelectionMode
+                    bulkSelectionMode,
+                    syncInProgress,
+                    syncLastError
                 )}
 
                 ${this.viewRouter.render(state)}

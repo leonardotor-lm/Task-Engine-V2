@@ -84,6 +84,7 @@ export class App {
         this.autoSyncTimer = null;
         this.autoSyncScheduledFingerprint = null;
         this.autoSyncBlockedFingerprint = null;
+        this.syncLastError = null;
 
         this.syncFocusWatcher =
             new SyncFocusWatcher({
@@ -921,6 +922,7 @@ export class App {
                 this.syncRemoteRevision = null;
                 this.syncRemoteUpdateAvailable =
                     false;
+                this.syncLastError = null;
 
                 this.render();
                 this.checkRemoteStatus();
@@ -934,6 +936,7 @@ export class App {
                 this.syncConfig.clear();
                 this.syncRemoteRevision = null;
                 this.syncRemoteUpdateAvailable = false;
+                this.syncLastError = null;
 
                 this.render();
 
@@ -950,6 +953,7 @@ export class App {
                     result.revision;
                 this.syncRemoteUpdateAvailable =
                     false;
+                this.syncLastError = null;
                 this.render();
 
                 return result;
@@ -967,6 +971,7 @@ export class App {
                     result.revision;
                 this.syncRemoteUpdateAvailable =
                     false;
+                this.syncLastError = null;
                 this.resetTransientState();
                 this.render();
 
@@ -986,6 +991,7 @@ export class App {
                     result.revision;
                 this.syncRemoteUpdateAvailable =
                     false;
+                this.syncLastError = null;
                 this.render();
 
                 return result;
@@ -1133,7 +1139,8 @@ export class App {
             remoteUpdateAvailable:
                 this.syncRemoteUpdateAvailable,
             inProgress:
-                this.autoSyncInProgress
+                this.autoSyncInProgress ||
+                this.syncCheckInProgress
         });
 
     }
@@ -1211,6 +1218,8 @@ export class App {
         }
 
         this.autoSyncInProgress = true;
+        this.syncLastError = null;
+        this.render();
 
         try {
 
@@ -1223,11 +1232,15 @@ export class App {
                 false;
             this.autoSyncBlockedFingerprint =
                 null;
+            this.syncLastError = null;
 
         } catch (error) {
 
             this.autoSyncBlockedFingerprint =
                 fingerprint;
+            this.syncLastError =
+                error?.message ||
+                "No se pudo sincronizar automáticamente.";
 
             if (
                 this.syncEngine.isConflict(
@@ -1297,6 +1310,8 @@ export class App {
         }
 
         this.syncCheckInProgress = true;
+        this.syncLastError = null;
+        this.render();
 
         try {
 
@@ -1310,6 +1325,8 @@ export class App {
                 status.updateAvailable;
             this.autoSyncBlockedFingerprint =
                 null;
+            this.syncLastError = null;
+            this.syncCheckInProgress = false;
 
             const action =
                 this.resolveAutomaticSyncAction();
@@ -1335,6 +1352,10 @@ export class App {
             this.render();
 
         } catch (error) {
+
+            this.syncLastError =
+                error?.message ||
+                "No se pudo comprobar la sincronización.";
 
             console.warn(
                 "No se pudo comprobar o descargar la revisión remota.",
@@ -1601,6 +1622,11 @@ export class App {
                 this.syncRemoteRevision,
             syncRemoteUpdateAvailable:
                 this.syncRemoteUpdateAvailable,
+            syncInProgress:
+                this.autoSyncInProgress ||
+                this.syncCheckInProgress,
+            syncLastError:
+                this.syncLastError,
             selectedTask: this.selectedTask,
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

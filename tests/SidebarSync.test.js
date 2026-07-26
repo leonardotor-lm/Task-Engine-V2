@@ -11,7 +11,9 @@ function renderSync({
     pendingChanges = false,
     lastSuccess = "",
     remoteRevision = null,
-    remoteUpdateAvailable = false
+    remoteUpdateAvailable = false,
+    inProgress = false,
+    lastError = null
 } = {}) {
 
     return new Sidebar().render(
@@ -29,7 +31,10 @@ function renderSync({
         pendingChanges,
         lastSuccess,
         remoteRevision,
-        remoteUpdateAvailable
+        remoteUpdateAvailable,
+        false,
+        inProgress,
+        lastError
     );
 
 }
@@ -123,7 +128,7 @@ test("avisa si coinciden cambios locales y remotos", () => {
 
     assert.match(
         html,
-        /Cambios locales y remotos · nube rev. 6/
+        /Conflicto · nube rev. 6/
     );
 
     assert.match(
@@ -174,6 +179,75 @@ test("escapa la URL antes de mostrarla", () => {
     assert.doesNotMatch(
         html,
         /value="https:\/\/example\.com\/\?value="test""/
+    );
+
+});
+
+
+test("muestra el estado mientras sincroniza", () => {
+
+    const html = renderSync({
+        configured: true,
+        revision: 4,
+        pendingChanges: true,
+        inProgress: true
+    });
+
+    assert.match(
+        html,
+        /Sincronizando…/
+    );
+    assert.match(
+        html,
+        /class="syncStatus syncing"/
+    );
+
+});
+
+test("muestra un error sin perder los controles manuales", () => {
+
+    const html = renderSync({
+        configured: true,
+        revision: 4,
+        pendingChanges: true,
+        lastError:
+            "No se pudo conectar."
+    });
+
+    assert.match(
+        html,
+        /Error de sincronización/
+    );
+    assert.match(
+        html,
+        /class="syncStatus error"/
+    );
+    assert.match(
+        html,
+        /Los cambios continúan guardados localmente/
+    );
+    assert.match(
+        html,
+        /id="pushToCloud"/
+    );
+
+});
+
+test("escapa el detalle técnico del error", () => {
+
+    const html = renderSync({
+        configured: true,
+        lastError:
+            'Error <script>alert("x")</script>'
+    });
+
+    assert.doesNotMatch(
+        html,
+        /<script>alert/
+    );
+    assert.match(
+        html,
+        /&lt;script&gt;/
     );
 
 });
