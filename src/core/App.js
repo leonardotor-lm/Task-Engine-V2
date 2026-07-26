@@ -911,10 +911,16 @@ export class App {
                         ? current.token
                         : "";
 
+                this.cancelAutomaticSync();
+
                 this.syncConfig.save({
                     url: nextUrl,
                     token: token || savedToken
                 });
+
+                this.syncRemoteRevision = null;
+                this.syncRemoteUpdateAvailable =
+                    false;
 
                 this.render();
                 this.checkRemoteStatus();
