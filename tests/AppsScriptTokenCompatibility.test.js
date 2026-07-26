@@ -15,6 +15,8 @@ function createContext() {
         "utf8"
     );
 
+    const cache = new Map();
+
     const context = {
         PropertiesService: {
             getScriptProperties() {
@@ -27,6 +29,31 @@ function createContext() {
                     }
                 };
             }
+        },
+        CacheService: {
+            getScriptCache() {
+                return {
+                    get(key) {
+                        return cache.get(key) ?? null;
+                    },
+                    put(key, value) {
+                        cache.set(key, value);
+                    }
+                };
+            }
+        },
+        LockService: {
+            getScriptLock() {
+                return {
+                    tryLock() {
+                        return true;
+                    },
+                    releaseLock() {}
+                };
+            }
+        },
+        console: {
+            warn() {}
         }
     };
 
