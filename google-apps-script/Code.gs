@@ -37,27 +37,32 @@ function handleRequest_(event, method) {
 
     try {
 
-        authorize_(event);
+        var body =
+            method === "POST"
+                ? parseRequestBody_(event)
+                : {};
+
+        authorize_(event, body);
 
         var action =
-            event &&
-            event.parameter &&
-            event.parameter.action;
+            body.action ||
+            (
+                event &&
+                event.parameter &&
+                event.parameter.action
+            );
 
-        if (method === "GET" && action === "load") {
+        if (
+            action === "load" &&
+            (
+                method === "GET" ||
+                method === "POST"
+            )
+        ) {
             return jsonResponse_(loadSnapshot_());
         }
 
         if (method === "POST" && action === "save") {
-
-            var body = parseRequestBody_(event);
-
-            if (body.action !== "save") {
-                throw protocolError_(
-                    "INVALID_ACTION",
-                    "La acción solicitada no es válida."
-                );
-            }
 
             return jsonResponse_(
                 saveSnapshot_(
@@ -95,7 +100,7 @@ function handleRequest_(event, method) {
 
 }
 
-function authorize_(event) {
+function authorize_(event, body) {
 
     var properties =
         PropertiesService.getScriptProperties();
@@ -113,9 +118,14 @@ function authorize_(event) {
     }
 
     var receivedToken =
-        event &&
-        event.parameter &&
-        event.parameter.token;
+        body &&
+        body.token
+            ? body.token
+            : (
+                event &&
+                event.parameter &&
+                event.parameter.token
+            );
 
     if (
         !receivedToken ||
