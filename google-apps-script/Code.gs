@@ -48,20 +48,11 @@ function handleRequest_(event, method) {
         authorize_(event, body);
         enforceRateLimit_();
 
-        var action =
-            body.action ||
-            (
-                event &&
-                event.parameter &&
-                event.parameter.action
-            );
+        var action = body.action;
 
         if (
-            action === "load" &&
-            (
-                method === "GET" ||
-                method === "POST"
-            )
+            method === "POST" &&
+            action === "load"
         ) {
             return jsonResponse_(loadSnapshot_());
         }
@@ -128,13 +119,7 @@ function authorize_(event, body) {
 
     var receivedToken =
         body &&
-        body.token
-            ? body.token
-            : (
-                event &&
-                event.parameter &&
-                event.parameter.token
-            );
+        body.token;
 
     if (
         !receivedToken ||
