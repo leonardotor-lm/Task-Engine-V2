@@ -15,6 +15,8 @@ function createContext() {
         "utf8"
     );
 
+    const cache = new Map();
+
     const context = {
         PropertiesService: {
             getScriptProperties() {
@@ -27,6 +29,31 @@ function createContext() {
                     }
                 };
             }
+        },
+        CacheService: {
+            getScriptCache() {
+                return {
+                    get(key) {
+                        return cache.get(key) ?? null;
+                    },
+                    put(key, value) {
+                        cache.set(key, value);
+                    }
+                };
+            }
+        },
+        LockService: {
+            getScriptLock() {
+                return {
+                    tryLock() {
+                        return true;
+                    },
+                    releaseLock() {}
+                };
+            }
+        },
+        console: {
+            warn() {}
         }
     };
 
@@ -117,5 +144,68 @@ test("la carga admite POST con acción y token dentro del cuerpo", () => {
 
     assert.equal(result.ok, true);
     assert.equal(result.revision, 3);
+
+});
+
+
+test("Apps Script rechaza solicitudes demasiado grandes antes de analizarlas", () => {
+
+    const context = createContext();
+
+    assert.throws(
+        () => context.parseRequestBody_({
+            postData: {
+                contents: "x".repeat(
+                    5000001
+                )
+            }
+        }),
+        /supera el tamaño permitido/
+    );
+
+});
+
+test("Apps Script limita la cantidad de solicitudes autenticadas", () => {
+
+    const context = createContext();
+
+    for (let index = 0; index < 120; index += 1) {
+        context.enforceRateLimit_();
+    }
+
+    assert.throws(
+        () => context.enforceRateLimit_(),
+        /demasiadas solicitudes/
+    );
+
+});
+
+test("el registro de rechazos no incluye el token ni el contenido", () => {
+
+    const context = createContext();
+    const entries = [];
+
+    context.console.warn = message => {
+        entries.push(message);
+    };
+
+    context.logRejectedRequest_(
+        {
+            code: "UNAUTHORIZED",
+            token: "secret-token",
+            data: "contenido privado"
+        },
+        "POST"
+    );
+
+    assert.equal(entries.length, 1);
+    assert.doesNotMatch(
+        entries[0],
+        /secret-token|contenido privado/
+    );
+    assert.match(
+        entries[0],
+        /UNAUTHORIZED/
+    );
 
 });
