@@ -26,14 +26,9 @@ export class CloudGateway {
 
     }
 
-    buildUrl(baseUrl, token, action) {
+    buildUrl(baseUrl) {
 
-        const url = new URL(baseUrl);
-
-        url.searchParams.set("token", token);
-        url.searchParams.set("action", action);
-
-        return url.toString();
+        return new URL(baseUrl).toString();
 
     }
 
@@ -128,10 +123,18 @@ export class CloudGateway {
     load({ url, token }) {
 
         return this.request(
-            this.buildUrl(url, token, "load"),
+            this.buildUrl(url),
             {
-                method: "GET",
-                cache: "no-store"
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "load",
+                    token
+                })
             }
         );
 
@@ -145,7 +148,7 @@ export class CloudGateway {
     }) {
 
         return this.request(
-            this.buildUrl(url, token, "save"),
+            this.buildUrl(url),
             {
                 method: "POST",
                 headers: {
@@ -154,6 +157,7 @@ export class CloudGateway {
                 },
                 body: JSON.stringify({
                     action: "save",
+                    token,
                     baseRevision,
                     data
                 })
