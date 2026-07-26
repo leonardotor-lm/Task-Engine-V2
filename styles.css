@@ -1296,3 +1296,100 @@ h3 {
     }
 
 }
+
+
+/* Primera etapa responsive: navegación móvil */
+.mobileHeader,
+.mobileMenuBackdrop {
+    display: none;
+}
+
+@media (max-width: 760px) {
+
+    body > h1 {
+        display: none;
+    }
+
+    .layout {
+        display: block;
+        height: 100dvh;
+        padding-top: 48px;
+    }
+
+    .mobileHeader {
+        position: fixed;
+        z-index: 45;
+        top: 0;
+        right: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+        height: 48px;
+        padding: 7px 10px;
+        border-bottom: 1px solid #cbd5e1;
+        background: #fff;
+    }
+
+    .mobileMenuButton {
+        width: 36px;
+        height: 34px;
+        padding: 0;
+        border: 1px solid #cbd5e1;
+        border-radius: 5px;
+        background: #fff;
+        color: #334155;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        position: fixed;
+        z-index: 60;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        box-sizing: border-box;
+        width: min(86vw, 320px);
+        overflow-y: auto;
+        border-right: 1px solid #cbd5e1;
+        background: #fff;
+        box-shadow: 10px 0 24px rgb(15 23 42 / 18%);
+        transform: translateX(-105%);
+        transition: transform 180ms ease-out;
+    }
+
+    .mobileMenuBackdrop {
+        position: fixed;
+        z-index: 55;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: rgb(15 23 42 / 38%);
+        cursor: default;
+    }
+
+    .mobileMenuOpen .sidebar {
+        transform: translateX(0);
+    }
+
+    .mobileMenuOpen .mobileMenuBackdrop {
+        display: block;
+    }
+
+    .content {
+        box-sizing: border-box;
+        height: calc(100dvh - 48px);
+        padding: 12px 10px;
+        overflow-y: auto;
+    }
+
+    .taskDrawer {
+        z-index: 70;
+        width: 100vw;
+    }
+
+}
