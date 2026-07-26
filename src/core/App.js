@@ -1380,8 +1380,6 @@ export class App {
 
             }
 
-            this.render();
-
         } catch (error) {
 
             this.syncLastError =
@@ -1393,12 +1391,11 @@ export class App {
                 error
             );
 
-            this.render();
-
         } finally {
 
             this.autoSyncInProgress = false;
             this.syncCheckInProgress = false;
+            this.render();
 
         }
 
