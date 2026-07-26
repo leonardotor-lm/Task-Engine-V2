@@ -3,6 +3,7 @@ import { TaskEditor } from "./TaskEditor.js";
 import { ViewRouter } from "./ViewRouter.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
+import { TaskSwipeController } from "./TaskSwipeController.js";
 
 export class MainView {
 
@@ -13,6 +14,8 @@ export class MainView {
         this.sidebar = new Sidebar();
         this.taskEditor = new TaskEditor();
         this.viewRouter = new ViewRouter();
+        this.taskSwipeController =
+            new TaskSwipeController();
 
     }
 
@@ -176,6 +179,23 @@ export class MainView {
             syncPendingChanges,
             syncRemoteUpdateAvailable
         } = state;
+
+        this.taskSwipeController.bind({
+            onComplete: id => {
+
+                try {
+
+                    this.callbacks
+                        .onToggleTask(id);
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+
+                }
+
+            }
+        });
 
         const layout =
             document.querySelector(".layout");
