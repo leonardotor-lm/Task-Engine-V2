@@ -942,59 +942,32 @@ export class App {
 
             },
 
-            onPushToCloud: async () => {
+            onPushToCloud: () => {
 
-                this.cancelAutomaticSync();
-
-                const result =
-                    await this.syncEngine.push();
-
-                this.syncRemoteRevision =
-                    result.revision;
-                this.syncRemoteUpdateAvailable =
-                    false;
-                this.syncLastError = null;
-                this.render();
-
-                return result;
+                return this.runManualSync(
+                    () => this.syncEngine.push()
+                );
 
             },
 
-            onPullFromCloud: async () => {
+            onPullFromCloud: () => {
 
-                this.cancelAutomaticSync();
-
-                const result =
-                    await this.syncEngine.pull();
-
-                this.syncRemoteRevision =
-                    result.revision;
-                this.syncRemoteUpdateAvailable =
-                    false;
-                this.syncLastError = null;
-                this.resetTransientState();
-                this.render();
-
-                return result;
+                return this.runManualSync(
+                    () => this.syncEngine.pull(),
+                    {
+                        resetTransientState: true
+                    }
+                );
 
             },
 
-            onOverwriteCloud: async () => {
+            onOverwriteCloud: () => {
 
-                this.cancelAutomaticSync();
-
-                const result =
-                    await this.syncEngine
-                        .overwriteRemote();
-
-                this.syncRemoteRevision =
-                    result.revision;
-                this.syncRemoteUpdateAvailable =
-                    false;
-                this.syncLastError = null;
-                this.render();
-
-                return result;
+                return this.runManualSync(
+                    () =>
+                        this.syncEngine
+                            .overwriteRemote()
+                );
 
             },
 
@@ -1111,6 +1084,64 @@ export class App {
         this.selectedTask = null;
 
         this.render();
+
+    }
+
+    async runManualSync(
+        operation,
+        {
+            resetTransientState = false
+        } = {}
+    ) {
+
+        this.cancelAutomaticSync();
+        this.autoSyncInProgress = true;
+        this.syncLastError = null;
+        this.render();
+
+        try {
+
+            const result = await operation();
+
+            this.syncRemoteRevision =
+                result.revision;
+            this.syncRemoteUpdateAvailable =
+                false;
+            this.autoSyncBlockedFingerprint =
+                null;
+            this.syncLastError = null;
+
+            if (resetTransientState) {
+                this.resetTransientState();
+            }
+
+            return result;
+
+        } catch (error) {
+
+            this.syncLastError =
+                error?.message ||
+                "No se pudo completar la sincronización.";
+
+            if (
+                this.syncEngine.isConflict(
+                    error
+                )
+            ) {
+                this.syncRemoteRevision =
+                    error.remoteRevision;
+                this.syncRemoteUpdateAvailable =
+                    true;
+            }
+
+            throw error;
+
+        } finally {
+
+            this.autoSyncInProgress = false;
+            this.render();
+
+        }
 
     }
 
