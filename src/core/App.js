@@ -1325,6 +1325,7 @@ export class App {
             this.autoSyncBlockedFingerprint =
                 null;
             this.syncLastError = null;
+            this.syncCheckInProgress = false;
 
             const action =
                 this.resolveAutomaticSyncAction();
