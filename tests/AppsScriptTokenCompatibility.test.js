@@ -64,19 +64,20 @@ function createContext() {
 
 }
 
-test("Apps Script conserva la autenticación por URL durante la migración", () => {
+test("Apps Script rechaza la autenticación mediante parámetros de URL", () => {
 
     const context = createContext();
 
-    assert.doesNotThrow(() =>
-        context.authorize_(
+    assert.throws(
+        () => context.authorize_(
             {
                 parameter: {
                     token: "secret-token"
                 }
             },
             {}
-        )
+        ),
+        /Token de sincronización inválido/
     );
 
 });
@@ -98,7 +99,7 @@ test("Apps Script acepta el token dentro del cuerpo JSON", () => {
 
 });
 
-test("Apps Script rechaza un token incorrecto en ambos formatos", () => {
+test("Apps Script rechaza un token incorrecto dentro del cuerpo", () => {
 
     const context = createContext();
 
