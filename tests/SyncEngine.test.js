@@ -277,7 +277,7 @@ test("la descarga envía acción y token en el cuerpo, nunca en la URL", async (
     });
 
     await gateway.load({
-        url: "https://example.com/exec",
+        url: "https://example.com/exec?token=legacy&action=load",
         token: "abc"
     });
 
