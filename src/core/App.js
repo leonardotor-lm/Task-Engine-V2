@@ -1013,83 +1013,76 @@ export class App {
 
             onShowInbox: () => {
 
-                this.currentView = View.INBOX;
-
-                this.render();
+                this.navigateTo(View.INBOX);
 
             },
 
             onShowToday: () => {
 
-                this.currentView = View.TODAY;
-
-                this.render();
+                this.navigateTo(View.TODAY);
 
             },
 
             onShowUpcoming: () => {
 
-                this.currentView = View.UPCOMING;
-
-                this.render();
+                this.navigateTo(View.UPCOMING);
 
             },
 
             onShowAll: () => {
 
-                this.currentView = View.ALL;
-
-                this.render();
+                this.navigateTo(View.ALL);
 
             },
 
             onShowCompleted: () => {
 
-                this.currentView = View.COMPLETED;
-
-                this.render();
+                this.navigateTo(View.COMPLETED);
 
             },
 
             onShowArchived: () => {
 
-                this.currentView = View.ARCHIVED;
-
-                this.render();
+                this.navigateTo(View.ARCHIVED);
 
             },
 
             onShowTrash: () => {
 
-                this.currentView = View.TRASH;
-
-                this.render();
+                this.navigateTo(View.TRASH);
 
             },
 
             onShowAreas: () => {
 
-                this.currentView = View.AREAS;
-
-                this.render();
+                this.navigateTo(View.AREAS);
 
             },
 
             onShowContexts: () => {
 
-                this.currentView = View.CONTEXTS;
-                this.render();
+                this.navigateTo(View.CONTEXTS);
 
             },
 
             onShowTags: () => {
 
-                this.currentView = View.TAGS;
-                this.render();
+                this.navigateTo(View.TAGS);
 
-            }
+            },
 
         });
+
+    }
+
+    navigateTo(view) {
+
+        this.currentView = view;
+        this.bulkSelectionMode = false;
+        this.selectedTaskIds.clear();
+        this.selectedTask = null;
+
+        this.render();
 
     }
 
