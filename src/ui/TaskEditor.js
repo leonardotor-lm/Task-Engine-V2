@@ -290,6 +290,18 @@ export class TaskEditor {
 
         }
 
+        const mobileSaveAction =
+            !isLocked
+                ? `
+                    <button
+                        id="saveTaskMobile"
+                        type="button"
+                        class="mobileEditorSave">
+                        Guardar
+                    </button>
+                `
+                : "";
+
         return `
             <aside
                 class="details taskDrawer"
@@ -297,15 +309,22 @@ export class TaskEditor {
 
                 <div class="taskEditorHeader">
 
-                    <h3>Editor</h3>
-
                     <button
                         id="closeTaskEditor"
                         type="button"
                         aria-label="Cerrar editor"
                         title="Cerrar editor">
-                        ×
+                        <span class="desktopCloseSymbol">
+                            ×
+                        </span>
+                        <span class="mobileBackSymbol">
+                            ←
+                        </span>
                     </button>
+
+                    <h3>Editar tarea</h3>
+
+                    ${mobileSaveAction}
 
                 </div>
 
@@ -400,7 +419,9 @@ export class TaskEditor {
 
                 <hr>
 
-                ${actions}
+                <div class="taskEditorActions">
+                    ${actions}
+                </div>
 
             </aside>
         `;
