@@ -611,6 +611,64 @@ export class TaskList {
 
                                                             <div class="quickMoreMenu">
 
+                                                                ${canAddSubtask
+                                                                    ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickAddSubtask mobileQuickMenuAction"
+                                                                            data-id="${escapeHtml(task.id)}">
+                                                                            Agregar subtarea
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
+
+                                                                ${canQuickPostpone
+                                                                    ? `
+                                                                        <details
+                                                                            class="quickPostpone mobileQuickPostpone"
+                                                                            data-id="${escapeHtml(task.id)}">
+
+                                                                            <summary>
+                                                                                Posponer
+                                                                            </summary>
+
+                                                                            <div class="quickPostponeMenu">
+
+                                                                                <button
+                                                                                    type="button"
+                                                                                    class="quickPostponePreset"
+                                                                                    data-date="${postponeOneDay}">
+                                                                                    Posponer 1 día
+                                                                                </button>
+
+                                                                                <button
+                                                                                    type="button"
+                                                                                    class="quickPostponePreset"
+                                                                                    data-date="${postponeOneWeek}">
+                                                                                    Posponer 1 semana
+                                                                                </button>
+
+                                                                                <label>
+                                                                                    Elegir fecha
+
+                                                                                    <input
+                                                                                        type="date"
+                                                                                        class="quickPostponeDate"
+                                                                                        min="${minimumPostponeDate}">
+                                                                                </label>
+
+                                                                                <button
+                                                                                    type="button"
+                                                                                    class="applyQuickPostpone">
+                                                                                    Aplicar
+                                                                                </button>
+
+                                                                            </div>
+
+                                                                        </details>
+                                                                    `
+                                                                    : ""}
+
                                                                 <button
                                                                     type="button"
                                                                     class="quickEditTask">

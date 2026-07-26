@@ -1393,3 +1393,121 @@ h3 {
     }
 
 }
+
+
+/* Segunda etapa responsive: lista y acciones táctiles */
+.mobileQuickMenuAction,
+.mobileQuickPostpone {
+    display: none;
+}
+
+@media (max-width: 760px) {
+
+    .task {
+        min-height: 44px;
+        padding: 10px 4px;
+    }
+
+    .taskHeader {
+        gap: 8px;
+    }
+
+    .taskTitleLine {
+        align-items: flex-start;
+        min-height: 24px;
+    }
+
+    .taskTitle {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .taskCompleteCheckbox,
+    .bulkTaskCheckbox {
+        width: 18px;
+        height: 18px;
+        margin-top: 3px;
+    }
+
+    .toggleSubtasks,
+    .toggleSubtasksSpacer {
+        width: 26px;
+        min-width: 26px;
+        min-height: 28px;
+    }
+
+    .taskQuickActions {
+        flex: 0 0 auto;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .taskQuickActions > .quickAddSubtask,
+    .taskQuickActions > .quickPostpone {
+        display: none;
+    }
+
+    .quickMoreActions > summary {
+        box-sizing: border-box;
+        min-width: 34px;
+        min-height: 32px;
+        padding: 4px 8px;
+        font-size: 18px;
+    }
+
+    .quickMoreMenu {
+        position: fixed;
+        z-index: 90;
+        top: auto;
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+        box-sizing: border-box;
+        max-height: 72dvh;
+        overflow-y: auto;
+        gap: 7px;
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 12px 36px rgb(15 23 42 / 28%);
+    }
+
+    .quickMoreMenu button,
+    .quickMoreMenu select,
+    .quickMoreMenu input,
+    .quickMoreMenu summary {
+        min-height: 42px;
+        padding: 9px 10px;
+    }
+
+    .quickMoreMenu .mobileQuickMenuAction,
+    .quickMoreMenu .mobileQuickPostpone {
+        display: block;
+    }
+
+    .mobileQuickPostpone > summary {
+        box-sizing: border-box;
+        justify-content: flex-start;
+        width: 100%;
+        border-color: #cbd5e1;
+        font-size: inherit;
+        font-weight: 400;
+    }
+
+    .mobileQuickPostpone .quickPostponeMenu {
+        position: static;
+        min-width: 0;
+        margin-top: 6px;
+        padding: 6px 0 0;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .inlineSubtaskForm {
+        margin-left: 34px;
+    }
+
+    .taskMeta {
+        line-height: 1.55;
+    }
+
+}
