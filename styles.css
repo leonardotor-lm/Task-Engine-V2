@@ -557,9 +557,23 @@ body {
     font-weight: 600;
 }
 
-.syncStatus.remote {
+.syncStatus.remote,
+.syncStatus.conflict,
+.syncStatus.error {
     color: #b42318;
     font-weight: 700;
+}
+
+.syncStatus.syncing {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.syncErrorHint {
+    margin: 10px 0 0;
+    color: #b42318;
+    font-size: 11px;
+    line-height: 1.4;
 }
 
 .syncLastSuccess {
