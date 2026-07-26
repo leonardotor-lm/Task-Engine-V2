@@ -258,7 +258,7 @@ test("invoca fetch con el contexto global del navegador", async () => {
 
 });
 
-test("la descarga envía acción y token en la URL", async () => {
+test("la descarga envía acción y token en el cuerpo, nunca en la URL", async () => {
 
     let request;
 
@@ -277,23 +277,35 @@ test("la descarga envía acción y token en la URL", async () => {
     });
 
     await gateway.load({
-        url: "https://example.com/exec",
+        url: "https://example.com/exec?token=legacy&action=load",
         token: "abc"
     });
 
     const url = new URL(request.url);
 
     assert.equal(
-        url.searchParams.get("action"),
-        "load"
+        url.searchParams.has("action"),
+        false
     );
 
     assert.equal(
-        url.searchParams.get("token"),
-        "abc"
+        url.searchParams.has("token"),
+        false
     );
 
-    assert.equal(request.options.method, "GET");
+    assert.equal(request.options.method, "POST");
+    assert.equal(
+        request.options.headers["Content-Type"],
+        "text/plain;charset=utf-8"
+    );
+
+    assert.deepEqual(
+        JSON.parse(request.options.body),
+        {
+            action: "load",
+            token: "abc"
+        }
+    );
 
 });
 
@@ -321,6 +333,17 @@ test("la subida usa texto plano para evitar preflight de CORS", async () => {
         data: backup()
     });
 
+    const requestUrl = new URL(request.url);
+
+    assert.equal(
+        requestUrl.searchParams.has("token"),
+        false
+    );
+    assert.equal(
+        requestUrl.searchParams.has("action"),
+        false
+    );
+
     assert.equal(
         request.options.headers["Content-Type"],
         "text/plain;charset=utf-8"
@@ -330,6 +353,7 @@ test("la subida usa texto plano para evitar preflight de CORS", async () => {
         JSON.parse(request.options.body),
         {
             action: "save",
+            token: "abc",
             baseRevision: 1,
             data: backup()
         }
