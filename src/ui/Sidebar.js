@@ -435,7 +435,10 @@ export class Sidebar {
         `;
 
         return `
-            <aside class="sidebar">
+            <aside
+                id="appSidebar"
+                class="sidebar"
+                aria-label="Navegación principal">
 
                 <h3>Task Engine</h3>
 
