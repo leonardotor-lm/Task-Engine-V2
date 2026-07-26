@@ -210,3 +210,38 @@ test("el registro de rechazos no incluye el token ni el contenido", () => {
     );
 
 });
+
+
+test("Apps Script no permite cargar datos mediante GET con token en la URL", () => {
+
+    const context = createContext();
+    let loadCalled = false;
+
+    context.loadSnapshot_ = () => {
+        loadCalled = true;
+        return {
+            ok: true
+        };
+    };
+
+    context.jsonResponse_ = payload =>
+        payload;
+
+    const result = context.handleRequest_(
+        {
+            parameter: {
+                action: "load",
+                token: "secret-token"
+            }
+        },
+        "GET"
+    );
+
+    assert.equal(loadCalled, false);
+    assert.equal(result.ok, false);
+    assert.equal(
+        result.error.code,
+        "UNAUTHORIZED"
+    );
+
+});
