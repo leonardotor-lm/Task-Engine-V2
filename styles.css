@@ -1637,3 +1637,128 @@ h3 {
     }
 
 }
+
+
+/* Primera etapa responsive: editor móvil */
+.mobileBackSymbol,
+.mobileEditorSave {
+    display: none;
+}
+
+.taskEditorActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+@media (max-width: 760px) {
+
+    .taskDrawer {
+        padding:
+            12px
+            12px
+            calc(
+                20px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .taskEditorHeader {
+        top: -12px;
+        min-height: 48px;
+        margin-bottom: 16px;
+        padding:
+            8px
+            10px;
+    }
+
+    .taskEditorHeader h3 {
+        flex: 1;
+        text-align: center;
+    }
+
+    #closeTaskEditor {
+        width: 42px;
+        height: 40px;
+        border: 0;
+        font-size: 20px;
+    }
+
+    .desktopCloseSymbol {
+        display: none;
+    }
+
+    .mobileBackSymbol {
+        display: inline;
+    }
+
+    .mobileEditorSave {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 72px;
+        min-height: 40px;
+        padding: 7px 10px;
+        border: 0;
+        border-radius: 6px;
+        background: #2563eb;
+        color: #fff;
+        font: inherit;
+        font-weight: 700;
+    }
+
+    .taskDrawer > label {
+        margin-top: 14px;
+        font-size: 13px;
+    }
+
+    .taskDrawer > input,
+    .taskDrawer > select,
+    .taskDrawer > textarea {
+        min-height: 44px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .taskDrawer > textarea {
+        min-height: 112px;
+        resize: vertical;
+    }
+
+    .tagField {
+        padding: 12px;
+    }
+
+    .tagOption {
+        min-height: 38px;
+    }
+
+    .taskEditorActions {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .taskEditorActions button {
+        min-height: 44px;
+    }
+
+    .taskEditorActions #saveTask {
+        display: none;
+    }
+
+    .taskEditorActions #deleteTask,
+    .taskEditorActions #permanentlyDeleteTask {
+        margin-top: 10px;
+        border-color: #b42318;
+        color: #b42318;
+    }
+
+    .subtaskForm input,
+    .subtaskForm button,
+    .postponeControls input,
+    .postponeControls button {
+        min-height: 42px;
+    }
+
+}
