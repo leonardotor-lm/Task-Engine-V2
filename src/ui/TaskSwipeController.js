@@ -37,7 +37,10 @@ export class TaskSwipeController {
 
     }
 
-    bind({ onComplete } = {}) {
+    bind({
+        onComplete,
+        onUndoComplete
+    } = {}) {
 
         document.querySelectorAll(
             ".task"
@@ -72,7 +75,8 @@ export class TaskSwipeController {
                 task,
                 completeControl,
                 actionsMenu,
-                onComplete
+                onComplete,
+                onUndoComplete
             );
 
         });
@@ -83,7 +87,8 @@ export class TaskSwipeController {
         task,
         completeControl,
         actionsMenu,
-        onComplete
+        onComplete,
+        onUndoComplete
     ) {
 
         let pointerId = null;
@@ -245,9 +250,21 @@ export class TaskSwipeController {
             ) {
 
                 suppressClick = true;
-                onComplete?.(
-                    completeControl.dataset.id
-                );
+
+                const taskId =
+                    completeControl.dataset.id;
+
+                const completed =
+                    onComplete?.(taskId);
+
+                if (completed !== false) {
+
+                    this.showCompletionNotice(
+                        taskId,
+                        onUndoComplete
+                    );
+
+                }
 
             }
 
@@ -285,6 +302,72 @@ export class TaskSwipeController {
                 reset();
 
             }
+        );
+
+    }
+
+    showCompletionNotice(
+        taskId,
+        onUndoComplete
+    ) {
+
+        document.getElementById(
+            "taskCompletionNotice"
+        )?.remove();
+
+        const notice =
+            document.createElement("div");
+
+        notice.id =
+            "taskCompletionNotice";
+
+        notice.className =
+            "taskCompletionNotice";
+
+        notice.setAttribute(
+            "role",
+            "status"
+        );
+
+        notice.innerHTML = `
+            <span>Tarea completada</span>
+
+            <button type="button">
+                Deshacer
+            </button>
+        `;
+
+        const remove = () => {
+            notice.remove();
+        };
+
+        const timeout =
+            window.setTimeout(
+                remove,
+                5000
+            );
+
+        notice.querySelector(
+            "button"
+        ).addEventListener(
+            "click",
+            () => {
+
+                window.clearTimeout(
+                    timeout
+                );
+
+                onUndoComplete?.(
+                    taskId
+                );
+
+                remove();
+
+            }
+        );
+
+        document.body.appendChild(
+            notice
         );
 
     }
