@@ -922,6 +922,7 @@ export class App {
                 this.syncRemoteRevision = null;
                 this.syncRemoteUpdateAvailable =
                     false;
+                this.syncLastError = null;
 
                 this.render();
                 this.checkRemoteStatus();
