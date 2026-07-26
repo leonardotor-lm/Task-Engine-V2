@@ -1511,3 +1511,129 @@ h3 {
     }
 
 }
+
+
+/* Gestos táctiles experimentales */
+@media (max-width: 760px) {
+
+    .task {
+        position: relative;
+        touch-action: pan-y;
+    }
+
+    .task.swipingRight,
+    .task.swipingLeft {
+        will-change: transform;
+    }
+
+    .task.swipingRight {
+        box-shadow:
+            -96px 0 #dcfce7;
+    }
+
+    .task.swipingLeft {
+        box-shadow:
+            96px 0 #dbeafe;
+    }
+
+    .task.swipingRight::before,
+    .task.swipingLeft::after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        width: 96px;
+        font-weight: 700;
+        pointer-events: none;
+    }
+
+    .task.swipingRight::before {
+        right: 100%;
+        justify-content: center;
+        content: "✓ Completar";
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .task.swipingLeft::after {
+        left: 100%;
+        justify-content: center;
+        content: "⋯ Acciones";
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+}
+
+
+/* Correcciones de interacción móvil */
+@media (max-width: 760px) {
+
+    html,
+    body {
+        overscroll-behavior-y: none;
+    }
+
+    .quickMoreMenu {
+        max-height:
+            calc(100dvh - 64px);
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+    }
+
+    .quickActionsSheetHeader {
+        position: sticky;
+        z-index: 2;
+        top: -12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: -12px -12px 4px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #fff;
+    }
+
+    .quickActionsSheetHeader .closeQuickActions {
+        width: 38px;
+        min-height: 38px;
+        padding: 0;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .taskCompletionNotice {
+        position: fixed;
+        z-index: 120;
+        right: 10px;
+        bottom: max(
+            12px,
+            env(safe-area-inset-bottom)
+        );
+        left: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 11px 12px;
+        border-radius: 8px;
+        background: #172033;
+        color: #fff;
+        box-shadow:
+            0 10px 28px
+            rgb(15 23 42 / 30%);
+    }
+
+    .taskCompletionNotice button {
+        min-height: 36px;
+        border: 1px solid #93c5fd;
+        border-radius: 5px;
+        background: transparent;
+        color: #bfdbfe;
+        font: inherit;
+        font-weight: 700;
+    }
+
+}

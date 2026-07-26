@@ -611,6 +611,17 @@ export class TaskList {
 
                                                             <div class="quickMoreMenu">
 
+                                                                <div class="quickActionsSheetHeader">
+                                                                    <strong>Acciones</strong>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        class="closeQuickActions"
+                                                                        aria-label="Cerrar acciones">
+                                                                        ×
+                                                                    </button>
+                                                                </div>
+
                                                                 ${canAddSubtask
                                                                     ? `
                                                                         <button
