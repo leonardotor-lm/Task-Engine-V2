@@ -167,6 +167,127 @@ export class MainView {
 
     }
 
+    setupMobileBackNavigation(state) {
+
+        if (
+            !window.matchMedia(
+                "(max-width: 760px)"
+            ).matches
+        ) {
+            return;
+        }
+
+        const guardKey =
+            "taskEngineMobileGuard";
+
+        if (
+            !window.history.state?.[
+                guardKey
+            ]
+        ) {
+
+            window.history.replaceState(
+                {
+                    ...window.history.state,
+                    taskEngineRoot: true
+                },
+                ""
+            );
+
+            window.history.pushState(
+                { [guardKey]: true },
+                ""
+            );
+
+        }
+
+        window.onpopstate = () => {
+
+            const restoreGuard = () => {
+
+                window.history.pushState(
+                    { [guardKey]: true },
+                    ""
+                );
+
+            };
+
+            const openActions =
+                document.querySelector(
+                    ".quickMoreActions[open]"
+                );
+
+            if (openActions) {
+
+                openActions.open = false;
+                restoreGuard();
+                return;
+
+            }
+
+            const layout =
+                document.querySelector(
+                    ".layout.mobileMenuOpen"
+                );
+
+            if (layout) {
+
+                layout.classList.remove(
+                    "mobileMenuOpen"
+                );
+
+                document.getElementById(
+                    "toggleMobileMenu"
+                )?.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                restoreGuard();
+                return;
+
+            }
+
+            if (state.selectedTask) {
+
+                restoreGuard();
+
+                this.callbacks
+                    .onCloseTaskEditor();
+
+                return;
+
+            }
+
+            if (state.view === View.PROJECT) {
+
+                restoreGuard();
+
+                this.callbacks
+                    .onCloseProject();
+
+                return;
+
+            }
+
+            if (
+                !Dialog.confirm(
+                    "¿Salir de Task Engine?"
+                )
+            ) {
+
+                restoreGuard();
+                return;
+
+            }
+
+            window.onpopstate = null;
+            window.history.back();
+
+        };
+
+    }
+
     bindEvents(state) {
 
         const {
@@ -182,6 +303,23 @@ export class MainView {
 
         this.taskSwipeController.bind({
             onComplete: id => {
+
+                try {
+
+                    this.callbacks
+                        .onToggleTask(id);
+
+                    return true;
+
+                } catch (error) {
+
+                    Dialog.alert(error.message);
+                    return false;
+
+                }
+
+            },
+            onUndoComplete: id => {
 
                 try {
 
@@ -240,6 +378,10 @@ export class MainView {
         )?.addEventListener(
             "click",
             closeMobileMenu
+        );
+
+        this.setupMobileBackNavigation(
+            state
         );
 
         document.getElementById("syncConfigForm")?.addEventListener("submit", event => {
@@ -990,6 +1132,25 @@ export class MainView {
                 menu.addEventListener(
                     "click",
                     event => event.stopPropagation()
+                );
+
+            });
+
+            document.querySelectorAll(
+                ".closeQuickActions"
+            ).forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        button.closest(
+                            ".quickMoreActions"
+                        ).open = false;
+
+                    }
                 );
 
             });
