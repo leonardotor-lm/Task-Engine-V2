@@ -1511,3 +1511,53 @@ h3 {
     }
 
 }
+
+
+/* Gestos táctiles experimentales */
+@media (max-width: 760px) {
+
+    .task {
+        position: relative;
+        touch-action: pan-y;
+        will-change: transform;
+    }
+
+    .task.swipingRight {
+        box-shadow:
+            -96px 0 #dcfce7;
+    }
+
+    .task.swipingLeft {
+        box-shadow:
+            96px 0 #dbeafe;
+    }
+
+    .task.swipingRight::before,
+    .task.swipingLeft::after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        width: 96px;
+        font-weight: 700;
+        pointer-events: none;
+    }
+
+    .task.swipingRight::before {
+        right: 100%;
+        justify-content: center;
+        content: "✓ Completar";
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .task.swipingLeft::after {
+        left: 100%;
+        justify-content: center;
+        content: "⋯ Acciones";
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+}
