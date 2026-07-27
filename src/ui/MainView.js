@@ -388,6 +388,24 @@ export class MainView {
             state
         );
 
+        if (
+            window.matchMedia(
+                "(max-width: 760px)"
+            ).matches
+        ) {
+
+            document.querySelectorAll(
+                '.editorSection[data-mobile-collapsed="true"]'
+            ).forEach(section => {
+
+                section.removeAttribute(
+                    "open"
+                );
+
+            });
+
+        }
+
         document.getElementById("syncConfigForm")?.addEventListener("submit", event => {
 
             event.preventDefault();
