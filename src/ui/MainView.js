@@ -2125,24 +2125,26 @@ export class MainView {
                 ".entityEditForm"
             ).forEach(form => {
 
-                form.addEventListener("submit", event => {
+                const saveEntity = () => {
 
-                    event.preventDefault();
-
-                    const entity = config.entities.find(
-                        entity =>
-                            entity.id === form.dataset.id
-                    );
+                    const entity =
+                        config.entities.find(
+                            entity =>
+                                entity.id ===
+                                    form.dataset.id
+                        );
 
                     if (!entity) return;
 
-                    const name = form.querySelector(
-                        ".entityEditName"
-                    ).value.trim();
+                    const name =
+                        form.querySelector(
+                            ".entityEditName"
+                        ).value.trim();
 
-                    const color = form.querySelector(
-                        ".entityEditColor"
-                    ).value;
+                    const color =
+                        form.querySelector(
+                            ".entityEditColor"
+                        ).value;
 
                     if (!name) return;
 
@@ -2156,13 +2158,50 @@ export class MainView {
 
                     } catch (error) {
 
-                        Dialog.alert(error.message);
+                        Dialog.alert(
+                            error.message
+                        );
 
                     }
 
-                });
+                };
 
-            });
+                form.addEventListener(
+                    "submit",
+                    event => {
+
+                        event.preventDefault();
+
+                    }
+                );
+
+                form.querySelector(
+                    ".saveEntityEdit"
+                ).addEventListener(
+                    "click",
+                    saveEntity
+                );
+
+                form.querySelector(
+                    ".entityEditName"
+                ).addEventListener(
+                    "keydown",
+                    event => {
+
+                        if (
+                            event.key !==
+                            "Enter"
+                        ) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        saveEntity();
+
+                    }
+                );
+
+            });;
 
         }
     }
