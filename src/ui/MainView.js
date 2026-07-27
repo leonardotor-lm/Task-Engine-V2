@@ -1790,6 +1790,73 @@ export class MainView {
 
             if (selectedTask) {
 
+                const recurrenceSelect =
+                    document.getElementById(
+                        "taskRecurrence"
+                    );
+
+                const updateRecurrenceControls =
+                    () => {
+
+                        if (!recurrenceSelect) {
+                            return;
+                        }
+
+                        const frequency =
+                            recurrenceSelect.value;
+
+                        const advancedFields =
+                            document.getElementById(
+                                "recurrenceAdvancedFields"
+                            );
+
+                        const weekdays =
+                            document.getElementById(
+                                "recurrenceWeekdays"
+                            );
+
+                        const unit =
+                            document.getElementById(
+                                "recurrenceIntervalUnit"
+                            );
+
+                        if (advancedFields) {
+                            advancedFields.hidden =
+                                !frequency;
+                        }
+
+                        if (weekdays) {
+                            weekdays.hidden =
+                                frequency !==
+                                    "WEEKLY";
+                        }
+
+                        if (unit) {
+
+                            const units = {
+                                DAILY:
+                                    "día(s)",
+                                WEEKLY:
+                                    "semana(s)",
+                                MONTHLY:
+                                    "mes(es)"
+                            };
+
+                            unit.textContent =
+                                units[frequency] ??
+                                "unidad";
+                        }
+
+                    };
+
+                recurrenceSelect
+                    ?.addEventListener(
+                        "change",
+                        updateRecurrenceControls
+                    );
+
+                updateRecurrenceControls();
+
                 document.getElementById(
                     "closeTaskEditor"
                 )?.addEventListener("click", () => {
@@ -2009,7 +2076,33 @@ export class MainView {
                         .map(input => input.value);
 
                     const recurrence =
-                        document.getElementById("taskRecurrence").value || null;
+                        document.getElementById(
+                            "taskRecurrence"
+                        ).value || null;
+
+                    const recurrenceInterval =
+                        recurrence
+                            ? Number(
+                                document.getElementById(
+                                    "taskRecurrenceInterval"
+                                ).value
+                            )
+                            : 1;
+
+                    const recurrenceWeekdays =
+                        recurrence === "WEEKLY"
+                            ? [
+                                ...document
+                                    .querySelectorAll(
+                                        ".taskRecurrenceWeekday:checked"
+                                    )
+                            ].map(
+                                input =>
+                                    Number(
+                                        input.value
+                                    )
+                            )
+                            : [];
 
                     if (!title) return;
 
@@ -2024,7 +2117,9 @@ export class MainView {
                             priority,
                             dueDate,
                             tagIds,
-                            recurrence
+                            recurrence,
+                            recurrenceInterval,
+                            recurrenceWeekdays
 
                         });
 
