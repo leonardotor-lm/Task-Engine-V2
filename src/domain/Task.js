@@ -1,6 +1,9 @@
 import { TaskStatus } from "./TaskStatus.js";
 import { Priority } from "./Priority.js";
-import { isValidRecurrenceFrequency } from "./Recurrence.js";
+import {
+    isValidRecurrenceFrequency,
+    normalizeRecurrenceRule
+} from "./Recurrence.js";
 
 export class Task {
 
@@ -38,6 +41,13 @@ export class Task {
 
         this.recurrence = data.recurrence ?? null;
 
+        this.recurrenceInterval =
+            data.recurrenceInterval ?? 1;
+
+        this.recurrenceWeekdays = [
+            ...(data.recurrenceWeekdays ?? [])
+        ];
+
         this.manualOrder = data.manualOrder ?? 0;
 
         const version = data.version ?? 1;
@@ -63,7 +73,13 @@ export class Task {
 
         this.validateRecurrence(
             this.recurrence,
-            this.dueDate
+            this.dueDate,
+            {
+                interval:
+                    this.recurrenceInterval,
+                weekdays:
+                    this.recurrenceWeekdays
+            }
         );
 
         if (
@@ -77,12 +93,18 @@ export class Task {
 
     }
 
-    validateRecurrence(recurrence, dueDate) {
+    validateRecurrence(
+        recurrence,
+        dueDate,
+        rule = {}
+    ) {
 
         if (recurrence === null) return;
 
         if (!isValidRecurrenceFrequency(recurrence)) {
-            throw new Error("Frecuencia de recurrencia inválida.");
+            throw new Error(
+                "Frecuencia de recurrencia inválida."
+            );
         }
 
         if (!dueDate) {
@@ -90,6 +112,11 @@ export class Task {
                 "La recurrencia necesita una fecha de vencimiento."
             );
         }
+
+        normalizeRecurrenceRule(
+            recurrence,
+            rule
+        );
 
     }
 
@@ -131,9 +158,27 @@ export class Task {
                 ? data.dueDate
                 : this.dueDate;
 
+        const nextRecurrenceInterval =
+            data.recurrenceInterval !==
+                undefined
+                ? data.recurrenceInterval
+                : this.recurrenceInterval;
+
+        const nextRecurrenceWeekdays =
+            data.recurrenceWeekdays !==
+                undefined
+                ? data.recurrenceWeekdays
+                : this.recurrenceWeekdays;
+
         this.validateRecurrence(
             nextRecurrence,
-            nextDueDate
+            nextDueDate,
+            {
+                interval:
+                    nextRecurrenceInterval,
+                weekdays:
+                    nextRecurrenceWeekdays
+            }
         );
 
         if (data.title !== undefined) {
@@ -179,6 +224,35 @@ export class Task {
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
 
+        if (
+            data.recurrenceInterval !==
+                undefined
+        ) {
+
+            this.recurrenceInterval =
+                Number(
+                    data.recurrenceInterval
+                );
+
+        }
+
+        if (
+            data.recurrenceWeekdays !==
+                undefined
+        ) {
+
+            this.recurrenceWeekdays = [
+                ...new Set(
+                    data.recurrenceWeekdays
+                        .map(Number)
+                )
+            ].sort(
+                (first, second) =>
+                    first - second
+            );
+
+        }
+
         if (data.recurrence !== undefined) {
 
             this.recurrence = data.recurrence;
@@ -186,10 +260,13 @@ export class Task {
             if (this.recurrence === null) {
 
                 this.recurrenceId = null;
+                this.recurrenceInterval = 1;
+                this.recurrenceWeekdays = [];
 
             } else if (this.recurrenceId === null) {
 
-                this.recurrenceId = crypto.randomUUID();
+                this.recurrenceId =
+                    crypto.randomUUID();
 
             }
 
@@ -343,6 +420,13 @@ export class Task {
             recurrenceId: this.recurrenceId,
 
             recurrence: this.recurrence,
+
+            recurrenceInterval:
+                this.recurrenceInterval,
+
+            recurrenceWeekdays: [
+                ...this.recurrenceWeekdays
+            ],
 
             manualOrder: this.manualOrder,
 
