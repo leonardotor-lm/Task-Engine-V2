@@ -1,6 +1,9 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
-import { RecurrenceFrequency } from "../domain/Recurrence.js";
+import {
+    RecurrenceFrequency,
+    RecurrenceWeekday
+} from "../domain/Recurrence.js";
 
 export class TaskEditor {
 
@@ -124,6 +127,64 @@ export class TaskEditor {
             [RecurrenceFrequency.WEEKLY]: "Semanal",
             [RecurrenceFrequency.MONTHLY]: "Mensual"
         };
+
+        const recurrenceWeekdayOptions = [
+            {
+                value:
+                    RecurrenceWeekday.MONDAY,
+                label: "L"
+            },
+            {
+                value:
+                    RecurrenceWeekday.TUESDAY,
+                label: "M"
+            },
+            {
+                value:
+                    RecurrenceWeekday.WEDNESDAY,
+                label: "X"
+            },
+            {
+                value:
+                    RecurrenceWeekday.THURSDAY,
+                label: "J"
+            },
+            {
+                value:
+                    RecurrenceWeekday.FRIDAY,
+                label: "V"
+            },
+            {
+                value:
+                    RecurrenceWeekday.SATURDAY,
+                label: "S"
+            },
+            {
+                value:
+                    RecurrenceWeekday.SUNDAY,
+                label: "D"
+            }
+        ].map(option => `
+
+            <label class="recurrenceWeekdayOption">
+
+                <input
+                    class="taskRecurrenceWeekday"
+                    type="checkbox"
+                    value="${option.value}"
+                    ${task.recurrenceWeekdays
+                        .includes(option.value)
+                        ? "checked"
+                        : ""}
+                    ${disabled}>
+
+                <span>
+                    ${option.label}
+                </span>
+
+            </label>
+
+        `).join("");
 
         const recurrenceIndicator = task.recurrence
             ? `
@@ -460,6 +521,54 @@ export class TaskEditor {
                             ${disabled}>
                             ${recurrenceOptions}
                         </select>
+
+                        <div
+                            id="recurrenceAdvancedFields"
+                            class="recurrenceAdvancedFields"
+                            ${task.recurrence
+                                ? ""
+                                : "hidden"}>
+
+                            <label for="taskRecurrenceInterval">
+                                Repetir cada
+                            </label>
+
+                            <div class="recurrenceIntervalControl">
+
+                                <input
+                                    id="taskRecurrenceInterval"
+                                    type="number"
+                                    min="1"
+                                    max="365"
+                                    value="${task.recurrenceInterval ?? 1}"
+                                    ${disabled}>
+
+                                <span id="recurrenceIntervalUnit">
+                                    unidad
+                                </span>
+
+                            </div>
+
+                            <fieldset
+                                id="recurrenceWeekdays"
+                                class="recurrenceWeekdays"
+                                ${task.recurrence ===
+                                    RecurrenceFrequency.WEEKLY
+                                    ? ""
+                                    : "hidden"}
+                                ${disabled}>
+
+                                <legend>
+                                    Días de la semana
+                                </legend>
+
+                                <div>
+                                    ${recurrenceWeekdayOptions}
+                                </div>
+
+                            </fieldset>
+
+                        </div>
 
                         ${postponementControls}
                         ${postponementSummary}

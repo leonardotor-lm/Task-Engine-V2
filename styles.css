@@ -1898,3 +1898,109 @@ h3 {
     }
 
 }
+
+
+/* Editor de recurrencias avanzadas */
+.recurrenceAdvancedFields[hidden],
+.recurrenceWeekdays[hidden] {
+    display: none;
+}
+
+.recurrenceAdvancedFields {
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+}
+
+.recurrenceAdvancedFields > label {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.recurrenceIntervalControl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recurrenceIntervalControl input {
+    box-sizing: border-box;
+    width: 88px;
+    padding: 7px;
+}
+
+.recurrenceIntervalControl span {
+    color: #475569;
+}
+
+.recurrenceWeekdays {
+    margin: 4px 0 0;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.recurrenceWeekdays > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.recurrenceWeekdayOption {
+    position: relative;
+    cursor: pointer;
+}
+
+.recurrenceWeekdayOption input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.recurrenceWeekdayOption span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    background: #fff;
+    color: #475569;
+}
+
+.recurrenceWeekdayOption
+    input:checked + span {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+}
+
+.recurrenceWeekdayOption
+    input:focus-visible + span {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+
+    .recurrenceAdvancedFields {
+        padding: 10px;
+    }
+
+    .recurrenceIntervalControl input {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .recurrenceWeekdayOption span {
+        width: 38px;
+        height: 38px;
+    }
+
+}
