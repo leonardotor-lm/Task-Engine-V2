@@ -4,6 +4,7 @@ import { ViewRouter } from "./ViewRouter.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
 import { TaskSwipeController } from "./TaskSwipeController.js";
+import { hasTaskEditorChanges } from "./TaskEditorDraft.js";
 
 export class MainView {
 
@@ -148,6 +149,29 @@ export class MainView {
 
     }
 
+    hasUnsavedTaskEdit(task) {
+
+        return Boolean(
+            task &&
+            hasTaskEditorChanges(task)
+        );
+
+    }
+
+    confirmDiscardTaskChanges(task) {
+
+        if (
+            !this.hasUnsavedTaskEdit(task)
+        ) {
+            return true;
+        }
+
+        return Dialog.confirm(
+            "Hay cambios sin guardar. ¿Descartarlos?"
+        );
+
+    }
+
     backupSummary(data) {
 
         return [
@@ -263,6 +287,17 @@ export class MainView {
             }
 
             if (state.selectedTask) {
+
+                if (
+                    !this.confirmDiscardTaskChanges(
+                        state.selectedTask
+                    )
+                ) {
+
+                    restoreGuard();
+                    return;
+
+                }
 
                 restoreGuard();
 
@@ -737,6 +772,15 @@ export class MainView {
             document.getElementById(
                 elementId
             )?.addEventListener("click", () => {
+
+                if (
+                    selectedTask &&
+                    !this.confirmDiscardTaskChanges(
+                        selectedTask
+                    )
+                ) {
+                    return;
+                }
 
                 this.navigateAndResetScroll(
                     () =>
@@ -1750,7 +1794,16 @@ export class MainView {
                     "closeTaskEditor"
                 )?.addEventListener("click", () => {
 
-                    this.callbacks.onCloseTaskEditor();
+                    if (
+                        !this.confirmDiscardTaskChanges(
+                            selectedTask
+                        )
+                    ) {
+                        return;
+                    }
+
+                    this.callbacks
+                        .onCloseTaskEditor();
 
                 });
 
