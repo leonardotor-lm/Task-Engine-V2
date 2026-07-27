@@ -1,7 +1,7 @@
-const METADATA_METADATA_STORAGE_KEY =
+const METADATA_STORAGE_KEY =
     "task-engine-v2-show-metadata";
 
-const COMPLETED_METADATA_STORAGE_KEY =
+const COMPLETED_STORAGE_KEY =
     "task-engine-v2-show-completed";
 
 export class TaskDisplayPreferences {
