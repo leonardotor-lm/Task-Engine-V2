@@ -1762,3 +1762,93 @@ h3 {
     }
 
 }
+
+
+/* Segunda etapa responsive: secciones del editor */
+.editorSection {
+    border: 0;
+}
+
+.editorSection > summary {
+    display: none;
+}
+
+.editorSectionBody {
+    display: contents;
+}
+
+@media (max-width: 760px) {
+
+    .editorSection {
+        margin: 0 0 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .editorSection > summary {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        box-sizing: border-box;
+        padding: 9px 11px;
+        color: #334155;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .editorSection > summary::marker {
+        color: #64748b;
+    }
+
+    .editorSection[open] > summary {
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .editorSectionBody {
+        display: block;
+        padding: 4px 11px 12px;
+    }
+
+    .editorSectionBody > label {
+        display: block;
+        margin: 13px 0 4px;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .editorSectionBody > input,
+    .editorSectionBody > select,
+    .editorSectionBody > textarea {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 44px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .editorSectionBody > textarea {
+        min-height: 112px;
+    }
+
+    .editorPrimarySection {
+        border-color: #cbd5e1;
+    }
+
+    .editorSubtasksSection
+        .editorSubtaskList {
+        padding-left: 16px;
+    }
+
+    .editorSubtasksSection
+        .subtaskForm {
+        margin-top: 12px;
+    }
+
+    .editorSection
+        .recurrenceIndicator {
+        margin: 10px 0 4px;
+    }
+
+}
