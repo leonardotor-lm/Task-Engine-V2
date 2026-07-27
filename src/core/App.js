@@ -1443,6 +1443,7 @@ export class App {
 
         this.selectedTask = null;
         this.currentView = View.TODAY;
+        this.currentAreaId = null;
         this.taskCreationOpen = false;
         this.searchQuery = "";
         this.taskFilters = {
