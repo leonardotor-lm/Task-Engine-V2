@@ -88,8 +88,18 @@ export class App {
 
         this.syncFocusWatcher =
             new SyncFocusWatcher({
-                onFocus: () =>
-                    this.checkRemoteStatus()
+                onFocus: () => {
+
+                    if (
+                        this.mainView
+                            ?.hasActiveEntityEdit()
+                    ) {
+                        return;
+                    }
+
+                    this.checkRemoteStatus();
+
+                }
             });
 
         this.mainView = new MainView({
