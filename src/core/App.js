@@ -59,6 +59,7 @@ export class App {
 
         this.selectedTask = null;
         this.currentView = View.TODAY;
+        this.currentAreaId = null;
         this.projectTaskId = null;
         this.previousProjectView = View.TODAY;
         this.projectHistory = [];
@@ -136,7 +137,11 @@ export class App {
                         title,
                         ...getTaskCreationDefaults(
                             this.currentView,
-                            this.getTodayString()
+                            this.getTodayString(),
+                            {
+                                areaId:
+                                    this.currentAreaId
+                            }
                         )
                     });
 
@@ -1050,6 +1055,20 @@ export class App {
 
             },
 
+            onShowArea: id => {
+
+                if (
+                    !this.areaService
+                        .getAreaById(id)
+                ) {
+                    return;
+                }
+
+                this.currentAreaId = id;
+                this.navigateTo(View.AREA);
+
+            },
+
             onShowCompleted: () => {
 
                 this.navigateTo(View.COMPLETED);
@@ -1093,6 +1112,11 @@ export class App {
     navigateTo(view) {
 
         this.currentView = view;
+
+        if (view !== View.AREA) {
+            this.currentAreaId = null;
+        }
+
         this.bulkSelectionMode = false;
         this.selectedTaskIds.clear();
         this.selectedTask = null;
@@ -1482,6 +1506,13 @@ export class App {
 
                 return this.taskService.getAllActiveTasks();
 
+            case View.AREA:
+
+                return this.currentAreaId
+                    ? this.taskService
+                        .getAllActiveTasks()
+                    : [];
+
             case View.COMPLETED:
 
                 return this.taskService.getCompletedTasks();
@@ -1509,7 +1540,8 @@ export class App {
             View.INBOX,
             View.TODAY,
             View.UPCOMING,
-            View.ALL
+            View.ALL,
+            View.AREA
         ];
 
         let visibleTasks = this.getVisibleTasks();
@@ -1529,7 +1561,15 @@ export class App {
                 visibleTasks,
                 {
                     query: this.searchQuery,
-                    filters: this.taskFilters,
+                    filters:
+                        this.currentView ===
+                            View.AREA
+                            ? {
+                                ...this.taskFilters,
+                                areaId:
+                                    this.currentAreaId
+                            }
+                            : this.taskFilters,
                     today: this.getTodayString()
                 }
             );
@@ -1546,6 +1586,7 @@ export class App {
             [View.TODAY]: "ACTIVE",
             [View.UPCOMING]: "ACTIVE",
             [View.ALL]: "ACTIVE",
+            [View.AREA]: "ACTIVE",
             [View.COMPLETED]: "COMPLETED",
             [View.ARCHIVED]: "ARCHIVED",
             [View.TRASH]: "TRASH"
@@ -1613,6 +1654,15 @@ export class App {
         this.mainView.render({
 
             view: this.currentView,
+            activeAreaId:
+                this.currentAreaId,
+            activeArea:
+                this.currentAreaId
+                    ? this.areaService
+                        .getAreaById(
+                            this.currentAreaId
+                        )
+                    : null,
             projectTask:
                 this.projectTaskId
                     ? this.taskService.getTaskById(
