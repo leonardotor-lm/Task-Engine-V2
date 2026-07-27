@@ -22,6 +22,10 @@ import {
     hasActiveTaskFilters
 } from "./TaskFilters.js";
 import {
+    compileAdvancedSearch,
+    filterTaskTreeByAdvancedSearch
+} from "./AdvancedSearch.js";
+import {
     TaskSort,
     sortTaskTree
 } from "./TaskSorting.js";
@@ -67,6 +71,9 @@ export class App {
         this.inlineSubtaskParentId = null;
         this.taskCreationOpen = false;
         this.searchQuery = "";
+        this.advancedSearchMode = false;
+        this.advancedSearchExpression = null;
+        this.advancedSearchError = "";
         this.taskFilters = {
             areaId: "",
             contextId: "",
@@ -249,6 +256,8 @@ export class App {
                 this.projectTaskId = null;
                 this.projectHistory = [];
                 this.searchQuery = "";
+                this.advancedSearchExpression = null;
+                this.advancedSearchError = "";
                 this.taskFilters = {
                     areaId: "",
                     contextId: "",
@@ -379,9 +388,26 @@ export class App {
             onSearchTasks: (query) => {
 
                 this.searchQuery = query;
+                this.advancedSearchError = "";
+
+                if (this.advancedSearchMode) {
+
+                    try {
+
+                        this.advancedSearchExpression =
+                            compileAdvancedSearch(query);
+
+                    } catch (error) {
+
+                        this.advancedSearchExpression = null;
+                        this.advancedSearchError =
+                            error.message;
+
+                    }
+
+                }
 
                 this.selectedTask = null;
-
                 this.render();
 
             },
@@ -389,7 +415,23 @@ export class App {
             onClearSearch: () => {
 
                 this.searchQuery = "";
+                this.advancedSearchExpression = null;
+                this.advancedSearchError = "";
 
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onToggleAdvancedSearch: () => {
+
+                this.advancedSearchMode =
+                    !this.advancedSearchMode;
+
+                this.searchQuery = "";
+                this.advancedSearchExpression = null;
+                this.advancedSearchError = "";
                 this.selectedTask = null;
 
                 this.render();
@@ -1456,6 +1498,8 @@ export class App {
         this.currentAreaId = null;
         this.taskCreationOpen = false;
         this.searchQuery = "";
+        this.advancedSearchExpression = null;
+        this.advancedSearchError = "";
         this.taskFilters = {
             areaId: "",
             contextId: "",
@@ -1636,16 +1680,29 @@ export class App {
             visibleTasks = filterTaskTreeByCriteria(
                 visibleTasks,
                 {
-                    query: this.searchQuery,
-                    filters:
-                        this.currentView ===
-                            View.AREA
-                            ? {
-                                ...this.taskFilters,
-                                areaId:
-                                    this.currentAreaId
-                            }
-                            : this.taskFilters,
+                    query: this.advancedSearchMode
+                        ? ""
+                        : this.searchQuery,
+                    filters: this.advancedSearchMode
+                        ? (
+                            this.currentView ===
+                                View.AREA
+                                ? {
+                                    areaId:
+                                        this.currentAreaId
+                                }
+                                : {}
+                        )
+                        : (
+                            this.currentView ===
+                                View.AREA
+                                ? {
+                                    ...this.taskFilters,
+                                    areaId:
+                                        this.currentAreaId
+                                }
+                                : this.taskFilters
+                        ),
                     today: this.getTodayString()
                 }
             );
@@ -1654,6 +1711,28 @@ export class App {
                 visibleTasks,
                 this.taskSort
             );
+
+        }
+
+        if (
+            this.advancedSearchMode &&
+            this.advancedSearchExpression
+        ) {
+
+            visibleTasks =
+                filterTaskTreeByAdvancedSearch(
+                    visibleTasks,
+                    this.advancedSearchExpression,
+                    {
+                        areas:
+                            this.areaService.getAllAreas(),
+                        contexts:
+                            this.contextService.getAllContexts(),
+                        tags:
+                            this.tagService.getAllTags(),
+                        today: this.getTodayString()
+                    }
+                );
 
         }
 
@@ -1757,6 +1836,10 @@ export class App {
             allTasks: this.taskService.getAllTasks(),
             expandedTaskIds: this.expandedTaskIds,
             searchQuery: this.searchQuery,
+            advancedSearchMode:
+                this.advancedSearchMode,
+            advancedSearchError:
+                this.advancedSearchError,
             taskFilters: this.taskFilters,
             filtersActive: hasActiveTaskFilters(
                 this.taskFilters
