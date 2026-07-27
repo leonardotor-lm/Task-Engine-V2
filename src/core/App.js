@@ -92,7 +92,11 @@ export class App {
 
                     if (
                         this.mainView
-                            ?.hasActiveEntityEdit()
+                            ?.hasActiveEntityEdit() ||
+                        this.mainView
+                            ?.hasUnsavedTaskEdit(
+                                this.selectedTask
+                            )
                     ) {
                         return;
                     }
