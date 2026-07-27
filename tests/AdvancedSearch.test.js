@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
     AdvancedSearchSyntaxError,
     compileAdvancedSearch,
+    filterTaskTreeByAdvancedSearch,
     matchesAdvancedSearch
 } from "../src/core/AdvancedSearch.js";
 import { TaskStatus } from "../src/domain/TaskStatus.js";
@@ -275,6 +276,42 @@ test("informa comillas y paréntesis incompletos", () => {
             "(prioridad:alta OR prioridad:media"
         ),
         AdvancedSearchSyntaxError
+    );
+
+});
+
+
+test("conserva los ancestros de las coincidencias avanzadas", () => {
+
+    const parent = task({
+        id: "project",
+        title: "Proyecto anual"
+    });
+
+    const child = task({
+        id: "matching-child",
+        title: "Preparar bibliografía",
+        parentTaskId: parent.id,
+        priority: 3
+    });
+
+    const unrelated = task({
+        id: "unrelated",
+        title: "Comprar alimentos"
+    });
+
+    const result =
+        filterTaskTreeByAdvancedSearch(
+            [parent, child, unrelated],
+            compileAdvancedSearch(
+                "prioridad:alta"
+            ),
+            context
+        );
+
+    assert.deepEqual(
+        result.map(item => item.id),
+        ["project", "matching-child"]
     );
 
 });
