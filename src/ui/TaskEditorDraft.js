@@ -6,9 +6,23 @@ const normalizeTagIds = tagIds => {
 
 };
 
+const normalizeWeekdays = weekdays => {
+
+    return [...(weekdays ?? [])]
+        .map(Number)
+        .sort(
+            (first, second) =>
+                first - second
+        );
+
+};
+
 export function createTaskDraft(task) {
 
     if (!task) return null;
+
+    const recurrence =
+        task.recurrence || null;
 
     return {
         title:
@@ -25,8 +39,20 @@ export function createTaskDraft(task) {
             task.dueDate || null,
         tagIds:
             normalizeTagIds(task.tagIds),
-        recurrence:
-            task.recurrence || null
+        recurrence,
+        recurrenceInterval:
+            recurrence
+                ? Number(
+                    task.recurrenceInterval ??
+                    1
+                )
+                : 1,
+        recurrenceWeekdays:
+            recurrence === "WEEKLY"
+                ? normalizeWeekdays(
+                    task.recurrenceWeekdays
+                )
+                : []
     };
 
 }
@@ -41,6 +67,11 @@ export function readTaskEditorDraft(
         );
 
     if (!title) return null;
+
+    const recurrence =
+        root.querySelector(
+            "#taskRecurrence"
+        ).value || null;
 
     return {
         title:
@@ -77,10 +108,29 @@ export function readTaskEditorDraft(
                     input => input.value
                 )
             ),
-        recurrence:
-            root.querySelector(
-                "#taskRecurrence"
-            ).value || null
+        recurrence,
+        recurrenceInterval:
+            recurrence
+                ? Number(
+                    root.querySelector(
+                        "#taskRecurrenceInterval"
+                    ).value
+                )
+                : 1,
+        recurrenceWeekdays:
+            recurrence === "WEEKLY"
+                ? normalizeWeekdays(
+                    [
+                        ...root
+                            .querySelectorAll(
+                                ".taskRecurrenceWeekday:checked"
+                            )
+                    ].map(
+                        input =>
+                            input.value
+                    )
+                )
+                : []
     };
 
 }
