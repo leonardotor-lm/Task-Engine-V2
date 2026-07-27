@@ -34,6 +34,8 @@ export class MainView {
             contexts,
             tags,
             searchQuery,
+            advancedSearchMode,
+            advancedSearchError,
             taskFilters,
             taskSort,
             canRestoreBackup,
@@ -97,7 +99,9 @@ export class MainView {
                     bulkSelectionMode,
                     syncInProgress,
                     syncLastError,
-                    showCompletedTasks
+                    showCompletedTasks,
+                    advancedSearchMode,
+                    advancedSearchError
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -670,6 +674,14 @@ export class MainView {
                 Dialog.alert(error.message);
 
             }
+
+        });
+
+        document.getElementById(
+            "toggleAdvancedSearch"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onToggleAdvancedSearch();
 
         });
 

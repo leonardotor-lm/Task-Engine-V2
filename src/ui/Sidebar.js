@@ -24,7 +24,9 @@ export class Sidebar {
         bulkSelectionMode = false,
         syncInProgress = false,
         syncLastError = null,
-        showCompletedTasks = false
+        showCompletedTasks = false,
+        advancedSearchMode = false,
+        advancedSearchError = ""
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -108,7 +110,9 @@ export class Sidebar {
             `
         ).join("");
 
-        const filters = taskViews.includes(activeView)
+        const filters =
+            taskViews.includes(activeView) &&
+            !advancedSearchMode
             ? `
                 <details
                     class="taskFilters"
@@ -484,14 +488,53 @@ export class Sidebar {
                     ＋ Nueva tarea
                 </button>
 
-                <form id="taskSearchForm" class="taskSearch">
+                <button
+                    id="toggleAdvancedSearch"
+                    type="button"
+                    class="advancedSearchToggle ${advancedSearchMode
+                        ? "active"
+                        : ""}"
+                    aria-pressed="${advancedSearchMode}">
+                    ${advancedSearchMode
+                        ? "Búsqueda avanzada activa"
+                        : "Usar búsqueda avanzada"}
+                </button>
+
+                <form
+                    id="taskSearchForm"
+                    class="taskSearch ${advancedSearchMode
+                        ? "advanced"
+                        : ""}">
 
                     <input
                         id="taskSearchInput"
                         type="search"
                         value="${escapeHtml(searchQuery)}"
-                        placeholder="Buscar tareas"
+                        placeholder="${advancedSearchMode
+                            ? "Ej.: prioridad:alta AND fecha:hoy"
+                            : "Buscar tareas"}"
+                        aria-describedby="${advancedSearchMode
+                            ? "advancedSearchHelp"
+                            : ""}"
                         autocomplete="off">
+
+                    ${advancedSearchMode
+                        ? `
+                            <p id="advancedSearchHelp">
+                                Usá AND, OR, NOT, paréntesis y campos como prioridad, área, contexto, etiqueta, fecha o estado.
+                            </p>
+                        `
+                        : ""}
+
+                    ${advancedSearchError
+                        ? `
+                            <p
+                                class="advancedSearchError"
+                                role="alert">
+                                ${escapeHtml(advancedSearchError)}
+                            </p>
+                        `
+                        : ""}
 
                     <div class="taskSearchActions">
 
