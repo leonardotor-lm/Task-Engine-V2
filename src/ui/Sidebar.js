@@ -23,7 +23,8 @@ export class Sidebar {
         syncRemoteUpdateAvailable = false,
         bulkSelectionMode = false,
         syncInProgress = false,
-        syncLastError = null
+        syncLastError = null,
+        showCompletedTasks = false
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -66,6 +67,15 @@ export class Sidebar {
             View.COMPLETED,
             View.ARCHIVED,
             View.TRASH
+        ];
+
+        const completedToggleViews = [
+            View.INBOX,
+            View.TODAY,
+            View.UPCOMING,
+            View.ALL,
+            View.AREA,
+            View.PROJECT
         ];
 
         const optionList = (
@@ -506,6 +516,21 @@ export class Sidebar {
                 ${filters}
 
                 ${sorting}
+
+                ${completedToggleViews.includes(activeView)
+                    ? `
+                        <button
+                            id="toggleCompletedTasks"
+                            type="button"
+                            class="bulkModeButton ${showCompletedTasks
+                                ? "active"
+                                : ""}">
+                            ${showCompletedTasks
+                                ? "Ocultar completadas"
+                                : "Mostrar completadas"}
+                        </button>
+                    `
+                    : ""}
 
                 ${taskViews.includes(activeView)
                     ? `
