@@ -26,6 +26,29 @@ export class Sidebar {
         syncLastError = null
     ) {
 
+        // Compatibilidad con llamadas anteriores a la incorporación
+        // de activeAreaId como cuarto argumento.
+        if (Array.isArray(activeAreaId)) {
+
+            syncLastError = syncInProgress;
+            syncInProgress = bulkSelectionMode;
+            bulkSelectionMode = syncRemoteUpdateAvailable;
+            syncRemoteUpdateAvailable = syncRemoteRevision;
+            syncRemoteRevision = syncLastSuccess;
+            syncLastSuccess = syncPendingChanges;
+            syncPendingChanges = syncRevision;
+            syncRevision = syncUrl;
+            syncUrl = syncConfigured;
+            syncConfigured = canRestoreBackup;
+            canRestoreBackup = taskSort;
+            taskSort = taskFilters;
+            taskFilters = tags;
+            tags = contexts;
+            contexts = activeAreaId;
+            activeAreaId = null;
+
+        }
+
         const buttonClass = view => {
 
             return activeView === view
