@@ -104,7 +104,9 @@ export class EntityManager {
                                 value="${escapeHtml(entity.color)}"
                                 aria-label="Color">
 
-                            <button type="submit">
+                            <button
+                                type="button"
+                                class="saveEntityEdit">
                                 Guardar
                             </button>
 
