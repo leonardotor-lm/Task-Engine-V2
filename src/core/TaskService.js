@@ -279,10 +279,21 @@ export class TaskService {
                     recurrenceId:
                         task.recurrenceId,
                     recurrence: task.recurrence,
+                    recurrenceInterval:
+                        task.recurrenceInterval,
+                    recurrenceWeekdays: [
+                        ...task.recurrenceWeekdays
+                    ],
                     dueDate:
                         getNextRecurrenceDate(
                             task.dueDate,
-                            task.recurrence
+                            task.recurrence,
+                            {
+                                interval:
+                                    task.recurrenceInterval,
+                                weekdays:
+                                    task.recurrenceWeekdays
+                            }
                         )
                 }));
 
@@ -600,7 +611,13 @@ export class TaskService {
 
         const nextDueDate = getNextRecurrenceDate(
             task.dueDate,
-            task.recurrence
+            task.recurrence,
+            {
+                interval:
+                    task.recurrenceInterval,
+                weekdays:
+                    task.recurrenceWeekdays
+            }
         );
 
         return this.repository.add({
@@ -615,6 +632,11 @@ export class TaskService {
             parentTaskId: null,
             recurrenceId: task.recurrenceId,
             recurrence: task.recurrence,
+            recurrenceInterval:
+                task.recurrenceInterval,
+            recurrenceWeekdays: [
+                ...task.recurrenceWeekdays
+            ],
             dueDate: nextDueDate
 
         });
@@ -694,7 +716,13 @@ export class TaskService {
 
         const nextDueDate = getNextRecurrenceDate(
             task.dueDate,
-            task.recurrence
+            task.recurrence,
+            {
+                interval:
+                    task.recurrenceInterval,
+                weekdays:
+                    task.recurrenceWeekdays
+            }
         );
 
         task.update({
