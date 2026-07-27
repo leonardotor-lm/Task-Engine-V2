@@ -2004,3 +2004,50 @@ h3 {
     }
 
 }
+
+
+/* Vistas dinámicas de áreas */
+.sidebarAreaViews {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 5px 0;
+}
+
+.sidebarSectionLabel {
+    padding: 4px 8px 2px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.showAreaView {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.showAreaView > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebarAreaColor {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    background: var(--area-color);
+}
+
+@media (max-width: 760px) {
+
+    .showAreaView {
+        min-height: 40px;
+    }
+
+}

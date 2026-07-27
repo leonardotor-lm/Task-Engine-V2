@@ -21,7 +21,13 @@ export class Task {
 
         this.description = data.description ?? "";
 
-        this.status = data.status ?? TaskStatus.INBOX;
+        this.status =
+            data.status ??
+            (
+                data.areaId
+                    ? TaskStatus.PENDING
+                    : TaskStatus.INBOX
+            );
 
         this.statusBeforeDelete = data.statusBeforeDelete ?? null;
 

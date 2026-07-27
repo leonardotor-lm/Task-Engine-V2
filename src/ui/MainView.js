@@ -30,6 +30,7 @@ export class MainView {
             selectedTask,
             allTasks,
             areas,
+            activeAreaId,
             contexts,
             tags,
             searchQuery,
@@ -79,6 +80,7 @@ export class MainView {
                     view,
                     searchQuery,
                     areas,
+                    activeAreaId,
                     contexts,
                     tags,
                     taskFilters,
@@ -793,12 +795,43 @@ export class MainView {
 
         }
 
+        document.querySelectorAll(
+            ".showAreaView"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        selectedTask &&
+                        !this.confirmDiscardTaskChanges(
+                            selectedTask
+                        )
+                    ) {
+                        return;
+                    }
+
+                    this.navigateAndResetScroll(
+                        () =>
+                            this.callbacks
+                                .onShowArea(
+                                    button.dataset.id
+                                )
+                    );
+
+                }
+            );
+
+        });
+
         const taskViews = [
 
             View.INBOX,
             View.TODAY,
             View.UPCOMING,
             View.ALL,
+            View.AREA,
             View.COMPLETED,
             View.ARCHIVED,
             View.TRASH,

@@ -8,6 +8,8 @@ export const View = Object.freeze({
 
     ALL: "all",
 
+    AREA: "area",
+
     COMPLETED: "completed",
 
     ARCHIVED: "archived",

@@ -73,6 +73,14 @@ export class ViewRouter {
                     "Todas"
                 );
 
+            case View.AREA:
+
+                return this.renderTaskList(
+                    state,
+                    state.activeArea?.name ??
+                        "Área"
+                );
+
             case View.COMPLETED:
 
                 return this.renderTaskList(

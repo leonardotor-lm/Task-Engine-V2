@@ -8,6 +8,7 @@ export class Sidebar {
         activeView,
         searchQuery = "",
         areas = [],
+        activeAreaId = null,
         contexts = [],
         tags = [],
         taskFilters = {},
@@ -25,6 +26,29 @@ export class Sidebar {
         syncLastError = null
     ) {
 
+        // Compatibilidad con llamadas anteriores a la incorporación
+        // de activeAreaId como cuarto argumento.
+        if (Array.isArray(activeAreaId)) {
+
+            syncLastError = syncInProgress;
+            syncInProgress = bulkSelectionMode;
+            bulkSelectionMode = syncRemoteUpdateAvailable;
+            syncRemoteUpdateAvailable = syncRemoteRevision;
+            syncRemoteRevision = syncLastSuccess;
+            syncLastSuccess = syncPendingChanges;
+            syncPendingChanges = syncRevision;
+            syncRevision = syncUrl;
+            syncUrl = syncConfigured;
+            syncConfigured = canRestoreBackup;
+            canRestoreBackup = taskSort;
+            taskSort = taskFilters;
+            taskFilters = tags;
+            tags = contexts;
+            contexts = activeAreaId;
+            activeAreaId = null;
+
+        }
+
         const buttonClass = view => {
 
             return activeView === view
@@ -38,6 +62,7 @@ export class Sidebar {
             View.TODAY,
             View.UPCOMING,
             View.ALL,
+            View.AREA,
             View.COMPLETED,
             View.ARCHIVED,
             View.TRASH
@@ -526,6 +551,41 @@ export class Sidebar {
                         class="${buttonClass(View.ALL)}">
                         📋 Todas
                     </button>
+
+                    ${areas.length > 0
+                        ? `
+                            <div class="sidebarAreaViews">
+
+                                <span class="sidebarSectionLabel">
+                                    Áreas
+                                </span>
+
+                                ${areas.map(area => `
+                                    <button
+                                        type="button"
+                                        class="sidebarButton showAreaView ${activeView ===
+                                            View.AREA &&
+                                            activeAreaId ===
+                                                area.id
+                                            ? "active"
+                                            : ""}"
+                                        data-id="${escapeHtml(area.id)}">
+
+                                        <span
+                                            class="sidebarAreaColor"
+                                            style="--area-color: ${escapeHtml(area.color)}">
+                                        </span>
+
+                                        <span>
+                                            ${escapeHtml(area.name)}
+                                        </span>
+
+                                    </button>
+                                `).join("")}
+
+                            </div>
+                        `
+                        : ""}
 
                     <hr>
 
