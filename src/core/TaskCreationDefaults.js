@@ -2,7 +2,10 @@ import { View } from "./View.js";
 
 export function getTaskCreationDefaults(
     view,
-    today
+    today,
+    {
+        areaId = null
+    } = {}
 ) {
 
     switch (view) {
@@ -11,6 +14,11 @@ export function getTaskCreationDefaults(
             return {
                 dueDate: today
             };
+
+        case View.AREA:
+            return areaId
+                ? { areaId }
+                : {};
 
         default:
             return {};
@@ -25,7 +33,8 @@ export function getTaskCreationView(view) {
         View.INBOX,
         View.TODAY,
         View.UPCOMING,
-        View.ALL
+        View.ALL,
+        View.AREA
     ];
 
     return directViews.includes(view)
