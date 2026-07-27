@@ -138,6 +138,16 @@ export class MainView {
 
     }
 
+    hasActiveEntityEdit() {
+
+        return Boolean(
+            document.querySelector(
+                ".entityEditForm:not([hidden])"
+            )
+        );
+
+    }
+
     backupSummary(data) {
 
         return [
