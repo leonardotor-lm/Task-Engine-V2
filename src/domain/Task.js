@@ -82,6 +82,33 @@ export class Task {
             }
         );
 
+        if (this.recurrence === null) {
+
+            this.recurrenceInterval = 1;
+            this.recurrenceWeekdays = [];
+
+        } else {
+
+            const normalizedRule =
+                normalizeRecurrenceRule(
+                    this.recurrence,
+                    {
+                        interval:
+                            this.recurrenceInterval,
+                        weekdays:
+                            this.recurrenceWeekdays
+                    }
+                );
+
+            this.recurrenceInterval =
+                normalizedRule.interval;
+
+            this.recurrenceWeekdays = [
+                ...normalizedRule.weekdays
+            ];
+
+        }
+
         if (
             this.recurrence !== null &&
             this.recurrenceId === null
