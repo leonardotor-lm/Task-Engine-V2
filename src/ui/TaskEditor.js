@@ -328,94 +328,162 @@ export class TaskEditor {
 
                 </div>
 
-                ${recurrenceIndicator}
+                <details
+                    class="editorSection editorPrimarySection"
+                    open>
 
-                <label>Título</label>
+                    <summary>
+                        Información principal
+                    </summary>
 
-                <input
-                    id="taskTitleEdit"
-                    type="text"
-                    value="${escapeHtml(task.title)}"
-                    ${disabled}>
+                    <div class="editorSectionBody">
 
-                <label>Descripción</label>
+                        <label for="taskTitleEdit">
+                            Título
+                        </label>
 
-                <textarea
-                    id="taskDescriptionEdit"
-                    rows="6"
-                    ${disabled}>${escapeHtml(task.description)}</textarea>
+                        <input
+                            id="taskTitleEdit"
+                            type="text"
+                            value="${escapeHtml(task.title)}"
+                            ${disabled}>
 
-                <label>Área</label>
+                        <label for="taskDescriptionEdit">
+                            Descripción
+                        </label>
 
-                <select
-                    id="taskArea"
-                    ${disabled}>
+                        <textarea
+                            id="taskDescriptionEdit"
+                            rows="6"
+                            ${disabled}>${escapeHtml(task.description)}</textarea>
 
-                    <option value="">
-                        Sin área
-                    </option>
+                        <label for="taskPriority">
+                            Prioridad
+                        </label>
 
-                    ${areaOptions}
+                        <select
+                            id="taskPriority"
+                            ${disabled}>
+                            ${priorityOptions}
+                        </select>
 
-                </select>
+                        <label for="taskDueDate">
+                            Fecha de vencimiento
+                        </label>
 
-                <label>Contexto</label>
+                        <input
+                            id="taskDueDate"
+                            type="date"
+                            value="${escapeHtml(task.dueDate)}"
+                            ${disabled}>
 
-                <select
-                    id="taskContext"
-                    ${disabled}>
+                    </div>
 
-                    <option value="">
-                        Sin contexto
-                    </option>
+                </details>
 
-                    ${contextOptions}
+                <details
+                    class="editorSection"
+                    data-mobile-collapsed="true"
+                    open>
 
-                </select>
+                    <summary>
+                        Organización
+                    </summary>
 
-                <fieldset class="tagField" ${disabled}>
+                    <div class="editorSectionBody">
 
-                    <legend>Etiquetas</legend>
+                        <label for="taskArea">
+                            Área
+                        </label>
 
-                    ${tagOptions}
+                        <select
+                            id="taskArea"
+                            ${disabled}>
 
-                </fieldset>
+                            <option value="">
+                                Sin área
+                            </option>
 
-                <label>Prioridad</label>
+                            ${areaOptions}
 
-                <select
-                    id="taskPriority"
-                    ${disabled}>
-                    ${priorityOptions}
-                </select>
+                        </select>
 
-                <label>Fecha de vencimiento</label>
+                        <label for="taskContext">
+                            Contexto
+                        </label>
 
-                <input
-                    id="taskDueDate"
-                    type="date"
-                    value="${escapeHtml(task.dueDate)}"
-                    ${disabled}>
+                        <select
+                            id="taskContext"
+                            ${disabled}>
 
-                <label>Repetir</label>
+                            <option value="">
+                                Sin contexto
+                            </option>
 
-                <select
-                    id="taskRecurrence"
-                    ${disabled}>
-                    ${recurrenceOptions}
-                </select>
+                            ${contextOptions}
 
-                ${postponementControls}
-                ${postponementSummary}
+                        </select>
 
-                <section class="subtaskSection">
+                        <fieldset
+                            class="tagField"
+                            ${disabled}>
 
-                    <h4>Subtareas</h4>
+                            <legend>Etiquetas</legend>
 
-                    ${subtaskItems}
-                    ${subtaskForm}
+                            ${tagOptions}
 
-                </section>
+                        </fieldset>
+
+                    </div>
+
+                </details>
+
+                <details
+                    class="editorSection"
+                    data-mobile-collapsed="true"
+                    open>
+
+                    <summary>
+                        Planificación
+                    </summary>
+
+                    <div class="editorSectionBody">
+
+                        ${recurrenceIndicator}
+
+                        <label for="taskRecurrence">
+                            Repetir
+                        </label>
+
+                        <select
+                            id="taskRecurrence"
+                            ${disabled}>
+                            ${recurrenceOptions}
+                        </select>
+
+                        ${postponementControls}
+                        ${postponementSummary}
+
+                    </div>
+
+                </details>
+
+                <details
+                    class="editorSection editorSubtasksSection"
+                    open>
+
+                    <summary>
+                        Subtareas
+                    </summary>
+
+                    <div class="editorSectionBody">
+
+                        ${subtaskItems}
+                        ${subtaskForm}
+
+                    </div>
+
+                </details>
 
                 <hr>
 
