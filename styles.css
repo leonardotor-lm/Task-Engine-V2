@@ -1852,3 +1852,49 @@ h3 {
     }
 
 }
+
+
+/* Corrección de alineación del editor en escritorio */
+.editorSectionBody > label {
+    display: block;
+    margin: 9px 0 4px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.editorSectionBody > input,
+.editorSectionBody > select,
+.editorSectionBody > textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 6px;
+}
+
+@media (min-width: 761px) {
+
+    .taskEditorHeader h3 {
+        order: 1;
+    }
+
+    #closeTaskEditor {
+        order: 2;
+    }
+
+}
+
+@media (max-width: 760px) {
+
+    #closeTaskEditor {
+        order: 1;
+    }
+
+    .taskEditorHeader h3 {
+        order: 2;
+    }
+
+    .mobileEditorSave {
+        order: 3;
+    }
+
+}
