@@ -1955,6 +1955,19 @@ export class MainView {
 
                 });
 
+                document.getElementById(
+                    "saveTaskMobile"
+                )?.addEventListener(
+                    "click",
+                    () => {
+
+                        document.getElementById(
+                            "saveTask"
+                        )?.click();
+
+                    }
+                );
+
             }
 
         }
