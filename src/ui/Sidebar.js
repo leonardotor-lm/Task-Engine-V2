@@ -8,6 +8,7 @@ export class Sidebar {
         activeView,
         searchQuery = "",
         areas = [],
+        activeAreaId = null,
         contexts = [],
         tags = [],
         taskFilters = {},
@@ -38,6 +39,7 @@ export class Sidebar {
             View.TODAY,
             View.UPCOMING,
             View.ALL,
+            View.AREA,
             View.COMPLETED,
             View.ARCHIVED,
             View.TRASH
@@ -526,6 +528,41 @@ export class Sidebar {
                         class="${buttonClass(View.ALL)}">
                         📋 Todas
                     </button>
+
+                    ${areas.length > 0
+                        ? `
+                            <div class="sidebarAreaViews">
+
+                                <span class="sidebarSectionLabel">
+                                    Áreas
+                                </span>
+
+                                ${areas.map(area => `
+                                    <button
+                                        type="button"
+                                        class="sidebarButton showAreaView ${activeView ===
+                                            View.AREA &&
+                                            activeAreaId ===
+                                                area.id
+                                            ? "active"
+                                            : ""}"
+                                        data-id="${escapeHtml(area.id)}">
+
+                                        <span
+                                            class="sidebarAreaColor"
+                                            style="--area-color: ${escapeHtml(area.color)}">
+                                        </span>
+
+                                        <span>
+                                            ${escapeHtml(area.name)}
+                                        </span>
+
+                                    </button>
+                                `).join("")}
+
+                            </div>
+                        `
+                        : ""}
 
                     <hr>
 
