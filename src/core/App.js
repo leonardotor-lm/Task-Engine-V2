@@ -621,6 +621,16 @@ export class App {
 
             },
 
+            onToggleCompletedTasks: () => {
+
+                this.taskDisplayPreferences
+                    .toggleCompletedTasks();
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onToggleBulkMode: () => {
 
                 this.bulkSelectionMode =
@@ -1535,6 +1545,52 @@ export class App {
 
     }
 
+    getCompletedTasksForCurrentView() {
+
+        const today = this.getTodayString();
+        const completedTasks =
+            this.taskService.getCompletedTasks();
+
+        switch (this.currentView) {
+
+            case View.TODAY:
+                return completedTasks.filter(
+                    task =>
+                        task.dueDate !== null &&
+                        task.dueDate <= today
+                );
+
+            case View.UPCOMING:
+                return completedTasks.filter(
+                    task =>
+                        task.dueDate !== null &&
+                        task.dueDate > today
+                );
+
+            case View.ALL:
+                return completedTasks;
+
+            case View.AREA:
+                return completedTasks.filter(
+                    task =>
+                        task.areaId ===
+                        this.currentAreaId
+                );
+
+            case View.INBOX:
+                return completedTasks.filter(
+                    task =>
+                        task.areaId === null &&
+                        task.dueDate === null
+                );
+
+            default:
+                return [];
+
+        }
+
+    }
+
     render() {
 
         const activeViews = [
@@ -1547,12 +1603,31 @@ export class App {
 
         let visibleTasks = this.getVisibleTasks();
 
-        if (activeViews.includes(this.currentView)) {
+        const showCompletedTasks =
+            this.taskDisplayPreferences
+                .areCompletedTasksVisible();
+
+        if (
+            activeViews.includes(this.currentView) &&
+            showCompletedTasks
+        ) {
 
             visibleTasks =
-                this.taskService.includeCompletedDescendants(
-                    visibleTasks
-                );
+                this.taskService.includeCompletedDescendants([
+                    ...visibleTasks,
+                    ...this.getCompletedTasksForCurrentView()
+                ]);
+
+        }
+
+        if (
+            this.currentView === View.PROJECT &&
+            !showCompletedTasks
+        ) {
+
+            visibleTasks = visibleTasks.filter(
+                task => !task.isCompleted()
+            );
 
         }
 
@@ -1696,6 +1771,7 @@ export class App {
             showTaskMetadata:
                 this.taskDisplayPreferences
                     .isMetadataVisible(),
+            showCompletedTasks,
             today: this.getTodayString(),
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),

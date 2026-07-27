@@ -46,7 +46,8 @@ export class MainView {
             syncRemoteUpdateAvailable,
             syncInProgress,
             syncLastError,
-            bulkSelectionMode
+            bulkSelectionMode,
+            showCompletedTasks
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -95,7 +96,8 @@ export class MainView {
                     syncRemoteUpdateAvailable,
                     bulkSelectionMode,
                     syncInProgress,
-                    syncLastError
+                    syncLastError,
+                    showCompletedTasks
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -740,6 +742,14 @@ export class MainView {
         )?.addEventListener("click", () => {
 
             this.callbacks.onToggleTaskMetadata();
+
+        });
+
+        document.getElementById(
+            "toggleCompletedTasks"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onToggleCompletedTasks();
 
         });
 
