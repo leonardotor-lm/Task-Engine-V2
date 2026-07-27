@@ -1,5 +1,8 @@
-const STORAGE_KEY =
+const METADATA_METADATA_STORAGE_KEY =
     "task-engine-v2-show-metadata";
+
+const COMPLETED_METADATA_STORAGE_KEY =
+    "task-engine-v2-show-completed";
 
 export class TaskDisplayPreferences {
 
@@ -12,7 +15,7 @@ export class TaskDisplayPreferences {
     isMetadataVisible() {
 
         return this.storage.getItem(
-            STORAGE_KEY
+            METADATA_STORAGE_KEY
         ) !== "false";
 
     }
@@ -23,7 +26,29 @@ export class TaskDisplayPreferences {
             !this.isMetadataVisible();
 
         this.storage.setItem(
-            STORAGE_KEY,
+            METADATA_STORAGE_KEY,
+            String(visible)
+        );
+
+        return visible;
+
+    }
+
+    areCompletedTasksVisible() {
+
+        return this.storage.getItem(
+            COMPLETED_STORAGE_KEY
+        ) === "true";
+
+    }
+
+    toggleCompletedTasks() {
+
+        const visible =
+            !this.areCompletedTasksVisible();
+
+        this.storage.setItem(
+            COMPLETED_STORAGE_KEY,
             String(visible)
         );
 
