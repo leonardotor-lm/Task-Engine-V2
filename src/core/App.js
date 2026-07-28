@@ -114,6 +114,8 @@ export class App {
                         this.mainView
                             ?.hasActiveEntityEdit() ||
                         this.mainView
+                            ?.hasActiveEntityCreation() ||
+                        this.mainView
                             ?.hasUnsavedTaskEdit(
                                 this.selectedTask
                             )
