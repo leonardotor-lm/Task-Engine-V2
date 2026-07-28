@@ -916,33 +916,77 @@ export class MainView {
                 "click",
                 () => {
 
-                    const filter =
-                        customFilters.find(
-                            item =>
-                                item.id ===
-                                button.dataset.id
-                        );
-
-                    if (!filter) return;
-
-                    const name = Dialog.prompt(
-                        "Nuevo nombre del filtro:",
-                        filter.name
+                    const item = button.closest(
+                        ".customFilterItem"
                     );
 
-                    if (
-                        name === null ||
-                        !name.trim()
-                    ) {
-                        return;
-                    }
+                    item.querySelector(
+                        ".customFilterDisplay"
+                    ).hidden = true;
+
+                    const form = item.querySelector(
+                        ".customFilterRenameForm"
+                    );
+
+                    form.hidden = false;
+                    form.querySelector(
+                        ".customFilterRenameInput"
+                    ).focus();
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".cancelCustomFilterRename"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const item = button.closest(
+                        ".customFilterItem"
+                    );
+
+                    item.querySelector(
+                        ".customFilterRenameForm"
+                    ).hidden = true;
+
+                    item.querySelector(
+                        ".customFilterDisplay"
+                    ).hidden = false;
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".customFilterRenameForm"
+        ).forEach(form => {
+
+            form.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const name = form
+                        .querySelector(
+                            ".customFilterRenameInput"
+                        )
+                        .value.trim();
+
+                    if (!name) return;
 
                     try {
 
                         this.callbacks
                             .onRenameCustomFilter(
-                                filter.id,
-                                name.trim()
+                                form.dataset.id,
+                                name
                             );
 
                     } catch (error) {
