@@ -1,7 +1,6 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { flattenTaskTree } from "../core/TaskTree.js";
-import { SearchableSelect } from "./SearchableSelect.js";
 import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
@@ -9,8 +8,6 @@ import {
 export class TaskList {
 
     constructor() {
-        this.searchableSelect =
-            new SearchableSelect();
         this.searchableMultiSelect =
             new SearchableMultiSelect();
     }
@@ -393,34 +390,6 @@ export class TaskList {
                     canShowQuickMenu &&
                     !hasActiveDescendants;
 
-                const moveTargets =
-                    canShowQuickMenu &&
-                    !task.recurrence
-                        ? allTasks.filter(
-                            candidate =>
-                                candidate.id !== task.id &&
-                                candidate.id !==
-                                    task.parentTaskId &&
-                                !candidate.isCompleted() &&
-                                !candidate.isArchived() &&
-                                !candidate.isDeleted() &&
-                                !candidate.recurrence &&
-                                !this.isDescendantOf(
-                                    candidate.id,
-                                    task.id,
-                                    allTasks
-                                )
-                        )
-                        : [];
-
-                const moveOptions =
-                    moveTargets.map(
-                        candidate => ({
-                            value: candidate.id,
-                            label: candidate.title
-                        })
-                    );
-
                 const postponeBaseDate =
                     task.dueDate > today
                         ? task.dueDate
@@ -692,14 +661,14 @@ export class TaskList {
                                                                     `
                                                                     : ""}
 
-                                                                <button
-                                                                    type="button"
-                                                                    class="quickEditTask">
-                                                                    Editar
-                                                                </button>
-
                                                                 ${task.recurrence
                                                                     ? `
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickEditTask">
+                                                                            Editar
+                                                                        </button>
+
                                                                         <button
                                                                             type="button"
                                                                             class="quickSkipRecurringTask">
@@ -710,64 +679,6 @@ export class TaskList {
                                                                             type="button"
                                                                             class="quickEndRecurrence">
                                                                             Finalizar recurrencia
-                                                                        </button>
-                                                                    `
-                                                                    : ""}
-
-                                                                ${!task.recurrence
-                                                                    ? `
-                                                                        <button
-                                                                            type="button"
-                                                                            class="quickDuplicateTask">
-                                                                            Duplicar
-                                                                        </button>
-                                                                    `
-                                                                    : ""}
-
-                                                                ${moveTargets.length > 0
-                                                                    ? `
-                                                                        <div class="quickMoveTaskControl">
-
-                                                                            ${this.searchableSelect.render({
-                                                                                id:
-                                                                                    `quickMoveTarget-${task.id}`,
-                                                                                label:
-                                                                                    "Mover a otro proyecto",
-                                                                                options:
-                                                                                    moveOptions,
-                                                                                placeholder:
-                                                                                    "Buscar proyecto…",
-                                                                                selectClass:
-                                                                                    "quickMoveTarget"
-                                                                            })}
-
-                                                                            <button
-                                                                                type="button"
-                                                                                class="quickMoveTask">
-                                                                                Mover
-                                                                            </button>
-
-                                                                        </div>
-                                                                    `
-                                                                    : ""}
-
-                                                                ${task.parentTaskId
-                                                                    ? `
-                                                                        <button
-                                                                            type="button"
-                                                                            class="quickDetachSubtask">
-                                                                            Convertir en tarea principal
-                                                                        </button>
-                                                                    `
-                                                                    : ""}
-
-                                                                ${task.dueDate &&
-                                                                    !task.recurrence
-                                                                    ? `
-                                                                        <button
-                                                                            type="button"
-                                                                            class="quickClearDueDate">
-                                                                            Quitar fecha
                                                                         </button>
                                                                     `
                                                                     : ""}
@@ -787,6 +698,21 @@ export class TaskList {
                                                                     class="quickDeleteTask destructiveAction">
                                                                     Enviar a Papelera
                                                                 </button>
+
+                                                                ${!task.recurrence
+                                                                    ? `
+                                                                        <div
+                                                                            class="quickMoreMenuDivider"
+                                                                            aria-hidden="true">
+                                                                        </div>
+
+                                                                        <button
+                                                                            type="button"
+                                                                            class="quickDuplicateTask">
+                                                                            Duplicar
+                                                                        </button>
+                                                                    `
+                                                                    : ""}
 
                                                             </div>
 
