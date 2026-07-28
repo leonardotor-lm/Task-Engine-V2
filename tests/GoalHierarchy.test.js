@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { GoalService } from "../src/core/GoalService.js";
+import { GoalStatus } from "../src/domain/GoalStatus.js";
 
 function installLocalStorage() {
 
@@ -152,7 +153,7 @@ test("mueve e independiza un subobjetivo", () => {
 
 });
 
-test("no elimina un objetivo con subobjetivos", () => {
+test("envía a la papelera un objetivo con subobjetivos", () => {
 
     installLocalStorage();
 
@@ -162,17 +163,21 @@ test("no elimina un objetivo con subobjetivos", () => {
         title: "Raíz"
     });
 
-    service.createGoal({
+    const child = service.createGoal({
         title: "Hijo",
         parentGoalId: root.id
     });
 
-    assert.throws(
-        () => service.deleteGoal(root.id),
-        {
-            message:
-                "No se puede eliminar un objetivo que contiene subobjetivos."
-        }
+    service.deleteGoal(root.id);
+
+    assert.equal(
+        root.status,
+        GoalStatus.DELETED
+    );
+
+    assert.equal(
+        child.status,
+        GoalStatus.DELETED
     );
 
 });
