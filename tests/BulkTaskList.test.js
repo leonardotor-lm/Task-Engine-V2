@@ -133,10 +133,31 @@ test("muestra área, contexto y etiquetas en la barra masiva", () => {
         html,
         /data-value-class="bulkTagCheckbox"/
     );
+    assert.match(
+        html,
+        /searchableMultiSelectCompact/
+    );
+    assert.match(
+        html,
+        /Agregar etiquetas/
+    );
     assert.doesNotMatch(
         html,
         /type="checkbox"\s+class="bulkTagCheckbox"/
     );
+
+});
+
+test("agrupa las acciones masivas secundarias", () => {
+
+    const html = render({
+        selectedTaskIds:
+            new Set(["task-1"])
+    });
+
+    assert.match(html, /bulkMoreActions/);
+    assert.match(html, /Más acciones/);
+    assert.match(html, /bulkPrimaryAction/);
 
 });
 
