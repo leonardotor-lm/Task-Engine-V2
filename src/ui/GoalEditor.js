@@ -240,6 +240,9 @@ export class GoalEditor {
 
                 </section>
 
+                ${possibleParents.length > 0 ||
+                    goal.parentGoalId
+                    ? `
                 <section class="goalHierarchySection">
 
                     <h4>Organización</h4>
@@ -284,6 +287,8 @@ export class GoalEditor {
                         : ""}
 
                 </section>
+                    `
+                    : ""}
 
             </aside>
         `;

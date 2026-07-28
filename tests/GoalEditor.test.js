@@ -134,3 +134,22 @@ test("muestra y administra tareas y proyectos asociados", () => {
     );
 
 });
+
+test("oculta Organización cuando no hay acciones disponibles", () => {
+
+    const goal = new Goal({
+        id: "only-goal",
+        title: "Objetivo único"
+    });
+
+    const html = new GoalEditor().render(
+        goal,
+        [goal]
+    );
+
+    assert.doesNotMatch(
+        html,
+        /<h4>Organización<\/h4>/
+    );
+
+});
