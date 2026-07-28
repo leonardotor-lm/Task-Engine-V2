@@ -42,3 +42,16 @@ Las funciones complejas permanecen disponibles en celular mediante paneles o sec
 
 Estado:
 Aceptada.
+
+---
+
+## D-005
+
+Las acciones rápidas se limitan a operaciones útiles durante la ejecución inmediata.
+
+Agregar subtarea y Posponer permanecen como accesos directos contextuales. Archivar y Enviar a Papelera se agrupan en **Más acciones**. Duplicar permanece al final como acción secundaria.
+
+Editar, Mover, Quitar fecha y Convertir en tarea principal se realizan desde el editor. Las tareas recurrentes conservan su menú específico.
+
+Estado:
+Aceptada.
