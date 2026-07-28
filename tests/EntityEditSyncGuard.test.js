@@ -45,3 +45,22 @@ test("recuperar el foco no renderiza durante la edición", () => {
     );
 
 });
+
+test("la creación con color modificado se detecta como estado transitorio", () => {
+
+    assert.match(
+        mainView,
+        /hasActiveEntityCreation\(\)/
+    );
+
+    assert.match(
+        mainView,
+        /color !== "#3b82f6"/
+    );
+
+    assert.match(
+        app,
+        /hasActiveEntityCreation\(\)/
+    );
+
+});
