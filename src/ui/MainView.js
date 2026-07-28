@@ -31,6 +31,7 @@ export class MainView {
             view,
             selectedTask,
             selectedGoal,
+            goalEditorOpen,
             allTasks,
             areas,
             activeAreaId,
@@ -123,9 +124,10 @@ export class MainView {
                 )}
 
                 ${this.goalEditor.render(
-                    selectedGoal,
-                    state.goals,
-                    allTasks
+                    goalEditorOpen
+                        ? selectedGoal
+                        : null,
+                    state.goals
                 )}
 
             </div>
@@ -361,12 +363,34 @@ export class MainView {
 
             }
 
+            if (state.goalEditorOpen) {
+
+                restoreGuard();
+
+                this.callbacks
+                    .onCloseGoalEditor();
+
+                return;
+
+            }
+
             if (state.view === View.PROJECT) {
 
                 restoreGuard();
 
                 this.callbacks
                     .onCloseProject();
+
+                return;
+
+            }
+
+            if (state.view === View.GOAL) {
+
+                restoreGuard();
+
+                this.callbacks
+                    .onCloseGoalView();
 
                 return;
 
@@ -1021,11 +1045,30 @@ export class MainView {
         if (selectedGoal) {
 
             document.getElementById(
+                "closeGoalView"
+            )?.addEventListener(
+                "click",
+                () =>
+                    this.callbacks
+                        .onCloseGoalView()
+            );
+
+            document.getElementById(
+                "editGoal"
+            )?.addEventListener(
+                "click",
+                () =>
+                    this.callbacks
+                        .onOpenGoalEditor()
+            );
+
+            document.getElementById(
                 "closeGoalEditor"
             )?.addEventListener(
                 "click",
                 () =>
-                    this.callbacks.onCloseGoal()
+                    this.callbacks
+                        .onCloseGoalEditor()
             );
 
             document.getElementById(
@@ -1434,7 +1477,8 @@ export class MainView {
             View.COMPLETED,
             View.ARCHIVED,
             View.TRASH,
-            View.PROJECT
+            View.PROJECT,
+            View.GOAL
 
         ];
 
