@@ -125,6 +125,18 @@ test("muestra área, contexto y etiquetas en la barra masiva", () => {
     assert.match(html, /Computadora/);
     assert.match(html, /id="bulkTags"/);
     assert.match(html, /Importante/);
+    assert.match(
+        html,
+        /id="bulkTagPickerSearch"/
+    );
+    assert.match(
+        html,
+        /data-value-class="bulkTagCheckbox"/
+    );
+    assert.doesNotMatch(
+        html,
+        /type="checkbox"\s+class="bulkTagCheckbox"/
+    );
 
 });
 
