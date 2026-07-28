@@ -48,7 +48,8 @@ export class SyncEngine {
             tasks: data.tasks.length,
             areas: data.areas.length,
             contexts: data.contexts.length,
-            tags: data.tags.length
+            tags: data.tags.length,
+            goals: (data.goals ?? []).length
         };
 
     }
@@ -75,7 +76,8 @@ export class SyncEngine {
                     tasks: 0,
                     areas: 0,
                     contexts: 0,
-                    tags: 0
+                    tags: 0,
+                    goals: 0
                 }
             };
 
@@ -218,6 +220,10 @@ export class SyncEngine {
             );
         }
 
+        this.ensureRemoteGoalsAreSafe(
+            response.data
+        );
+
         const data =
             this.backupService.parseAndValidate(
                 JSON.stringify(response.data)
@@ -238,6 +244,39 @@ export class SyncEngine {
             revision,
             summary: this.summarize(data)
         };
+
+    }
+
+    ensureRemoteGoalsAreSafe(remoteBackup) {
+
+        const remoteGoals =
+            remoteBackup?.data?.goals;
+
+        if (Array.isArray(remoteGoals)) {
+            return;
+        }
+
+        if (
+            typeof this.backupService
+                .createBackup !== "function"
+        ) {
+            return;
+        }
+
+        const localBackup =
+            this.backupService.createBackup();
+
+        const localGoals =
+            localBackup?.data?.goals;
+
+        if (
+            Array.isArray(localGoals) &&
+            localGoals.length > 0
+        ) {
+            throw new Error(
+                "La nube usa una versión anterior que no admite objetivos. Actualizá Google Apps Script antes de descargar."
+            );
+        }
 
     }
 

@@ -390,14 +390,16 @@ function loadSnapshot_() {
         tasks: [],
         areas: [],
         contexts: [],
-        tags: []
+        tags: [],
+        goals: []
     };
 
     var typeToCollection = {
         task: "tasks",
         area: "areas",
         context: "contexts",
-        tag: "tags"
+        tag: "tags",
+        goal: "goals"
     };
 
     var lastRow =
@@ -565,7 +567,8 @@ function snapshotToRows_(
         ["tasks", "task"],
         ["areas", "area"],
         ["contexts", "context"],
-        ["tags", "tag"]
+        ["tags", "tag"],
+        ["goals", "goal"]
     ];
 
     var rows = [];
@@ -629,7 +632,8 @@ function validateSnapshot_(snapshot) {
         "tasks",
         "areas",
         "contexts",
-        "tags"
+        "tags",
+        "goals"
     ];
 
     var idsByCollection = {};
@@ -669,6 +673,11 @@ function validateSnapshot_(snapshot) {
 
     validateTaskReferences_(
         snapshot.data.tasks,
+        idsByCollection
+    );
+
+    validateGoalReferences_(
+        snapshot.data.goals,
         idsByCollection
     );
 
@@ -799,6 +808,70 @@ function validateTaskReferences_(
 
             current =
                 tasksById[current.parentTaskId];
+
+        }
+
+    });
+
+}
+
+function validateGoalReferences_(
+    goals,
+    ids
+) {
+
+    var validStatuses = {
+        ACTIVE: true,
+        COMPLETED: true,
+        ARCHIVED: true,
+        DELETED: true
+    };
+
+    goals.forEach(function(goal) {
+
+        if (!validStatuses[goal.status]) {
+            throw protocolError_(
+                "INVALID_GOAL_STATUS",
+                "Un objetivo contiene un estado inválido."
+            );
+        }
+
+        if (
+            goal.parentGoalId &&
+            !ids.goals[goal.parentGoalId]
+        ) {
+            throw protocolError_(
+                "INVALID_REFERENCE",
+                "Un objetivo referencia un objetivo padre inexistente."
+            );
+        }
+
+    });
+
+    var goalsById = {};
+
+    goals.forEach(function(goal) {
+        goalsById[goal.id] = goal;
+    });
+
+    goals.forEach(function(goal) {
+
+        var visited = {};
+        var current = goal;
+
+        while (current && current.parentGoalId) {
+
+            if (visited[current.id]) {
+                throw protocolError_(
+                    "INVALID_GOAL_TREE",
+                    "La jerarquía de objetivos contiene un ciclo."
+                );
+            }
+
+            visited[current.id] = true;
+
+            current =
+                goalsById[current.parentGoalId];
 
         }
 

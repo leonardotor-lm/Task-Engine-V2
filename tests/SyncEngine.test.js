@@ -59,7 +59,8 @@ function backup() {
             }],
             areas: [],
             contexts: [],
-            tags: []
+            tags: [],
+            goals: []
         }
     };
 
@@ -689,5 +690,56 @@ test("no descarga cuando la nube todavía está vacía", async () => {
         engine.pull(),
         /no hay datos/
     );
+
+});
+
+test("no reemplaza objetivos locales si la nube usa el formato anterior", async () => {
+
+    const remoteBackup = backup();
+    delete remoteBackup.data.goals;
+
+    let imported = false;
+
+    const engine = new SyncEngine({
+        backupService: {
+            createBackup() {
+                return {
+                    ...backup(),
+                    data: {
+                        ...backup().data,
+                        goals: [{
+                            id: "goal-1",
+                            version: 1
+                        }]
+                    }
+                };
+            },
+            importBackup() {
+                imported = true;
+            }
+        },
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "abc"
+            })
+        },
+        gateway: {
+            async load() {
+                return {
+                    revision: 2,
+                    data: remoteBackup
+                };
+            }
+        }
+    });
+
+    await assert.rejects(
+        engine.pull(),
+        /versión anterior.*objetivos/
+    );
+
+    assert.equal(imported, false);
 
 });

@@ -35,6 +35,7 @@ function snapshot(overrides = {}) {
             areas: [],
             contexts: [],
             tags: [],
+            goals: [],
             ...overrides
         }
     };
@@ -159,9 +160,65 @@ test("acepta relaciones válidas entre todas las colecciones", () => {
                 ],
                 tags: [
                     entity("tag-1")
+                ],
+                goals: [
+                    entity("goal-1", {
+                        status: "ACTIVE"
+                    }),
+                    entity("goal-2", {
+                        status: "ACTIVE",
+                        parentGoalId: "goal-1"
+                    })
                 ]
             })
         )
+    );
+
+});
+
+test("convierte objetivos en filas versionadas", () => {
+
+    const backend = loadBackend();
+
+    const rows = backend.snapshotToRows_(
+        snapshot({
+            goals: [
+                entity("goal-1", {
+                    title: "Objetivo",
+                    status: "ACTIVE"
+                })
+            ]
+        }),
+        4
+    );
+
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0][1], "goal");
+    assert.equal(rows[0][2], "goal-1");
+
+});
+
+test("rechaza ciclos en la jerarquía de objetivos", () => {
+
+    const backend = loadBackend();
+
+    assert.throws(
+        () => backend.validateSnapshot_(
+            snapshot({
+                goals: [
+                    entity("goal-1", {
+                        status: "ACTIVE",
+                        parentGoalId: "goal-2"
+                    }),
+                    entity("goal-2", {
+                        status: "ACTIVE",
+                        parentGoalId: "goal-1"
+                    })
+                ]
+            })
+        ),
+        error =>
+            error.code === "INVALID_GOAL_TREE"
     );
 
 });
