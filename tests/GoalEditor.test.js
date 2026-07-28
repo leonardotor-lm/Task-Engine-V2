@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { Goal } from "../src/domain/Goal.js";
+import { Task } from "../src/domain/Task.js";
 import { GoalEditor } from "../src/ui/GoalEditor.js";
 
 test("no reserva espacio sin un objetivo", () => {
@@ -89,5 +90,43 @@ test("oculta Organización cuando no hay acciones disponibles", () => {
         html,
         /<h4>Organización<\/h4>/
     );
+
+});
+
+test("administra las asociaciones desde el editor", () => {
+
+    const goal = new Goal({
+        id: "goal-1",
+        title: "Publicar un libro"
+    });
+
+    const associated = new Task({
+        id: "task-1",
+        title: "Corregir manuscrito",
+        goalIds: [goal.id]
+    });
+
+    const available = new Task({
+        id: "task-2",
+        title: "Buscar editorial"
+    });
+
+    const html = new GoalEditor().render(
+        goal,
+        [goal],
+        [associated, available]
+    );
+
+    assert.match(
+        html,
+        /Tareas y proyectos asociados/
+    );
+    assert.match(html, /Corregir manuscrito/);
+    assert.match(
+        html,
+        /class="detachTaskFromGoal"/
+    );
+    assert.match(html, /id="goalTaskForm"/);
+    assert.match(html, /Buscar editorial/);
 
 });
