@@ -4,7 +4,9 @@ export const GoalStatus = Object.freeze({
 
     COMPLETED: "COMPLETED",
 
-    ARCHIVED: "ARCHIVED"
+    ARCHIVED: "ARCHIVED",
+
+    DELETED: "DELETED"
 
 });
 

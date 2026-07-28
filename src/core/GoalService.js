@@ -1,4 +1,5 @@
 import { GoalRepository } from "../infrastructure/GoalRepository.js";
+import { GoalStatus } from "../domain/GoalStatus.js";
 
 export class GoalService {
 
@@ -103,15 +104,102 @@ export class GoalService {
 
     deleteGoal(id) {
 
-        this.getRequiredGoal(id);
+        const goal = this.getRequiredGoal(id);
 
-        if (this.getDirectSubgoals(id).length > 0) {
+        const tree = [
+            goal,
+            ...this.getDescendants(id)
+        ];
+
+        for (const item of tree) {
+            item.delete();
+            this.repository.update(item);
+        }
+
+        return goal;
+
+    }
+
+    restoreDeletedGoal(id) {
+
+        const goal = this.getRequiredGoal(id);
+
+        const tree = [
+            goal,
+            ...this.getDescendants(id)
+        ];
+
+        for (const item of tree) {
+
+            if (
+                item.status ===
+                GoalStatus.DELETED
+            ) {
+                item.restoreFromTrash();
+                this.repository.update(item);
+            }
+
+        }
+
+        return goal;
+
+    }
+
+    permanentlyDeleteGoal(id) {
+
+        const goal = this.getRequiredGoal(id);
+
+        if (
+            goal.status !==
+            GoalStatus.DELETED
+        ) {
             throw new Error(
-                "No se puede eliminar un objetivo que contiene subobjetivos."
+                "Sólo se puede eliminar definitivamente un objetivo de la papelera."
             );
         }
 
-        this.repository.remove(id);
+        const tree = [
+            goal,
+            ...this.getDescendants(id)
+        ];
+
+        for (const item of [...tree].reverse()) {
+            this.repository.remove(item.id);
+        }
+
+        return goal;
+
+    }
+
+    getActiveGoals() {
+        return this.getGoalsByStatus(
+            GoalStatus.ACTIVE
+        );
+    }
+
+    getCompletedGoals() {
+        return this.getGoalsByStatus(
+            GoalStatus.COMPLETED
+        );
+    }
+
+    getArchivedGoals() {
+        return this.getGoalsByStatus(
+            GoalStatus.ARCHIVED
+        );
+    }
+
+    getDeletedGoals() {
+        return this.getGoalsByStatus(
+            GoalStatus.DELETED
+        );
+    }
+
+    getGoalsByStatus(status) {
+
+        return this.repository
+            .getAll()
+            .filter(goal => goal.status === status);
 
     }
 

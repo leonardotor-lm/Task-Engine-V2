@@ -20,6 +20,8 @@ export class Goal {
         this.title = title;
         this.description = data.description ?? "";
         this.status = data.status ?? GoalStatus.ACTIVE;
+        this.statusBeforeDelete =
+            data.statusBeforeDelete ?? null;
 
         if (!isValidGoalStatus(this.status)) {
             throw new Error(
@@ -52,7 +54,10 @@ export class Goal {
             this.completedAt = this.updatedAt;
         }
 
-        if (this.status !== GoalStatus.COMPLETED) {
+        if (
+            this.status === GoalStatus.ACTIVE ||
+            this.status === GoalStatus.ARCHIVED
+        ) {
             this.completedAt = null;
         }
 
@@ -184,6 +189,40 @@ export class Goal {
 
     }
 
+    delete() {
+
+        if (this.status !== GoalStatus.DELETED) {
+            this.statusBeforeDelete = this.status;
+        }
+
+        this.status = GoalStatus.DELETED;
+
+        this.touch();
+
+    }
+
+    restoreFromTrash() {
+
+        if (this.status !== GoalStatus.DELETED) {
+            throw new Error(
+                "El objetivo no está eliminado."
+            );
+        }
+
+        this.status =
+            this.statusBeforeDelete ??
+            GoalStatus.ACTIVE;
+
+        if (this.status !== GoalStatus.COMPLETED) {
+            this.completedAt = null;
+        }
+
+        this.statusBeforeDelete = null;
+
+        this.touch();
+
+    }
+
     toJSON() {
 
         return {
@@ -191,6 +230,8 @@ export class Goal {
             title: this.title,
             description: this.description,
             status: this.status,
+            statusBeforeDelete:
+                this.statusBeforeDelete,
             parentGoalId: this.parentGoalId,
             dueDate: this.dueDate,
             version: this.version,
