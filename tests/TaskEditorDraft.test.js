@@ -15,6 +15,7 @@ const task = {
     priority: 2,
     dueDate: "2026-07-28",
     tagIds: ["tag-2", "tag-1"],
+    goalIds: ["goal-2", "goal-1"],
     recurrence: null
 };
 
@@ -55,7 +56,13 @@ const createRoot = overrides => {
                     { value: "tag-1" },
                     { value: "tag-2" }
                 ]
-                : [];
+                : selector ===
+                    ".taskGoal:checked"
+                    ? [
+                        { value: "goal-1" },
+                        { value: "goal-2" }
+                    ]
+                    : [];
         }
     };
 
