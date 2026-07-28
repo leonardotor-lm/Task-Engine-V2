@@ -118,7 +118,8 @@ export class MainView {
                     areas,
                     contexts,
                     tags,
-                    allTasks
+                    allTasks,
+                    state.goals
                 )}
 
                 ${this.goalEditor.render(
@@ -2619,6 +2620,10 @@ export class MainView {
                         .from(document.querySelectorAll(".taskTag:checked"))
                         .map(input => input.value);
 
+                    const goalIds = Array
+                        .from(document.querySelectorAll(".taskGoal:checked"))
+                        .map(input => input.value);
+
                     const recurrence =
                         document.getElementById(
                             "taskRecurrence"
@@ -2661,6 +2666,7 @@ export class MainView {
                             priority,
                             dueDate,
                             tagIds,
+                            goalIds,
                             recurrence,
                             recurrenceInterval,
                             recurrenceWeekdays
