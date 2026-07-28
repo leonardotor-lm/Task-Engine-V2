@@ -1,11 +1,19 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
 import {
+    SearchableMultiSelect
+} from "./SearchableMultiSelect.js";
+import {
     RecurrenceFrequency,
     RecurrenceWeekday
 } from "../domain/Recurrence.js";
 
 export class TaskEditor {
+
+    constructor() {
+        this.searchableMultiSelect =
+            new SearchableMultiSelect();
+    }
 
     render(
         task,
@@ -61,33 +69,11 @@ export class TaskEditor {
 
         `).join("");
 
-        const tagOptions = tags.length > 0
-            ? tags.map(tag => `
-
-                <label class="tagOption">
-
-                    <input
-                        class="taskTag"
-                        type="checkbox"
-                        value="${escapeHtml(tag.id)}"
-                        ${task.tagIds.includes(tag.id) ? "checked" : ""}
-                        ${disabled}>
-
-                    <span
-                        class="tagColor"
-                        style="background:${escapeHtml(tag.color)}">
-                    </span>
-
-                    ${escapeHtml(tag.name)}
-
-                </label>
-
-            `).join("")
-            : `
-                <span class="emptyTagMessage">
-                    No hay etiquetas creadas.
-                </span>
-            `;
+        const tagOptions = tags.map(tag => ({
+            value: tag.id,
+            label: tag.name,
+            color: tag.color
+        }));
 
         const goalOptions = goals
             .filter(goal =>
@@ -95,31 +81,11 @@ export class TaskEditor {
                 goal.status !== "ARCHIVED"
             );
 
-        const goalOptionHtml =
-            goalOptions.length > 0
-                ? goalOptions.map(goal => `
-
-                    <label class="goalOption">
-
-                        <input
-                            class="taskGoal"
-                            type="checkbox"
-                            value="${escapeHtml(goal.id)}"
-                            ${(task.goalIds ?? []).includes(goal.id)
-                                ? "checked"
-                                : ""}
-                            ${disabled}>
-
-                        ${escapeHtml(goal.title)}
-
-                    </label>
-
-                `).join("")
-                : `
-                    <span class="emptyGoalMessage">
-                        No hay objetivos activos.
-                    </span>
-                `;
+        const goalOptionItems =
+            goalOptions.map(goal => ({
+                value: goal.id,
+                label: goal.title
+            }));
 
         const priorityOptions = PriorityOptions.map(option => `
 
@@ -524,25 +490,28 @@ export class TaskEditor {
 
                         </select>
 
-                        <fieldset
-                            class="tagField"
-                            ${disabled}>
+                        ${this.searchableMultiSelect.render({
+                            id: "taskTags",
+                            label: "Etiquetas",
+                            options: tagOptions,
+                            selectedValues: task.tagIds,
+                            valueClass: "taskTag",
+                            emptyMessage:
+                                "No hay etiquetas creadas.",
+                            disabled: isLocked
+                        })}
 
-                            <legend>Etiquetas</legend>
-
-                            ${tagOptions}
-
-                        </fieldset>
-
-                        <fieldset
-                            class="goalField"
-                            ${disabled}>
-
-                            <legend>Objetivos</legend>
-
-                            ${goalOptionHtml}
-
-                        </fieldset>
+                        ${this.searchableMultiSelect.render({
+                            id: "taskGoals",
+                            label: "Objetivos",
+                            options: goalOptionItems,
+                            selectedValues:
+                                task.goalIds ?? [],
+                            valueClass: "taskGoal",
+                            emptyMessage:
+                                "No hay objetivos activos.",
+                            disabled: isLocked
+                        })}
 
                     </div>
 
@@ -651,6 +620,17 @@ export class TaskEditor {
 
             </aside>
         `;
+
+    }
+
+    bindClassificationSelectors() {
+
+        this.searchableMultiSelect.bind(
+            "taskTags"
+        );
+        this.searchableMultiSelect.bind(
+            "taskGoals"
+        );
 
     }
 

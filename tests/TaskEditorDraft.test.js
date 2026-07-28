@@ -51,13 +51,13 @@ const createRoot = overrides => {
         },
         querySelectorAll(selector) {
             return selector ===
-                ".taskTag:checked"
+                ".taskTag"
                 ? [
                     { value: "tag-1" },
                     { value: "tag-2" }
                 ]
                 : selector ===
-                    ".taskGoal:checked"
+                    ".taskGoal"
                     ? [
                         { value: "goal-1" },
                         { value: "goal-2" }

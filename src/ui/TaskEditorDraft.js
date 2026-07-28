@@ -112,7 +112,7 @@ export function readTaskEditorDraft(
             normalizeTagIds(
                 [
                     ...root.querySelectorAll(
-                        ".taskTag:checked"
+                        ".taskTag"
                     )
                 ].map(
                     input => input.value
@@ -122,7 +122,7 @@ export function readTaskEditorDraft(
             normalizeGoalIds(
                 [
                     ...root.querySelectorAll(
-                        ".taskGoal:checked"
+                        ".taskGoal"
                     )
                 ].map(
                     input => input.value

@@ -463,6 +463,11 @@ export class MainView {
             }
         });
 
+        if (selectedTask) {
+            this.taskEditor
+                .bindClassificationSelectors();
+        }
+
         const layout =
             document.querySelector(".layout");
 
@@ -2755,11 +2760,11 @@ export class MainView {
                         document.getElementById("taskDueDate").value || null;
 
                     const tagIds = Array
-                        .from(document.querySelectorAll(".taskTag:checked"))
+                        .from(document.querySelectorAll(".taskTag"))
                         .map(input => input.value);
 
                     const goalIds = Array
-                        .from(document.querySelectorAll(".taskGoal:checked"))
+                        .from(document.querySelectorAll(".taskGoal"))
                         .map(input => input.value);
 
                     const recurrence =
