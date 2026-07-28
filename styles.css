@@ -135,6 +135,71 @@ body {
     background: #fff;
 }
 
+.bulkTagControl .searchableMultiSelectCompact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.searchableMultiSelectCompact > legend,
+.searchableMultiSelectCompact
+    > .searchableMultiSelectHeader {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.searchableMultiSelectCompact
+    > .searchableMultiSelectChips:has(
+        .searchableMultiSelectEmpty
+    ) {
+    display: none;
+}
+
+.searchableMultiSelectCompact
+    .searchableMultiSelectManager {
+    position: relative;
+    order: -1;
+}
+
+.searchableMultiSelectCompact
+    .searchableMultiSelectManager summary,
+.bulkMoreActions summary {
+    padding: 7px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    list-style: none;
+}
+
+.searchableMultiSelectCompact
+    .searchableMultiSelectManager summary::-webkit-details-marker,
+.bulkMoreActions summary::-webkit-details-marker {
+    display: none;
+}
+
+.searchableMultiSelectCompact
+    .searchableMultiSelectManagerBody {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 240px;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+}
+
 .bulkTagControl
     .searchableMultiSelectManagerBody {
     min-width: 220px;
@@ -147,17 +212,83 @@ body {
 }
 
 .bulkToolbar .secondaryAction {
+    margin-left: auto;
     color: #64748b;
 }
 
+.bulkToolbar .bulkPrimaryAction {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+}
+
+.bulkMoreActions {
+    position: relative;
+}
+
 .bulkStateActions {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 5px);
+    right: 0;
     display: flex;
+    flex-direction: column;
     gap: 6px;
+    min-width: 170px;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+}
+
+.bulkStateActions button {
+    width: 100%;
+    text-align: left;
 }
 
 .bulkStateActions .dangerAction {
     border-color: #b42318;
     color: #b42318;
+}
+
+@media (max-width: 760px) {
+
+    .bulkToolbar {
+        align-items: stretch;
+    }
+
+    .bulkToolbar > strong {
+        flex-basis: 100%;
+    }
+
+    .bulkControl,
+    .bulkControl select,
+    .bulkControl input {
+        min-width: 0;
+        flex: 1 1 150px;
+    }
+
+    .bulkTagControl {
+        flex: 1 1 100%;
+    }
+
+    .searchableMultiSelectCompact
+        .searchableMultiSelectManagerBody {
+        position: fixed;
+        top: auto;
+        right: 10px;
+        bottom: 10px;
+        left: 10px;
+        box-sizing: border-box;
+        width: auto;
+    }
+
+    .bulkToolbar .secondaryAction {
+        margin-left: 0;
+    }
+
 }
 
 .taskTitle {
@@ -973,6 +1104,13 @@ h3 {
 .bulkToolbar select,
 .bulkToolbar input,
 .bulkToolbar button {
+    padding: 5px 6px;
+}
+
+.bulkToolbar
+    .searchableMultiSelectCompact
+    .searchableMultiSelectManager summary,
+.bulkToolbar .bulkMoreActions summary {
     padding: 5px 6px;
 }
 
