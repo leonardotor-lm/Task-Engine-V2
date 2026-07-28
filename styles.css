@@ -2231,6 +2231,27 @@ h3 {
     background: #f8fafc;
 }
 
+.goalStatusNavigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 12px;
+}
+
+.goalStatusNavigation button.active {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.goalHistoryActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
 .goalForm > label:first-child {
     grid-column: 1 / -1;
     font-weight: 700;

@@ -860,6 +860,74 @@ export class MainView {
         if (view === View.GOALS) {
 
             document.querySelectorAll(
+                ".showGoalStatus"
+            ).forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () =>
+                        this.callbacks
+                            .onShowGoalStatus(
+                                button.dataset.status
+                            )
+                );
+
+            });
+
+            const goalActions = [
+                ["reopenGoal", "onReopenGoal"],
+                [
+                    "restoreArchivedGoal",
+                    "onRestoreArchivedGoal"
+                ],
+                ["deleteGoal", "onDeleteGoal"],
+                [
+                    "restoreDeletedGoal",
+                    "onRestoreDeletedGoal"
+                ],
+                [
+                    "permanentlyDeleteGoal",
+                    "onPermanentlyDeleteGoal"
+                ]
+            ];
+
+            for (
+                const [
+                    className,
+                    callbackName
+                ] of goalActions
+            ) {
+
+                document.querySelectorAll(
+                    `.${className}`
+                ).forEach(button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            if (
+                                className ===
+                                    "permanentlyDeleteGoal" &&
+                                !Dialog.confirm(
+                                    "¿Eliminar definitivamente este objetivo y sus subobjetivos?"
+                                )
+                            ) {
+                                return;
+                            }
+
+                            this.callbacks[
+                                callbackName
+                            ](button.dataset.id);
+
+                        }
+                    );
+
+                });
+
+            }
+
+            document.querySelectorAll(
                 ".openGoal"
             ).forEach(button => {
 

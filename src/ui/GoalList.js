@@ -3,12 +3,14 @@ import { escapeHtml } from "./escapeHtml.js";
 
 export class GoalList {
 
-    render(goals = []) {
+    render(
+        goals = [],
+        currentStatus = GoalStatus.ACTIVE
+    ) {
 
-        const activeGoals = goals.filter(
+        const visibleGoals = goals.filter(
             goal =>
-                goal.status ===
-                GoalStatus.ACTIVE
+                goal.status === currentStatus
         );
 
         return `
@@ -18,8 +20,13 @@ export class GoalList {
                     <h2>Objetivos</h2>
                 </div>
 
-                <form id="goalForm" class="goalForm">
+                ${this.renderStatusNavigation(
+                    currentStatus
+                )}
 
+                ${currentStatus === GoalStatus.ACTIVE
+                    ? `
+                <form id="goalForm" class="goalForm">
                     <label for="goalTitle">
                         Nuevo objetivo
                     </label>
@@ -49,12 +56,20 @@ export class GoalList {
                     </button>
 
                 </form>
+                    `
+                    : ""}
 
-                ${activeGoals.length > 0
-                    ? this.renderTree(activeGoals)
+                ${visibleGoals.length > 0
+                    ? this.renderTree(
+                        visibleGoals,
+                        currentStatus
+                    )
                     : `
                         <p class="emptyState">
-                            No hay objetivos activos.
+                            ${currentStatus ===
+                                GoalStatus.ACTIVE
+                                ? "No hay objetivos activos."
+                                : "No hay objetivos en esta sección."}
                         </p>
                     `}
 
@@ -63,7 +78,34 @@ export class GoalList {
 
     }
 
-    renderTree(goals) {
+    renderStatusNavigation(currentStatus) {
+
+        const sections = [
+            [GoalStatus.ACTIVE, "Activos"],
+            [GoalStatus.COMPLETED, "Completados"],
+            [GoalStatus.ARCHIVED, "Archivados"],
+            [GoalStatus.DELETED, "Papelera"]
+        ];
+
+        return `
+            <nav class="goalStatusNavigation">
+                ${sections.map(([status, label]) => `
+                    <button
+                        type="button"
+                        class="showGoalStatus ${status ===
+                            currentStatus
+                            ? "active"
+                            : ""}"
+                        data-status="${status}">
+                        ${label}
+                    </button>
+                `).join("")}
+            </nav>
+        `;
+
+    }
+
+    renderTree(goals, currentStatus) {
 
         const goalsByParent = new Map();
         const goalIds = new Set(
@@ -104,12 +146,21 @@ export class GoalList {
 
                     return `
                         <li class="goalItem">
-                            <button
-                                type="button"
-                                class="openGoal"
-                                data-id="${escapeHtml(goal.id)}">
-                                ${escapeHtml(goal.title)}
-                            </button>
+                            ${currentStatus ===
+                                GoalStatus.ACTIVE
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="openGoal"
+                                        data-id="${escapeHtml(goal.id)}">
+                                        ${escapeHtml(goal.title)}
+                                    </button>
+                                `
+                                : `
+                                    <strong>
+                                        ${escapeHtml(goal.title)}
+                                    </strong>
+                                `}
 
                             ${goal.dueDate
                                 ? `
@@ -134,6 +185,11 @@ export class GoalList {
                                 `
                                 : ""}
 
+                            ${this.renderActions(
+                                goal,
+                                currentStatus
+                            )}
+
                             ${children
                                 ? `
                                     <ul class="goalChildren">
@@ -153,6 +209,65 @@ export class GoalList {
                 ${renderBranch(null)}
             </ul>
         `;
+
+    }
+
+    renderActions(goal, status) {
+
+        const id = escapeHtml(goal.id);
+
+        if (status === GoalStatus.COMPLETED) {
+            return `
+                <div class="goalHistoryActions">
+                    <button
+                        class="reopenGoal"
+                        data-id="${id}">
+                        Reactivar
+                    </button>
+                    <button
+                        class="deleteGoal"
+                        data-id="${id}">
+                        Papelera
+                    </button>
+                </div>
+            `;
+        }
+
+        if (status === GoalStatus.ARCHIVED) {
+            return `
+                <div class="goalHistoryActions">
+                    <button
+                        class="restoreArchivedGoal"
+                        data-id="${id}">
+                        Restaurar
+                    </button>
+                    <button
+                        class="deleteGoal"
+                        data-id="${id}">
+                        Papelera
+                    </button>
+                </div>
+            `;
+        }
+
+        if (status === GoalStatus.DELETED) {
+            return `
+                <div class="goalHistoryActions">
+                    <button
+                        class="restoreDeletedGoal"
+                        data-id="${id}">
+                        Restaurar
+                    </button>
+                    <button
+                        class="permanentlyDeleteGoal dangerAction"
+                        data-id="${id}">
+                        Eliminar definitivamente
+                    </button>
+                </div>
+            `;
+        }
+
+        return "";
 
     }
 

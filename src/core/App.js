@@ -70,6 +70,7 @@ export class App {
 
         this.selectedTask = null;
         this.selectedGoal = null;
+        this.currentGoalStatus = "ACTIVE";
         this.currentView = View.TODAY;
         this.currentAreaId = null;
         this.projectTaskId = null;
@@ -1237,6 +1238,7 @@ export class App {
             onShowGoals: () => {
 
                 this.selectedGoal = null;
+                this.currentGoalStatus = "ACTIVE";
                 this.navigateTo(View.GOALS);
 
             },
@@ -1244,6 +1246,15 @@ export class App {
             onCreateGoal: (data) => {
 
                 this.goalService.createGoal(data);
+
+                this.render();
+
+            },
+
+            onShowGoalStatus: (status) => {
+
+                this.currentGoalStatus = status;
+                this.selectedGoal = null;
 
                 this.render();
 
@@ -1293,6 +1304,43 @@ export class App {
 
                 this.goalService.archiveGoal(id);
                 this.selectedGoal = null;
+
+                this.render();
+
+            },
+
+            onReopenGoal: (id) => {
+
+                this.goalService.reopenGoal(id);
+                this.render();
+
+            },
+
+            onRestoreArchivedGoal: (id) => {
+
+                this.goalService.restoreGoal(id);
+                this.render();
+
+            },
+
+            onDeleteGoal: (id) => {
+
+                this.goalService.deleteGoal(id);
+                this.render();
+
+            },
+
+            onRestoreDeletedGoal: (id) => {
+
+                this.goalService.restoreDeletedGoal(id);
+                this.render();
+
+            },
+
+            onPermanentlyDeleteGoal: (id) => {
+
+                this.goalService
+                    .permanentlyDeleteGoal(id);
 
                 this.render();
 
@@ -2047,6 +2095,8 @@ export class App {
                 this.syncLastError,
             selectedTask: this.selectedTask,
             selectedGoal: this.selectedGoal,
+            currentGoalStatus:
+                this.currentGoalStatus,
             goals: this.goalService.getAllGoals(),
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),
