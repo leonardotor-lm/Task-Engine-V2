@@ -7,7 +7,14 @@ import {
 
 export class TaskEditor {
 
-    render(task, areas = [], contexts = [], tags = [], allTasks = []) {
+    render(
+        task,
+        areas = [],
+        contexts = [],
+        tags = [],
+        allTasks = [],
+        goals = []
+    ) {
 
         if (!task) {
             return "";
@@ -81,6 +88,38 @@ export class TaskEditor {
                     No hay etiquetas creadas.
                 </span>
             `;
+
+        const goalOptions = goals
+            .filter(goal =>
+                goal.status !== "DELETED" &&
+                goal.status !== "ARCHIVED"
+            );
+
+        const goalOptionHtml =
+            goalOptions.length > 0
+                ? goalOptions.map(goal => `
+
+                    <label class="goalOption">
+
+                        <input
+                            class="taskGoal"
+                            type="checkbox"
+                            value="${escapeHtml(goal.id)}"
+                            ${(task.goalIds ?? []).includes(goal.id)
+                                ? "checked"
+                                : ""}
+                            ${disabled}>
+
+                        ${escapeHtml(goal.title)}
+
+                    </label>
+
+                `).join("")
+                : `
+                    <span class="emptyGoalMessage">
+                        No hay objetivos activos.
+                    </span>
+                `;
 
         const priorityOptions = PriorityOptions.map(option => `
 
@@ -492,6 +531,16 @@ export class TaskEditor {
                             <legend>Etiquetas</legend>
 
                             ${tagOptions}
+
+                        </fieldset>
+
+                        <fieldset
+                            class="goalField"
+                            ${disabled}>
+
+                            <legend>Objetivos</legend>
+
+                            ${goalOptionHtml}
 
                         </fieldset>
 
