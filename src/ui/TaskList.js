@@ -22,7 +22,8 @@ export class TaskList {
         allTasks = tasks,
         headingActions = "",
         creationPlaceholder = "Nueva tarea",
-        inlineSubtaskParentId = null
+        inlineSubtaskParentId = null,
+        contentBeforeList = ""
     ) {
 
         const form = allowCreate
@@ -129,6 +130,8 @@ export class TaskList {
                     : ""}
 
                 ${form}
+
+                ${contentBeforeList}
         `;
 
         if (tasks.length === 0) {
