@@ -50,3 +50,25 @@ test("escapa el contenido del objetivo", () => {
     assert.doesNotMatch(html, /<img/);
 
 });
+
+test("permite mover e independizar un subobjetivo", () => {
+
+    const parent = new Goal({
+        id: "parent",
+        title: "Principal"
+    });
+
+    const child = new Goal({
+        title: "Subobjetivo",
+        parentGoalId: parent.id
+    });
+
+    const html = new GoalEditor().render(
+        child,
+        [parent, child]
+    );
+
+    assert.match(html, /id="goalParentForm"/);
+    assert.match(html, /id="detachGoal"/);
+
+});

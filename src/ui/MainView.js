@@ -122,7 +122,8 @@ export class MainView {
                 )}
 
                 ${this.goalEditor.render(
-                    selectedGoal
+                    selectedGoal,
+                    state.goals
                 )}
 
             </div>
@@ -1106,6 +1107,51 @@ export class MainView {
                         selectedGoal.id,
                         title
                     );
+
+                }
+            );
+
+            document.getElementById(
+                "goalParentForm"
+            )?.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const parentGoalId = document
+                        .getElementById(
+                            "goalParentId"
+                        )
+                        .value;
+
+                    if (!parentGoalId) return;
+
+                    try {
+                        this.callbacks.onMoveGoal(
+                            selectedGoal.id,
+                            parentGoalId
+                        );
+                    } catch (error) {
+                        Dialog.alert(error.message);
+                    }
+
+                }
+            );
+
+            document.getElementById(
+                "detachGoal"
+            )?.addEventListener(
+                "click",
+                () => {
+
+                    try {
+                        this.callbacks.onDetachGoal(
+                            selectedGoal.id
+                        );
+                    } catch (error) {
+                        Dialog.alert(error.message);
+                    }
 
                 }
             );

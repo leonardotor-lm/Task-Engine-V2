@@ -2,9 +2,22 @@ import { escapeHtml } from "./escapeHtml.js";
 
 export class GoalEditor {
 
-    render(goal) {
+    render(goal, goals = []) {
 
         if (!goal) return "";
+
+        const descendants =
+            this.getDescendantIds(
+                goal.id,
+                goals
+            );
+
+        const possibleParents = goals.filter(
+            item =>
+                item.id !== goal.id &&
+                !descendants.has(item.id) &&
+                item.status === "ACTIVE"
+        );
 
         return `
             <aside class="goalDrawer">
@@ -104,8 +117,78 @@ export class GoalEditor {
 
                 </section>
 
+                <section class="goalHierarchySection">
+
+                    <h4>Organización</h4>
+
+                    ${possibleParents.length > 0
+                        ? `
+                            <form id="goalParentForm">
+                                <select
+                                    id="goalParentId"
+                                    required>
+                                    <option value="">
+                                        Mover a otro objetivo…
+                                    </option>
+                                    ${possibleParents
+                                        .map(item => `
+                                            <option
+                                                value="${escapeHtml(item.id)}"
+                                                ${item.id ===
+                                                    goal.parentGoalId
+                                                    ? "selected"
+                                                    : ""}>
+                                                ${escapeHtml(item.title)}
+                                            </option>
+                                        `)
+                                        .join("")}
+                                </select>
+                                <button type="submit">
+                                    Mover
+                                </button>
+                            </form>
+                        `
+                        : ""}
+
+                    ${goal.parentGoalId
+                        ? `
+                            <button
+                                id="detachGoal"
+                                type="button">
+                                Convertir en objetivo principal
+                            </button>
+                        `
+                        : ""}
+
+                </section>
+
             </aside>
         `;
+
+    }
+
+    getDescendantIds(goalId, goals) {
+
+        const result = new Set();
+        const pending = [goalId];
+
+        while (pending.length > 0) {
+
+            const parentId = pending.shift();
+
+            for (const goal of goals) {
+                if (
+                    goal.parentGoalId === parentId &&
+                    !result.has(goal.id)
+                ) {
+                    result.add(goal.id);
+                    pending.push(goal.id);
+                }
+            }
+
+        }
+
+        return result;
 
     }
 

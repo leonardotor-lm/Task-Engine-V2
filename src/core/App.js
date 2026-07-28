@@ -1270,6 +1270,34 @@ export class App {
 
             },
 
+            onMoveGoal: (
+                id,
+                parentGoalId
+            ) => {
+
+                this.goalService.moveGoal(
+                    id,
+                    parentGoalId
+                );
+
+                this.selectedGoal =
+                    this.goalService.getGoalById(id);
+
+                this.render();
+
+            },
+
+            onDetachGoal: (id) => {
+
+                this.goalService.detachGoal(id);
+
+                this.selectedGoal =
+                    this.goalService.getGoalById(id);
+
+                this.render();
+
+            },
+
             onShowGoalStatus: (status) => {
 
                 this.currentGoalStatus = status;
