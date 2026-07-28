@@ -132,11 +132,15 @@ Ejemplo:
 venceEntre:"2026-08-01,2026-08-31"
 ```
 
-Las fechas exactas usan el formato `AAAA-MM-DD`:
+Las fechas pueden escribirse en formatos habituales de Argentina:
 
 ```text
-fecha:2026-08-15
+fecha:15/08
+fecha:15/08/26
+fecha:15/08/2026
 ```
+
+Si se omite el año, se utiliza el año corriente. El formato técnico `AAAA-MM-DD` continúa siendo válido, pero no es obligatorio.
 
 También se admiten comparadores:
 
@@ -144,6 +148,19 @@ También se admiten comparadores:
 fecha:>2026-08-01
 fecha:<=2026-08-31
 ```
+
+También se admiten expresiones relativas:
+
+```text
+fecha:hoy
+fecha:manana
+fecha:"en 3 dias"
+fecha:"en 2 semanas"
+fecha:viernes
+fecha:"proximo viernes"
+```
+
+Cuando una expresión contiene espacios, debe escribirse entre comillas. Un nombre de día se interpreta como la próxima aparición de ese día; si coincide con hoy, se refiere a hoy.
 
 Los períodos admiten días o semanas:
 
@@ -212,14 +229,12 @@ Ejemplo útil para una revisión semanal:
 posposiciones:>=3 AND estado:incompleta
 ```
 
-## Jerarquía, adjuntos y recurrencia
+## Jerarquía y recurrencia
 
 | Criterio | Qué busca | Ejemplo |
 |---|---|---|
 | `tieneSubtareas` | Tareas padre con subtareas directas | `tieneSubtareas:si` |
 | `esSubtarea` | Tareas que dependen de otra | `esSubtarea:si` |
-| `tieneAdjuntos` | Tareas con archivos adjuntos | `tieneAdjuntos:si` |
-| `adjuntoContiene` | Texto contenido en el nombre de un adjunto | `adjuntoContiene:pdf` |
 | `recurrente` | Tareas con alguna recurrencia | `recurrente:si` |
 | `repeticion` | Una frecuencia determinada | `repeticion:semanal` |
 
@@ -274,6 +289,10 @@ La consulta se aplica sobre la vista abierta:
 - En **Archivadas** o **Papelera**, busca dentro de esas vistas.
 - Un Filtro personalizado guardado se abre sobre **Todas**, es decir, sobre las tareas activas.
 - Para incluir completadas en una vista activa, debe estar activada la opción **Mostrar completadas**.
+
+## Funciones todavía no disponibles
+
+La aplicación aún no permite agregar adjuntos. Por ese motivo, la búsqueda avanzada no incluye criterios de adjuntos. Se incorporarán cuando esa funcionalidad exista realmente.
 
 ## Guardar un filtro personalizado
 
