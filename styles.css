@@ -2390,6 +2390,32 @@ h3 {
     border-top: 1px solid #e2e8f0;
 }
 
+.goalHierarchySection {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.goalHierarchySection h4 {
+    margin: 0 0 8px;
+}
+
+#goalParentForm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+#goalParentForm select,
+#goalParentForm button,
+#detachGoal {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 8px;
+    font: inherit;
+}
+
 .goalSubgoalsSection h4 {
     margin: 0 0 8px;
 }
