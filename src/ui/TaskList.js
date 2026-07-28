@@ -1073,39 +1073,51 @@ export class TaskList {
                         valueClass:
                             "bulkTagCheckbox",
                         emptyMessage:
-                            "No hay etiquetas disponibles."
+                            "No hay etiquetas disponibles.",
+                        compact: true,
+                        managerLabel:
+                            "Agregar etiquetas"
                     })}
 
                 </div>
 
                 <button
                     id="applyBulkChanges"
-                    type="button">
+                    type="button"
+                    class="bulkPrimaryAction">
                     Aplicar cambios
                 </button>
 
-                <div class="bulkStateActions">
+                <details class="bulkMoreActions">
 
-                    <button
-                        id="bulkCompleteTasks"
-                        type="button">
-                        Completar
-                    </button>
+                    <summary>
+                        Más acciones
+                    </summary>
 
-                    <button
-                        id="bulkArchiveTasks"
-                        type="button">
-                        Archivar
-                    </button>
+                    <div class="bulkStateActions">
 
-                    <button
-                        id="bulkDeleteTasks"
-                        type="button"
-                        class="dangerAction">
-                        Enviar a papelera
-                    </button>
+                        <button
+                            id="bulkCompleteTasks"
+                            type="button">
+                            Completar
+                        </button>
 
-                </div>
+                        <button
+                            id="bulkArchiveTasks"
+                            type="button">
+                            Archivar
+                        </button>
+
+                        <button
+                            id="bulkDeleteTasks"
+                            type="button"
+                            class="dangerAction">
+                            Enviar a papelera
+                        </button>
+
+                    </div>
+
+                </details>
 
                 <button
                     id="clearBulkSelection"
