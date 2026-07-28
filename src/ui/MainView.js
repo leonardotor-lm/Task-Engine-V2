@@ -127,7 +127,8 @@ export class MainView {
                     goalEditorOpen
                         ? selectedGoal
                         : null,
-                    state.goals
+                    state.goals,
+                    allTasks
                 )}
 
             </div>
