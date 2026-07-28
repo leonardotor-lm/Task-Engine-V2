@@ -36,8 +36,9 @@ test("el editor permite asociar múltiples objetivos", () => {
     assert.match(html, /class="taskGoal"/);
     assert.match(
         html,
-        /value="goal-2"\s+checked/
+        /class="searchableMultiSelectChip"[\s\S]*value="goal-2"/
     );
+    assert.match(html, /id="taskGoalsSearch"/);
 
 });
 
