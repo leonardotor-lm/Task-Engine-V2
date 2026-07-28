@@ -129,6 +129,17 @@ body {
     font-size: 12px;
 }
 
+.bulkTagControl .searchableMultiSelect {
+    min-width: 220px;
+    margin: 0;
+    background: #fff;
+}
+
+.bulkTagControl
+    .searchableMultiSelectManagerBody {
+    min-width: 220px;
+}
+
 .bulkToolbar select,
 .bulkToolbar input,
 .bulkToolbar button {
