@@ -42,7 +42,59 @@ const FIELD_ALIASES = Object.freeze({
     isarchived: "isArchived",
     archivada: "isArchived",
     isdeleted: "isDeleted",
-    eliminada: "isDeleted"
+    eliminada: "isDeleted",
+    title: "title",
+    titulo: "title",
+    description: "description",
+    descripcion: "description",
+    areacontains: "areaContains",
+    areacontiene: "areaContains",
+    contextcontains: "contextContains",
+    contextocontiene: "contextContains",
+    tagcontains: "tagContains",
+    etiquetacontiene: "tagContains",
+    istagged: "isTagged",
+    tieneetiquetas: "isTagged",
+    hasduedate: "hasDueDate",
+    tienefecha: "hasDueDate",
+    duebefore: "dueBefore",
+    fechaantes: "dueBefore",
+    dueafter: "dueAfter",
+    fechadespues: "dueAfter",
+    duewithin: "dueWithin",
+    fechadentro: "dueWithin",
+    completed: "completed",
+    completada: "completed",
+    completedbefore: "completedBefore",
+    completadaantes: "completedBefore",
+    completedafter: "completedAfter",
+    completadadespues: "completedAfter",
+    completedwithin: "completedWithin",
+    completadadentro: "completedWithin",
+    created: "created",
+    creada: "created",
+    createdbefore: "createdBefore",
+    creadaantes: "createdBefore",
+    createdafter: "createdAfter",
+    creadadespues: "createdAfter",
+    createdwithin: "createdWithin",
+    creadadentro: "createdWithin",
+    updated: "updated",
+    actualizada: "updated",
+    updatedbefore: "updatedBefore",
+    actualizadaantes: "updatedBefore",
+    updatedafter: "updatedAfter",
+    actualizadadespues: "updatedAfter",
+    updatedwithin: "updatedWithin",
+    actualizadadentro: "updatedWithin",
+    postponed: "postponed",
+    posposiciones: "postponed",
+    issubtask: "isSubtask",
+    essubtarea: "isSubtask",
+    hasattachments: "hasAttachments",
+    tieneadjuntos: "hasAttachments",
+    recurrence: "recurrence",
+    repeticion: "recurrence"
 });
 
 const STATUS_VALUES = Object.freeze({
@@ -386,6 +438,204 @@ function matchesEntity(value, id, entities = []) {
 
 }
 
+function containsEntityName(
+    value,
+    ids,
+    entities = []
+) {
+
+    const normalizedValue =
+        normalizeSearchText(value);
+
+    return entities.some(entity => {
+
+        return (
+            ids.includes(entity.id) &&
+            normalizeSearchText(entity.name)
+                .includes(normalizedValue)
+        );
+
+    });
+
+}
+
+function dateOnly(value) {
+
+    return typeof value === "string"
+        ? value.slice(0, 10)
+        : "";
+
+}
+
+function shiftDate(dateValue, days) {
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+        return "";
+    }
+
+    const date = new Date(
+        `${dateValue}T00:00:00.000Z`
+    );
+
+    date.setUTCDate(
+        date.getUTCDate() + days
+    );
+
+    return date.toISOString().slice(0, 10);
+
+}
+
+function resolveDate(value, today) {
+
+    const normalized =
+        normalizeSearchText(value);
+
+    if (["hoy", "today"].includes(normalized)) {
+        return today;
+    }
+
+    if (["ayer", "yesterday"].includes(normalized)) {
+        return shiftDate(today, -1);
+    }
+
+    if ([
+        "manana",
+        "tomorrow"
+    ].includes(normalized)) {
+        return shiftDate(today, 1);
+    }
+
+    return /^\d{4}-\d{2}-\d{2}$/.test(value)
+        ? value
+        : "";
+
+}
+
+function parseDurationDays(value) {
+
+    const normalized =
+        normalizeSearchText(value);
+
+    const match = normalized.match(
+        /^(\d+)\s*(dia|dias|day|days|semana|semanas|week|weeks)$/
+    );
+
+    if (!match) {
+        return null;
+    }
+
+    const amount = Number(match[1]);
+    const unit = match[2];
+
+    return unit.startsWith("semana") ||
+        unit.startsWith("week")
+        ? amount * 7
+        : amount;
+
+}
+
+function matchesDateValue(
+    dateValue,
+    value,
+    today
+) {
+
+    const normalized =
+        normalizeSearchText(value);
+
+    if ([
+        "nunca",
+        "never",
+        "sin-fecha",
+        "sinfecha"
+    ].includes(normalized)) {
+        return !dateValue;
+    }
+
+    const target = resolveDate(
+        value,
+        today
+    );
+
+    return Boolean(
+        dateValue &&
+        target &&
+        dateOnly(dateValue) === target
+    );
+
+}
+
+function matchesDateBoundary(
+    dateValue,
+    value,
+    today,
+    direction
+) {
+
+    const target = resolveDate(
+        value,
+        today
+    );
+
+    if (!dateValue || !target) {
+        return false;
+    }
+
+    return direction === "before"
+        ? dateOnly(dateValue) < target
+        : dateOnly(dateValue) > target;
+
+}
+
+function matchesDateWithin(
+    dateValue,
+    value,
+    today,
+    future
+) {
+
+    const days = parseDurationDays(value);
+
+    if (!dateValue || days === null) {
+        return false;
+    }
+
+    const date = dateOnly(dateValue);
+    const boundary = shiftDate(
+        today,
+        future ? days : -days
+    );
+
+    return future
+        ? date >= today && date <= boundary
+        : date >= boundary && date <= today;
+
+}
+
+function matchesNumber(value, actual) {
+
+    const normalized = value.replace(/\s/g, "");
+    const match = normalized.match(
+        /^(>=|<=|>|<|=)?(\d+)$/
+    );
+
+    if (!match) {
+        return false;
+    }
+
+    const operator = match[1] ?? "=";
+    const expected = Number(match[2]);
+
+    switch (operator) {
+        case ">": return actual > expected;
+        case "<": return actual < expected;
+        case ">=": return actual >= expected;
+        case "<=": return actual <= expected;
+        default: return actual === expected;
+    }
+
+}
+
 function parseBoolean(value) {
 
     const normalized = normalizeSearchText(value);
@@ -446,18 +696,22 @@ function matchesDueDate(task, value, today) {
         return task.dueDate === value;
     }
 
-    if (/^<\d{4}-\d{2}-\d{2}$/.test(value)) {
-        return Boolean(
-            task.dueDate &&
-            task.dueDate < value.slice(1)
-        );
-    }
+    const comparison = value.match(
+        /^(>=|<=|>|<)(\d{4}-\d{2}-\d{2})$/
+    );
 
-    if (/^>\d{4}-\d{2}-\d{2}$/.test(value)) {
-        return Boolean(
-            task.dueDate &&
-            task.dueDate > value.slice(1)
-        );
+    if (comparison && task.dueDate) {
+
+        const [, operator, date] = comparison;
+
+        switch (operator) {
+            case ">": return task.dueDate > date;
+            case "<": return task.dueDate < date;
+            case ">=": return task.dueDate >= date;
+            case "<=": return task.dueDate <= date;
+            default: return false;
+        }
+
     }
 
     return false;
@@ -472,6 +726,19 @@ function matchesField(task, node, context) {
     switch (node.field) {
 
         case "status":
+
+            if ([
+                "incompleta",
+                "incomplete",
+                "activa",
+                "active"
+            ].includes(normalizedValue)) {
+                return [
+                    TaskStatus.INBOX,
+                    TaskStatus.PENDING
+                ].includes(task.status);
+            }
+
             return task.status ===
                 STATUS_VALUES[normalizedValue];
 
@@ -484,6 +751,51 @@ function matchesField(task, node, context) {
 
             return task.priority === numericValue;
 
+        }
+
+        case "title":
+            return normalizeSearchText(
+                task.title ?? ""
+            ).includes(normalizedValue);
+
+        case "description":
+            return normalizeSearchText(
+                task.description ?? ""
+            ).includes(normalizedValue);
+
+        case "areaContains":
+            return containsEntityName(
+                node.value,
+                task.areaId ? [task.areaId] : [],
+                context.areas
+            );
+
+        case "contextContains":
+            return containsEntityName(
+                node.value,
+                task.contextId
+                    ? [task.contextId]
+                    : [],
+                context.contexts
+            );
+
+        case "tagContains":
+            return containsEntityName(
+                node.value,
+                task.tagIds,
+                context.tags
+            );
+
+        case "isTagged": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                (task.tagIds.length > 0) === expected;
+        }
+
+        case "hasDueDate": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                Boolean(task.dueDate) === expected;
         }
 
         case "area":
@@ -515,6 +827,157 @@ function matchesField(task, node, context) {
                 node.value,
                 context.today
             );
+
+        case "dueBefore":
+            return matchesDateBoundary(
+                task.dueDate,
+                node.value,
+                context.today,
+                "before"
+            );
+
+        case "dueAfter":
+            return matchesDateBoundary(
+                task.dueDate,
+                node.value,
+                context.today,
+                "after"
+            );
+
+        case "dueWithin":
+            return matchesDateWithin(
+                task.dueDate,
+                node.value,
+                context.today,
+                true
+            );
+
+        case "completed":
+            return matchesDateValue(
+                task.completedAt,
+                node.value,
+                context.today
+            );
+
+        case "completedBefore":
+            return matchesDateBoundary(
+                task.completedAt,
+                node.value,
+                context.today,
+                "before"
+            );
+
+        case "completedAfter":
+            return matchesDateBoundary(
+                task.completedAt,
+                node.value,
+                context.today,
+                "after"
+            );
+
+        case "completedWithin":
+            return matchesDateWithin(
+                task.completedAt,
+                node.value,
+                context.today,
+                false
+            );
+
+        case "created":
+            return matchesDateValue(
+                task.createdAt,
+                node.value,
+                context.today
+            );
+
+        case "createdBefore":
+            return matchesDateBoundary(
+                task.createdAt,
+                node.value,
+                context.today,
+                "before"
+            );
+
+        case "createdAfter":
+            return matchesDateBoundary(
+                task.createdAt,
+                node.value,
+                context.today,
+                "after"
+            );
+
+        case "createdWithin":
+            return matchesDateWithin(
+                task.createdAt,
+                node.value,
+                context.today,
+                false
+            );
+
+        case "updated":
+            return matchesDateValue(
+                task.updatedAt,
+                node.value,
+                context.today
+            );
+
+        case "updatedBefore":
+            return matchesDateBoundary(
+                task.updatedAt,
+                node.value,
+                context.today,
+                "before"
+            );
+
+        case "updatedAfter":
+            return matchesDateBoundary(
+                task.updatedAt,
+                node.value,
+                context.today,
+                "after"
+            );
+
+        case "updatedWithin":
+            return matchesDateWithin(
+                task.updatedAt,
+                node.value,
+                context.today,
+                false
+            );
+
+        case "postponed":
+            return matchesNumber(
+                node.value,
+                task.postponements?.length ?? 0
+            );
+
+        case "isSubtask": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                Boolean(task.parentTaskId) === expected;
+        }
+
+        case "hasAttachments": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                (task.attachments?.length > 0) === expected;
+        }
+
+        case "recurrence": {
+
+            const values = {
+                diaria: "DAILY",
+                daily: "DAILY",
+                semanal: "WEEKLY",
+                weekly: "WEEKLY",
+                mensual: "MONTHLY",
+                monthly: "MONTHLY"
+            };
+
+            return task.recurrence ===
+                values[normalizedValue];
+
+        }
 
         case "hasSubtasks": {
 

@@ -103,3 +103,27 @@ test("muestra de forma segura los errores de sintaxis", () => {
     );
 
 });
+
+
+test("ofrece una referencia de criterios avanzados", () => {
+
+    const html = renderSidebar({
+        advanced: true
+    });
+
+    assert.match(
+        html,
+        /Ver criterios disponibles/
+    );
+
+    assert.match(
+        html,
+        /fechaDentro/
+    );
+
+    assert.match(
+        html,
+        /posposiciones/
+    );
+
+});
