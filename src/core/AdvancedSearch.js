@@ -91,8 +91,6 @@ const FIELD_ALIASES = Object.freeze({
     posposiciones: "postponed",
     issubtask: "isSubtask",
     essubtarea: "isSubtask",
-    hasattachments: "hasAttachments",
-    tieneadjuntos: "hasAttachments",
     recurrence: "recurrence",
     repeticion: "recurrence",
     vence: "due",
@@ -107,9 +105,7 @@ const FIELD_ALIASES = Object.freeze({
     updatedbetween: "updatedBetween",
     actualizadaentre: "updatedBetween",
     completedbetween: "completedBetween",
-    completadaentre: "completedBetween",
-    attachmentcontains: "attachmentContains",
-    adjuntocontiene: "attachmentContains"
+    completadaentre: "completedBetween"
 });
 
 const STATUS_VALUES = Object.freeze({
@@ -502,8 +498,9 @@ function shiftDate(dateValue, days) {
 
 function resolveDate(value, today) {
 
+    const raw = String(value).trim();
     const normalized =
-        normalizeSearchText(value);
+        normalizeSearchText(raw);
 
     if (["hoy", "today"].includes(normalized)) {
         return today;
@@ -520,8 +517,108 @@ function resolveDate(value, today) {
         return shiftDate(today, 1);
     }
 
-    return /^\d{4}-\d{2}-\d{2}$/.test(value)
-        ? value
+    const relative = normalized.match(
+        /^en\s+(\d+)\s+(dia|dias|day|days|semana|semanas|week|weeks)$/
+    );
+
+    if (relative) {
+
+        const amount = Number(relative[1]);
+        const unit = relative[2];
+        const days =
+            unit.startsWith("semana") ||
+            unit.startsWith("week")
+                ? amount * 7
+                : amount;
+
+        return shiftDate(today, days);
+
+    }
+
+    const weekdays = {
+        domingo: 0,
+        sunday: 0,
+        lunes: 1,
+        monday: 1,
+        martes: 2,
+        tuesday: 2,
+        miercoles: 3,
+        wednesday: 3,
+        jueves: 4,
+        thursday: 4,
+        viernes: 5,
+        friday: 5,
+        sabado: 6,
+        saturday: 6
+    };
+
+    const weekdayName = normalized
+        .replace(/^proximo\s+/, "")
+        .replace(/^next\s+/, "");
+
+    if (
+        weekdays[weekdayName] !==
+        undefined
+    ) {
+
+        const current = new Date(
+            `${today}T00:00:00.000Z`
+        ).getUTCDay();
+
+        const difference =
+            (
+                weekdays[weekdayName] -
+                current +
+                7
+            ) % 7;
+
+        return shiftDate(
+            today,
+            difference
+        );
+
+    }
+
+    const localDate = raw.match(
+        /^(\d{1,2})\/(\d{1,2})(?:\/(\d{2}|\d{4}))?$/
+    );
+
+    if (localDate) {
+
+        const day = Number(localDate[1]);
+        const month = Number(localDate[2]);
+        const currentYear = Number(
+            today.slice(0, 4)
+        );
+
+        let year = localDate[3]
+            ? Number(localDate[3])
+            : currentYear;
+
+        if (year < 100) {
+            year += 2000;
+        }
+
+        const candidate = new Date(
+            Date.UTC(year, month - 1, day)
+        );
+
+        if (
+            candidate.getUTCFullYear() !== year ||
+            candidate.getUTCMonth() !== month - 1 ||
+            candidate.getUTCDate() !== day
+        ) {
+            return "";
+        }
+
+        return candidate
+            .toISOString()
+            .slice(0, 10);
+
+    }
+
+    return /^\d{4}-\d{2}-\d{2}$/.test(raw)
+        ? raw
         : "";
 
 }
@@ -757,17 +854,34 @@ function matchesDueDate(task, value, today) {
         return !task.dueDate;
     }
 
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        return task.dueDate === value;
+    const resolvedDate = resolveDate(
+        value,
+        today
+    );
+
+    if (resolvedDate) {
+        return task.dueDate === resolvedDate;
     }
 
     const comparison = value.match(
-        /^(>=|<=|>|<)(\d{4}-\d{2}-\d{2})$/
+        /^(>=|<=|>|<)(.+)$/
     );
 
-    if (comparison && task.dueDate) {
+    const comparisonDate = comparison
+        ? resolveDate(
+            comparison[2],
+            today
+        )
+        : "";
 
-        const [, operator, date] = comparison;
+    if (
+        comparison &&
+        comparisonDate &&
+        task.dueDate
+    ) {
+
+        const operator = comparison[1];
+        const date = comparisonDate;
 
         switch (operator) {
             case ">": return task.dueDate > date;
@@ -1049,32 +1163,6 @@ function matchesField(task, node, context) {
             return expected !== null &&
                 Boolean(task.parentTaskId) === expected;
         }
-
-        case "hasAttachments": {
-            const expected = parseBoolean(node.value);
-            return expected !== null &&
-                (task.attachments?.length > 0) === expected;
-        }
-
-        case "attachmentContains":
-            return (task.attachments ?? [])
-                .some(attachment => {
-
-                    const name =
-                        typeof attachment === "string"
-                            ? attachment
-                            : (
-                                attachment.name ??
-                                attachment.fileName ??
-                                attachment.filename ??
-                                attachment.title ??
-                                ""
-                            );
-
-                    return normalizeSearchText(name)
-                        .includes(normalizedValue);
-
-                });
 
         case "recurrence": {
 
