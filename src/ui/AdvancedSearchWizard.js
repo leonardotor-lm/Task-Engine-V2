@@ -278,7 +278,7 @@ export function renderAdvancedSearchWizard({
         <details class="advancedSearchWizard">
             <summary>Construir búsqueda</summary>
 
-            <form id="advancedSearchWizardForm">
+            <div id="advancedSearchWizardForm">
 
                 <label for="advancedSearchConnector">
                     Relación
@@ -314,11 +314,13 @@ export function renderAdvancedSearchWizard({
                         ).join("")}
                 </div>
 
-                <button type="submit">
+                <button
+                    id="addAdvancedSearchCriterion"
+                    type="button">
                     Agregar criterio
                 </button>
 
-            </form>
+            </div>
         </details>
     `;
 
