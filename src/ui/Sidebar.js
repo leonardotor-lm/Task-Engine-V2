@@ -26,7 +26,9 @@ export class Sidebar {
         syncLastError = null,
         showCompletedTasks = false,
         advancedSearchMode = false,
-        advancedSearchError = ""
+        advancedSearchError = "",
+        customFilters = [],
+        currentCustomFilterId = null
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -552,6 +554,18 @@ export class Sidebar {
                             Buscar
                         </button>
 
+                        ${advancedSearchMode &&
+                            searchQuery.trim() &&
+                            !advancedSearchError
+                            ? `
+                                <button
+                                    id="saveCustomFilter"
+                                    type="button">
+                                    Guardar filtro
+                                </button>
+                            `
+                            : ""}
+
                         ${searchQuery
                             ? `
                                 <button
@@ -662,6 +676,59 @@ export class Sidebar {
                                 `).join("")}
 
                             </div>
+                        `
+                        : ""}
+
+                    ${customFilters.length > 0
+                        ? `
+                            <details
+                                class="customFiltersSection"
+                                ${currentCustomFilterId
+                                    ? "open"
+                                    : ""}>
+
+                                <summary>
+                                    Filtros personalizados
+                                </summary>
+
+                                <div class="customFilterList">
+                                    ${customFilters.map(filter => `
+                                        <div class="customFilterItem">
+
+                                            <button
+                                                type="button"
+                                                class="showCustomFilter ${filter.id ===
+                                                    currentCustomFilterId
+                                                    ? "active"
+                                                    : ""}"
+                                                data-id="${escapeHtml(filter.id)}"
+                                                title="${escapeHtml(filter.query)}">
+                                                ${escapeHtml(filter.name)}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="renameCustomFilter"
+                                                data-id="${escapeHtml(filter.id)}"
+                                                aria-label="Renombrar ${escapeHtml(filter.name)}"
+                                                title="Renombrar filtro">
+                                                ✎
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="deleteCustomFilter"
+                                                data-id="${escapeHtml(filter.id)}"
+                                                aria-label="Eliminar ${escapeHtml(filter.name)}"
+                                                title="Eliminar filtro">
+                                                ×
+                                            </button>
+
+                                        </div>
+                                    `).join("")}
+                                </div>
+
+                            </details>
                         `
                         : ""}
 
