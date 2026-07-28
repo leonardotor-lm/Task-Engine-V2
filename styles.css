@@ -365,6 +365,29 @@ body {
     max-height: 180px;
 }
 
+.taskMoveField {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.taskMoveManager summary {
+    padding: 5px 0;
+    cursor: pointer;
+}
+
+.taskMoveManagerBody {
+    display: grid;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.taskMoveManagerBody > button {
+    justify-self: start;
+}
+
 .emptyTagMessage {
     color: #64748b;
     font-size: 13px;
