@@ -2,12 +2,17 @@ import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { flattenTaskTree } from "../core/TaskTree.js";
 import { SearchableSelect } from "./SearchableSelect.js";
+import {
+    SearchableMultiSelect
+} from "./SearchableMultiSelect.js";
 
 export class TaskList {
 
     constructor() {
         this.searchableSelect =
             new SearchableSelect();
+        this.searchableMultiSelect =
+            new SearchableMultiSelect();
     }
 
     render(
@@ -990,15 +995,11 @@ export class TaskList {
             `).join("");
 
         const tagOptions =
-            tags.map(tag => `
-                <label class="bulkTagOption">
-                    <input
-                        type="checkbox"
-                        class="bulkTagCheckbox"
-                        value="${escapeHtml(tag.id)}">
-                    ${escapeHtml(tag.name)}
-                </label>
-            `).join("");
+            tags.map(tag => ({
+                value: tag.id,
+                label: tag.name,
+                color: tag.color
+            }));
 
         return `
             <section class="bulkToolbar">
@@ -1060,54 +1061,63 @@ export class TaskList {
 
                 </div>
 
-                <div class="bulkTagControl">
+                <div
+                    id="bulkTags"
+                    class="bulkTagControl">
 
-                    <span>
-                        Agregar etiquetas
-                    </span>
-
-                    <div
-                        id="bulkTags"
-                        class="bulkTagOptions">
-                        ${tags.length > 0
-                            ? tagOptions
-                            : `
-                                <small>
-                                    No hay etiquetas disponibles.
-                                </small>
-                            `}
-                    </div>
+                    ${this.searchableMultiSelect.render({
+                        id: "bulkTagPicker",
+                        label: "Agregar etiquetas",
+                        options: tagOptions,
+                        selectedValues: [],
+                        valueClass:
+                            "bulkTagCheckbox",
+                        emptyMessage:
+                            "No hay etiquetas disponibles.",
+                        compact: true,
+                        managerLabel:
+                            "Agregar etiquetas"
+                    })}
 
                 </div>
 
                 <button
                     id="applyBulkChanges"
-                    type="button">
+                    type="button"
+                    class="bulkPrimaryAction">
                     Aplicar cambios
                 </button>
 
-                <div class="bulkStateActions">
+                <details class="bulkMoreActions">
 
-                    <button
-                        id="bulkCompleteTasks"
-                        type="button">
-                        Completar
-                    </button>
+                    <summary>
+                        Más acciones
+                    </summary>
 
-                    <button
-                        id="bulkArchiveTasks"
-                        type="button">
-                        Archivar
-                    </button>
+                    <div class="bulkStateActions">
 
-                    <button
-                        id="bulkDeleteTasks"
-                        type="button"
-                        class="dangerAction">
-                        Enviar a papelera
-                    </button>
+                        <button
+                            id="bulkCompleteTasks"
+                            type="button">
+                            Completar
+                        </button>
 
-                </div>
+                        <button
+                            id="bulkArchiveTasks"
+                            type="button">
+                            Archivar
+                        </button>
+
+                        <button
+                            id="bulkDeleteTasks"
+                            type="button"
+                            class="dangerAction">
+                            Enviar a papelera
+                        </button>
+
+                    </div>
+
+                </details>
 
                 <button
                     id="clearBulkSelection"

@@ -23,6 +23,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Estado:** En desarrollo.
 - Base reutilizable y buscable incorporada inicialmente en el gestor de asociaciones de objetivos.
 - Selector múltiple buscable con chips incorporado en el editor de tareas para etiquetas y objetivos.
+- La edición múltiple utiliza el mismo selector buscable para agregar etiquetas.
 - Crear un componente reutilizable con búsqueda para listas extensas.
 - Usarlo para elegir destinos al mover tareas o proyectos.
 - Evitar listas completas de casillas o desplegables HTML con cientos de opciones.
@@ -60,7 +61,22 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Documentar amenazas, medidas actuales y mejoras recomendadas.
 - Definir rotación y recuperación segura de credenciales.
 
+### Simplificación de acciones rápidas
+
+- **Estado:** Pendiente.
+- Aplicar divulgación progresiva sin eliminar funciones.
+- Mantener visibles sólo las acciones frecuentes y contextuales.
+- Agrupar Mover, Duplicar, Archivar, Eliminar y recurrencias dentro de **Más acciones**.
+- Diseñar un menú compacto en escritorio y un panel ordenado por grupos en celular.
+
 ## Prioridad media
+
+### Densidad y jerarquía visual
+
+- **Estado:** Pendiente.
+- Revisar editores, barras y paneles para reducir ruido sin perder capacidades.
+- Mantener información esencial visible y administración bajo demanda.
+- Conservar una interfaz sobria, compacta y fácil de recorrer.
 
 ### Selector de colores
 
