@@ -115,6 +115,34 @@ test("muestra Convertir en tarea principal sólo en subtareas", () => {
 
 });
 
+test("Mover usa un selector buscable en las acciones rápidas", () => {
+
+    const task = new Task({
+        id: "task",
+        title: "Tarea"
+    });
+
+    const destination = new Task({
+        id: "destination",
+        title: "Proyecto de destino"
+    });
+
+    const html = render([
+        task,
+        destination
+    ]);
+
+    assert.match(
+        html,
+        /id="quickMoveTarget-taskSearch"/
+    );
+    assert.match(
+        html,
+        /class="quickMoveTarget"/
+    );
+
+});
+
 test("muestra Quitar fecha sólo en tareas fechadas no recurrentes", () => {
 
     const dated = new Task({

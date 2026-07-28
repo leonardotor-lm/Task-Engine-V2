@@ -6,7 +6,8 @@ export class SearchableSelect {
         id,
         label,
         options = [],
-        placeholder = "Buscar…"
+        placeholder = "Buscar…",
+        selectClass = ""
     }) {
 
         if (options.length === 0) return "";
@@ -17,7 +18,9 @@ export class SearchableSelect {
         );
 
         return `
-            <div class="searchableSelect">
+            <div
+                class="searchableSelect"
+                data-searchable-select-id="${escapeHtml(id)}">
                 <label for="${escapeHtml(id)}Search">
                     ${escapeHtml(label)}
                 </label>
@@ -30,6 +33,7 @@ export class SearchableSelect {
                     aria-controls="${escapeHtml(id)}">
                 <select
                     id="${escapeHtml(id)}"
+                    class="${escapeHtml(selectClass)}"
                     size="${size}"
                     required>
                     ${options.map(option => `
@@ -64,6 +68,18 @@ export class SearchableSelect {
                 ".searchableSelectEmpty"
             );
 
+        const root = search.closest(
+            ".searchableSelect"
+        );
+
+        if (root?.dataset.searchableBound === "true") {
+            return;
+        }
+
+        if (root) {
+            root.dataset.searchableBound = "true";
+        }
+
         search.addEventListener("input", () => {
 
             const query = this.normalize(search.value);
@@ -92,6 +108,20 @@ export class SearchableSelect {
                 empty.hidden = visible > 0;
             }
 
+        });
+
+        select.selectedIndex = -1;
+
+    }
+
+    bindAll(root = document) {
+
+        root.querySelectorAll(
+            "[data-searchable-select-id]"
+        ).forEach(element => {
+            this.bind(
+                element.dataset.searchableSelectId
+            );
         });
 
     }

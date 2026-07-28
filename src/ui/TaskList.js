@@ -1,8 +1,14 @@
 import { PriorityOptions } from "./PriorityOptions.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { flattenTaskTree } from "../core/TaskTree.js";
+import { SearchableSelect } from "./SearchableSelect.js";
 
 export class TaskList {
+
+    constructor() {
+        this.searchableSelect =
+            new SearchableSelect();
+    }
 
     render(
         tasks,
@@ -404,13 +410,11 @@ export class TaskList {
 
                 const moveOptions =
                     moveTargets.map(
-                        candidate => `
-                            <option
-                                value="${escapeHtml(candidate.id)}">
-                                ${escapeHtml(candidate.title)}
-                            </option>
-                        `
-                    ).join("");
+                        candidate => ({
+                            value: candidate.id,
+                            label: candidate.title
+                        })
+                    );
 
                 const postponeBaseDate =
                     task.dueDate > today
@@ -719,17 +723,18 @@ export class TaskList {
                                                                     ? `
                                                                         <div class="quickMoveTaskControl">
 
-                                                                            <label>
-                                                                                Mover a otro proyecto
-
-                                                                                <select class="quickMoveTarget">
-                                                                                    <option value="">
-                                                                                        Elegir proyecto
-                                                                                    </option>
-
-                                                                                    ${moveOptions}
-                                                                                </select>
-                                                                            </label>
+                                                                            ${this.searchableSelect.render({
+                                                                                id:
+                                                                                    `quickMoveTarget-${task.id}`,
+                                                                                label:
+                                                                                    "Mover a otro proyecto",
+                                                                                options:
+                                                                                    moveOptions,
+                                                                                placeholder:
+                                                                                    "Buscar proyecto…",
+                                                                                selectClass:
+                                                                                    "quickMoveTarget"
+                                                                            })}
 
                                                                             <button
                                                                                 type="button"

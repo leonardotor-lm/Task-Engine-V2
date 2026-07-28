@@ -3,6 +3,7 @@ import { escapeHtml } from "./escapeHtml.js";
 import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
+import { SearchableSelect } from "./SearchableSelect.js";
 import {
     RecurrenceFrequency,
     RecurrenceWeekday
@@ -13,6 +14,8 @@ export class TaskEditor {
     constructor() {
         this.searchableMultiSelect =
             new SearchableMultiSelect();
+        this.searchableSelect =
+            new SearchableSelect();
     }
 
     render(
@@ -86,6 +89,39 @@ export class TaskEditor {
                 value: goal.id,
                 label: goal.title
             }));
+
+        const descendantIds =
+            this.getDescendantIds(
+                task.id,
+                allTasks
+            );
+
+        const moveTargets = !isLocked &&
+            !task.recurrence
+            ? allTasks.filter(candidate =>
+                candidate.id !== task.id &&
+                candidate.id !== task.parentTaskId &&
+                !descendantIds.has(candidate.id) &&
+                !candidate.isCompleted() &&
+                !candidate.isArchived() &&
+                !candidate.isDeleted() &&
+                !candidate.recurrence
+            )
+            : [];
+
+        const moveOptions = [
+            ...(task.parentTaskId
+                ? [{
+                    value: "__ROOT__",
+                    label:
+                        "Convertir en tarea principal"
+                }]
+                : []),
+            ...moveTargets.map(candidate => ({
+                value: candidate.id,
+                label: candidate.title
+            }))
+        ];
 
         const priorityOptions = PriorityOptions.map(option => `
 
@@ -513,6 +549,39 @@ export class TaskEditor {
                             disabled: isLocked
                         })}
 
+                        ${moveOptions.length > 0
+                            ? `
+                                <fieldset class="taskMoveField">
+                                    <legend>
+                                        Mover
+                                    </legend>
+
+                                    <details class="taskMoveManager">
+                                        <summary>
+                                            Elegir destino
+                                        </summary>
+
+                                        <div class="taskMoveManagerBody">
+                                            ${this.searchableSelect.render({
+                                                id: "taskMoveTarget",
+                                                label:
+                                                    "Proyecto de destino",
+                                                options: moveOptions,
+                                                placeholder:
+                                                    "Buscar proyecto…"
+                                            })}
+
+                                            <button
+                                                id="moveTaskFromEditor"
+                                                type="button">
+                                                Mover
+                                            </button>
+                                        </div>
+                                    </details>
+                                </fieldset>
+                            `
+                            : ""}
+
                     </div>
 
                 </details>
@@ -631,6 +700,34 @@ export class TaskEditor {
         this.searchableMultiSelect.bind(
             "taskGoals"
         );
+        this.searchableSelect.bind(
+            "taskMoveTarget"
+        );
+
+    }
+
+    getDescendantIds(taskId, tasks) {
+
+        const result = new Set();
+        const pending = [taskId];
+
+        while (pending.length > 0) {
+
+            const parentId = pending.shift();
+
+            for (const task of tasks) {
+                if (
+                    task.parentTaskId === parentId &&
+                    !result.has(task.id)
+                ) {
+                    result.add(task.id);
+                    pending.push(task.id);
+                }
+            }
+
+        }
+
+        return result;
 
     }
 
