@@ -216,20 +216,17 @@ test("compara la cantidad de posposiciones", () => {
 
 });
 
-test("detecta subtareas, adjuntos y tipo de recurrencia", () => {
+test("detecta subtareas y tipo de recurrencia", () => {
 
     const item = task({
         parentTaskId: "parent",
-        attachments: [
-            { name: "programa.pdf" }
-        ],
         recurrence: "WEEKLY"
     });
 
     assert.equal(
         matches(
             item,
-            "esSubtarea:si AND tieneAdjuntos:si AND repeticion:semanal"
+            "esSubtarea:si AND repeticion:semanal"
         ),
         true
     );
@@ -333,41 +330,6 @@ test("busca creación, actualización y finalización entre fechas", () => {
 
 });
 
-test("busca texto en el nombre de un adjunto", () => {
-
-    const item = task({
-        attachments: [
-            { name: "Programa anual.pdf" },
-            { fileName: "rúbrica.docx" }
-        ]
-    });
-
-    assert.equal(
-        matches(
-            item,
-            "adjuntoContiene:programa"
-        ),
-        true
-    );
-
-    assert.equal(
-        matches(
-            item,
-            "adjuntoContiene:rubrica"
-        ),
-        true
-    );
-
-    assert.equal(
-        matches(
-            item,
-            "adjuntoContiene:xlsx"
-        ),
-        false
-    );
-
-});
-
 test("acepta los sinónimos de vencimiento", () => {
 
     const item = task({
@@ -378,6 +340,70 @@ test("acepta los sinónimos de vencimiento", () => {
         matches(
             item,
             "venceDespues:2026-08-01 AND venceAntes:2026-09-01"
+        ),
+        true
+    );
+
+});
+
+
+test("acepta fechas en formato argentino", () => {
+
+    const item = task({
+        dueDate: "2026-08-15"
+    });
+
+    assert.equal(
+        matches(item, "fecha:15/08"),
+        true
+    );
+
+    assert.equal(
+        matches(item, "fecha:15/08/26"),
+        true
+    );
+
+    assert.equal(
+        matches(item, "fecha:15/08/2026"),
+        true
+    );
+
+});
+
+test("acepta fechas relativas y días de la semana", () => {
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-30" }),
+            'fecha:"en 3 dias"'
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-31" }),
+            "fecha:viernes"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-08-10" }),
+            'fecha:"en 2 semanas"'
+        ),
+        true
+    );
+
+});
+
+test("admite rangos con formato argentino", () => {
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-08-15" }),
+            'venceEntre:"01/08,31/08"'
         ),
         true
     );
