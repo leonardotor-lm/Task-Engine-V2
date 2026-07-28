@@ -112,6 +112,7 @@ estado:incompleta AND prioridad:alta
 | `fechaAntes` | Fechas anteriores al valor | `fechaAntes:2026-08-01` |
 | `fechaDespues` | Fechas posteriores al valor | `fechaDespues:hoy` |
 | `fechaDentro` | Vencimientos dentro de un período futuro | `fechaDentro:"7 dias"` |
+| `fechaEntre` | Vencimientos entre dos fechas, inclusive | `fechaEntre:"2026-08-01,2026-08-31"` |
 | `tieneFecha` | Presencia o ausencia de fecha | `tieneFecha:no` |
 
 Valores relativos admitidos para `fecha`:
@@ -122,6 +123,14 @@ Valores relativos admitidos para `fecha`:
 - `atrasada` o `vencida`
 - `proxima`
 - `sin-fecha`
+
+También pueden usarse los sinónimos `vence`, `venceAntes`, `venceDespues`, `venceDentro` y `venceEntre`.
+
+Ejemplo:
+
+```text
+venceEntre:"2026-08-01,2026-08-31"
+```
 
 Las fechas exactas usan el formato `AAAA-MM-DD`:
 
@@ -151,16 +160,25 @@ fechaDentro:"2 semanas"
 | `creadaAntes` | `creadaAntes:2026-07-01` |
 | `creadaDespues` | `creadaDespues:2026-07-01` |
 | `creadaDentro` | `creadaDentro:"30 dias"` |
+| `creadaEntre` | `creadaEntre:"2026-07-01,2026-07-31"` |
 | `actualizada` | `actualizada:hoy` |
 | `actualizadaAntes` | `actualizadaAntes:2026-07-01` |
 | `actualizadaDespues` | `actualizadaDespues:2026-07-01` |
 | `actualizadaDentro` | `actualizadaDentro:"7 dias"` |
+| `actualizadaEntre` | `actualizadaEntre:"2026-07-01,2026-07-31"` |
 | `completada` | `completada:hoy` |
 | `completadaAntes` | `completadaAntes:2026-07-01` |
 | `completadaDespues` | `completadaDespues:2026-07-01` |
 | `completadaDentro` | `completadaDentro:"30 dias"` |
+| `completadaEntre` | `completadaEntre:"2026-07-01,2026-07-31"` |
 
 En los criterios `Dentro`, las fechas de creación, actualización y finalización miran hacia atrás; `fechaDentro` mira hacia adelante.
+
+Los criterios `Entre` reciben dos fechas separadas por coma y consideran incluidos ambos extremos:
+
+```text
+creadaEntre:"2026-07-01,2026-07-31"
+```
 
 ## Posposiciones
 
@@ -201,6 +219,7 @@ posposiciones:>=3 AND estado:incompleta
 | `tieneSubtareas` | Tareas padre con subtareas directas | `tieneSubtareas:si` |
 | `esSubtarea` | Tareas que dependen de otra | `esSubtarea:si` |
 | `tieneAdjuntos` | Tareas con archivos adjuntos | `tieneAdjuntos:si` |
+| `adjuntoContiene` | Texto contenido en el nombre de un adjunto | `adjuntoContiene:pdf` |
 | `recurrente` | Tareas con alguna recurrencia | `recurrente:si` |
 | `repeticion` | Una frecuencia determinada | `repeticion:semanal` |
 
