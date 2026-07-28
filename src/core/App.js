@@ -3,6 +3,7 @@ import { TaskService } from "./TaskService.js";
 import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
+import { CustomFilterService } from "./CustomFilterService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
@@ -43,12 +44,16 @@ export class App {
         this.areaService = new AreaService();
         this.contextService = new ContextService();
         this.tagService = new TagService();
+        this.customFilterService =
+            new CustomFilterService();
 
         this.backupService = new BackupService({
             taskRepository: this.taskService.repository,
             areaRepository: this.areaService.repository,
             contextRepository: this.contextService.repository,
-            tagRepository: this.tagService.repository
+            tagRepository: this.tagService.repository,
+            customFilterRepository:
+                this.customFilterService.repository
         });
 
         this.syncConfig = new SyncConfig();
