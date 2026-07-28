@@ -166,6 +166,15 @@ export class SearchableMultiSelect {
 
         if (!root || root.disabled) return;
 
+        if (
+            root.dataset.searchableMultiBound ===
+            "true"
+        ) {
+            return;
+        }
+
+        root.dataset.searchableMultiBound = "true";
+
         const search = document.getElementById(
             `${id}Search`
         );
