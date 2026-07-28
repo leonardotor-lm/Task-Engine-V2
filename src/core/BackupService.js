@@ -3,6 +3,7 @@ import { Area } from "../domain/Area.js";
 import { Context } from "../domain/Context.js";
 import { Tag } from "../domain/Tag.js";
 import { CustomFilter } from "../domain/CustomFilter.js";
+import { Goal } from "../domain/Goal.js";
 import { TaskStatus } from "../domain/TaskStatus.js";
 
 export const BACKUP_FORMAT = "task-engine-v2-backup";
@@ -18,6 +19,7 @@ export class BackupService {
         contextRepository,
         tagRepository,
         customFilterRepository = null,
+        goalRepository = null,
         storage = localStorage
     }) {
 
@@ -27,6 +29,7 @@ export class BackupService {
         this.tagRepository = tagRepository;
         this.customFilterRepository =
             customFilterRepository;
+        this.goalRepository = goalRepository;
         this.storage = storage;
 
     }
@@ -55,6 +58,12 @@ export class BackupService {
                         ?.getAll()
                         .map(filter =>
                             filter.toJSON()
+                        ) ?? [],
+                goals:
+                    this.goalRepository
+                        ?.getAll()
+                        .map(goal =>
+                            goal.toJSON()
                         ) ?? []
             }
         };
@@ -122,6 +131,7 @@ export class BackupService {
         let contexts;
         let tags;
         let customFilters;
+        let goals;
 
         try {
 
@@ -137,6 +147,11 @@ export class BackupService {
                 ? data.customFilters.map(
                     item =>
                         new CustomFilter(item)
+                )
+                : [];
+            goals = Array.isArray(data.goals)
+                ? data.goals.map(
+                    item => new Goal(item)
                 )
                 : [];
 
@@ -156,6 +171,11 @@ export class BackupService {
             customFilters,
             "filtros personalizados"
         );
+        this.validateUniqueIds(
+            goals,
+            "objetivos"
+        );
+        this.validateGoalReferences(goals);
 
         this.validateTaskReferences({
             tasks,
@@ -169,7 +189,8 @@ export class BackupService {
             areas,
             contexts,
             tags,
-            customFilters
+            customFilters,
+            goals
         };
 
     }
@@ -318,6 +339,45 @@ export class BackupService {
 
     }
 
+    validateGoalReferences(goals) {
+
+        const goalsById = new Map(
+            goals.map(goal => [goal.id, goal])
+        );
+
+        for (const goal of goals) {
+
+            if (
+                goal.parentGoalId &&
+                !goalsById.has(goal.parentGoalId)
+            ) {
+                throw new Error(
+                    `El objetivo "${goal.title}" tiene un objetivo principal inexistente.`
+                );
+            }
+
+            const visited = new Set();
+            let current = goal;
+
+            while (current?.parentGoalId) {
+
+                if (visited.has(current.id)) {
+                    throw new Error(
+                        "La copia contiene un ciclo en la jerarquía de objetivos."
+                    );
+                }
+
+                visited.add(current.id);
+                current = goalsById.get(
+                    current.parentGoalId
+                );
+
+            }
+
+        }
+
+    }
+
     applyData(data) {
 
         this.taskRepository.replaceAll(data.tasks);
@@ -330,6 +390,11 @@ export class BackupService {
         this.customFilterRepository
             ?.replaceAll(
                 data.customFilters ?? []
+            );
+
+        this.goalRepository
+            ?.replaceAll(
+                data.goals ?? []
             );
 
     }

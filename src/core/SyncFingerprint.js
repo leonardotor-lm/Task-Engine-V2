@@ -3,7 +3,8 @@ const COLLECTIONS = [
     "areas",
     "contexts",
     "tags",
-    "customFilters"
+    "customFilters",
+    "goals"
 ];
 
 export function createSyncFingerprint(
@@ -25,7 +26,10 @@ export function createSyncFingerprint(
         const entities =
             data[collection] ??
             (
-                collection === "customFilters"
+                [
+                    "customFilters",
+                    "goals"
+                ].includes(collection)
                     ? []
                     : null
             );

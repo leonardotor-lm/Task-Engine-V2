@@ -656,7 +656,8 @@ test("descarga, valida e importa antes de guardar la revisión", async () => {
                 areas: [],
                 contexts: [],
                 tags: [],
-                customFilters: []
+                customFilters: [],
+                goals: []
             })
         ]
     ]);
