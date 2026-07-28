@@ -79,6 +79,7 @@ export class App {
         this.advancedSearchMode = false;
         this.advancedSearchExpression = null;
         this.advancedSearchError = "";
+        this.currentCustomFilterId = null;
         this.taskFilters = {
             areaId: "",
             contextId: "",
@@ -394,6 +395,7 @@ export class App {
 
                 this.searchQuery = query;
                 this.advancedSearchError = "";
+                this.currentCustomFilterId = null;
 
                 if (this.advancedSearchMode) {
 
@@ -422,6 +424,7 @@ export class App {
                 this.searchQuery = "";
                 this.advancedSearchExpression = null;
                 this.advancedSearchError = "";
+                this.currentCustomFilterId = null;
 
                 this.selectedTask = null;
 
@@ -437,7 +440,91 @@ export class App {
                 this.searchQuery = "";
                 this.advancedSearchExpression = null;
                 this.advancedSearchError = "";
+                this.currentCustomFilterId = null;
                 this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onSaveCustomFilter: (name) => {
+
+                if (
+                    !this.advancedSearchMode ||
+                    !this.advancedSearchExpression ||
+                    this.advancedSearchError
+                ) {
+                    throw new Error(
+                        "La búsqueda avanzada debe ser válida antes de guardarla."
+                    );
+                }
+
+                const filter =
+                    this.customFilterService
+                        .createFilter({
+                            name,
+                            query: this.searchQuery
+                        });
+
+                this.currentCustomFilterId =
+                    filter.id;
+
+                this.render();
+
+                return filter;
+
+            },
+
+            onApplyCustomFilter: (id) => {
+
+                const filter =
+                    this.customFilterService
+                        .getFilterById(id);
+
+                if (!filter) return;
+
+                this.currentView = View.ALL;
+                this.currentAreaId = null;
+                this.projectTaskId = null;
+                this.projectHistory = [];
+                this.advancedSearchMode = true;
+                this.searchQuery = filter.query;
+                this.advancedSearchExpression =
+                    compileAdvancedSearch(
+                        filter.query
+                    );
+                this.advancedSearchError = "";
+                this.currentCustomFilterId = id;
+                this.bulkSelectionMode = false;
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onRenameCustomFilter: (
+                id,
+                name
+            ) => {
+
+                this.customFilterService
+                    .updateFilter(id, { name });
+
+                this.render();
+
+            },
+
+            onDeleteCustomFilter: (id) => {
+
+                this.customFilterService
+                    .deleteFilter(id);
+
+                if (
+                    this.currentCustomFilterId === id
+                ) {
+                    this.currentCustomFilterId = null;
+                }
 
                 this.render();
 
@@ -1175,6 +1262,7 @@ export class App {
         }
 
         this.bulkSelectionMode = false;
+        this.currentCustomFilterId = null;
         this.selectedTaskIds.clear();
         this.selectedTask = null;
 
@@ -1505,6 +1593,7 @@ export class App {
         this.searchQuery = "";
         this.advancedSearchExpression = null;
         this.advancedSearchError = "";
+        this.currentCustomFilterId = null;
         this.taskFilters = {
             areaId: "",
             contextId: "",
@@ -1845,6 +1934,11 @@ export class App {
                 this.advancedSearchMode,
             advancedSearchError:
                 this.advancedSearchError,
+            customFilters:
+                this.customFilterService
+                    .getAllFilters(),
+            currentCustomFilterId:
+                this.currentCustomFilterId,
             taskFilters: this.taskFilters,
             filtersActive: hasActiveTaskFilters(
                 this.taskFilters
