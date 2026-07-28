@@ -2,6 +2,7 @@ import { TaskList } from "./TaskList.js";
 import { EntityManager } from "./EntityManager.js";
 import { ProjectView } from "./ProjectView.js";
 import { GoalList } from "./GoalList.js";
+import { GoalView } from "./GoalView.js";
 import { View } from "../core/View.js";
 
 export class ViewRouter {
@@ -12,6 +13,7 @@ export class ViewRouter {
         this.entityManager = new EntityManager();
         this.projectView = new ProjectView();
         this.goalList = new GoalList();
+        this.goalView = new GoalView();
 
     }
 
@@ -60,6 +62,10 @@ export class ViewRouter {
                     state.goals,
                     state.currentGoalStatus
                 );
+
+            case View.GOAL:
+
+                return this.goalView.render(state);
 
             case View.TODAY:
 
