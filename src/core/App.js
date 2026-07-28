@@ -1251,6 +1251,25 @@ export class App {
 
             },
 
+            onCreateSubgoal: (
+                parentGoalId,
+                title
+            ) => {
+
+                this.goalService.createGoal({
+                    title,
+                    parentGoalId
+                });
+
+                this.selectedGoal =
+                    this.goalService.getGoalById(
+                        parentGoalId
+                    );
+
+                this.render();
+
+            },
+
             onShowGoalStatus: (status) => {
 
                 this.currentGoalStatus = status;
