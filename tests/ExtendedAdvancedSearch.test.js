@@ -263,3 +263,24 @@ test("estado incompleto incluye Inbox y Pendiente", () => {
     );
 
 });
+
+
+test("busca vencimientos de ayer y mañana", () => {
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-26" }),
+            "fecha:ayer"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-28" }),
+            "fecha:manana"
+        ),
+        true
+    );
+
+});
