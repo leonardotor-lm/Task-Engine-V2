@@ -57,7 +57,8 @@ export class ViewRouter {
             case View.GOALS:
 
                 return this.goalList.render(
-                    state.goals
+                    state.goals,
+                    state.currentGoalStatus
                 );
 
             case View.TODAY:

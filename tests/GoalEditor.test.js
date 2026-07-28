@@ -28,6 +28,10 @@ test("muestra los datos y acciones del objetivo", () => {
     assert.match(html, /2027-03-01/);
     assert.match(html, /id="completeGoal"/);
     assert.match(html, /id="archiveGoal"/);
+    assert.match(
+        html,
+        /id="deleteGoalFromEditor"/
+    );
 
 });
 
