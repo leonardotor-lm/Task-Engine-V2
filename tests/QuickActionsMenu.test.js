@@ -40,7 +40,7 @@ test("muestra el menú contextual en una tarea activa", () => {
         /class="quickMoreActions"/
     );
 
-    assert.match(
+    assert.doesNotMatch(
         html,
         /class="quickEditTask"/
     );
@@ -87,35 +87,7 @@ test("oculta Archivar cuando existen descendientes activos", () => {
 
 });
 
-test("muestra Convertir en tarea principal sólo en subtareas", () => {
-
-    const parent = new Task({
-        id: "project",
-        title: "Proyecto"
-    });
-
-    const child = new Task({
-        id: "child-task",
-        title: "Subtarea",
-        parentTaskId: parent.id
-    });
-
-    const childHtml = render([child]);
-    const parentHtml = render([parent]);
-
-    assert.match(
-        childHtml,
-        /class="quickDetachSubtask"/
-    );
-
-    assert.doesNotMatch(
-        parentHtml,
-        /class="quickDetachSubtask"/
-    );
-
-});
-
-test("Mover usa un selector buscable en las acciones rápidas", () => {
+test("reserva Mover y Convertir en principal para el editor", () => {
 
     const task = new Task({
         id: "task",
@@ -132,18 +104,18 @@ test("Mover usa un selector buscable en las acciones rápidas", () => {
         destination
     ]);
 
-    assert.match(
+    assert.doesNotMatch(
         html,
-        /id="quickMoveTarget-taskSearch"/
+        /class="quickMoveTask"/
     );
-    assert.match(
+    assert.doesNotMatch(
         html,
-        /class="quickMoveTarget"/
+        /class="quickDetachSubtask"/
     );
 
 });
 
-test("muestra Quitar fecha sólo en tareas fechadas no recurrentes", () => {
+test("reserva Quitar fecha para el editor", () => {
 
     const dated = new Task({
         id: "dated",
@@ -159,7 +131,7 @@ test("muestra Quitar fecha sólo en tareas fechadas no recurrentes", () => {
     const datedHtml = render([dated]);
     const undatedHtml = render([undated]);
 
-    assert.match(
+    assert.doesNotMatch(
         datedHtml,
         /class="quickClearDueDate"/
     );
@@ -190,6 +162,11 @@ test("muestra acciones de recurrencia sólo cuando corresponde", () => {
     assert.match(
         html,
         /class="quickEndRecurrence"/
+    );
+
+    assert.match(
+        html,
+        /class="quickEditTask"/
     );
 
     assert.doesNotMatch(
