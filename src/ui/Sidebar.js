@@ -1,6 +1,7 @@
 import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { PriorityOptions } from "./PriorityOptions.js";
+import { renderAdvancedSearchWizard } from "./AdvancedSearchWizard.js";
 
 export class Sidebar {
 
@@ -533,6 +534,12 @@ export class Sidebar {
                                 <p><strong>Propiedades:</strong> prioridad, estado, tieneFecha, tieneEtiquetas, tieneSubtareas, esSubtarea, tieneAdjuntos, recurrente, repeticion, posposiciones.</p>
                                 <p><strong>Valores útiles:</strong> hoy, ayer, mañana, sin-fecha, &gt;3, &lt;2, “7 dias”.</p>
                             </details>
+
+                            ${renderAdvancedSearchWizard({
+                                areas,
+                                contexts,
+                                tags
+                            })}
                         `
                         : ""}
 
