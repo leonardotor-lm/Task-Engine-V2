@@ -1,0 +1,46 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { Goal } from "../src/domain/Goal.js";
+import { GoalEditor } from "../src/ui/GoalEditor.js";
+
+test("no reserva espacio sin un objetivo", () => {
+
+    assert.equal(
+        new GoalEditor().render(null),
+        ""
+    );
+
+});
+
+test("muestra los datos y acciones del objetivo", () => {
+
+    const html = new GoalEditor().render(
+        new Goal({
+            title: "Publicar un libro",
+            description: "Preparar el manuscrito",
+            dueDate: "2027-03-01"
+        })
+    );
+
+    assert.match(html, /Publicar un libro/);
+    assert.match(html, /Preparar el manuscrito/);
+    assert.match(html, /2027-03-01/);
+    assert.match(html, /id="completeGoal"/);
+    assert.match(html, /id="archiveGoal"/);
+
+});
+
+test("escapa el contenido del objetivo", () => {
+
+    const html = new GoalEditor().render(
+        new Goal({
+            title: "<script>Meta</script>",
+            description: "<img src=x>"
+        })
+    );
+
+    assert.doesNotMatch(html, /<script>/);
+    assert.doesNotMatch(html, /<img/);
+
+});
