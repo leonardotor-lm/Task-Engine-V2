@@ -7,6 +7,9 @@ import { Dialog } from "../components/Dialog.js";
 import { TaskSwipeController } from "./TaskSwipeController.js";
 import { hasTaskEditorChanges } from "./TaskEditorDraft.js";
 import { SearchableSelect } from "./SearchableSelect.js";
+import {
+    SearchableMultiSelect
+} from "./SearchableMultiSelect.js";
 
 export class MainView {
 
@@ -22,6 +25,8 @@ export class MainView {
             new TaskSwipeController();
         this.searchableSelect =
             new SearchableSelect();
+        this.searchableMultiSelect =
+            new SearchableMultiSelect();
 
         this.mobileHistoryInitialized =
             false;
@@ -138,6 +143,9 @@ export class MainView {
         `;
 
         this.searchableSelect.bindAll();
+        this.searchableMultiSelect.bind(
+            "bulkTagPicker"
+        );
         this.bindEvents(state);
 
     }
@@ -1656,7 +1664,7 @@ export class MainView {
                 const addTagIds = [
                     ...document
                         .querySelectorAll(
-                            ".bulkTagCheckbox:checked"
+                            ".bulkTagCheckbox"
                         )
                 ].map(checkbox => checkbox.value);
 
