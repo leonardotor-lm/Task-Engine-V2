@@ -22,8 +22,8 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 - **Estado:** En desarrollo.
 - Base reutilizable y buscable incorporada inicialmente en el gestor de asociaciones de objetivos.
+- Selector múltiple buscable con chips incorporado en el editor de tareas para etiquetas y objetivos.
 - Crear un componente reutilizable con búsqueda para listas extensas.
-- Usarlo para elegir etiquetas y objetivos mediante selección múltiple.
 - Usarlo para elegir destinos al mover tareas o proyectos.
 - Evitar listas completas de casillas o desplegables HTML con cientos de opciones.
 - Ofrecer búsqueda, altura limitada, desplazamiento y confirmación explícita.
