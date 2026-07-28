@@ -27,3 +27,18 @@ Google Sheets es un mecanismo de persistencia y no la base de datos del sistema.
 
 Estado:
 Aceptada.
+
+---
+
+## D-004
+
+La aplicación conserva paridad funcional entre escritorio y celular, pero adapta sus prioridades de uso.
+
+El escritorio es el entorno principal para planificación, revisión, organización, jerarquías y operaciones amplias.
+
+El celular es el entorno principal para consultar acciones inmediatas, capturar, completar, posponer y ejecutar acciones rápidas.
+
+Las funciones complejas permanecen disponibles en celular mediante paneles o secciones que eviten saturar la interfaz.
+
+Estado:
+Aceptada.

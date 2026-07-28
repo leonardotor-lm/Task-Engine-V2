@@ -1045,6 +1045,9 @@ export class MainView {
 
         if (selectedGoal) {
 
+            this.goalEditor
+                .bindAssociationSelectors();
+
             document.getElementById(
                 "closeGoalView"
             )?.addEventListener(
@@ -1245,31 +1248,34 @@ export class MainView {
                 }
             );
 
-            document.querySelectorAll(
-                ".detachTaskFromGoal"
-            ).forEach(button => {
+            document.getElementById(
+                "goalTaskDetachForm"
+            )?.addEventListener(
+                "submit",
+                event => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                    event.preventDefault();
 
-                        try {
-                            this.callbacks
-                                .onDetachTaskFromGoal(
-                                    button.dataset
-                                        .taskId,
-                                    selectedGoal.id
-                                );
-                        } catch (error) {
-                            Dialog.alert(
-                                error.message
+                    const taskId = document
+                        .getElementById(
+                            "goalTaskDetachId"
+                        )
+                        .value;
+
+                    if (!taskId) return;
+
+                    try {
+                        this.callbacks
+                            .onDetachTaskFromGoal(
+                                taskId,
+                                selectedGoal.id
                             );
-                        }
-
+                    } catch (error) {
+                        Dialog.alert(error.message);
                     }
-                );
 
-            });
+                }
+            );
 
             document.getElementById(
                 "detachGoal"

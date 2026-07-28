@@ -119,14 +119,15 @@ test("administra las asociaciones desde el editor", () => {
 
     assert.match(
         html,
-        /Tareas y proyectos asociados/
+        /Gestionar asociaciones/
     );
     assert.match(html, /Corregir manuscrito/);
     assert.match(
         html,
-        /class="detachTaskFromGoal"/
+        /id="goalTaskDetachForm"/
     );
     assert.match(html, /id="goalTaskForm"/);
+    assert.match(html, /type="search"/);
     assert.match(html, /Buscar editorial/);
 
 });

@@ -20,7 +20,8 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Selectores escalables
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
+- Base reutilizable y buscable incorporada inicialmente en el gestor de asociaciones de objetivos.
 - Crear un componente reutilizable con búsqueda para listas extensas.
 - Usarlo para elegir etiquetas y objetivos mediante selección múltiple.
 - Usarlo para elegir destinos al mover tareas o proyectos.
@@ -29,10 +30,10 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Gestión de asociaciones de objetivos
 
-- **Estado:** Pendiente.
-- Sustituir la lista completa del editor de objetivos por un control compacto con cantidad asociada.
-- Abrir un gestor específico para asociar o quitar varias tareas y proyectos.
-- Incorporar búsqueda y filtros por área y tipo.
+- **Estado:** En desarrollo.
+- El editor muestra un control compacto con la cantidad asociada.
+- El gestor permite buscar y asociar o quitar tareas y proyectos sin desplegar listas interminables.
+- Pendiente: incorporar filtros adicionales por área y tipo si el volumen real los vuelve necesarios.
 - Mantener la pantalla central del objetivo orientada al seguimiento, no a la administración.
 
 ### Mover tareas y proyectos

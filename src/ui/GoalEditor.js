@@ -1,6 +1,12 @@
 import { escapeHtml } from "./escapeHtml.js";
+import { SearchableSelect } from "./SearchableSelect.js";
 
 export class GoalEditor {
+
+    constructor() {
+        this.searchableSelect =
+            new SearchableSelect();
+    }
 
     render(
         goal,
@@ -137,62 +143,72 @@ export class GoalEditor {
 
                 <section class="goalTasksSection">
 
-                    <h4>Tareas y proyectos asociados</h4>
+                    <details class="goalAssociationManager">
+                        <summary>
+                            Gestionar asociaciones
+                            (${directlyAssociated.length})
+                        </summary>
 
-                    <ul class="goalTaskList">
-                        ${directlyAssociated.length > 0
-                            ? directlyAssociated
-                                .map(task => `
-                                    <li class="goalTaskItem">
-                                        <span>
-                                            <strong>
-                                                ${escapeHtml(task.title)}
-                                            </strong>
-                                            <small>
-                                                ${typeLabel(task)}
-                                            </small>
-                                        </span>
+                        <div class="goalAssociationManagerBody">
+
+                            ${directlyAssociated.length > 0
+                                ? `
+                                    <form id="goalTaskDetachForm">
+                                        ${this.searchableSelect.render({
+                                            id: "goalTaskDetachId",
+                                            label: "Quitar asociación",
+                                            placeholder:
+                                                "Buscar entre las asociadas…",
+                                            options: directlyAssociated
+                                                .map(task => ({
+                                                    value: task.id,
+                                                    label:
+                                                        `${typeLabel(task)}: ` +
+                                                        task.title
+                                                }))
+                                        })}
                                         <button
-                                            type="button"
-                                            class="detachTaskFromGoal"
-                                            data-task-id="${escapeHtml(task.id)}">
+                                            type="submit"
+                                            class="dangerAction">
                                             Quitar
                                         </button>
-                                    </li>
-                                `)
-                                .join("")
-                            : `
-                                <li class="emptyGoalTasks">
-                                    No hay asociaciones directas.
-                                </li>
-                            `}
-                    </ul>
+                                    </form>
+                                `
+                                : `
+                                    <p class="emptyGoalTasks">
+                                        No hay asociaciones directas.
+                                    </p>
+                                `}
 
-                    ${availableTasks.length > 0
-                        ? `
-                            <form id="goalTaskForm">
-                                <select
-                                    id="goalTaskId"
-                                    required>
-                                    <option value="">
-                                        Asociar tarea o proyecto…
-                                    </option>
-                                    ${availableTasks
-                                        .map(task => `
-                                            <option
-                                                value="${escapeHtml(task.id)}">
-                                                ${typeLabel(task)}:
-                                                ${escapeHtml(task.title)}
-                                            </option>
-                                        `)
-                                        .join("")}
-                                </select>
-                                <button type="submit">
-                                    Asociar
-                                </button>
-                            </form>
-                        `
-                        : ""}
+                            ${availableTasks.length > 0
+                                ? `
+                                    <form id="goalTaskForm">
+                                        ${this.searchableSelect.render({
+                                            id: "goalTaskId",
+                                            label: "Agregar asociación",
+                                            placeholder:
+                                                "Buscar tareas o proyectos…",
+                                            options: availableTasks
+                                                .map(task => ({
+                                                    value: task.id,
+                                                    label:
+                                                        `${typeLabel(task)}: ` +
+                                                        task.title
+                                                }))
+                                        })}
+                                        <button type="submit">
+                                            Asociar
+                                        </button>
+                                    </form>
+                                `
+                                : `
+                                    <p class="emptyGoalTasks">
+                                        No hay más tareas o proyectos disponibles.
+                                    </p>
+                                `}
+
+                        </div>
+                    </details>
 
                 </section>
 
@@ -269,6 +285,17 @@ export class GoalEditor {
 
             </aside>
         `;
+
+    }
+
+    bindAssociationSelectors() {
+
+        this.searchableSelect.bind(
+            "goalTaskDetachId"
+        );
+        this.searchableSelect.bind(
+            "goalTaskId"
+        );
 
     }
 
