@@ -94,7 +94,22 @@ const FIELD_ALIASES = Object.freeze({
     hasattachments: "hasAttachments",
     tieneadjuntos: "hasAttachments",
     recurrence: "recurrence",
-    repeticion: "recurrence"
+    repeticion: "recurrence",
+    vence: "due",
+    venceantes: "dueBefore",
+    vencesdespues: "dueAfter",
+    vencesdentro: "dueWithin",
+    venceentre: "dueBetween",
+    duebetween: "dueBetween",
+    fechaentre: "dueBetween",
+    createdbetween: "createdBetween",
+    creadaentre: "createdBetween",
+    updatedbetween: "updatedBetween",
+    actualizadaentre: "updatedBetween",
+    completedbetween: "completedBetween",
+    completadaentre: "completedBetween",
+    attachmentcontains: "attachmentContains",
+    adjuntocontiene: "attachmentContains"
 });
 
 const STATUS_VALUES = Object.freeze({
@@ -612,6 +627,43 @@ function matchesDateWithin(
 
 }
 
+function matchesDateBetween(
+    dateValue,
+    value,
+    today
+) {
+
+    if (!dateValue) {
+        return false;
+    }
+
+    const parts = String(value)
+        .split(/\s*(?:,|\.\.)\s*/);
+
+    if (parts.length !== 2) {
+        return false;
+    }
+
+    const start = resolveDate(
+        parts[0],
+        today
+    );
+
+    const end = resolveDate(
+        parts[1],
+        today
+    );
+
+    if (!start || !end || start > end) {
+        return false;
+    }
+
+    const date = dateOnly(dateValue);
+
+    return date >= start && date <= end;
+
+}
+
 function matchesNumber(value, actual) {
 
     const normalized = value.replace(/\s/g, "");
@@ -865,6 +917,13 @@ function matchesField(task, node, context) {
                 true
             );
 
+        case "dueBetween":
+            return matchesDateBetween(
+                task.dueDate,
+                node.value,
+                context.today
+            );
+
         case "completed":
             return matchesDateValue(
                 task.completedAt,
@@ -894,6 +953,13 @@ function matchesField(task, node, context) {
                 node.value,
                 context.today,
                 false
+            );
+
+        case "completedBetween":
+            return matchesDateBetween(
+                task.completedAt,
+                node.value,
+                context.today
             );
 
         case "created":
@@ -927,6 +993,13 @@ function matchesField(task, node, context) {
                 false
             );
 
+        case "createdBetween":
+            return matchesDateBetween(
+                task.createdAt,
+                node.value,
+                context.today
+            );
+
         case "updated":
             return matchesDateValue(
                 task.updatedAt,
@@ -958,6 +1031,13 @@ function matchesField(task, node, context) {
                 false
             );
 
+        case "updatedBetween":
+            return matchesDateBetween(
+                task.updatedAt,
+                node.value,
+                context.today
+            );
+
         case "postponed":
             return matchesNumber(
                 node.value,
@@ -975,6 +1055,26 @@ function matchesField(task, node, context) {
             return expected !== null &&
                 (task.attachments?.length > 0) === expected;
         }
+
+        case "attachmentContains":
+            return (task.attachments ?? [])
+                .some(attachment => {
+
+                    const name =
+                        typeof attachment === "string"
+                            ? attachment
+                            : (
+                                attachment.name ??
+                                attachment.fileName ??
+                                attachment.filename ??
+                                attachment.title ??
+                                ""
+                            );
+
+                    return normalizeSearchText(name)
+                        .includes(normalizedValue);
+
+                });
 
         case "recurrence": {
 
