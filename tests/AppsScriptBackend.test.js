@@ -137,6 +137,30 @@ test("rechaza referencias a entidades inexistentes", () => {
 
 });
 
+test("rechaza objetivos de tarea inexistentes", () => {
+
+    const backend = loadBackend();
+
+    assert.throws(
+        () => backend.validateSnapshot_(
+            snapshot({
+                tasks: [
+                    entity("task-1", {
+                        title: "Tarea",
+                        tagIds: [],
+                        goalIds: [
+                            "missing-goal"
+                        ]
+                    })
+                ]
+            })
+        ),
+        error =>
+            error.code === "INVALID_REFERENCE"
+    );
+
+});
+
 test("acepta relaciones válidas entre todas las colecciones", () => {
 
     const backend = loadBackend();
