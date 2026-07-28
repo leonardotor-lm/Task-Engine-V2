@@ -6,6 +6,7 @@ import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
 import { TaskSwipeController } from "./TaskSwipeController.js";
 import { hasTaskEditorChanges } from "./TaskEditorDraft.js";
+import { SearchableSelect } from "./SearchableSelect.js";
 
 export class MainView {
 
@@ -19,6 +20,8 @@ export class MainView {
         this.viewRouter = new ViewRouter();
         this.taskSwipeController =
             new TaskSwipeController();
+        this.searchableSelect =
+            new SearchableSelect();
 
         this.mobileHistoryInitialized =
             false;
@@ -134,6 +137,7 @@ export class MainView {
             </div>
         `;
 
+        this.searchableSelect.bindAll();
         this.bindEvents(state);
 
     }
@@ -2833,6 +2837,66 @@ export class MainView {
                         document.getElementById(
                             "saveTask"
                         )?.click();
+
+                    }
+                );
+
+                document.getElementById(
+                    "moveTaskFromEditor"
+                )?.addEventListener(
+                    "click",
+                    () => {
+
+                        const targetId = document
+                            .getElementById(
+                                "taskMoveTarget"
+                            )
+                            .value;
+
+                        if (!targetId) {
+                            Dialog.alert(
+                                "Elegí un destino."
+                            );
+                            return;
+                        }
+
+                        if (
+                            hasTaskEditorChanges(
+                                selectedTask
+                            )
+                        ) {
+                            Dialog.alert(
+                                "Guardá los cambios de la tarea antes de moverla."
+                            );
+                            return;
+                        }
+
+                        if (!Dialog.confirm(
+                            targetId === "__ROOT__"
+                                ? "¿Convertir esta subtarea en una tarea principal?"
+                                : "¿Mover esta tarea y todo su árbol al proyecto seleccionado?"
+                        )) {
+                            return;
+                        }
+
+                        try {
+
+                            if (targetId === "__ROOT__") {
+                                this.callbacks
+                                    .onDetachSubtask(
+                                        selectedTask.id
+                                    );
+                            } else {
+                                this.callbacks
+                                    .onMoveTaskToProject(
+                                        selectedTask.id,
+                                        targetId
+                                    );
+                            }
+
+                        } catch (error) {
+                            Dialog.alert(error.message);
+                        }
 
                     }
                 );
