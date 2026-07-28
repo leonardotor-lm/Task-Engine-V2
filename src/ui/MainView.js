@@ -36,6 +36,8 @@ export class MainView {
             searchQuery,
             advancedSearchMode,
             advancedSearchError,
+            customFilters,
+            currentCustomFilterId,
             taskFilters,
             taskSort,
             canRestoreBackup,
@@ -101,7 +103,9 @@ export class MainView {
                     syncLastError,
                     showCompletedTasks,
                     advancedSearchMode,
-                    advancedSearchError
+                    advancedSearchError,
+                    customFilters,
+                    currentCustomFilterId
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -703,6 +707,33 @@ export class MainView {
 
         });
 
+        document.getElementById(
+            "saveCustomFilter"
+        )?.addEventListener("click", () => {
+
+            const name = Dialog.prompt(
+                "Nombre del filtro personalizado:",
+                ""
+            );
+
+            if (name === null || !name.trim()) {
+                return;
+            }
+
+            try {
+
+                this.callbacks.onSaveCustomFilter(
+                    name.trim()
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
+
         document.getElementById("taskFilterForm")?.addEventListener("submit", event => {
 
             event.preventDefault();
@@ -841,6 +872,110 @@ export class MainView {
                                     button.dataset.id
                                 )
                     );
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".showCustomFilter"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        selectedTask &&
+                        !this.confirmDiscardTaskChanges(
+                            selectedTask
+                        )
+                    ) {
+                        return;
+                    }
+
+                    this.navigateAndResetScroll(
+                        () =>
+                            this.callbacks
+                                .onApplyCustomFilter(
+                                    button.dataset.id
+                                )
+                    );
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".renameCustomFilter"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const filter =
+                        customFilters.find(
+                            item =>
+                                item.id ===
+                                button.dataset.id
+                        );
+
+                    if (!filter) return;
+
+                    const name = Dialog.prompt(
+                        "Nuevo nombre del filtro:",
+                        filter.name
+                    );
+
+                    if (
+                        name === null ||
+                        !name.trim()
+                    ) {
+                        return;
+                    }
+
+                    try {
+
+                        this.callbacks
+                            .onRenameCustomFilter(
+                                filter.id,
+                                name.trim()
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(
+                            error.message
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".deleteCustomFilter"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    if (!Dialog.confirm(
+                        "¿Eliminar este filtro personalizado?"
+                    )) {
+                        return;
+                    }
+
+                    this.callbacks
+                        .onDeleteCustomFilter(
+                            button.dataset.id
+                        );
 
                 }
             );
