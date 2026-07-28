@@ -2119,3 +2119,49 @@ h3 {
 .advancedSearchReference p {
     margin: 6px 0 0;
 }
+
+
+.advancedSearchWizard {
+    margin-top: 8px;
+    padding: 7px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 11px;
+}
+
+.advancedSearchWizard summary {
+    color: #1d4ed8;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#advancedSearchWizardForm {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+#advancedSearchWizardForm label {
+    color: #475569;
+    font-weight: 600;
+}
+
+#advancedSearchWizardForm select,
+#advancedSearchWizardForm input,
+#advancedSearchWizardForm button {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 6px;
+}
+
+.advancedSearchWizardValue[hidden] {
+    display: none;
+}
+
+.advancedSearchNumber {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 6px;
+}
