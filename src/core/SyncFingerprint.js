@@ -2,7 +2,8 @@ const COLLECTIONS = [
     "tasks",
     "areas",
     "contexts",
-    "tags"
+    "tags",
+    "customFilters"
 ];
 
 export function createSyncFingerprint(
@@ -21,14 +22,22 @@ export function createSyncFingerprint(
 
     for (const collection of COLLECTIONS) {
 
-        if (!Array.isArray(data[collection])) {
+        const entities =
+            data[collection] ??
+            (
+                collection === "customFilters"
+                    ? []
+                    : null
+            );
+
+        if (!Array.isArray(entities)) {
             throw new Error(
                 "La copia está incompleta."
             );
         }
 
         fingerprint[collection] =
-            data[collection]
+            entities
                 .map(entity => ({
                     id: entity.id,
                     version: entity.version
