@@ -1342,6 +1342,78 @@ export class App {
 
             },
 
+            onAssociateTaskToGoal: (
+                taskId,
+                goalId
+            ) => {
+
+                const goal =
+                    this.goalService
+                        .getGoalById(goalId);
+
+                const task =
+                    this.taskService
+                        .getTaskById(taskId);
+
+                if (!goal || !task) {
+                    throw new Error(
+                        "No se pudo completar la asociación."
+                    );
+                }
+
+                this.taskService.updateTask(
+                    taskId,
+                    {
+                        goalIds: [
+                            ...new Set([
+                                ...(task.goalIds ?? []),
+                                goalId
+                            ])
+                        ]
+                    }
+                );
+
+                this.selectedGoal = goal;
+                this.render();
+
+            },
+
+            onDetachTaskFromGoal: (
+                taskId,
+                goalId
+            ) => {
+
+                const goal =
+                    this.goalService
+                        .getGoalById(goalId);
+
+                const task =
+                    this.taskService
+                        .getTaskById(taskId);
+
+                if (!goal || !task) {
+                    throw new Error(
+                        "No se pudo quitar la asociación."
+                    );
+                }
+
+                this.taskService.updateTask(
+                    taskId,
+                    {
+                        goalIds:
+                            (task.goalIds ?? [])
+                                .filter(
+                                    id =>
+                                        id !== goalId
+                                )
+                    }
+                );
+
+                this.selectedGoal = goal;
+                this.render();
+
+            },
+
             onCompleteGoal: (id) => {
 
                 this.goalService.completeGoal(id);

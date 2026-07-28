@@ -2390,6 +2390,68 @@ h3 {
     border-top: 1px solid #e2e8f0;
 }
 
+.goalTasksSection {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.goalTasksSection h4 {
+    margin: 0 0 8px;
+}
+
+.goalTaskList {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.goalTaskItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+}
+
+.goalTaskItem span {
+    display: grid;
+    min-width: 0;
+}
+
+.goalTaskItem strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.goalTaskItem small,
+.emptyGoalTasks {
+    color: #64748b;
+}
+
+.detachTaskFromGoal {
+    flex: 0 0 auto;
+}
+
+#goalTaskForm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+}
+
+#goalTaskForm select,
+#goalTaskForm button {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 8px;
+    font: inherit;
+}
+
 .goalHierarchySection {
     margin-top: 14px;
     padding-top: 12px;
@@ -2485,6 +2547,12 @@ h3 {
         grid-template-columns: 1fr;
     }
 
+    #goalTaskForm {
+        grid-template-columns: 1fr;
+    }
+
+    #goalTaskForm select,
+    #goalTaskForm button,
     #subgoalForm input,
     #subgoalForm button {
         min-height: 44px;

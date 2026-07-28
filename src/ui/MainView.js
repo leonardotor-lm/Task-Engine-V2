@@ -124,7 +124,8 @@ export class MainView {
 
                 ${this.goalEditor.render(
                     selectedGoal,
-                    state.goals
+                    state.goals,
+                    allTasks
                 )}
 
             </div>
@@ -1170,6 +1171,61 @@ export class MainView {
 
                 }
             );
+
+            document.getElementById(
+                "goalTaskForm"
+            )?.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const taskId = document
+                        .getElementById(
+                            "goalTaskId"
+                        )
+                        .value;
+
+                    if (!taskId) return;
+
+                    try {
+                        this.callbacks
+                            .onAssociateTaskToGoal(
+                                taskId,
+                                selectedGoal.id
+                            );
+                    } catch (error) {
+                        Dialog.alert(error.message);
+                    }
+
+                }
+            );
+
+            document.querySelectorAll(
+                ".detachTaskFromGoal"
+            ).forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        try {
+                            this.callbacks
+                                .onDetachTaskFromGoal(
+                                    button.dataset
+                                        .taskId,
+                                    selectedGoal.id
+                                );
+                        } catch (error) {
+                            Dialog.alert(
+                                error.message
+                            );
+                        }
+
+                    }
+                );
+
+            });
 
             document.getElementById(
                 "detachGoal"
