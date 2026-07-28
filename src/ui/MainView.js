@@ -5,6 +5,11 @@ import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
 import { TaskSwipeController } from "./TaskSwipeController.js";
 import { hasTaskEditorChanges } from "./TaskEditorDraft.js";
+import {
+    appendAdvancedSearchClause,
+    createAdvancedSearchClause,
+    getActiveWizardValueGroup
+} from "./AdvancedSearchWizard.js";
 
 export class MainView {
 
@@ -682,6 +687,102 @@ export class MainView {
         )?.addEventListener("click", () => {
 
             this.callbacks.onToggleAdvancedSearch();
+
+        });
+
+        const wizardForm =
+            document.getElementById(
+                "advancedSearchWizardForm"
+            );
+
+        const wizardCriterion =
+            document.getElementById(
+                "advancedSearchCriterion"
+            );
+
+        const updateWizardValue = () => {
+
+            if (!wizardForm || !wizardCriterion) {
+                return;
+            }
+
+            wizardForm.querySelectorAll(
+                "[data-criterion-value]"
+            ).forEach(group => {
+
+                group.hidden =
+                    group.dataset.criterionValue !==
+                    wizardCriterion.value;
+
+            });
+
+        };
+
+        wizardCriterion?.addEventListener(
+            "change",
+            updateWizardValue
+        );
+
+        updateWizardValue();
+
+        document.getElementById(
+            "addAdvancedSearchCriterion"
+        )?.addEventListener("click", () => {
+
+            const searchInput =
+                document.getElementById(
+                    "taskSearchInput"
+                );
+
+            const connector =
+                document.getElementById(
+                    "advancedSearchConnector"
+                )?.value;
+
+            const criterion =
+                wizardCriterion?.value;
+
+            const valueGroup =
+                getActiveWizardValueGroup(
+                    wizardForm,
+                    criterion
+                );
+
+            const value = valueGroup
+                ?.querySelector(
+                    "[data-wizard-value]"
+                )?.value ?? "";
+
+            const comparison = valueGroup
+                ?.querySelector(
+                    "[data-wizard-comparison]"
+                )?.value ?? "=";
+
+            const clause =
+                createAdvancedSearchClause({
+                    criterion,
+                    value,
+                    comparison
+                });
+
+            if (!clause) {
+
+                Dialog.alert(
+                    "Completá el valor del criterio."
+                );
+
+                return;
+
+            }
+
+            searchInput.value =
+                appendAdvancedSearchClause(
+                    searchInput.value,
+                    clause,
+                    connector
+                );
+
+            searchInput.focus();
 
         });
 
