@@ -284,3 +284,102 @@ test("busca vencimientos de ayer y mañana", () => {
     );
 
 });
+
+
+test("busca vencimientos entre dos fechas inclusivas", () => {
+
+    for (const dueDate of [
+        "2026-08-01",
+        "2026-08-15",
+        "2026-08-31"
+    ]) {
+        assert.equal(
+            matches(
+                task({ dueDate }),
+                'fechaEntre:"2026-08-01,2026-08-31"'
+            ),
+            true
+        );
+    }
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-09-01" }),
+            'venceEntre:"2026-08-01,2026-08-31"'
+        ),
+        false
+    );
+
+});
+
+test("busca creación, actualización y finalización entre fechas", () => {
+
+    const item = task({
+        createdAt:
+            "2026-07-05T10:00:00.000Z",
+        updatedAt:
+            "2026-07-15T10:00:00.000Z",
+        completedAt:
+            "2026-07-31T10:00:00.000Z"
+    });
+
+    assert.equal(
+        matches(
+            item,
+            'creadaEntre:"2026-07-01,2026-07-31" AND actualizadaEntre:"2026-07-01,2026-07-31" AND completadaEntre:"2026-07-01,2026-07-31"'
+        ),
+        true
+    );
+
+});
+
+test("busca texto en el nombre de un adjunto", () => {
+
+    const item = task({
+        attachments: [
+            { name: "Programa anual.pdf" },
+            { fileName: "rúbrica.docx" }
+        ]
+    });
+
+    assert.equal(
+        matches(
+            item,
+            "adjuntoContiene:programa"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            item,
+            "adjuntoContiene:rubrica"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            item,
+            "adjuntoContiene:xlsx"
+        ),
+        false
+    );
+
+});
+
+test("acepta los sinónimos de vencimiento", () => {
+
+    const item = task({
+        dueDate: "2026-08-15"
+    });
+
+    assert.equal(
+        matches(
+            item,
+            "venceDespues:2026-08-01 AND venceAntes:2026-09-01"
+        ),
+        true
+    );
+
+});
