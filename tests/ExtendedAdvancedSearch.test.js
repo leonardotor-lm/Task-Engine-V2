@@ -216,20 +216,17 @@ test("compara la cantidad de posposiciones", () => {
 
 });
 
-test("detecta subtareas, adjuntos y tipo de recurrencia", () => {
+test("detecta subtareas y tipo de recurrencia", () => {
 
     const item = task({
         parentTaskId: "parent",
-        attachments: [
-            { name: "programa.pdf" }
-        ],
         recurrence: "WEEKLY"
     });
 
     assert.equal(
         matches(
             item,
-            "esSubtarea:si AND tieneAdjuntos:si AND repeticion:semanal"
+            "esSubtarea:si AND repeticion:semanal"
         ),
         true
     );
@@ -260,6 +257,155 @@ test("estado incompleto incluye Inbox y Pendiente", () => {
             "estado:incompleta"
         ),
         false
+    );
+
+});
+
+
+test("busca vencimientos de ayer y mañana", () => {
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-26" }),
+            "fecha:ayer"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-28" }),
+            "fecha:manana"
+        ),
+        true
+    );
+
+});
+
+
+test("busca vencimientos entre dos fechas inclusivas", () => {
+
+    for (const dueDate of [
+        "2026-08-01",
+        "2026-08-15",
+        "2026-08-31"
+    ]) {
+        assert.equal(
+            matches(
+                task({ dueDate }),
+                'fechaEntre:"2026-08-01,2026-08-31"'
+            ),
+            true
+        );
+    }
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-09-01" }),
+            'venceEntre:"2026-08-01,2026-08-31"'
+        ),
+        false
+    );
+
+});
+
+test("busca creación, actualización y finalización entre fechas", () => {
+
+    const item = task({
+        createdAt:
+            "2026-07-05T10:00:00.000Z",
+        updatedAt:
+            "2026-07-15T10:00:00.000Z",
+        completedAt:
+            "2026-07-31T10:00:00.000Z"
+    });
+
+    assert.equal(
+        matches(
+            item,
+            'creadaEntre:"2026-07-01,2026-07-31" AND actualizadaEntre:"2026-07-01,2026-07-31" AND completadaEntre:"2026-07-01,2026-07-31"'
+        ),
+        true
+    );
+
+});
+
+test("acepta los sinónimos de vencimiento", () => {
+
+    const item = task({
+        dueDate: "2026-08-15"
+    });
+
+    assert.equal(
+        matches(
+            item,
+            "venceDespues:2026-08-01 AND venceAntes:2026-09-01"
+        ),
+        true
+    );
+
+});
+
+
+test("acepta fechas en formato argentino", () => {
+
+    const item = task({
+        dueDate: "2026-08-15"
+    });
+
+    assert.equal(
+        matches(item, "fecha:15/08"),
+        true
+    );
+
+    assert.equal(
+        matches(item, "fecha:15/08/26"),
+        true
+    );
+
+    assert.equal(
+        matches(item, "fecha:15/08/2026"),
+        true
+    );
+
+});
+
+test("acepta fechas relativas y días de la semana", () => {
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-30" }),
+            'fecha:"en 3 dias"'
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-31" }),
+            "fecha:viernes"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-08-10" }),
+            'fecha:"en 2 semanas"'
+        ),
+        true
+    );
+
+});
+
+test("admite rangos con formato argentino", () => {
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-08-15" }),
+            'venceEntre:"01/08,31/08"'
+        ),
+        true
     );
 
 });

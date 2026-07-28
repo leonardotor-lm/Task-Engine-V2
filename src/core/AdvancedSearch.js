@@ -91,10 +91,21 @@ const FIELD_ALIASES = Object.freeze({
     posposiciones: "postponed",
     issubtask: "isSubtask",
     essubtarea: "isSubtask",
-    hasattachments: "hasAttachments",
-    tieneadjuntos: "hasAttachments",
     recurrence: "recurrence",
-    repeticion: "recurrence"
+    repeticion: "recurrence",
+    vence: "due",
+    venceantes: "dueBefore",
+    vencedespues: "dueAfter",
+    vencedentro: "dueWithin",
+    venceentre: "dueBetween",
+    duebetween: "dueBetween",
+    fechaentre: "dueBetween",
+    createdbetween: "createdBetween",
+    creadaentre: "createdBetween",
+    updatedbetween: "updatedBetween",
+    actualizadaentre: "updatedBetween",
+    completedbetween: "completedBetween",
+    completadaentre: "completedBetween"
 });
 
 const STATUS_VALUES = Object.freeze({
@@ -487,8 +498,9 @@ function shiftDate(dateValue, days) {
 
 function resolveDate(value, today) {
 
+    const raw = String(value).trim();
     const normalized =
-        normalizeSearchText(value);
+        normalizeSearchText(raw);
 
     if (["hoy", "today"].includes(normalized)) {
         return today;
@@ -505,8 +517,108 @@ function resolveDate(value, today) {
         return shiftDate(today, 1);
     }
 
-    return /^\d{4}-\d{2}-\d{2}$/.test(value)
-        ? value
+    const relative = normalized.match(
+        /^en\s+(\d+)\s+(dia|dias|day|days|semana|semanas|week|weeks)$/
+    );
+
+    if (relative) {
+
+        const amount = Number(relative[1]);
+        const unit = relative[2];
+        const days =
+            unit.startsWith("semana") ||
+            unit.startsWith("week")
+                ? amount * 7
+                : amount;
+
+        return shiftDate(today, days);
+
+    }
+
+    const weekdays = {
+        domingo: 0,
+        sunday: 0,
+        lunes: 1,
+        monday: 1,
+        martes: 2,
+        tuesday: 2,
+        miercoles: 3,
+        wednesday: 3,
+        jueves: 4,
+        thursday: 4,
+        viernes: 5,
+        friday: 5,
+        sabado: 6,
+        saturday: 6
+    };
+
+    const weekdayName = normalized
+        .replace(/^proximo\s+/, "")
+        .replace(/^next\s+/, "");
+
+    if (
+        weekdays[weekdayName] !==
+        undefined
+    ) {
+
+        const current = new Date(
+            `${today}T00:00:00.000Z`
+        ).getUTCDay();
+
+        const difference =
+            (
+                weekdays[weekdayName] -
+                current +
+                7
+            ) % 7;
+
+        return shiftDate(
+            today,
+            difference
+        );
+
+    }
+
+    const localDate = raw.match(
+        /^(\d{1,2})\/(\d{1,2})(?:\/(\d{2}|\d{4}))?$/
+    );
+
+    if (localDate) {
+
+        const day = Number(localDate[1]);
+        const month = Number(localDate[2]);
+        const currentYear = Number(
+            today.slice(0, 4)
+        );
+
+        let year = localDate[3]
+            ? Number(localDate[3])
+            : currentYear;
+
+        if (year < 100) {
+            year += 2000;
+        }
+
+        const candidate = new Date(
+            Date.UTC(year, month - 1, day)
+        );
+
+        if (
+            candidate.getUTCFullYear() !== year ||
+            candidate.getUTCMonth() !== month - 1 ||
+            candidate.getUTCDate() !== day
+        ) {
+            return "";
+        }
+
+        return candidate
+            .toISOString()
+            .slice(0, 10);
+
+    }
+
+    return /^\d{4}-\d{2}-\d{2}$/.test(raw)
+        ? raw
         : "";
 
 }
@@ -612,6 +724,43 @@ function matchesDateWithin(
 
 }
 
+function matchesDateBetween(
+    dateValue,
+    value,
+    today
+) {
+
+    if (!dateValue) {
+        return false;
+    }
+
+    const parts = String(value)
+        .split(/\s*(?:,|\.\.)\s*/);
+
+    if (parts.length !== 2) {
+        return false;
+    }
+
+    const start = resolveDate(
+        parts[0],
+        today
+    );
+
+    const end = resolveDate(
+        parts[1],
+        today
+    );
+
+    if (!start || !end || start > end) {
+        return false;
+    }
+
+    const date = dateOnly(dateValue);
+
+    return date >= start && date <= end;
+
+}
+
 function matchesNumber(value, actual) {
 
     const normalized = value.replace(/\s/g, "");
@@ -662,6 +811,19 @@ function matchesDueDate(task, value, today) {
     }
 
     if ([
+        "ayer",
+        "yesterday",
+        "manana",
+        "tomorrow"
+    ].includes(normalized)) {
+        return matchesDateValue(
+            task.dueDate,
+            value,
+            today
+        );
+    }
+
+    if ([
         "atrasada",
         "vencida",
         "antes-de-hoy",
@@ -692,17 +854,34 @@ function matchesDueDate(task, value, today) {
         return !task.dueDate;
     }
 
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        return task.dueDate === value;
+    const resolvedDate = resolveDate(
+        value,
+        today
+    );
+
+    if (resolvedDate) {
+        return task.dueDate === resolvedDate;
     }
 
     const comparison = value.match(
-        /^(>=|<=|>|<)(\d{4}-\d{2}-\d{2})$/
+        /^(>=|<=|>|<)(.+)$/
     );
 
-    if (comparison && task.dueDate) {
+    const comparisonDate = comparison
+        ? resolveDate(
+            comparison[2],
+            today
+        )
+        : "";
 
-        const [, operator, date] = comparison;
+    if (
+        comparison &&
+        comparisonDate &&
+        task.dueDate
+    ) {
+
+        const operator = comparison[1];
+        const date = comparisonDate;
 
         switch (operator) {
             case ">": return task.dueDate > date;
@@ -852,6 +1031,13 @@ function matchesField(task, node, context) {
                 true
             );
 
+        case "dueBetween":
+            return matchesDateBetween(
+                task.dueDate,
+                node.value,
+                context.today
+            );
+
         case "completed":
             return matchesDateValue(
                 task.completedAt,
@@ -881,6 +1067,13 @@ function matchesField(task, node, context) {
                 node.value,
                 context.today,
                 false
+            );
+
+        case "completedBetween":
+            return matchesDateBetween(
+                task.completedAt,
+                node.value,
+                context.today
             );
 
         case "created":
@@ -914,6 +1107,13 @@ function matchesField(task, node, context) {
                 false
             );
 
+        case "createdBetween":
+            return matchesDateBetween(
+                task.createdAt,
+                node.value,
+                context.today
+            );
+
         case "updated":
             return matchesDateValue(
                 task.updatedAt,
@@ -945,6 +1145,13 @@ function matchesField(task, node, context) {
                 false
             );
 
+        case "updatedBetween":
+            return matchesDateBetween(
+                task.updatedAt,
+                node.value,
+                context.today
+            );
+
         case "postponed":
             return matchesNumber(
                 node.value,
@@ -955,12 +1162,6 @@ function matchesField(task, node, context) {
             const expected = parseBoolean(node.value);
             return expected !== null &&
                 Boolean(task.parentTaskId) === expected;
-        }
-
-        case "hasAttachments": {
-            const expected = parseBoolean(node.value);
-            return expected !== null &&
-                (task.attachments?.length > 0) === expected;
         }
 
         case "recurrence": {

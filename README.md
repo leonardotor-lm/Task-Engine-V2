@@ -3,3 +3,8 @@
 Aplicación personal de gestión de tareas desarrollada sobre Google Apps Script y Google Sheets.
 
 Estado: En desarrollo.
+
+
+## Documentación
+
+- [Guía de búsqueda avanzada](docs/BUSQUEDA_AVANZADA.md)

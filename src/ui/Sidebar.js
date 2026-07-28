@@ -26,7 +26,9 @@ export class Sidebar {
         syncLastError = null,
         showCompletedTasks = false,
         advancedSearchMode = false,
-        advancedSearchError = ""
+        advancedSearchError = "",
+        customFilters = [],
+        currentCustomFilterId = null
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -529,9 +531,9 @@ export class Sidebar {
 
                                 <p><strong>Contenido:</strong> titulo, descripcion.</p>
                                 <p><strong>Organización:</strong> area, areaContiene, contexto, contextoContiene, etiqueta, etiquetaContiene.</p>
-                                <p><strong>Fechas:</strong> fecha, fechaAntes, fechaDespues, fechaDentro, completada, creada, actualizada.</p>
-                                <p><strong>Propiedades:</strong> prioridad, estado, tieneFecha, tieneEtiquetas, tieneSubtareas, esSubtarea, tieneAdjuntos, recurrente, repeticion, posposiciones.</p>
-                                <p><strong>Valores útiles:</strong> hoy, ayer, mañana, sin-fecha, &gt;3, &lt;2, “7 dias”.</p>
+                                <p><strong>Fechas:</strong> fecha, fechaAntes, fechaDespues, fechaDentro, fechaEntre, completada, creada, actualizada y sus variantes Entre.</p>
+                                <p><strong>Propiedades:</strong> prioridad, estado, tieneFecha, tieneEtiquetas, tieneSubtareas, esSubtarea, recurrente, repeticion, posposiciones.</p>
+                                <p><strong>Valores útiles:</strong> hoy, ayer, mañana, viernes, “en 3 dias”, 15/08, &gt;3 y rangos entre fechas.</p>
                             </details>
                         `
                         : ""}
@@ -551,6 +553,18 @@ export class Sidebar {
                         <button type="submit">
                             Buscar
                         </button>
+
+                        ${advancedSearchMode &&
+                            searchQuery.trim() &&
+                            !advancedSearchError
+                            ? `
+                                <button
+                                    id="saveCustomFilter"
+                                    type="button">
+                                    Guardar filtro
+                                </button>
+                            `
+                            : ""}
 
                         ${searchQuery
                             ? `
@@ -662,6 +676,81 @@ export class Sidebar {
                                 `).join("")}
 
                             </div>
+                        `
+                        : ""}
+
+                    ${customFilters.length > 0
+                        ? `
+                            <details
+                                class="customFiltersSection"
+                                ${currentCustomFilterId
+                                    ? "open"
+                                    : ""}>
+
+                                <summary>
+                                    Filtros personalizados
+                                </summary>
+
+                                <div class="customFilterList">
+                                    ${customFilters.map(filter => `
+                                        <div class="customFilterItem">
+
+                                            <div class="customFilterDisplay">
+                                                <button
+                                                    type="button"
+                                                    class="showCustomFilter ${filter.id ===
+                                                        currentCustomFilterId
+                                                        ? "active"
+                                                        : ""}"
+                                                    data-id="${escapeHtml(filter.id)}"
+                                                    title="${escapeHtml(filter.query)}">
+                                                    ${escapeHtml(filter.name)}
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="renameCustomFilter"
+                                                    data-id="${escapeHtml(filter.id)}"
+                                                    aria-label="Renombrar ${escapeHtml(filter.name)}"
+                                                    title="Renombrar filtro">
+                                                    ✎
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="deleteCustomFilter"
+                                                    data-id="${escapeHtml(filter.id)}"
+                                                    aria-label="Eliminar ${escapeHtml(filter.name)}"
+                                                    title="Eliminar filtro">
+                                                    ×
+                                                </button>
+                                            </div>
+
+                                            <form
+                                                class="customFilterRenameForm"
+                                                data-id="${escapeHtml(filter.id)}"
+                                                hidden>
+                                                <input
+                                                    class="customFilterRenameInput"
+                                                    type="text"
+                                                    value="${escapeHtml(filter.name)}"
+                                                    maxlength="80"
+                                                    required>
+                                                <button type="submit">
+                                                    Guardar
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="cancelCustomFilterRename">
+                                                    Cancelar
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    `).join("")}
+                                </div>
+
+                            </details>
                         `
                         : ""}
 

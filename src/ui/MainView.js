@@ -36,6 +36,8 @@ export class MainView {
             searchQuery,
             advancedSearchMode,
             advancedSearchError,
+            customFilters,
+            currentCustomFilterId,
             taskFilters,
             taskSort,
             canRestoreBackup,
@@ -101,7 +103,9 @@ export class MainView {
                     syncLastError,
                     showCompletedTasks,
                     advancedSearchMode,
-                    advancedSearchError
+                    advancedSearchError,
+                    customFilters,
+                    currentCustomFilterId
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -703,6 +707,33 @@ export class MainView {
 
         });
 
+        document.getElementById(
+            "saveCustomFilter"
+        )?.addEventListener("click", () => {
+
+            const name = Dialog.prompt(
+                "Nombre del filtro personalizado:",
+                ""
+            );
+
+            if (name === null || !name.trim()) {
+                return;
+            }
+
+            try {
+
+                this.callbacks.onSaveCustomFilter(
+                    name.trim()
+                );
+
+            } catch (error) {
+
+                Dialog.alert(error.message);
+
+            }
+
+        });
+
         document.getElementById("taskFilterForm")?.addEventListener("submit", event => {
 
             event.preventDefault();
@@ -841,6 +872,154 @@ export class MainView {
                                     button.dataset.id
                                 )
                     );
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".showCustomFilter"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        selectedTask &&
+                        !this.confirmDiscardTaskChanges(
+                            selectedTask
+                        )
+                    ) {
+                        return;
+                    }
+
+                    this.navigateAndResetScroll(
+                        () =>
+                            this.callbacks
+                                .onApplyCustomFilter(
+                                    button.dataset.id
+                                )
+                    );
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".renameCustomFilter"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const item = button.closest(
+                        ".customFilterItem"
+                    );
+
+                    item.querySelector(
+                        ".customFilterDisplay"
+                    ).hidden = true;
+
+                    const form = item.querySelector(
+                        ".customFilterRenameForm"
+                    );
+
+                    form.hidden = false;
+                    form.querySelector(
+                        ".customFilterRenameInput"
+                    ).focus();
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".cancelCustomFilterRename"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const item = button.closest(
+                        ".customFilterItem"
+                    );
+
+                    item.querySelector(
+                        ".customFilterRenameForm"
+                    ).hidden = true;
+
+                    item.querySelector(
+                        ".customFilterDisplay"
+                    ).hidden = false;
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".customFilterRenameForm"
+        ).forEach(form => {
+
+            form.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const name = form
+                        .querySelector(
+                            ".customFilterRenameInput"
+                        )
+                        .value.trim();
+
+                    if (!name) return;
+
+                    try {
+
+                        this.callbacks
+                            .onRenameCustomFilter(
+                                form.dataset.id,
+                                name
+                            );
+
+                    } catch (error) {
+
+                        Dialog.alert(
+                            error.message
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".deleteCustomFilter"
+        ).forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    if (!Dialog.confirm(
+                        "¿Eliminar este filtro personalizado?"
+                    )) {
+                        return;
+                    }
+
+                    this.callbacks
+                        .onDeleteCustomFilter(
+                            button.dataset.id
+                        );
 
                 }
             );
