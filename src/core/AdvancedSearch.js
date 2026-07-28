@@ -662,6 +662,19 @@ function matchesDueDate(task, value, today) {
     }
 
     if ([
+        "ayer",
+        "yesterday",
+        "manana",
+        "tomorrow"
+    ].includes(normalized)) {
+        return matchesDateValue(
+            task.dueDate,
+            value,
+            today
+        );
+    }
+
+    if ([
         "atrasada",
         "vencida",
         "antes-de-hoy",
