@@ -170,6 +170,37 @@ export class MainView {
 
     }
 
+    hasActiveEntityCreation() {
+
+        const form = document.querySelector(
+            "#entityForm"
+        );
+
+        if (!form) return false;
+
+        const name = form.querySelector(
+            "#entityName"
+        )?.value.trim();
+
+        const color = form.querySelector(
+            "#entityColor"
+        )?.value.toLowerCase();
+
+        const hasFocus =
+            typeof form.contains === "function" &&
+            form.contains(document.activeElement);
+
+        return Boolean(
+            hasFocus ||
+            name ||
+            (
+                color &&
+                color !== "#3b82f6"
+            )
+        );
+
+    }
+
     hasUnsavedTaskEdit(task) {
 
         return Boolean(
