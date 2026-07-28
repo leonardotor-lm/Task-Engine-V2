@@ -1068,6 +1068,23 @@ export class MainView {
                 }
             );
 
+            document.getElementById(
+                "deleteGoalFromEditor"
+            )?.addEventListener(
+                "click",
+                () => {
+
+                    if (Dialog.confirm(
+                        "¿Mover este objetivo y sus subobjetivos a la papelera?"
+                    )) {
+                        this.callbacks.onDeleteGoal(
+                            selectedGoal.id
+                        );
+                    }
+
+                }
+            );
+
         }
 
         document.querySelectorAll(

@@ -72,6 +72,13 @@ export class GoalEditor {
                             Archivar
                         </button>
 
+                        <button
+                            id="deleteGoalFromEditor"
+                            type="button"
+                            class="dangerAction">
+                            Mover a la papelera
+                        </button>
+
                     </div>
 
                 </form>

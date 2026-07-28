@@ -1326,6 +1326,7 @@ export class App {
             onDeleteGoal: (id) => {
 
                 this.goalService.deleteGoal(id);
+                this.selectedGoal = null;
                 this.render();
 
             },
