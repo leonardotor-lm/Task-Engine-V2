@@ -812,6 +812,7 @@ export class MainView {
             ["showCompleted", "onShowCompleted"],
             ["showArchived", "onShowArchived"],
             ["showTrash", "onShowTrash"],
+            ["showGoals", "onShowGoals"],
             ["manageAreas", "onShowAreas"],
             ["manageContexts", "onShowContexts"],
             ["manageTags", "onShowTags"]
@@ -845,6 +846,49 @@ export class MainView {
                 );
 
             });
+
+        }
+
+        if (view === View.GOALS) {
+
+            document.getElementById(
+                "goalForm"
+            )?.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const title = document
+                        .getElementById(
+                            "goalTitle"
+                        )
+                        .value
+                        .trim();
+
+                    if (!title) return;
+
+                    const description = document
+                        .getElementById(
+                            "goalDescription"
+                        )
+                        .value
+                        .trim();
+
+                    const dueDate = document
+                        .getElementById(
+                            "goalDueDate"
+                        )
+                        .value || null;
+
+                    this.callbacks.onCreateGoal({
+                        title,
+                        description,
+                        dueDate
+                    });
+
+                }
+            );
 
         }
 

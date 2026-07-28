@@ -757,6 +757,14 @@ export class Sidebar {
                     <hr>
 
                     <button
+                        id="showGoals"
+                        class="${buttonClass(View.GOALS)}">
+                        🎯 Objetivos
+                    </button>
+
+                    <hr>
+
+                    <button
                         id="showCompleted"
                         class="${buttonClass(View.COMPLETED)}">
                         ✅ Completadas

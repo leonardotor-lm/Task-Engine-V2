@@ -4,6 +4,7 @@ import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
 import { CustomFilterService } from "./CustomFilterService.js";
+import { GoalService } from "./GoalService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
@@ -46,6 +47,7 @@ export class App {
         this.tagService = new TagService();
         this.customFilterService =
             new CustomFilterService();
+        this.goalService = new GoalService();
 
         this.backupService = new BackupService({
             taskRepository: this.taskService.repository,
@@ -1231,6 +1233,20 @@ export class App {
 
             },
 
+            onShowGoals: () => {
+
+                this.navigateTo(View.GOALS);
+
+            },
+
+            onCreateGoal: (data) => {
+
+                this.goalService.createGoal(data);
+
+                this.render();
+
+            },
+
             onShowAreas: () => {
 
                 this.navigateTo(View.AREAS);
@@ -1979,6 +1995,7 @@ export class App {
             syncLastError:
                 this.syncLastError,
             selectedTask: this.selectedTask,
+            goals: this.goalService.getAllGoals(),
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),
             tags: this.tagService.getAllTags()

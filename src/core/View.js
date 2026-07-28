@@ -18,6 +18,8 @@ export const View = Object.freeze({
 
     PROJECT: "project",
 
+    GOALS: "goals",
+
     AREAS: "areas",
 
     CONTEXTS: "contexts",
