@@ -38,10 +38,10 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Mover tareas y proyectos
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - Mantener la acción rápida **Mover**.
-- Incorporar también **Mover** dentro del editor de tareas.
-- Utilizar el selector escalable con búsqueda.
+- **Mover** está disponible también dentro del editor de tareas.
+- El editor utiliza el selector escalable con búsqueda y permite convertir una subtarea en principal.
 - Excluir la propia tarea y sus descendientes para impedir ciclos.
 - Conservar el árbol completo al mover un proyecto.
 
