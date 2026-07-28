@@ -76,3 +76,25 @@ test("asigna múltiples etiquetas a una tarea", () => {
     assert.deepEqual(data.tagIds, ["tag-1", "tag-2"]);
 
 });
+
+test("asigna una tarea a múltiples objetivos", () => {
+
+    const task = new Task({
+        title: "Preparar clase"
+    });
+
+    task.update({
+        goalIds: ["goal-1", "goal-2"]
+    });
+
+    assert.deepEqual(
+        task.goalIds,
+        ["goal-1", "goal-2"]
+    );
+
+    assert.deepEqual(
+        task.toJSON().goalIds,
+        ["goal-1", "goal-2"]
+    );
+
+});
