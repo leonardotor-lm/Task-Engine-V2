@@ -9,6 +9,8 @@ export class SearchableMultiSelect {
         selectedValues = [],
         valueClass,
         emptyMessage,
+        compact = false,
+        managerLabel = "Agregar o quitar",
         disabled = false
     }) {
 
@@ -22,7 +24,9 @@ export class SearchableMultiSelect {
 
         return `
             <fieldset
-                class="searchableMultiSelect"
+                class="searchableMultiSelect${compact
+                    ? " searchableMultiSelectCompact"
+                    : ""}"
                 data-picker-id="${escapeHtml(id)}"
                 data-value-class="${escapeHtml(valueClass)}"
                 ${disabled ? "disabled" : ""}>
@@ -62,7 +66,7 @@ export class SearchableMultiSelect {
                     ? `
                         <details class="searchableMultiSelectManager">
                             <summary>
-                                Agregar o quitar
+                                ${escapeHtml(managerLabel)}
                             </summary>
 
                             <div class="searchableMultiSelectManagerBody">
