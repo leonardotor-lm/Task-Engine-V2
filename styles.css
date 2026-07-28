@@ -2165,14 +2165,19 @@ h3 {
 }
 
 .customFilterRenameForm {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .customFilterRenameForm input,
 .customFilterRenameForm button {
     box-sizing: border-box;
+    width: 100%;
     min-width: 0;
     padding: 5px 6px;
+}
+
+.customFilterRenameForm input {
+    grid-column: 1 / -1;
 }
 
 .customFilterItem button {
