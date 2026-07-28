@@ -56,10 +56,14 @@ test("muestra el objetivo como espacio de trabajo", () => {
     assert.match(html, /id="closeGoalView"/);
     assert.match(html, /Preparar manuscrito/);
     assert.match(html, /Corregir capítulo/);
-    assert.match(
+    assert.doesNotMatch(
+        html,
+        /Asociaciones directas/
+    );
+    assert.doesNotMatch(
         html,
         /class="detachTaskFromGoal"/
     );
-    assert.match(html, /id="goalTaskForm"/);
+    assert.doesNotMatch(html, /id="goalTaskForm"/);
 
 });

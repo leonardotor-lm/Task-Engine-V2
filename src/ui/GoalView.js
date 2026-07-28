@@ -21,47 +21,6 @@ export class GoalView {
             `;
         }
 
-        const directlyAssociated =
-            state.allTasks.filter(
-                task =>
-                    !task.isDeleted() &&
-                    (task.goalIds ?? [])
-                        .includes(goal.id)
-            );
-
-        const availableTasks =
-            state.allTasks.filter(
-                task =>
-                    (
-                        task.status === "INBOX" ||
-                        task.status === "PENDING"
-                    ) &&
-                    !(task.goalIds ?? [])
-                        .includes(goal.id)
-            );
-
-        const taskIdsWithChildren = new Set(
-            state.allTasks
-                .filter(task =>
-                    task.parentTaskId !== null
-                )
-                .map(task => task.parentTaskId)
-        );
-
-        const typeLabel = task => {
-
-            if (taskIdsWithChildren.has(task.id)) {
-                return "Proyecto";
-            }
-
-            if (task.parentTaskId !== null) {
-                return "Subtarea";
-            }
-
-            return "Tarea";
-
-        };
-
         const completed = state.tasks.filter(
             task => task.isCompleted()
         ).length;
@@ -82,35 +41,6 @@ export class GoalView {
             </button>
         `;
 
-        const associationItems =
-            directlyAssociated.length > 0
-                ? directlyAssociated.map(task => `
-                    <li class="goalTaskItem">
-                        <span>
-                            <strong>
-                                ${escapeHtml(task.title)}
-                            </strong>
-                            <small>
-                                ${typeLabel(task)}
-                                ${task.isCompleted()
-                                    ? " · Completada"
-                                    : ""}
-                            </small>
-                        </span>
-                        <button
-                            type="button"
-                            class="detachTaskFromGoal"
-                            data-task-id="${escapeHtml(task.id)}">
-                            Quitar
-                        </button>
-                    </li>
-                `).join("")
-                : `
-                    <li class="emptyGoalTasks">
-                        No hay tareas ni proyectos asociados.
-                    </li>
-                `;
-
         const intro = `
             <section class="goalWorkspaceSummary">
                 ${goal.description
@@ -130,39 +60,6 @@ export class GoalView {
                         `
                         : ""}
                 </p>
-            </section>
-
-            <section class="goalTasksSection">
-                <h3>Asociaciones directas</h3>
-                <ul class="goalTaskList">
-                    ${associationItems}
-                </ul>
-
-                ${availableTasks.length > 0
-                    ? `
-                        <form id="goalTaskForm">
-                            <select
-                                id="goalTaskId"
-                                required>
-                                <option value="">
-                                    Asociar tarea o proyecto…
-                                </option>
-                                ${availableTasks
-                                    .map(task => `
-                                        <option
-                                            value="${escapeHtml(task.id)}">
-                                            ${typeLabel(task)}:
-                                            ${escapeHtml(task.title)}
-                                        </option>
-                                    `)
-                                    .join("")}
-                            </select>
-                            <button type="submit">
-                                Asociar
-                            </button>
-                        </form>
-                    `
-                    : ""}
             </section>
 
             <h3 class="goalWorkHeading">
