@@ -2419,6 +2419,50 @@ h3 {
     margin: 0 0 8px;
 }
 
+.goalAssociationManager summary {
+    padding: 8px 0;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.goalAssociationManagerBody {
+    display: grid;
+    gap: 16px;
+    padding-top: 8px;
+}
+
+.goalAssociationManager form {
+    display: grid;
+    gap: 8px;
+}
+
+.goalAssociationManager form > button {
+    justify-self: start;
+}
+
+.searchableSelect {
+    display: grid;
+    gap: 6px;
+}
+
+.searchableSelectSearch,
+.searchableSelect select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 8px;
+    font: inherit;
+}
+
+.searchableSelect select {
+    max-height: 180px;
+}
+
+.searchableSelectEmpty {
+    margin: 0;
+    color: #64748b;
+}
+
 .goalTaskList {
     display: grid;
     gap: 6px;
