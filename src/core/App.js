@@ -69,6 +69,7 @@ export class App {
         });
 
         this.selectedTask = null;
+        this.selectedGoal = null;
         this.currentView = View.TODAY;
         this.currentAreaId = null;
         this.projectTaskId = null;
@@ -1235,6 +1236,7 @@ export class App {
 
             onShowGoals: () => {
 
+                this.selectedGoal = null;
                 this.navigateTo(View.GOALS);
 
             },
@@ -1242,6 +1244,55 @@ export class App {
             onCreateGoal: (data) => {
 
                 this.goalService.createGoal(data);
+
+                this.render();
+
+            },
+
+            onSelectGoal: (id) => {
+
+                this.selectedGoal =
+                    this.goalService
+                        .getGoalById(id);
+
+                this.render();
+
+            },
+
+            onCloseGoal: () => {
+
+                this.selectedGoal = null;
+
+                this.render();
+
+            },
+
+            onUpdateGoal: (id, data) => {
+
+                this.goalService.updateGoal(
+                    id,
+                    data
+                );
+
+                this.selectedGoal = null;
+
+                this.render();
+
+            },
+
+            onCompleteGoal: (id) => {
+
+                this.goalService.completeGoal(id);
+                this.selectedGoal = null;
+
+                this.render();
+
+            },
+
+            onArchiveGoal: (id) => {
+
+                this.goalService.archiveGoal(id);
+                this.selectedGoal = null;
 
                 this.render();
 
@@ -1995,6 +2046,7 @@ export class App {
             syncLastError:
                 this.syncLastError,
             selectedTask: this.selectedTask,
+            selectedGoal: this.selectedGoal,
             goals: this.goalService.getAllGoals(),
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

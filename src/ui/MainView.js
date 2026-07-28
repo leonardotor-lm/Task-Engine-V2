@@ -1,5 +1,6 @@
 import { Sidebar } from "./Sidebar.js";
 import { TaskEditor } from "./TaskEditor.js";
+import { GoalEditor } from "./GoalEditor.js";
 import { ViewRouter } from "./ViewRouter.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
@@ -14,6 +15,7 @@ export class MainView {
 
         this.sidebar = new Sidebar();
         this.taskEditor = new TaskEditor();
+        this.goalEditor = new GoalEditor();
         this.viewRouter = new ViewRouter();
         this.taskSwipeController =
             new TaskSwipeController();
@@ -28,6 +30,7 @@ export class MainView {
         const {
             view,
             selectedTask,
+            selectedGoal,
             allTasks,
             areas,
             activeAreaId,
@@ -116,6 +119,10 @@ export class MainView {
                     contexts,
                     tags,
                     allTasks
+                )}
+
+                ${this.goalEditor.render(
+                    selectedGoal
                 )}
 
             </div>
@@ -354,6 +361,7 @@ export class MainView {
         const {
             view,
             selectedTask,
+            selectedGoal,
             allTasks,
             areas,
             contexts,
@@ -851,6 +859,22 @@ export class MainView {
 
         if (view === View.GOALS) {
 
+            document.querySelectorAll(
+                ".openGoal"
+            ).forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+                        this.callbacks
+                            .onSelectGoal(
+                                button.dataset.id
+                            );
+                    }
+                );
+
+            });
+
             document.getElementById(
                 "goalForm"
             )?.addEventListener(
@@ -886,6 +910,92 @@ export class MainView {
                         description,
                         dueDate
                     });
+
+                }
+            );
+
+        }
+
+        if (selectedGoal) {
+
+            document.getElementById(
+                "closeGoalEditor"
+            )?.addEventListener(
+                "click",
+                () =>
+                    this.callbacks.onCloseGoal()
+            );
+
+            document.getElementById(
+                "goalEditorForm"
+            )?.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const title = document
+                        .getElementById(
+                            "goalTitleEdit"
+                        )
+                        .value
+                        .trim();
+
+                    if (!title) return;
+
+                    this.callbacks.onUpdateGoal(
+                        selectedGoal.id,
+                        {
+                            title,
+                            description: document
+                                .getElementById(
+                                    "goalDescriptionEdit"
+                                )
+                                .value
+                                .trim(),
+                            dueDate: document
+                                .getElementById(
+                                    "goalDueDateEdit"
+                                )
+                                .value || null
+                        }
+                    );
+
+                }
+            );
+
+            document.getElementById(
+                "completeGoal"
+            )?.addEventListener(
+                "click",
+                () => {
+
+                    if (Dialog.confirm(
+                        "¿Marcar este objetivo como completado?"
+                    )) {
+                        this.callbacks
+                            .onCompleteGoal(
+                                selectedGoal.id
+                            );
+                    }
+
+                }
+            );
+
+            document.getElementById(
+                "archiveGoal"
+            )?.addEventListener(
+                "click",
+                () => {
+
+                    if (Dialog.confirm(
+                        "¿Archivar este objetivo?"
+                    )) {
+                        this.callbacks
+                            .onArchiveGoal(
+                                selectedGoal.id
+                            );
+                    }
 
                 }
             );

@@ -104,9 +104,12 @@ export class GoalList {
 
                     return `
                         <li class="goalItem">
-                            <strong>
+                            <button
+                                type="button"
+                                class="openGoal"
+                                data-id="${escapeHtml(goal.id)}">
                                 ${escapeHtml(goal.title)}
-                            </strong>
+                            </button>
 
                             ${goal.dueDate
                                 ? `
