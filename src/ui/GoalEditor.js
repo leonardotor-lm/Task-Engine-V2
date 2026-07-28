@@ -4,8 +4,7 @@ export class GoalEditor {
 
     render(
         goal,
-        goals = [],
-        tasks = []
+        goals = []
     ) {
 
         if (!goal) return "";
@@ -22,83 +21,6 @@ export class GoalEditor {
                 !descendants.has(item.id) &&
                 item.status === "ACTIVE"
         );
-
-        const associatedTasks = tasks.filter(
-            task =>
-                task.status !== "DELETED" &&
-                (task.goalIds ?? [])
-                    .includes(goal.id)
-        );
-
-        const availableTasks = tasks.filter(
-            task =>
-                (
-                    task.status === "INBOX" ||
-                    task.status === "PENDING"
-                ) &&
-                !(task.goalIds ?? [])
-                    .includes(goal.id)
-        );
-
-        const taskIdsWithChildren = new Set(
-            tasks
-                .filter(task =>
-                    task.parentTaskId !== null
-                )
-                .map(task => task.parentTaskId)
-        );
-
-        const taskTypeLabel = task => {
-
-            if (
-                taskIdsWithChildren.has(task.id)
-            ) {
-                return "Proyecto";
-            }
-
-            if (task.parentTaskId !== null) {
-                return "Subtarea";
-            }
-
-            return "Tarea";
-
-        };
-
-        const associatedTaskItems =
-            associatedTasks.length > 0
-                ? associatedTasks.map(task => `
-
-                    <li class="goalTaskItem">
-
-                        <span>
-                            <strong>
-                                ${escapeHtml(task.title)}
-                            </strong>
-                            <small>
-                                ${taskTypeLabel(task)}
-                                ${task.status === "COMPLETED"
-                                    ? " · Completada"
-                                    : task.status === "ARCHIVED"
-                                        ? " · Archivada"
-                                        : ""}
-                            </small>
-                        </span>
-
-                        <button
-                            type="button"
-                            class="detachTaskFromGoal"
-                            data-task-id="${escapeHtml(task.id)}">
-                            Quitar
-                        </button>
-
-                    </li>
-
-                `).join("")
-                : `
-                    <li class="emptyGoalTasks">
-                        No hay tareas ni proyectos asociados.
-                    </li>
-                `;
 
         return `
             <aside class="goalDrawer">
@@ -195,48 +117,6 @@ export class GoalEditor {
                         </button>
 
                     </form>
-
-                </section>
-
-                <section class="goalTasksSection">
-
-                    <h4>Trabajo asociado</h4>
-
-                    <ul class="goalTaskList">
-                        ${associatedTaskItems}
-                    </ul>
-
-                    ${availableTasks.length > 0
-                        ? `
-                            <form id="goalTaskForm">
-
-                                <select
-                                    id="goalTaskId"
-                                    required>
-
-                                    <option value="">
-                                        Asociar tarea o proyecto…
-                                    </option>
-
-                                    ${availableTasks
-                                        .map(task => `
-                                            <option
-                                                value="${escapeHtml(task.id)}">
-                                                ${taskTypeLabel(task)}:
-                                                ${escapeHtml(task.title)}
-                                            </option>
-                                        `)
-                                        .join("")}
-
-                                </select>
-
-                                <button type="submit">
-                                    Asociar
-                                </button>
-
-                            </form>
-                        `
-                        : ""}
 
                 </section>
 

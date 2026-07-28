@@ -73,68 +73,6 @@ test("permite mover e independizar un subobjetivo", () => {
 
 });
 
-test("muestra y administra tareas y proyectos asociados", () => {
-
-    const goal = new Goal({
-        id: "goal-1",
-        title: "Publicar un libro"
-    });
-
-    const html = new GoalEditor().render(
-        goal,
-        [goal],
-        [
-            {
-                id: "project-1",
-                title: "Preparar manuscrito",
-                status: "PENDING",
-                parentTaskId: null,
-                goalIds: ["goal-1"]
-            },
-            {
-                id: "subtask-1",
-                title: "Corregir capítulo",
-                status: "PENDING",
-                parentTaskId: "project-1",
-                goalIds: []
-            },
-            {
-                id: "task-1",
-                title: "Buscar editorial",
-                status: "INBOX",
-                parentTaskId: null,
-                goalIds: []
-            }
-        ]
-    );
-
-    assert.match(
-        html,
-        /Trabajo asociado/
-    );
-
-    assert.match(
-        html,
-        /Preparar manuscrito/
-    );
-
-    assert.match(
-        html,
-        /class="detachTaskFromGoal"/
-    );
-
-    assert.match(
-        html,
-        /id="goalTaskForm"/
-    );
-
-    assert.match(
-        html,
-        /Preparar manuscrito[\s\S]*Proyecto/
-    );
-
-});
-
 test("oculta Organización cuando no hay acciones disponibles", () => {
 
     const goal = new Goal({

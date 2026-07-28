@@ -2396,6 +2396,25 @@ h3 {
     border-top: 1px solid #e2e8f0;
 }
 
+.goalWorkspaceSummary {
+    margin: 4px 0 14px;
+    padding: 10px 12px;
+    border-left: 3px solid #2563eb;
+    background: #f8fafc;
+}
+
+.goalWorkspaceSummary p {
+    margin: 0 0 6px;
+}
+
+.goalWorkspaceSummary p:last-child {
+    margin-bottom: 0;
+}
+
+.goalWorkHeading {
+    margin: 18px 0 8px;
+}
+
 .goalTasksSection h4 {
     margin: 0 0 8px;
 }
