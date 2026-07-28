@@ -695,34 +695,56 @@ export class Sidebar {
                                     ${customFilters.map(filter => `
                                         <div class="customFilterItem">
 
-                                            <button
-                                                type="button"
-                                                class="showCustomFilter ${filter.id ===
-                                                    currentCustomFilterId
-                                                    ? "active"
-                                                    : ""}"
-                                                data-id="${escapeHtml(filter.id)}"
-                                                title="${escapeHtml(filter.query)}">
-                                                ${escapeHtml(filter.name)}
-                                            </button>
+                                            <div class="customFilterDisplay">
+                                                <button
+                                                    type="button"
+                                                    class="showCustomFilter ${filter.id ===
+                                                        currentCustomFilterId
+                                                        ? "active"
+                                                        : ""}"
+                                                    data-id="${escapeHtml(filter.id)}"
+                                                    title="${escapeHtml(filter.query)}">
+                                                    ${escapeHtml(filter.name)}
+                                                </button>
 
-                                            <button
-                                                type="button"
-                                                class="renameCustomFilter"
-                                                data-id="${escapeHtml(filter.id)}"
-                                                aria-label="Renombrar ${escapeHtml(filter.name)}"
-                                                title="Renombrar filtro">
-                                                ✎
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    class="renameCustomFilter"
+                                                    data-id="${escapeHtml(filter.id)}"
+                                                    aria-label="Renombrar ${escapeHtml(filter.name)}"
+                                                    title="Renombrar filtro">
+                                                    ✎
+                                                </button>
 
-                                            <button
-                                                type="button"
-                                                class="deleteCustomFilter"
+                                                <button
+                                                    type="button"
+                                                    class="deleteCustomFilter"
+                                                    data-id="${escapeHtml(filter.id)}"
+                                                    aria-label="Eliminar ${escapeHtml(filter.name)}"
+                                                    title="Eliminar filtro">
+                                                    ×
+                                                </button>
+                                            </div>
+
+                                            <form
+                                                class="customFilterRenameForm"
                                                 data-id="${escapeHtml(filter.id)}"
-                                                aria-label="Eliminar ${escapeHtml(filter.name)}"
-                                                title="Eliminar filtro">
-                                                ×
-                                            </button>
+                                                hidden>
+                                                <input
+                                                    class="customFilterRenameInput"
+                                                    type="text"
+                                                    value="${escapeHtml(filter.name)}"
+                                                    maxlength="80"
+                                                    required>
+                                                <button type="submit">
+                                                    Guardar
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="cancelCustomFilterRename">
+                                                    Cancelar
+                                                </button>
+                                            </form>
 
                                         </div>
                                     `).join("")}
