@@ -83,6 +83,27 @@ export class GoalEditor {
 
                 </form>
 
+                <section class="goalSubgoalsSection">
+
+                    <h4>Subobjetivos</h4>
+
+                    <form id="subgoalForm">
+
+                        <input
+                            id="subgoalTitle"
+                            type="text"
+                            placeholder="Nuevo subobjetivo"
+                            maxlength="160"
+                            required>
+
+                        <button type="submit">
+                            Agregar
+                        </button>
+
+                    </form>
+
+                </section>
+
             </aside>
         `;
 

@@ -32,6 +32,8 @@ test("muestra los datos y acciones del objetivo", () => {
         html,
         /id="deleteGoalFromEditor"/
     );
+    assert.match(html, /id="subgoalForm"/);
+    assert.match(html, /id="subgoalTitle"/);
 
 });
 

@@ -1085,6 +1085,31 @@ export class MainView {
                 }
             );
 
+            document.getElementById(
+                "subgoalForm"
+            )?.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
+
+                    const title = document
+                        .getElementById(
+                            "subgoalTitle"
+                        )
+                        .value
+                        .trim();
+
+                    if (!title) return;
+
+                    this.callbacks.onCreateSubgoal(
+                        selectedGoal.id,
+                        title
+                    );
+
+                }
+            );
+
         }
 
         document.querySelectorAll(
