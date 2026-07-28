@@ -2,6 +2,7 @@ import { Task } from "../domain/Task.js";
 import { Area } from "../domain/Area.js";
 import { Context } from "../domain/Context.js";
 import { Tag } from "../domain/Tag.js";
+import { CustomFilter } from "../domain/CustomFilter.js";
 import { TaskStatus } from "../domain/TaskStatus.js";
 
 export const BACKUP_FORMAT = "task-engine-v2-backup";
@@ -16,6 +17,7 @@ export class BackupService {
         areaRepository,
         contextRepository,
         tagRepository,
+        customFilterRepository = null,
         storage = localStorage
     }) {
 
@@ -23,6 +25,8 @@ export class BackupService {
         this.areaRepository = areaRepository;
         this.contextRepository = contextRepository;
         this.tagRepository = tagRepository;
+        this.customFilterRepository =
+            customFilterRepository;
         this.storage = storage;
 
     }
@@ -45,7 +49,13 @@ export class BackupService {
                     .map(context => context.toJSON()),
                 tags: this.tagRepository
                     .getAll()
-                    .map(tag => tag.toJSON())
+                    .map(tag => tag.toJSON()),
+                customFilters:
+                    this.customFilterRepository
+                        ?.getAll()
+                        .map(filter =>
+                            filter.toJSON()
+                        ) ?? []
             }
         };
 
@@ -111,6 +121,7 @@ export class BackupService {
         let areas;
         let contexts;
         let tags;
+        let customFilters;
 
         try {
 
@@ -120,6 +131,14 @@ export class BackupService {
                 item => new Context(item)
             );
             tags = data.tags.map(item => new Tag(item));
+            customFilters = Array.isArray(
+                data.customFilters
+            )
+                ? data.customFilters.map(
+                    item =>
+                        new CustomFilter(item)
+                )
+                : [];
 
         } catch (error) {
 
@@ -133,6 +152,10 @@ export class BackupService {
         this.validateUniqueIds(areas, "áreas");
         this.validateUniqueIds(contexts, "contextos");
         this.validateUniqueIds(tags, "etiquetas");
+        this.validateUniqueIds(
+            customFilters,
+            "filtros personalizados"
+        );
 
         this.validateTaskReferences({
             tasks,
@@ -145,7 +168,8 @@ export class BackupService {
             tasks,
             areas,
             contexts,
-            tags
+            tags,
+            customFilters
         };
 
     }
@@ -302,6 +326,11 @@ export class BackupService {
             data.contexts
         );
         this.tagRepository.replaceAll(data.tags);
+
+        this.customFilterRepository
+            ?.replaceAll(
+                data.customFilters ?? []
+            );
 
     }
 
