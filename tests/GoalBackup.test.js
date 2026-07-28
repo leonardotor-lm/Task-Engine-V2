@@ -109,3 +109,23 @@ test("rechaza padres inexistentes y ciclos", () => {
     );
 
 });
+
+test("rechaza una tarea asociada a un objetivo inexistente", () => {
+
+    const backupService = service(repository());
+    const backup = backupService.createBackup();
+
+    backup.data.tasks = [{
+        id: "task-1",
+        title: "Tarea",
+        goalIds: ["missing-goal"]
+    }];
+
+    assert.throws(
+        () => backupService.parseAndValidate(
+            JSON.stringify(backup)
+        ),
+        /objetivo inexistente/
+    );
+
+});

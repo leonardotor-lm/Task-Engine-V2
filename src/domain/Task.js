@@ -39,6 +39,8 @@ export class Task {
 
         this.tagIds = data.tagIds ?? [];
 
+        this.goalIds = data.goalIds ?? [];
+
         this.attachments = data.attachments ?? [];
 
         this.parentTaskId = data.parentTaskId ?? null;
@@ -254,6 +256,9 @@ export class Task {
         if (data.tagIds !== undefined)
             this.tagIds = [...data.tagIds];
 
+        if (data.goalIds !== undefined)
+            this.goalIds = [...data.goalIds];
+
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
 
@@ -445,6 +450,8 @@ export class Task {
             priority: this.priority,
 
             tagIds: [...this.tagIds],
+
+            goalIds: [...this.goalIds],
 
             attachments: [...this.attachments],
 

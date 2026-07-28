@@ -181,7 +181,8 @@ export class BackupService {
             tasks,
             areas,
             contexts,
-            tags
+            tags,
+            goals
         });
 
         return {
@@ -226,7 +227,8 @@ export class BackupService {
         tasks,
         areas,
         contexts,
-        tags
+        tags,
+        goals = []
     }) {
 
         const taskIds = new Set(
@@ -243,6 +245,10 @@ export class BackupService {
 
         const tagIds = new Set(
             tags.map(tag => tag.id)
+        );
+
+        const goalIds = new Set(
+            goals.map(goal => goal.id)
         );
 
         const validStatuses = new Set(
@@ -297,6 +303,16 @@ export class BackupService {
                 if (!tagIds.has(tagId)) {
                     throw new Error(
                         `La tarea "${task.title}" referencia una etiqueta inexistente.`
+                    );
+                }
+
+            }
+
+            for (const goalId of task.goalIds) {
+
+                if (!goalIds.has(goalId)) {
+                    throw new Error(
+                        `La tarea "${task.title}" referencia un objetivo inexistente.`
                     );
                 }
 

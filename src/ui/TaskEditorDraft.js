@@ -6,6 +6,14 @@ const normalizeTagIds = tagIds => {
 
 };
 
+const normalizeGoalIds = goalIds => {
+
+    return [...(goalIds ?? [])]
+        .map(String)
+        .sort();
+
+};
+
 const normalizeWeekdays = weekdays => {
 
     return [...(weekdays ?? [])]
@@ -39,6 +47,8 @@ export function createTaskDraft(task) {
             task.dueDate || null,
         tagIds:
             normalizeTagIds(task.tagIds),
+        goalIds:
+            normalizeGoalIds(task.goalIds),
         recurrence,
         recurrenceInterval:
             recurrence
@@ -103,6 +113,16 @@ export function readTaskEditorDraft(
                 [
                     ...root.querySelectorAll(
                         ".taskTag:checked"
+                    )
+                ].map(
+                    input => input.value
+                )
+            ),
+        goalIds:
+            normalizeGoalIds(
+                [
+                    ...root.querySelectorAll(
+                        ".taskGoal:checked"
                     )
                 ].map(
                     input => input.value

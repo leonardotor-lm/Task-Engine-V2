@@ -782,6 +782,27 @@ function validateTaskReferences_(
 
         });
 
+        var taskGoalIds =
+            task.goalIds || [];
+
+        if (!Array.isArray(taskGoalIds)) {
+            throw protocolError_(
+                "INVALID_REFERENCE",
+                "Una tarea contiene objetivos inválidos."
+            );
+        }
+
+        taskGoalIds.forEach(function(goalId) {
+
+            if (!ids.goals[goalId]) {
+                throw protocolError_(
+                    "INVALID_REFERENCE",
+                    "Una tarea referencia un objetivo inexistente."
+                );
+            }
+
+        });
+
     });
 
     var tasksById = {};
