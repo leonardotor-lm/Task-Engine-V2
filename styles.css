@@ -2097,3 +2097,25 @@ h3 {
     background: #fef2f2;
     color: #991b1b;
 }
+
+
+.advancedSearchReference {
+    margin-top: 8px;
+    padding: 7px 8px;
+    border: 1px solid #dbeafe;
+    border-radius: 5px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.advancedSearchReference summary {
+    color: #1d4ed8;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.advancedSearchReference p {
+    margin: 6px 0 0;
+}
