@@ -55,7 +55,9 @@ export class App {
             contextRepository: this.contextService.repository,
             tagRepository: this.tagService.repository,
             customFilterRepository:
-                this.customFilterService.repository
+                this.customFilterService.repository,
+            goalRepository:
+                this.goalService.repository
         });
 
         this.syncConfig = new SyncConfig();
