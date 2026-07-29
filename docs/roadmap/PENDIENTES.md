@@ -40,8 +40,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 ### Mover tareas y proyectos
 
 - **Estado:** En desarrollo.
-- Mantener la acción rápida **Mover**.
-- **Mover** está disponible también dentro del editor de tareas.
+- Mantener **Mover** dentro del editor de tareas.
 - El editor utiliza el selector escalable con búsqueda y permite convertir una subtarea en principal.
 - Excluir la propia tarea y sus descendientes para impedir ciclos.
 - Conservar el árbol completo al mover un proyecto.
@@ -60,14 +59,6 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Revisar validación, límites y registros de Google Apps Script.
 - Documentar amenazas, medidas actuales y mejoras recomendadas.
 - Definir rotación y recuperación segura de credenciales.
-
-### Simplificación de acciones rápidas
-
-- **Estado:** Pendiente.
-- Aplicar divulgación progresiva sin eliminar funciones.
-- Mantener visibles sólo las acciones frecuentes y contextuales.
-- Agrupar Mover, Duplicar, Archivar, Eliminar y recurrencias dentro de **Más acciones**.
-- Diseñar un menú compacto en escritorio y un panel ordenado por grupos en celular.
 
 ## Prioridad media
 

@@ -115,7 +115,7 @@ test("impide mover una tarea dentro de un descendiente", () => {
 
 });
 
-test("el selector excluye el destino circular", () => {
+test("la lista reserva el selector de movimiento para el editor", () => {
 
     const parent = new Task({
         id: "parent-ui",
@@ -155,19 +155,14 @@ test("el selector excluye el destino circular", () => {
         ]
     );
 
-    assert.match(
+    assert.doesNotMatch(
         html,
-        /value="destination-ui"/
-    );
-
-    const parentRow = html.slice(
-        html.indexOf('data-id="parent-ui"'),
-        html.indexOf('data-id="destination-ui"')
+        /class="quickMoveTarget"/
     );
 
     assert.doesNotMatch(
-        parentRow,
-        /value="child-ui"/
+        html,
+        /class="quickMoveTask"/
     );
 
 });
