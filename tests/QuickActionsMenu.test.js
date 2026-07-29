@@ -40,6 +40,16 @@ test("muestra el menú contextual en una tarea activa", () => {
         /class="quickMoreActions"/
     );
 
+    assert.match(
+        html,
+        /class="icon quickActionIcon"/
+    );
+
+    assert.match(
+        html,
+        /class="closeQuickActions iconButton"/
+    );
+
     assert.doesNotMatch(
         html,
         /class="quickEditTask"/
