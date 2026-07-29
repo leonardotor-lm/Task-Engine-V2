@@ -75,7 +75,7 @@ export class GoalView {
             state.contexts,
             state.tags,
             "",
-            state.expandedTaskIds,
+            state.goalExpandedTaskIds,
             false,
             new Set(),
             false,
