@@ -1,5 +1,6 @@
 import { escapeHtml } from "./escapeHtml.js";
 import { SearchableSelect } from "./SearchableSelect.js";
+import { Icon } from "./Icon.js";
 
 export class GoalEditor {
 
@@ -71,10 +72,21 @@ export class GoalEditor {
                     <h3>Editar objetivo</h3>
 
                     <button
+                        type="submit"
+                        form="goalEditorForm"
+                        class="mobileGoalEditorSave iconButton"
+                        aria-label="Guardar objetivo"
+                        title="Guardar objetivo">
+                        ${Icon.render("save")}
+                    </button>
+
+                    <button
                         id="closeGoalEditor"
                         type="button"
-                        aria-label="Cerrar editor">
-                        ×
+                        class="iconButton"
+                        aria-label="Cerrar editor"
+                        title="Cerrar editor">
+                        ${Icon.render("close")}
                     </button>
                 </header>
 
