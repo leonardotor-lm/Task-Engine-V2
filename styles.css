@@ -1259,21 +1259,47 @@ h3 {
 
 
 .newTaskButton {
-    box-sizing: border-box;
     width: 100%;
     margin-bottom: 12px;
-    padding: 8px 10px;
+    justify-content: flex-start;
+}
+
+.createActionButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 36px;
+    gap: 7px;
+    padding: 7px 10px;
     border: 1px solid #2563eb;
     border-radius: 6px;
     background: #2563eb;
     color: #fff;
     font-weight: 700;
-    text-align: left;
     cursor: pointer;
 }
 
-.newTaskButton:hover {
+.createActionButton:hover,
+.createActionButton:focus-visible {
     background: #1d4ed8;
+}
+
+.createActionButton:focus-visible {
+    outline: 2px solid #bfdbfe;
+    outline-offset: 2px;
+}
+
+.createActionButton:active {
+    background: #1e40af;
+}
+
+.createActionIcon {
+    display: inline-flex;
+}
+
+.createActionIcon .icon {
+    --icon-size: 18px;
 }
 
 #taskForm {
@@ -1397,6 +1423,24 @@ h3 {
 }
 
 @media (max-width: 760px) {
+
+    .createActionButton,
+    .newTaskButton.createActionButton {
+        width: 44px;
+        height: 44px;
+        min-height: 44px;
+        padding: 0;
+    }
+
+    .createActionLabel {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
 
     .taskDrawer {
         width: 100vw;
