@@ -219,7 +219,7 @@ body {
 .bulkToolbar .bulkPrimaryAction {
     border-color: var(--color-accent);
     background: var(--color-accent);
-    color: var(--color-surface);
+    color: var(--color-on-accent);
     font-weight: 700;
 }
 
@@ -1060,12 +1060,14 @@ body {
     --color-surface-subtle: #f8fafc;
     --color-surface-hover: #f1f5f9;
     --color-border: #e2e8f0;
-    --color-border-strong: #cbd5e1;
+    --color-border-strong: #8995a5;
     --color-accent: #2563eb;
     --color-accent-strong: #1d4ed8;
     --color-accent-soft: #eff6ff;
     --color-accent-muted: #dbeafe;
-    --color-focus-ring: #bfdbfe;
+    --color-on-accent: #fff;
+    --color-on-dark: #fff;
+    --color-focus-ring: #2563eb;
     --color-danger: #b42318;
     --disabled-opacity: 0.48;
 
@@ -1324,7 +1326,7 @@ h3 {
     border: 1px solid var(--color-accent);
     border-radius: 6px;
     background: var(--color-accent);
-    color: var(--color-surface);
+    color: var(--color-on-accent);
     font-weight: 700;
     cursor: pointer;
 }
@@ -2045,7 +2047,7 @@ h3 {
         padding: 11px 12px;
         border-radius: 8px;
         background: var(--color-text);
-        color: var(--color-surface);
+        color: var(--color-on-dark);
         box-shadow:
             0 10px 28px
             rgb(15 23 42 / 30%);
@@ -2127,7 +2129,7 @@ h3 {
         border: 0;
         border-radius: 6px;
         background: var(--color-accent);
-        color: var(--color-surface);
+        color: var(--color-on-accent);
         font: inherit;
         font-weight: 700;
     }
@@ -2402,7 +2404,7 @@ h3 {
     input:checked + span {
     border-color: var(--color-accent);
     background: var(--color-accent);
-    color: var(--color-surface);
+    color: var(--color-on-accent);
     font-weight: 700;
 }
 
@@ -3389,7 +3391,7 @@ h3 {
 .taskDrawer #saveTask {
     border-color: var(--color-accent);
     background: var(--color-accent);
-    color: var(--color-surface);
+    color: var(--color-on-accent);
 }
 
 .taskDrawer #archiveTask {
@@ -3490,7 +3492,7 @@ h3 {
     button[type="submit"] {
     border-color: var(--color-accent);
     background: var(--color-accent);
-    color: var(--color-surface);
+    color: var(--color-on-accent);
 }
 
 #goalEditorForm #archiveGoal {
@@ -3811,6 +3813,7 @@ h3 {
 .taskViewOptions .viewOptionButton.active {
     background: var(--color-accent-soft);
     color: var(--color-accent-strong);
+    font-weight: 600;
 }
 
 #toggleBulkMode {
@@ -3830,6 +3833,7 @@ h3 {
 #toggleBulkMode.active {
     background: var(--color-accent-soft);
     color: var(--color-accent-strong);
+    font-weight: 600;
 }
 
 .bulkModeNotice {

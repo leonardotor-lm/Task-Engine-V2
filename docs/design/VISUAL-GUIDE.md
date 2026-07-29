@@ -185,6 +185,13 @@ Los colores que representan datos —por ejemplo, prioridades, áreas, contextos
 - La selección y la activación no deben depender únicamente del color.
 - Las transiciones deben respetar la preferencia de movimiento reducido del sistema.
 
+### Contraste
+
+- Los textos estructurales deben alcanzar una relación mínima de 4.5:1 sobre su superficie habitual.
+- Los límites de campos, controles y focos deben alcanzar al menos 3:1 respecto del fondo contiguo.
+- El color de texto sobre acciones destacadas debe definirse con un token propio; no debe inferirse del color general de las superficies.
+- Los divisores decorativos pueden conservar menor contraste cuando no comunican límites operables ni información.
+
 ## Criterio de revisión
 
 Antes de incorporar un elemento visible, debe comprobarse:
