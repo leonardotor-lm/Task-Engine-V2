@@ -229,7 +229,12 @@ export class TaskList {
                             aria-label="${isExpanded
                                 ? "Contraer subtareas"
                                 : "Expandir subtareas"}">
-                            ${isExpanded ? "▼" : "▶"}
+                            ${Icon.render(
+                                isExpanded
+                                    ? "chevron-down"
+                                    : "chevron-right",
+                                "treeToggleIcon"
+                            )}
                         </button>
                     `
                     : `
@@ -456,7 +461,9 @@ export class TaskList {
                                     aria-label="Título de la nueva subtarea"
                                     autofocus>
 
-                                <button type="submit">
+                                <button
+                                    type="submit"
+                                    class="primaryAction">
                                     Agregar
                                 </button>
 
@@ -525,7 +532,15 @@ export class TaskList {
                                             `
                                             : ""}
                                         ${task.recurrence
-                                            ? '<span class="recurrenceIcon" title="Tarea recurrente">↻</span> '
+                                            ? `<span
+                                                class="recurrenceIcon"
+                                                title="Tarea recurrente"
+                                                aria-label="Tarea recurrente">
+                                                ${Icon.render(
+                                                    "repeat",
+                                                    "taskStatusIcon"
+                                                )}
+                                            </span>`
                                             : ""}
                                         ${escapeHtml(task.title)}
                                     </span>
@@ -563,7 +578,10 @@ export class TaskList {
                                                             <summary
                                                                 title="Posponer"
                                                                 aria-label="Posponer ${escapeHtml(task.title)}">
-                                                                ◷
+                                                                ${Icon.render(
+                                                                    "clock",
+                                                                    "quickActionIcon"
+                                                                )}
                                                             </summary>
 
                                                             <div class="quickPostponeMenu">

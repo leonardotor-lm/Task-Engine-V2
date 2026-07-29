@@ -611,8 +611,37 @@ body {
 }
 
 .recurrenceIcon {
+    display: inline-flex;
+    align-items: center;
     color: #7c3aed;
     font-weight: 700;
+}
+
+.taskStatusIcon {
+    --icon-size: 13px;
+}
+
+.treeToggleIcon,
+.chipRemoveIcon,
+.sidebarUtilityIcon,
+.inlineStatusIcon {
+    --icon-size: 14px;
+}
+
+.inlineStatusIcon {
+    display: inline-block;
+    vertical-align: -2px;
+}
+
+.recurrenceIndicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mobileMenuButton .icon {
+    --icon-size: 20px;
+    margin: auto;
 }
 
 .postponeControls,
@@ -1694,6 +1723,11 @@ input[type="date"],
 .inlineSubtaskTitle {
     min-width: 0;
     flex: 1;
+    box-sizing: border-box;
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border-strong);
+    font: inherit;
 }
 
 @media (hover: none) {
@@ -1812,6 +1846,39 @@ input[type="date"],
 .quickMoreMenu button {
     width: 100%;
     text-align: left;
+}
+
+.quickMoreMenu .quickEditTask,
+.quickMoreMenu .quickSkipRecurringTask,
+.quickMoreMenu .quickEndRecurrence,
+.quickMoreMenu .quickArchiveTask,
+.quickMoreMenu .quickDeleteTask,
+.quickMoreMenu .quickDuplicateTask {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.quickMoreMenu .quickEditTask:hover,
+.quickMoreMenu .quickEditTask:focus-visible,
+.quickMoreMenu .quickSkipRecurringTask:hover,
+.quickMoreMenu .quickSkipRecurringTask:focus-visible,
+.quickMoreMenu .quickEndRecurrence:hover,
+.quickMoreMenu .quickEndRecurrence:focus-visible,
+.quickMoreMenu .quickArchiveTask:hover,
+.quickMoreMenu .quickArchiveTask:focus-visible,
+.quickMoreMenu .quickDeleteTask:hover,
+.quickMoreMenu .quickDeleteTask:focus-visible,
+.quickMoreMenu .quickDuplicateTask:hover,
+.quickMoreMenu .quickDuplicateTask:focus-visible {
+    background: var(--color-surface-hover);
 }
 
 .quickMoreMenu .destructiveAction {
@@ -2103,7 +2170,7 @@ input[type="date"],
     .task.swipingRight::before {
         right: 100%;
         justify-content: center;
-        content: "✓ Completar";
+        content: "Completar";
         background: #dcfce7;
         color: #15803d;
     }
@@ -2111,7 +2178,7 @@ input[type="date"],
     .task.swipingLeft::after {
         left: 100%;
         justify-content: center;
-        content: "⋯ Acciones";
+        content: "Acciones";
         background: var(--color-accent-muted);
         color: var(--color-accent-strong);
     }
@@ -4065,9 +4132,26 @@ input[type="date"],
 .bulkToolbar select,
 .bulkToolbar input,
 .bulkToolbar button {
-    min-height: 32px;
+    width: 100%;
+    min-height: 34px;
     box-sizing: border-box;
-    border-radius: 6px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    font: inherit;
+    line-height: 1.2;
+}
+
+.bulkToolbar
+    .searchableMultiSelectCompact
+    .searchableMultiSelectManager summary,
+.bulkToolbar .bulkMoreActions summary {
+    display: flex;
+    align-items: center;
+}
+
+.bulkToolbar .bulkPrimaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
 }
 
 .bulkToolbar .secondaryAction {

@@ -1,4 +1,5 @@
 import { escapeHtml } from "./escapeHtml.js";
+import { Icon } from "./Icon.js";
 
 export class SearchableMultiSelect {
 
@@ -150,7 +151,10 @@ export class SearchableMultiSelect {
                             type="button"
                             class="searchableMultiSelectRemove"
                             aria-label="Quitar ${escapeHtml(option.label)}">
-                            ×
+                            ${Icon.render(
+                                "close",
+                                "chipRemoveIcon"
+                            )}
                         </button>
                     `}
                 <input
@@ -355,7 +359,10 @@ export class SearchableMultiSelect {
             "aria-label",
             `Quitar ${label}`
         );
-        remove.textContent = "×";
+        remove.innerHTML = Icon.render(
+            "close",
+            "chipRemoveIcon"
+        );
 
         const input = document.createElement("input");
         input.type = "hidden";

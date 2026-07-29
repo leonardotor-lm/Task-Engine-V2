@@ -10,6 +10,7 @@ import { SearchableSelect } from "./SearchableSelect.js";
 import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
+import { Icon } from "./Icon.js";
 
 export class MainView {
 
@@ -78,7 +79,7 @@ export class MainView {
                         aria-controls="appSidebar"
                         aria-expanded="false"
                         aria-label="Abrir navegación">
-                        ☰
+                        ${Icon.render("menu")}
                     </button>
 
                     <strong>Task Engine</strong>

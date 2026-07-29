@@ -15,8 +15,27 @@ test("ofrece la familia inicial de íconos", () => {
             "eye",
             "eye-off",
             "more",
-            "close"
+            "close",
+            "chevron-down",
+            "chevron-right",
+            "clock",
+            "repeat",
+            "menu",
+            "check"
         ]
+    );
+
+});
+
+test("usa trazados oficiales de la familia Lucide", () => {
+
+    assert.match(
+        Icon.render("edit"),
+        /M21\.174 6\.812/
+    );
+    assert.match(
+        Icon.render("repeat"),
+        /M13 18H7/
     );
 
 });
