@@ -3392,3 +3392,120 @@ h3 {
     }
 
 }
+
+
+/* Ajustes finales del editor de objetivos */
+.goalDrawer {
+    padding: 12px;
+}
+
+.goalEditorHeader {
+    margin-bottom: 10px;
+}
+
+#goalEditorForm {
+    gap: 4px;
+}
+
+#goalEditorForm > label {
+    margin-top: 6px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#goalEditorForm > input,
+#goalEditorForm > textarea {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+}
+
+#goalEditorForm > input:focus,
+#goalEditorForm > textarea:focus {
+    border-color: #2563eb;
+    outline: 2px solid #dbeafe;
+    outline-offset: 0;
+}
+
+.goalEditorActions {
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.goalEditorActions button {
+    border-radius: 6px;
+}
+
+#goalEditorForm
+    .goalEditorActions
+    button[type="submit"] {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+}
+
+#goalEditorForm #archiveGoal {
+    border-color: transparent;
+    background: transparent;
+    color: #475569;
+}
+
+#goalEditorForm #deleteGoalFromEditor {
+    border-color: transparent;
+    background: transparent;
+    color: #b42318;
+}
+
+.goalTasksSection,
+.goalSubgoalsSection,
+.goalHierarchySection {
+    margin-top: 10px;
+    padding-top: 8px;
+}
+
+.goalAssociationManager summary,
+.goalHierarchySection > summary {
+    min-height: 32px;
+    box-sizing: border-box;
+    padding: 5px 2px;
+    color: #334155;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.goalAssociationManagerBody,
+.goalHierarchySectionBody {
+    padding: 6px 2px 2px;
+}
+
+.goalSubgoalsSection h4 {
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 13px;
+}
+
+#subgoalForm,
+#goalParentForm {
+    gap: 5px;
+}
+
+@media (max-width: 760px) {
+
+    .goalDrawer {
+        padding:
+            12px
+            12px
+            calc(
+                20px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .goalAssociationManager summary,
+    .goalHierarchySection > summary {
+        min-height: 44px;
+        padding: 10px 2px;
+    }
+
+}
