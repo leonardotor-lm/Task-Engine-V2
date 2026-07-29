@@ -14,18 +14,18 @@ test("los botones usan una geometría recta común", () => {
     );
     assert.match(
         styles,
-        /button,[\s\S]*?\.importBackupButton,[\s\S]*?\.entityCreateManager > summary\s*\{[\s\S]*?border-radius:\s*var\(--button-radius\) !important/
+        /button,[\s\S]*?\.importBackupButton,[\s\S]*?details > summary,[\s\S]*?select,[\s\S]*?input\[type="search"\]\s*\{[\s\S]*?border-radius:\s*var\(--button-radius\) !important/
     );
 });
 
-test("el radio de botones no modifica paneles ni campos", () => {
+test("la geometría recta alcanza desplegables y búsquedas", () => {
     const sharedRule = styles.match(
-        /button,\n\.importBackupButton,\n\.searchableMultiSelectManager summary,[\s\S]*?border-radius:\s*var\(--button-radius\) !important;[\s\S]*?\}/
+        /button,\n\.importBackupButton,\ndetails > summary,\nselect,\ninput\[type="search"\][\s\S]*?border-radius:\s*var\(--button-radius\) !important;[\s\S]*?\}/
     );
 
     assert.ok(sharedRule);
-    assert.doesNotMatch(
-        sharedRule[0],
-        /input|textarea|select|\.taskDrawer|\.goalItem/
-    );
+    assert.match(sharedRule[0], /details > summary/);
+    assert.match(sharedRule[0], /select/);
+    assert.match(sharedRule[0], /input\[type="search"\]/);
+    assert.doesNotMatch(sharedRule[0], /textarea|input\[type="text"\]/);
 });
