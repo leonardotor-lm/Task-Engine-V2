@@ -49,6 +49,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 ### Botones e iconografía
 
 - **Estado:** Pendiente para una etapa visual cercana.
+- Aplicar los criterios establecidos en `docs/design/VISUAL-GUIDE.md`.
 - Revisar de forma sistemática los botones de escritorio y celular.
 - Reemplazar textos evidentes por íconos reconocibles cuando reduzcan ruido visual.
 - Evaluar, entre otros, flecha hacia la izquierda para **Volver**, disquete para **Guardar** y ojo abierto o cerrado para **Mostrar u ocultar detalles**.
