@@ -42,8 +42,8 @@ test("muestra el objetivo como espacio de trabajo", () => {
         areas: [],
         contexts: [],
         tags: [],
-        expandedTaskIds:
-            new Set([project.id]),
+        goalExpandedTaskIds:
+            new Set(),
         showTaskMetadata: true,
         today: "2026-07-28",
         inlineSubtaskParentId: null
@@ -55,15 +55,54 @@ test("muestra el objetivo como espacio de trabajo", () => {
     assert.match(html, /id="editGoal"/);
     assert.match(html, /id="closeGoalView"/);
     assert.match(html, /Preparar manuscrito/);
-    assert.match(html, /Corregir capítulo/);
     assert.doesNotMatch(
         html,
         /Asociaciones directas/
     );
+    assert.doesNotMatch(html, /Corregir capítulo/);
+    assert.match(html, /Expandir subtareas/);
     assert.doesNotMatch(
         html,
         /class="detachTaskFromGoal"/
     );
     assert.doesNotMatch(html, /id="goalTaskForm"/);
+
+});
+
+test("despliega las subtareas de un proyecto a pedido", () => {
+
+    const goal = new Goal({
+        id: "goal-1",
+        title: "Publicar un libro"
+    });
+
+    const project = new Task({
+        id: "project-1",
+        title: "Preparar manuscrito",
+        goalIds: [goal.id]
+    });
+
+    const subtask = new Task({
+        id: "subtask-1",
+        title: "Corregir capítulo",
+        parentTaskId: project.id
+    });
+
+    const html = new GoalView().render({
+        selectedGoal: goal,
+        tasks: [project, subtask],
+        allTasks: [project, subtask],
+        areas: [],
+        contexts: [],
+        tags: [],
+        goalExpandedTaskIds:
+            new Set([project.id]),
+        showTaskMetadata: true,
+        today: "2026-07-28",
+        inlineSubtaskParentId: null
+    });
+
+    assert.match(html, /Corregir capítulo/);
+    assert.match(html, /Contraer subtareas/);
 
 });
