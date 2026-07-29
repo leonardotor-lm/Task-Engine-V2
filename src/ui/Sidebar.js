@@ -783,7 +783,10 @@ export class Sidebar {
                                                     data-id="${escapeHtml(filter.id)}"
                                                     aria-label="Renombrar ${escapeHtml(filter.name)}"
                                                     title="Renombrar filtro">
-                                                    ✎
+                                                    ${Icon.render(
+                                                        "edit",
+                                                        "sidebarUtilityIcon"
+                                                    )}
                                                 </button>
 
                                                 <button
@@ -792,7 +795,10 @@ export class Sidebar {
                                                     data-id="${escapeHtml(filter.id)}"
                                                     aria-label="Eliminar ${escapeHtml(filter.name)}"
                                                     title="Eliminar filtro">
-                                                    ×
+                                                    ${Icon.render(
+                                                        "close",
+                                                        "sidebarUtilityIcon"
+                                                    )}
                                                 </button>
                                             </div>
 
