@@ -1065,7 +1065,9 @@ body {
     --color-accent-strong: #1d4ed8;
     --color-accent-soft: #eff6ff;
     --color-accent-muted: #dbeafe;
+    --color-focus-ring: #bfdbfe;
     --color-danger: #b42318;
+    --disabled-opacity: 0.48;
 
     --ui-font:
         Inter,
@@ -1095,6 +1097,36 @@ input,
 select,
 textarea {
     font: inherit;
+}
+
+:where(
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]
+):focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+:where(button, input, select, textarea):disabled {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
 }
 
 h2,
