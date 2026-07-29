@@ -1023,6 +1023,11 @@ body {
     cursor: not-allowed;
 }
 
+.responsiveButtonIcon,
+.mobileGoalEditorSave {
+    display: none;
+}
+
 .bulkModeNotice {
     margin: 0 0 12px;
     padding: 8px 10px;
@@ -1996,16 +2001,16 @@ h3 {
     }
 
     .mobileBackSymbol {
-        display: inline;
+        display: inline-flex;
     }
 
     .mobileEditorSave {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 72px;
-        min-height: 40px;
-        padding: 7px 10px;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0;
         border: 0;
         border-radius: 6px;
         background: #2563eb;
@@ -2880,6 +2885,34 @@ h3 {
         height: 44px;
     }
 
+    .responsiveIconButton {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        padding: 0;
+    }
+
+    .responsiveButtonIcon,
+    .mobileGoalEditorSave {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .responsiveButtonLabel {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
     .taskListHeading:has(.goalHeadingAction) {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
@@ -2930,6 +2963,32 @@ h3 {
                 20px +
                 env(safe-area-inset-bottom)
             );
+    }
+
+    .goalEditorHeader {
+        position: sticky;
+        z-index: 2;
+        top: -12px;
+        display: grid;
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto
+            auto;
+        margin:
+            -12px
+            -12px
+            14px;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #fff;
+    }
+
+    .goalEditorHeader h3 {
+        min-width: 0;
+    }
+
+    .goalEditorActions button[type="submit"] {
+        display: none;
     }
 
     #goalEditorForm > input,
