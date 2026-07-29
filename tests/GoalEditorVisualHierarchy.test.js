@@ -31,12 +31,12 @@ test("el editor jerarquiza sus acciones", () => {
 
     assert.match(
         styles,
-        /#goalEditorForm\s+\.goalEditorActions\s+button\[type="submit"\][\s\S]*?background:\s*#2563eb/
+        /#goalEditorForm\s+\.goalEditorActions\s+button\[type="submit"\][\s\S]*?background:\s*var\(--color-accent\)/
     );
 
     assert.match(
         styles,
-        /#deleteGoalFromEditor\s*\{[\s\S]*?color:\s*#b42318/
+        /#deleteGoalFromEditor\s*\{[\s\S]*?color:\s*var\(--color-danger\)/
     );
 
 });
