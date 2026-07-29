@@ -73,14 +73,16 @@ export class GoalList {
                         id="goalDueDate"
                         type="date">
 
-                    <button type="submit">
+                    <button
+                        type="submit"
+                        class="primaryAction">
                         Crear objetivo
                     </button>
 
                     <button
                         id="cancelGoalCreation"
                         type="button"
-                        class="secondaryAction">
+                        class="tertiaryAction">
                         Cancelar
                     </button>
 
@@ -249,12 +251,12 @@ export class GoalList {
             return `
                 <div class="goalHistoryActions">
                     <button
-                        class="reopenGoal"
+                        class="reopenGoal primaryAction"
                         data-id="${id}">
                         Reactivar
                     </button>
                     <button
-                        class="deleteGoal"
+                        class="deleteGoal dangerAction"
                         data-id="${id}">
                         Papelera
                     </button>
@@ -266,12 +268,12 @@ export class GoalList {
             return `
                 <div class="goalHistoryActions">
                     <button
-                        class="restoreArchivedGoal"
+                        class="restoreArchivedGoal primaryAction"
                         data-id="${id}">
                         Restaurar
                     </button>
                     <button
-                        class="deleteGoal"
+                        class="deleteGoal dangerAction"
                         data-id="${id}">
                         Papelera
                     </button>
@@ -283,7 +285,7 @@ export class GoalList {
             return `
                 <div class="goalHistoryActions">
                     <button
-                        class="restoreDeletedGoal"
+                        class="restoreDeletedGoal primaryAction"
                         data-id="${id}">
                         Restaurar
                     </button>
