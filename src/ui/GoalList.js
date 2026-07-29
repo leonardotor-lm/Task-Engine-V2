@@ -1,5 +1,6 @@
 import { GoalStatus } from "../domain/GoalStatus.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { Icon } from "./Icon.js";
 
 export class GoalList {
 
@@ -25,8 +26,16 @@ export class GoalList {
                         ? `
                             <button
                                 id="openGoalCreation"
-                                type="button">
-                                Crear objetivo
+                                type="button"
+                                class="createActionButton"
+                                aria-label="Crear objetivo"
+                                title="Crear objetivo">
+                                <span class="createActionIcon">
+                                    ${Icon.render("plus")}
+                                </span>
+                                <span class="createActionLabel">
+                                    Crear objetivo
+                                </span>
                             </button>
                         `
                         : ""}
