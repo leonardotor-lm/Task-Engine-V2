@@ -1049,15 +1049,15 @@ body {
 }
 
 
-/* Prueba visual: interfaz compacta y monoespaciada */
+/* Base visual: interfaz compacta */
 :root {
     --ui-font:
-        ui-monospace,
-        "Cascadia Code",
-        "Segoe UI Mono",
-        Consolas,
-        "Liberation Mono",
-        monospace;
+        Inter,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
     --ui-font-size: 14px;
     --ui-line-height: 1.35;
     --panel-padding: 12px;
@@ -3096,7 +3096,7 @@ h3 {
 
 .task {
     padding:
-        9px
+        6px
         6px;
     border-bottom: 1px solid #edf1f5;
     background: transparent;
@@ -3126,7 +3126,7 @@ h3 {
 
 .taskTitle {
     color: #172033;
-    line-height: 1.35;
+    line-height: 1.25;
 }
 
 .projectTask .taskTitle {
@@ -3145,7 +3145,7 @@ h3 {
 
 .taskMeta {
     gap: 3px 7px;
-    margin-top: 3px;
+    margin-top: 2px;
     color: #64748b;
     font-size: 11px;
     line-height: 1.35;
@@ -3177,6 +3177,44 @@ h3 {
     align-self: center;
 }
 
+.taskHeader {
+    gap: 4px;
+}
+
+.taskTitleLine {
+    min-height: 16px;
+}
+
+.toggleSubtasks,
+.toggleSubtasksSpacer {
+    width: 18px;
+}
+
+.taskCompleteCheckbox,
+.bulkTaskCheckbox {
+    box-sizing: border-box;
+    width: 13px;
+    height: 13px;
+}
+
+.bulkTaskCheckbox {
+    border-width: 1.5px;
+}
+
+.bulkTaskCheckbox:checked {
+    box-shadow: inset 0 0 0 2px #fff;
+}
+
+.quickActionIcon {
+    --icon-size: 16px;
+}
+
+.task .iconButton {
+    --icon-size: 16px;
+    width: 30px;
+    height: 30px;
+}
+
 .priority-4 {
     border: 0;
     color: #b42318;
@@ -3197,7 +3235,7 @@ h3 {
     .task {
         min-height: 44px;
         padding:
-            10px
+            7px
             4px;
     }
 
@@ -3210,8 +3248,33 @@ h3 {
     }
 
     .taskMeta {
-        margin-top: 4px;
-        line-height: 1.45;
+        margin-top: 2px;
+        line-height: 1.35;
+    }
+
+    .taskHeader {
+        gap: 6px;
+    }
+
+    .taskTitleLine {
+        min-height: 20px;
+    }
+
+    .taskCompleteCheckbox,
+    .bulkTaskCheckbox {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+    }
+
+    .quickActionIcon,
+    .task .iconButton {
+        --icon-size: 17px;
+    }
+
+    .task .iconButton {
+        width: 44px;
+        height: 44px;
     }
 
 }
