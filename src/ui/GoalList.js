@@ -5,7 +5,8 @@ export class GoalList {
 
     render(
         goals = [],
-        currentStatus = GoalStatus.ACTIVE
+        currentStatus = GoalStatus.ACTIVE,
+        creationOpen = false
     ) {
 
         const visibleGoals = goals.filter(
@@ -18,13 +19,25 @@ export class GoalList {
 
                 <div class="contentHeader">
                     <h2>Objetivos</h2>
+
+                    ${currentStatus === GoalStatus.ACTIVE &&
+                        !creationOpen
+                        ? `
+                            <button
+                                id="openGoalCreation"
+                                type="button">
+                                Crear objetivo
+                            </button>
+                        `
+                        : ""}
                 </div>
 
                 ${this.renderStatusNavigation(
                     currentStatus
                 )}
 
-                ${currentStatus === GoalStatus.ACTIVE
+                ${currentStatus === GoalStatus.ACTIVE &&
+                    creationOpen
                     ? `
                 <form id="goalForm" class="goalForm">
                     <label for="goalTitle">
@@ -55,6 +68,13 @@ export class GoalList {
                         Crear objetivo
                     </button>
 
+                    <button
+                        id="cancelGoalCreation"
+                        type="button"
+                        class="secondaryAction">
+                        Cancelar
+                    </button>
+
                 </form>
                     `
                     : ""}
@@ -68,7 +88,7 @@ export class GoalList {
                         <p class="emptyState">
                             ${currentStatus ===
                                 GoalStatus.ACTIVE
-                                ? "No hay objetivos activos."
+                                ? "Aún no fijaste ningún objetivo."
                                 : "No hay objetivos en esta sección."}
                         </p>
                     `}

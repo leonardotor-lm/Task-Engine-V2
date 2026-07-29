@@ -938,6 +938,24 @@ export class MainView {
 
         if (view === View.GOALS) {
 
+            document.getElementById(
+                "openGoalCreation"
+            )?.addEventListener(
+                "click",
+                () =>
+                    this.callbacks
+                        .onOpenGoalCreation()
+            );
+
+            document.getElementById(
+                "cancelGoalCreation"
+            )?.addEventListener(
+                "click",
+                () =>
+                    this.callbacks
+                        .onCancelGoalCreation()
+            );
+
             document.querySelectorAll(
                 ".showGoalStatus"
             ).forEach(button => {

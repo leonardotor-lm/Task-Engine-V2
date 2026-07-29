@@ -73,6 +73,8 @@ export class App {
         this.selectedTask = null;
         this.selectedGoal = null;
         this.goalEditorOpen = false;
+        this.goalCreationOpen = false;
+        this.goalExpandedTaskIds = new Set();
         this.currentGoalStatus = "ACTIVE";
         this.currentView = View.TODAY;
         this.currentAreaId = null;
@@ -577,10 +579,15 @@ export class App {
 
             onToggleTaskExpansion: (id) => {
 
-                if (this.expandedTaskIds.has(id)) {
-                    this.expandedTaskIds.delete(id);
+                const expandedTaskIds =
+                    this.currentView === View.GOAL
+                        ? this.goalExpandedTaskIds
+                        : this.expandedTaskIds;
+
+                if (expandedTaskIds.has(id)) {
+                    expandedTaskIds.delete(id);
                 } else {
-                    this.expandedTaskIds.add(id);
+                    expandedTaskIds.add(id);
                 }
 
                 this.render();
@@ -1246,14 +1253,30 @@ export class App {
 
                 this.selectedGoal = null;
                 this.goalEditorOpen = false;
+                this.goalCreationOpen = false;
                 this.currentGoalStatus = "ACTIVE";
                 this.navigateTo(View.GOALS);
+
+            },
+
+            onOpenGoalCreation: () => {
+
+                this.goalCreationOpen = true;
+                this.render();
+
+            },
+
+            onCancelGoalCreation: () => {
+
+                this.goalCreationOpen = false;
+                this.render();
 
             },
 
             onCreateGoal: (data) => {
 
                 this.goalService.createGoal(data);
+                this.goalCreationOpen = false;
 
                 this.render();
 
@@ -1311,6 +1334,7 @@ export class App {
                 this.currentGoalStatus = status;
                 this.selectedGoal = null;
                 this.goalEditorOpen = false;
+                this.goalCreationOpen = false;
 
                 this.render();
 
@@ -1326,18 +1350,9 @@ export class App {
 
                 this.selectedGoal = goal;
                 this.goalEditorOpen = false;
+                this.goalCreationOpen = false;
+                this.goalExpandedTaskIds.clear();
                 this.currentView = View.GOAL;
-
-                for (
-                    const task of
-                    this.getGoalWorkspaceTasks(
-                        goal.id
-                    )
-                ) {
-                    this.expandedTaskIds.add(
-                        task.id
-                    );
-                }
 
                 this.render();
 
@@ -1883,6 +1898,8 @@ export class App {
         this.selectedTask = null;
         this.selectedGoal = null;
         this.goalEditorOpen = false;
+        this.goalCreationOpen = false;
+        this.goalExpandedTaskIds.clear();
         this.currentView = View.TODAY;
         this.currentAreaId = null;
         this.taskCreationOpen = false;
@@ -2280,6 +2297,8 @@ export class App {
             tasks: visibleTasks,
             allTasks: this.taskService.getAllTasks(),
             expandedTaskIds: this.expandedTaskIds,
+            goalExpandedTaskIds:
+                this.goalExpandedTaskIds,
             searchQuery: this.searchQuery,
             advancedSearchMode:
                 this.advancedSearchMode,
@@ -2333,6 +2352,8 @@ export class App {
             selectedGoal: this.selectedGoal,
             goalEditorOpen:
                 this.goalEditorOpen,
+            goalCreationOpen:
+                this.goalCreationOpen,
             currentGoalStatus:
                 this.currentGoalStatus,
             goals: this.goalService.getAllGoals(),

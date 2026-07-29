@@ -4,15 +4,30 @@ import assert from "node:assert/strict";
 import { Goal } from "../src/domain/Goal.js";
 import { GoalList } from "../src/ui/GoalList.js";
 
-test("muestra el formulario y el estado vacío", () => {
+test("prioriza el estado vacío y ofrece crear bajo demanda", () => {
 
     const html = new GoalList().render([]);
 
-    assert.match(html, /id="goalForm"/);
+    assert.match(html, /id="openGoalCreation"/);
+    assert.doesNotMatch(html, /id="goalForm"/);
     assert.match(
         html,
-        /No hay objetivos activos/
+        /Aún no fijaste ningún objetivo/
     );
+
+});
+
+test("muestra el formulario sólo cuando se solicita", () => {
+
+    const html = new GoalList().render(
+        [],
+        undefined,
+        true
+    );
+
+    assert.match(html, /id="goalForm"/);
+    assert.match(html, /id="cancelGoalCreation"/);
+    assert.doesNotMatch(html, /id="openGoalCreation"/);
 
 });
 

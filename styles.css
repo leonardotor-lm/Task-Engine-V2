@@ -2464,6 +2464,21 @@ h3 {
     overflow-y: auto;
 }
 
+.goalsView .contentHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.goalsView .contentHeader h2 {
+    margin-right: auto;
+}
+
+.goalsView .contentHeader button {
+    padding: 7px 10px;
+}
+
 .goalForm {
     display: grid;
     grid-template-columns:
@@ -2807,6 +2822,10 @@ h3 {
 }
 
 @media (max-width: 760px) {
+
+    .goalsView .contentHeader {
+        align-items: flex-start;
+    }
 
     .goalForm {
         grid-template-columns: 1fr;
