@@ -36,7 +36,7 @@ test("el editor agrupa sus propiedades por función", () => {
 
 });
 
-test("organización y planificación se contraen sólo en móvil", () => {
+test("organización y planificación comienzan contraídas", () => {
 
     assert.equal(
         (
@@ -56,5 +56,23 @@ test("organización y planificación se contraen sólo en móvil", () => {
         mainView,
         /max-width: 760px/
     );
+
+    const secondarySections = [
+        ...editor.matchAll(
+            /<details\s+class="editorSection editorSecondarySection"[\s\S]*?>/g
+        )
+    ];
+
+    assert.equal(
+        secondarySections.length,
+        2
+    );
+
+    for (const section of secondarySections) {
+        assert.doesNotMatch(
+            section[0],
+            /\sopen/
+        );
+    }
 
 });
