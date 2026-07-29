@@ -42,6 +42,30 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Mantener información esencial visible y administración bajo demanda.
 - Conservar una interfaz sobria, compacta y fácil de recorrer.
 
+### Presentación de proyectos dentro de objetivos
+
+- **Estado:** Pendiente.
+- Al abrir un objetivo, mostrar cada proyecto inicialmente contraído.
+- Mantener visible el nombre del proyecto y su flecha de expansión.
+- Mostrar las subtareas sólo cuando la persona despliegue el proyecto.
+- Conservar el estado compacto para evitar que el objetivo se abra como una lista extensa.
+
+### Encabezado móvil de objetivos
+
+- **Estado:** Pendiente.
+- En celular, ubicar las acciones del objetivo debajo del título.
+- Reservar para el título todo el ancho disponible y evitar cortes innecesarios en dos líneas.
+- Mantener una jerarquía visual clara entre nombre, estado y acciones.
+
+### Botones e iconografía
+
+- **Estado:** Pendiente para una etapa visual cercana.
+- Revisar de forma sistemática los botones de escritorio y celular.
+- Reemplazar textos evidentes por íconos reconocibles cuando reduzcan ruido visual.
+- Evaluar, entre otros, flecha hacia la izquierda para **Volver**, disquete para **Guardar** y ojo abierto o cerrado para **Mostrar u ocultar detalles**.
+- Mantener etiquetas accesibles, títulos descriptivos y estados visuales claros en todos los botones con sólo ícono.
+- Conservar texto cuando un ícono aislado pueda resultar ambiguo.
+
 ### Selector de colores
 
 - **Estado:** Postergado hasta la etapa visual.
