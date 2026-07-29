@@ -178,6 +178,13 @@ El tema principal distingue tokens para texto, texto secundario, texto atenuado,
 
 Los colores que representan datos —por ejemplo, prioridades, áreas, contextos y etiquetas— permanecen separados de la paleta estructural. Un tema puede adaptar su presentación, pero no debe borrar su significado ni reducir el contraste.
 
+### Estados interactivos
+
+- Todo control operable mediante teclado debe mostrar un foco visible común.
+- Los controles deshabilitados deben diferenciarse sin desaparecer visualmente.
+- La selección y la activación no deben depender únicamente del color.
+- Las transiciones deben respetar la preferencia de movimiento reducido del sistema.
+
 ## Criterio de revisión
 
 Antes de incorporar un elemento visible, debe comprobarse:
