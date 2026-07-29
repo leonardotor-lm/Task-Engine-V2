@@ -109,7 +109,7 @@ export class GoalEditor {
 
                     <textarea
                         id="goalDescriptionEdit"
-                        rows="6">${escapeHtml(
+                        rows="4">${escapeHtml(
                             goal.description
                         )}</textarea>
 
@@ -248,50 +248,56 @@ export class GoalEditor {
                 ${possibleParents.length > 0 ||
                     goal.parentGoalId
                     ? `
-                <section class="goalHierarchySection">
+                <details class="goalHierarchySection">
 
-                    <h4>Organización</h4>
+                    <summary>
+                        Organización
+                    </summary>
 
-                    ${possibleParents.length > 0
-                        ? `
-                            <form id="goalParentForm">
-                                <select
-                                    id="goalParentId"
-                                    required>
-                                    <option value="">
-                                        Mover a otro objetivo…
-                                    </option>
-                                    ${possibleParents
-                                        .map(item => `
-                                            <option
-                                                value="${escapeHtml(item.id)}"
-                                                ${item.id ===
-                                                    goal.parentGoalId
-                                                    ? "selected"
-                                                    : ""}>
-                                                ${escapeHtml(item.title)}
-                                            </option>
-                                        `)
-                                        .join("")}
-                                </select>
-                                <button type="submit">
-                                    Mover
+                    <div class="goalHierarchySectionBody">
+
+                        ${possibleParents.length > 0
+                            ? `
+                                <form id="goalParentForm">
+                                    <select
+                                        id="goalParentId"
+                                        required>
+                                        <option value="">
+                                            Mover a otro objetivo…
+                                        </option>
+                                        ${possibleParents
+                                            .map(item => `
+                                                <option
+                                                    value="${escapeHtml(item.id)}"
+                                                    ${item.id ===
+                                                        goal.parentGoalId
+                                                        ? "selected"
+                                                        : ""}>
+                                                    ${escapeHtml(item.title)}
+                                                </option>
+                                            `)
+                                            .join("")}
+                                    </select>
+                                    <button type="submit">
+                                        Mover
+                                    </button>
+                                </form>
+                            `
+                            : ""}
+
+                        ${goal.parentGoalId
+                            ? `
+                                <button
+                                    id="detachGoal"
+                                    type="button">
+                                    Convertir en objetivo principal
                                 </button>
-                            </form>
-                        `
-                        : ""}
+                            `
+                            : ""}
 
-                    ${goal.parentGoalId
-                        ? `
-                            <button
-                                id="detachGoal"
-                                type="button">
-                                Convertir en objetivo principal
-                            </button>
-                        `
-                        : ""}
+                    </div>
 
-                </section>
+                </details>
                     `
                     : ""}
 
