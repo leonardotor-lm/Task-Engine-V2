@@ -29,14 +29,14 @@ export class GoalView {
             <button
                 id="closeGoalView"
                 type="button"
-                class="secondaryAction">
+                class="secondaryAction goalHeadingAction">
                 Volver
             </button>
 
             <button
                 id="editGoal"
                 type="button"
-                class="secondaryAction">
+                class="secondaryAction goalHeadingAction">
                 Editar objetivo
             </button>
         `;
