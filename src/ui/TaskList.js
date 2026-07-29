@@ -543,7 +543,10 @@ export class TaskList {
                                                             data-id="${escapeHtml(task.id)}"
                                                             title="Agregar subtarea"
                                                             aria-label="Agregar subtarea a ${escapeHtml(task.title)}">
-                                                            +
+                                                            ${Icon.render(
+                                                                "plus",
+                                                                "quickActionIcon"
+                                                            )}
                                                         </button>
                                                     `
                                                     : ""}
@@ -606,7 +609,10 @@ export class TaskList {
                                                             <summary
                                                                 title="Más acciones"
                                                                 aria-label="Más acciones para ${escapeHtml(task.title)}">
-                                                                ⋯
+                                                                ${Icon.render(
+                                                                    "more",
+                                                                    "quickActionIcon"
+                                                                )}
                                                             </summary>
 
                                                             <div class="quickMoreMenu">
@@ -616,9 +622,12 @@ export class TaskList {
 
                                                                     <button
                                                                         type="button"
-                                                                        class="closeQuickActions"
-                                                                        aria-label="Cerrar acciones">
-                                                                        ×
+                                                                        class="closeQuickActions iconButton"
+                                                                        aria-label="Cerrar acciones"
+                                                                        title="Cerrar acciones">
+                                                                        ${Icon.render(
+                                                                            "close"
+                                                                        )}
                                                                     </button>
                                                                 </div>
 
