@@ -231,7 +231,11 @@ export class TaskEditor {
         const recurrenceIndicator = task.recurrence
             ? `
                 <p class="recurrenceIndicator">
-                    ↻ Recurrente: ${recurrenceLabels[task.recurrence]}
+                    ${Icon.render(
+                        "repeat",
+                        "inlineStatusIcon"
+                    )}
+                    Recurrente: ${recurrenceLabels[task.recurrence]}
                 </p>
             `
             : "";
@@ -298,7 +302,12 @@ export class TaskEditor {
                                 type="button"
                                 class="subtaskLink ${subtask.isCompleted() ? "completedSubtaskLink" : ""}"
                                 data-id="${escapeHtml(subtask.id)}">
-                                ${subtask.isCompleted() ? "✓ " : ""}
+                                ${subtask.isCompleted()
+                                    ? Icon.render(
+                                        "check",
+                                        "inlineStatusIcon"
+                                    )
+                                    : ""}
                                 ${escapeHtml(subtask.title)}
                             </button>
                         </li>
