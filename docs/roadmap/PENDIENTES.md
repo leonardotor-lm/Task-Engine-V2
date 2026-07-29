@@ -18,33 +18,6 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ## Prioridad alta
 
-### Selectores escalables
-
-- **Estado:** En desarrollo.
-- Base reutilizable y buscable incorporada inicialmente en el gestor de asociaciones de objetivos.
-- Selector múltiple buscable con chips incorporado en el editor de tareas para etiquetas y objetivos.
-- La edición múltiple utiliza el mismo selector buscable para agregar etiquetas.
-- Crear un componente reutilizable con búsqueda para listas extensas.
-- Usarlo para elegir destinos al mover tareas o proyectos.
-- Evitar listas completas de casillas o desplegables HTML con cientos de opciones.
-- Ofrecer búsqueda, altura limitada, desplazamiento y confirmación explícita.
-
-### Gestión de asociaciones de objetivos
-
-- **Estado:** En desarrollo.
-- El editor muestra un control compacto con la cantidad asociada.
-- El gestor permite buscar y asociar o quitar tareas y proyectos sin desplegar listas interminables.
-- Pendiente: incorporar filtros adicionales por área y tipo si el volumen real los vuelve necesarios.
-- Mantener la pantalla central del objetivo orientada al seguimiento, no a la administración.
-
-### Mover tareas y proyectos
-
-- **Estado:** En desarrollo.
-- Mantener **Mover** dentro del editor de tareas.
-- El editor utiliza el selector escalable con búsqueda y permite convertir una subtarea en principal.
-- Excluir la propia tarea y sus descendientes para impedir ciclos.
-- Conservar el árbol completo al mover un proyecto.
-
 ### Objetivos en edición múltiple
 
 - **Estado:** Pendiente.
