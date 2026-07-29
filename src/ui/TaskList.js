@@ -33,7 +33,8 @@ export class TaskList {
         creationPlaceholder = "Nueva tarea",
         inlineSubtaskParentId = null,
         contentBeforeList = "",
-        goals = []
+        goals = [],
+        contentClass = ""
     ) {
 
         const form = allowCreate
@@ -99,7 +100,7 @@ export class TaskList {
         );
 
         let html = `
-            <main class="content">
+            <main class="content ${escapeHtml(contentClass)}">
 
                 <div class="taskListHeading">
 
