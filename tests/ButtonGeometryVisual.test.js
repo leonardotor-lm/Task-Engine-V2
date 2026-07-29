@@ -7,25 +7,30 @@ const styles = fs.readFileSync(
     "utf8"
 );
 
-test("los botones usan una geometría recta común", () => {
+test("la interfaz usa una geometría recta común", () => {
     assert.match(
         styles,
-        /--button-radius:\s*0/
+        /--interface-radius:\s*0/
     );
     assert.match(
         styles,
-        /button,[\s\S]*?\.importBackupButton,[\s\S]*?details > summary,[\s\S]*?select,[\s\S]*?input\[type="search"\]\s*\{[\s\S]*?border-radius:\s*var\(--button-radius\) !important/
+        /button,[\s\S]*?\.goalItem\s*\{[\s\S]*?border-radius:\s*var\(--interface-radius\) !important/
     );
 });
 
-test("la geometría recta alcanza desplegables y búsquedas", () => {
+test("la geometría recta alcanza controles, editores y paneles", () => {
     const sharedRule = styles.match(
-        /button,\n\.importBackupButton,\ndetails > summary,\nselect,\ninput\[type="search"\][\s\S]*?border-radius:\s*var\(--button-radius\) !important;[\s\S]*?\}/
+        /button,\n\.importBackupButton,\ndetails > summary,\nselect,\ninput\[type="search"\],[\s\S]*?\.goalItem\s*\{[\s\S]*?border-radius:\s*var\(--interface-radius\) !important;[\s\S]*?\}/
     );
 
     assert.ok(sharedRule);
     assert.match(sharedRule[0], /details > summary/);
     assert.match(sharedRule[0], /select/);
     assert.match(sharedRule[0], /input\[type="search"\]/);
-    assert.doesNotMatch(sharedRule[0], /textarea|input\[type="text"\]/);
+    assert.match(sharedRule[0], /input\[type="date"\]/);
+    assert.match(sharedRule[0], /\.taskDrawer textarea/);
+    assert.match(sharedRule[0], /#goalEditorForm textarea/);
+    assert.match(sharedRule[0], /\.syncTools/);
+    assert.match(sharedRule[0], /\.backupTools/);
+    assert.match(sharedRule[0], /\.goalItem/);
 });
