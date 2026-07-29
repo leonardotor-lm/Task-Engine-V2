@@ -1071,6 +1071,7 @@ body {
     --color-danger: #b42318;
     --color-danger-soft: #fef2f2;
     --disabled-opacity: 0.48;
+    --interface-radius: 0;
 
     --ui-font:
         Inter,
@@ -1314,6 +1315,22 @@ h3 {
 
 .dangerAction:hover {
     background: var(--color-danger-soft);
+}
+
+button,
+.importBackupButton,
+details > summary,
+select,
+input[type="search"],
+input[type="date"],
+.taskDrawer input,
+.taskDrawer textarea,
+#goalEditorForm input,
+#goalEditorForm textarea,
+.syncTools,
+.backupTools,
+.goalItem {
+    border-radius: var(--interface-radius) !important;
 }
 
 .bulkToolbar select,
