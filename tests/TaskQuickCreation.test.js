@@ -52,6 +52,16 @@ test("la barra lateral ofrece Nueva tarea", () => {
         /Nueva tarea/
     );
 
+    assert.match(
+        html,
+        /class="newTaskButton createActionButton"/
+    );
+
+    assert.match(
+        html,
+        /class="createActionIcon"/
+    );
+
 });
 
 test("la captura rápida puede cancelarse", () => {
