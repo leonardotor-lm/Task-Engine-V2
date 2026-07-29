@@ -116,3 +116,16 @@ La adaptación es exclusiva de la vista móvil y no altera la distribución de e
 
 Estado:
 Aceptada.
+
+---
+
+## D-011
+
+La estética principal de Task Engine responde a Flat 2.0 y utiliza la simplificación visual como administración contextual de la complejidad, no como pérdida de funciones.
+
+Las vistas de ejecución priorizan concentración y acciones inmediatas; las vistas de planificación permiten mayor detalle. La iconografía se implementa mediante una familia única de SVG simples, consistentes y accesibles. Los valores visuales se organizarán progresivamente mediante variables CSS semánticas para admitir temas futuros.
+
+La referencia normativa queda registrada en `docs/design/VISUAL-GUIDE.md`.
+
+Estado:
+Aceptada.
