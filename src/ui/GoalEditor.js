@@ -126,19 +126,23 @@ export class GoalEditor {
 
                     <div class="goalEditorActions">
 
-                        <button type="submit">
+                        <button
+                            type="submit"
+                            class="primaryAction">
                             Guardar
                         </button>
 
                         <button
                             id="completeGoal"
-                            type="button">
+                            type="button"
+                            class="secondaryAction">
                             Completar
                         </button>
 
                         <button
                             id="archiveGoal"
-                            type="button">
+                            type="button"
+                            class="tertiaryAction">
                             Archivar
                         </button>
 
