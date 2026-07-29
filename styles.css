@@ -971,6 +971,58 @@ body {
     cursor: pointer;
 }
 
+.icon {
+    display: block;
+    flex: 0 0 auto;
+    width: var(--icon-size, 20px);
+    height: var(--icon-size, 20px);
+    overflow: visible;
+    stroke-width: var(--icon-stroke-width, 1.8);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.iconButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+}
+
+.iconButton:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.iconButton:focus-visible {
+    border-color: #2563eb;
+    outline: 2px solid #bfdbfe;
+    outline-offset: 2px;
+}
+
+.iconButton:active {
+    background: #e2e8f0;
+}
+
+.iconButton[aria-pressed="true"] {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.iconButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .bulkModeNotice {
     margin: 0 0 12px;
     padding: 8px 10px;
@@ -2822,6 +2874,11 @@ h3 {
 }
 
 @media (max-width: 760px) {
+
+    .iconButton {
+        width: 44px;
+        height: 44px;
+    }
 
     .taskListHeading:has(.goalHeadingAction) {
         display: grid;
