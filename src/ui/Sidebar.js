@@ -83,6 +83,11 @@ export class Sidebar {
             View.PROJECT
         ];
 
+        const taskControlViews = [
+            ...taskViews,
+            View.PROJECT
+        ];
+
         const optionList = (
             entities,
             selectedId
@@ -536,6 +541,8 @@ export class Sidebar {
                     </span>
                 </button>
 
+                ${taskControlViews.includes(activeView)
+                    ? `
                 <form
                     id="taskSearchForm"
                     class="taskSearch ${advancedSearchMode
@@ -645,43 +652,61 @@ export class Sidebar {
                     `
                     : ""}
 
-                ${syncTools}
-
-                ${backupTools}
+                    `
+                    : ""}
 
                 <nav>
 
-                    <button
-                        id="showInbox"
-                        class="${buttonClass(View.INBOX)}">
-                        📥 Inbox
-                    </button>
+                    <span class="sidebarSectionLabel">
+                        Ejecución
+                    </span>
 
                     <button
                         id="showToday"
                         class="${buttonClass(View.TODAY)}">
-                        📅 Hoy
+                        Hoy
+                    </button>
+
+                    <button
+                        id="showInbox"
+                        class="${buttonClass(View.INBOX)}">
+                        Inbox
                     </button>
 
                     <button
                         id="showUpcoming"
                         class="${buttonClass(View.UPCOMING)}">
-                        📆 Próximas
+                        Próximas
                     </button>
+
+                    <span class="sidebarSectionLabel">
+                        Planificación
+                    </span>
 
                     <button
                         id="showAll"
                         class="${buttonClass(View.ALL)}">
-                        📋 Todas
+                        Todas
+                    </button>
+
+                    <button
+                        id="showGoals"
+                        class="${buttonClass(View.GOALS)}">
+                        Objetivos
                     </button>
 
                     ${areas.length > 0
                         ? `
-                            <div class="sidebarAreaViews">
-
-                                <span class="sidebarSectionLabel">
+                            <details
+                                class="sidebarNavigationGroup sidebarAreaGroup"
+                                ${activeView === View.AREA
+                                    ? "open"
+                                    : ""}>
+                                <summary>
                                     Áreas
-                                </span>
+                                </summary>
+
+                                <div class="sidebarAreaViews">
 
                                 ${areas.map(area => `
                                     <button
@@ -706,7 +731,8 @@ export class Sidebar {
                                     </button>
                                 `).join("")}
 
-                            </div>
+                                </div>
+                            </details>
                         `
                         : ""}
 
@@ -785,55 +811,76 @@ export class Sidebar {
                         `
                         : ""}
 
-                    <hr>
+                    <details
+                        class="sidebarNavigationGroup"
+                        ${[
+                            View.COMPLETED,
+                            View.ARCHIVED,
+                            View.TRASH
+                        ].includes(activeView)
+                            ? "open"
+                            : ""}>
+                        <summary>Historial</summary>
 
-                    <button
-                        id="showGoals"
-                        class="${buttonClass(View.GOALS)}">
-                        🎯 Objetivos
-                    </button>
+                        <div class="sidebarNavigationGroupBody">
+                            <button
+                                id="showCompleted"
+                                class="${buttonClass(View.COMPLETED)}">
+                                Completadas
+                            </button>
 
-                    <hr>
+                            <button
+                                id="showArchived"
+                                class="${buttonClass(View.ARCHIVED)}">
+                                Archivadas
+                            </button>
 
-                    <button
-                        id="showCompleted"
-                        class="${buttonClass(View.COMPLETED)}">
-                        ✅ Completadas
-                    </button>
+                            <button
+                                id="showTrash"
+                                class="${buttonClass(View.TRASH)}">
+                                Papelera
+                            </button>
+                        </div>
+                    </details>
 
-                    <button
-                        id="showArchived"
-                        class="${buttonClass(View.ARCHIVED)}">
-                        🗄️ Archivadas
-                    </button>
+                    <details
+                        class="sidebarNavigationGroup"
+                        ${[
+                            View.AREAS,
+                            View.CONTEXTS,
+                            View.TAGS
+                        ].includes(activeView)
+                            ? "open"
+                            : ""}>
+                        <summary>Organización</summary>
 
-                    <button
-                        id="showTrash"
-                        class="${buttonClass(View.TRASH)}">
-                        🗑️ Papelera
-                    </button>
+                        <div class="sidebarNavigationGroupBody">
+                            <button
+                                id="manageAreas"
+                                class="${buttonClass(View.AREAS)}">
+                                Áreas
+                            </button>
 
-                    <hr>
+                            <button
+                                id="manageContexts"
+                                class="${buttonClass(View.CONTEXTS)}">
+                                Contextos
+                            </button>
 
-                    <button
-                        id="manageAreas"
-                        class="${buttonClass(View.AREAS)}">
-                        ⚙️ Áreas
-                    </button>
-
-                    <button
-                        id="manageContexts"
-                        class="${buttonClass(View.CONTEXTS)}">
-                        ⚙️ Contextos
-                    </button>
-
-                    <button
-                        id="manageTags"
-                        class="${buttonClass(View.TAGS)}">
-                        🏷️ Etiquetas
-                    </button>
+                            <button
+                                id="manageTags"
+                                class="${buttonClass(View.TAGS)}">
+                                Etiquetas
+                            </button>
+                        </div>
+                    </details>
 
                 </nav>
+
+                <div class="sidebarSystemTools">
+                    ${syncTools}
+                    ${backupTools}
+                </div>
 
             </aside>
         `;
