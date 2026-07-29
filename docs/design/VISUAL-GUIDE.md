@@ -199,6 +199,14 @@ Los colores que representan datos —por ejemplo, prioridades, áreas, contextos
 - La búsqueda, los filtros y la selección múltiple sólo aparecen en vistas donde actúan sobre tareas.
 - Sincronización y copias de seguridad permanecen disponibles al final, fuera del recorrido principal.
 
+### Jerarquía de acciones
+
+- Cada contexto debe presentar como máximo una acción primaria.
+- Las acciones secundarias conservan borde y superficie neutros.
+- Las acciones terciarias permanecen planas y se reservan para cancelar, archivar o limpiar.
+- Las acciones destructivas usan el color de peligro y no compiten visualmente con la acción primaria.
+- Los cuatro niveles comparten altura, radio, tipografía y estados interactivos.
+
 ## Criterio de revisión
 
 Antes de incorporar un elemento visible, debe comprobarse:
