@@ -92,3 +92,16 @@ La auditoría del código queda cerrada. La verificación operativa depende de c
 
 Estado:
 Aceptada.
+
+---
+
+## D-009
+
+Las vistas de seguimiento priorizan el contenido existente y mantienen las herramientas de creación bajo demanda.
+
+En Objetivos, la vista inicial muestra los objetivos existentes o un estado vacío y ofrece la creación mediante una acción explícita. Al abrir un objetivo, los proyectos aparecen contraídos y conservan visible su control de expansión; sus subtareas se muestran sólo a pedido.
+
+La simplificación visual no elimina funcionalidad: reduce herramientas permanentes y preserva el foco sobre el contenido.
+
+Estado:
+Aceptada.
