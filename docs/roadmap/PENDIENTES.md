@@ -27,6 +27,18 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ## Prioridad media
 
+### Objetivos en la búsqueda avanzada
+
+- **Estado:** Pendiente.
+- Extender el motor de búsqueda avanzada para contemplar la entidad Objetivo y sus asociaciones, incorporada después del diseño inicial del buscador.
+- Permitir buscar tareas y proyectos por objetivo o subobjetivo asociado, con coincidencias parciales y normalización de mayúsculas y tildes.
+- Incorporar criterios para distinguir elementos con o sin objetivos asociados.
+- Definir el alcance de la jerarquía: asociación directa, objetivo principal y descendientes.
+- Incorporar en la búsqueda de objetivos sus propiedades pertinentes, como título, descripción, estado, fecha límite y posición jerárquica.
+- Mantener compatibilidad con AND, OR, NOT, paréntesis y filtros guardados.
+- Definir nombres de campos y sinónimos coherentes en español e inglés.
+- Actualizar la referencia de búsqueda avanzada y agregar pruebas de análisis, filtrado y conservación de jerarquías.
+
 ### Densidad y jerarquía visual
 
 - **Estado:** Pendiente.
