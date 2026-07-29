@@ -461,7 +461,9 @@ export class TaskList {
                                     aria-label="Título de la nueva subtarea"
                                     autofocus>
 
-                                <button type="submit">
+                                <button
+                                    type="submit"
+                                    class="primaryAction">
                                     Agregar
                                 </button>
 
