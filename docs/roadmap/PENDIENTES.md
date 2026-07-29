@@ -18,14 +18,12 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ## Prioridad alta
 
-### Auditoría de seguridad
+### Verificación del despliegue de seguridad
 
-- **Estado:** Pendiente.
-- Revisar exposición del repositorio público y GitHub Pages.
-- Revisar almacenamiento local del token y configuración de sincronización.
-- Revisar validación, límites y registros de Google Apps Script.
-- Documentar amenazas, medidas actuales y mejoras recomendadas.
-- Definir rotación y recuperación segura de credenciales.
+- **Estado:** Pendiente de comprobación operativa.
+- Confirmar que el despliegue activo de Apps Script utiliza la versión actual de `google-apps-script/Code.gs`.
+- Probar una descarga y una subida con el despliegue actualizado.
+- Verificar que todas las colecciones, incluidos los objetivos, se conservan.
 
 ## Prioridad media
 

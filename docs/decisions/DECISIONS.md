@@ -79,3 +79,16 @@ La operación es aditiva: conserva los objetivos que cada tarea ya tenía y suma
 
 Estado:
 Aceptada.
+
+---
+
+## D-008
+
+La arquitectura de seguridad actual se considera adecuada para el uso personal previsto y no requiere reescribir ni migrar el backend.
+
+El token se envía en el cuerpo de solicitudes `POST`, se valida en Apps Script y se conserva localmente para permitir la sincronización automática. Se aceptan los riesgos residuales propios de `localStorage`, el endpoint público y la credencial compartida, con rotación como mecanismo de revocación.
+
+La auditoría del código queda cerrada. La verificación operativa depende de confirmar que el despliegue de Apps Script utiliza la versión actual.
+
+Estado:
+Aceptada.
