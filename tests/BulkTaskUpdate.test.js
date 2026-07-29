@@ -147,13 +147,14 @@ test("aplica prioridad y fecha en una sola operación", () => {
 
 });
 
-test("agrega etiquetas sin borrar las existentes", () => {
+test("agrega etiquetas y objetivos sin borrar los existentes", () => {
 
     const repository = new MemoryRepository([
         new Task({
             id: "task-1",
             title: "Primera",
-            tagIds: ["tag-existing"]
+            tagIds: ["tag-existing"],
+            goalIds: ["goal-existing"]
         }),
         new Task({
             id: "task-2",
@@ -174,6 +175,10 @@ test("agrega etiquetas sin borrar las existentes", () => {
             addTagIds: [
                 "tag-existing",
                 "tag-new"
+            ],
+            addGoalIds: [
+                "goal-existing",
+                "goal-new"
             ]
         }
     );
@@ -189,6 +194,16 @@ test("agrega etiquetas sin borrar las existentes", () => {
     assert.deepEqual(
         second.tagIds,
         ["tag-existing", "tag-new"]
+    );
+
+    assert.deepEqual(
+        first.goalIds,
+        ["goal-existing", "goal-new"]
+    );
+
+    assert.deepEqual(
+        second.goalIds,
+        ["goal-existing", "goal-new"]
     );
 
     assert.equal(first.areaId, "area-1");
