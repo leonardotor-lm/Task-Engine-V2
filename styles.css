@@ -2823,6 +2823,23 @@ h3 {
 
 @media (max-width: 760px) {
 
+    .taskListHeading:has(.goalHeadingAction) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: stretch;
+    }
+
+    .taskListHeading:has(.goalHeadingAction) > h2 {
+        min-width: 0;
+        margin-bottom: 0;
+    }
+
+    .taskListHeading:has(.goalHeadingAction)
+        .taskListHeadingActions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
     .goalsView .contentHeader {
         align-items: flex-start;
     }
