@@ -103,7 +103,8 @@ export class TaskService {
         ids,
         data,
         {
-            addTagIds = []
+            addTagIds = [],
+            addGoalIds = []
         } = {}
     ) {
 
@@ -153,6 +154,17 @@ export class TaskService {
                     ...new Set([
                         ...copy.tagIds,
                         ...addTagIds
+                    ])
+                ];
+
+            }
+
+            if (addGoalIds.length > 0) {
+
+                changes.goalIds = [
+                    ...new Set([
+                        ...copy.goalIds,
+                        ...addGoalIds
                     ])
                 ];
 

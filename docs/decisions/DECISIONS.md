@@ -68,3 +68,14 @@ Mover una tarea o proyecto, y convertir una subtarea en tarea principal, se real
 
 Estado:
 Aceptada.
+
+---
+
+## D-007
+
+La edición múltiple permite agregar uno o varios objetivos mediante el mismo selector buscable y compacto utilizado para otras asociaciones.
+
+La operación es aditiva: conserva los objetivos que cada tarea ya tenía y suma los nuevos sin duplicarlos. Puede aplicarse junto con prioridad, fecha, área, contexto y etiquetas en una sola escritura masiva.
+
+Estado:
+Aceptada.

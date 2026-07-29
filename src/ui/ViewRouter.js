@@ -42,7 +42,9 @@ export class ViewRouter {
             state.allTasks,
             headingActions,
             "Nueva tarea",
-            state.inlineSubtaskParentId
+            state.inlineSubtaskParentId,
+            "",
+            state.goals
 
         );
 

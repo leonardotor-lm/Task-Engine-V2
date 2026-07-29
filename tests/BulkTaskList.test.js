@@ -10,7 +10,8 @@ function render({
     mode = "ACTIVE",
     areas = [],
     contexts = [],
-    tags = []
+    tags = [],
+    goals = []
 } = {}) {
 
     const task = new Task({
@@ -30,7 +31,15 @@ function render({
         false,
         selectedTaskIds,
         enabled,
-        mode
+        mode,
+        true,
+        "",
+        [task],
+        "",
+        "Nueva tarea",
+        null,
+        "",
+        goals
     );
 
 }
@@ -158,6 +167,39 @@ test("agrupa las acciones masivas secundarias", () => {
     assert.match(html, /bulkMoreActions/);
     assert.match(html, /Más acciones/);
     assert.match(html, /bulkPrimaryAction/);
+
+});
+
+test("muestra objetivos activos en un selector masivo buscable", () => {
+
+    const html = render({
+        selectedTaskIds:
+            new Set(["task-1"]),
+        goals: [{
+            id: "goal-active",
+            title: "Preparar trimestre",
+            status: "ACTIVE"
+        }, {
+            id: "goal-archived",
+            title: "Objetivo archivado",
+            status: "ARCHIVED"
+        }]
+    });
+
+    assert.match(html, /id="bulkGoals"/);
+    assert.match(
+        html,
+        /id="bulkGoalPickerSearch"/
+    );
+    assert.match(
+        html,
+        /data-value-class="bulkGoalInput"/
+    );
+    assert.match(html, /Preparar trimestre/);
+    assert.doesNotMatch(
+        html,
+        /Objetivo archivado/
+    );
 
 });
 

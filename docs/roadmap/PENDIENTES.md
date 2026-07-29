@@ -18,12 +18,6 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ## Prioridad alta
 
-### Objetivos en edición múltiple
-
-- **Estado:** Pendiente.
-- Permitir asignar uno o varios objetivos a todas las tareas seleccionadas.
-- Aplicar el cambio junto con fecha, prioridad, área, contexto y etiquetas en una sola operación.
-
 ### Auditoría de seguridad
 
 - **Estado:** Pendiente.

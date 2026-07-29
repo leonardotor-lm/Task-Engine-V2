@@ -813,6 +813,7 @@ export class App {
 
                 const {
                     addTagIds = [],
+                    addGoalIds = [],
                     ...taskData
                 } = data;
 
@@ -821,7 +822,8 @@ export class App {
                         [...this.selectedTaskIds],
                         taskData,
                         {
-                            addTagIds
+                            addTagIds,
+                            addGoalIds
                         }
                     );
 

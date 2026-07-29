@@ -146,6 +146,9 @@ export class MainView {
         this.searchableMultiSelect.bind(
             "bulkTagPicker"
         );
+        this.searchableMultiSelect.bind(
+            "bulkGoalPicker"
+        );
         this.bindEvents(state);
 
     }
@@ -1668,6 +1671,13 @@ export class MainView {
                         )
                 ].map(checkbox => checkbox.value);
 
+                const addGoalIds = [
+                    ...document
+                        .querySelectorAll(
+                            ".bulkGoalInput"
+                        )
+                ].map(input => input.value);
+
                 const changes = {};
 
                 if (priorityValue !== "") {
@@ -1696,6 +1706,11 @@ export class MainView {
                 if (addTagIds.length > 0) {
                     changes.addTagIds =
                         addTagIds;
+                }
+
+                if (addGoalIds.length > 0) {
+                    changes.addGoalIds =
+                        addGoalIds;
                 }
 
                 if (
