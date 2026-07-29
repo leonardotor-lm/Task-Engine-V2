@@ -68,7 +68,7 @@ test("usa espaciado y jerarquía en lugar de cajas", () => {
 
     assert.match(
         styles,
-        /\.priority-4[\s\S]*?color: #b42318/
+        /\.priority-4[\s\S]*?color: var\(--color-danger\)/
     );
 
 });
