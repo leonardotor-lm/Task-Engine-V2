@@ -55,3 +55,16 @@ Editar, Mover, Quitar fecha y Convertir en tarea principal se realizan desde el 
 
 Estado:
 Aceptada.
+
+---
+
+## D-006
+
+Las listas extensas se administran mediante selectores reutilizables con búsqueda, altura limitada y confirmación explícita. Las selecciones múltiples se representan mediante chips.
+
+Las asociaciones entre objetivos y tareas se gestionan desde sus editores, sin sobrecargar las vistas de seguimiento. Los filtros adicionales por área o tipo se incorporarán sólo si el volumen real demuestra que son necesarios.
+
+Mover una tarea o proyecto, y convertir una subtarea en tarea principal, se realiza desde el editor. El movimiento conserva el árbol completo y excluye la propia tarea y sus descendientes para impedir ciclos.
+
+Estado:
+Aceptada.
