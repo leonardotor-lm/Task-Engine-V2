@@ -9,6 +9,8 @@ test("prioriza el estado vacío y ofrece crear bajo demanda", () => {
     const html = new GoalList().render([]);
 
     assert.match(html, /id="openGoalCreation"/);
+    assert.match(html, /class="createActionButton"/);
+    assert.match(html, /class="createActionIcon"/);
     assert.doesNotMatch(html, /id="goalForm"/);
     assert.match(
         html,
