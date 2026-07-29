@@ -1,6 +1,7 @@
 import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { PriorityOptions } from "./PriorityOptions.js";
+import { Icon } from "./Icon.js";
 
 export class Sidebar {
 
@@ -486,8 +487,15 @@ export class Sidebar {
                 <button
                     id="openTaskCreation"
                     type="button"
-                    class="newTaskButton">
-                    ＋ Nueva tarea
+                    class="newTaskButton createActionButton"
+                    aria-label="Nueva tarea"
+                    title="Nueva tarea">
+                    <span class="createActionIcon">
+                        ${Icon.render("plus")}
+                    </span>
+                    <span class="createActionLabel">
+                        Nueva tarea
+                    </span>
                 </button>
 
                 <button
