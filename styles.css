@@ -611,8 +611,37 @@ body {
 }
 
 .recurrenceIcon {
+    display: inline-flex;
+    align-items: center;
     color: #7c3aed;
     font-weight: 700;
+}
+
+.taskStatusIcon {
+    --icon-size: 13px;
+}
+
+.treeToggleIcon,
+.chipRemoveIcon,
+.sidebarUtilityIcon,
+.inlineStatusIcon {
+    --icon-size: 14px;
+}
+
+.inlineStatusIcon {
+    display: inline-block;
+    vertical-align: -2px;
+}
+
+.recurrenceIndicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mobileMenuButton .icon {
+    --icon-size: 20px;
+    margin: auto;
 }
 
 .postponeControls,
@@ -2103,7 +2132,7 @@ input[type="date"],
     .task.swipingRight::before {
         right: 100%;
         justify-content: center;
-        content: "✓ Completar";
+        content: "Completar";
         background: #dcfce7;
         color: #15803d;
     }
@@ -2111,7 +2140,7 @@ input[type="date"],
     .task.swipingLeft::after {
         left: 100%;
         justify-content: center;
-        content: "⋯ Acciones";
+        content: "Acciones";
         background: var(--color-accent-muted);
         color: var(--color-accent-strong);
     }
