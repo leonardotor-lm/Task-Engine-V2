@@ -206,7 +206,7 @@ Los colores que representan datos —por ejemplo, prioridades, áreas, contextos
 - Las acciones terciarias permanecen planas y se reservan para cancelar, archivar o limpiar.
 - Las acciones destructivas usan el color de peligro y no compiten visualmente con la acción primaria.
 - Los cuatro niveles comparten altura, radio, tipografía y estados interactivos.
-- Los botones, desplegables, selectores y campos de búsqueda utilizan esquinas rectas; los demás campos, paneles y etiquetas conservan su geometría propia.
+- Los botones, desplegables, selectores, fechas, campos de edición y contenedores funcionales utilizan esquinas rectas. Esta geometría se aplica también a sincronización, copias y elementos jerárquicos de Objetivos.
 
 ### Proyectos
 
