@@ -1,34 +1,57 @@
 import { escapeHtml } from "./escapeHtml.js";
+import { Icon } from "./Icon.js";
 
 export class EntityManager {
 
     render(title, entities = []) {
 
+        const createLabels = {
+            "Áreas": "Nueva área",
+            "Contextos": "Nuevo contexto",
+            "Etiquetas": "Nueva etiqueta"
+        };
+
+        const createLabel =
+            createLabels[title] ??
+            "Nuevo elemento";
+
         let html = `
-            <main class="content">
+            <main class="content entityManager">
 
                 <h2>${escapeHtml(title)}</h2>
 
-                <form id="entityForm">
+                <details class="entityCreateManager">
 
-                    <input
-                        id="entityName"
-                        type="text"
-                        placeholder="Nombre"
-                        autocomplete="off">
+                    <summary>
+                        ${Icon.render(
+                            "plus",
+                            "entityCreateIcon"
+                        )}
+                        <span>${escapeHtml(createLabel)}</span>
+                    </summary>
 
-                    <input
-                        id="entityColor"
-                        type="color"
-                        value="#3b82f6">
+                    <form id="entityForm">
 
-                    <button type="submit">
-                        Crear
-                    </button>
+                        <input
+                            id="entityName"
+                            type="text"
+                            placeholder="Nombre"
+                            aria-label="Nombre"
+                            autocomplete="off">
 
-                </form>
+                        <input
+                            id="entityColor"
+                            type="color"
+                            value="#3b82f6"
+                            aria-label="Color">
 
-                <hr>
+                        <button type="submit">
+                            Crear
+                        </button>
+
+                    </form>
+
+                </details>
         `;
 
         if (entities.length === 0) {
@@ -69,9 +92,11 @@ export class EntityManager {
 
                                 <button
                                     type="button"
-                                    class="editEntity"
-                                    data-id="${escapeHtml(entity.id)}">
-                                    Editar
+                                    class="editEntity iconButton"
+                                    data-id="${escapeHtml(entity.id)}"
+                                    aria-label="Editar ${escapeHtml(entity.name)}"
+                                    title="Editar">
+                                    ${Icon.render("edit")}
                                 </button>
 
                                 <button

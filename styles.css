@@ -3509,3 +3509,154 @@ h3 {
     }
 
 }
+
+
+/* Ajustes finales de los gestores de entidades */
+.entityManager h2 {
+    margin-bottom: 10px;
+}
+
+.entityCreateManager {
+    margin-bottom: 10px;
+}
+
+.entityCreateManager > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    box-sizing: border-box;
+    padding: 4px 7px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #2563eb;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.entityCreateManager > summary::-webkit-details-marker {
+    display: none;
+}
+
+.entityCreateManager > summary:hover {
+    background: #eff6ff;
+}
+
+.entityCreateIcon {
+    --icon-size: 16px;
+}
+
+.entityCreateManager #entityForm {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        auto;
+    gap: 6px;
+    max-width: 520px;
+    padding: 7px 0 3px;
+}
+
+.entityCreateManager #entityForm input,
+.entityCreateManager #entityForm button {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 34px;
+    padding: 6px;
+    border-radius: 6px;
+    font: inherit;
+}
+
+.entityCreateManager #entityColor {
+    width: 40px;
+    padding: 2px;
+}
+
+.entityManager .entityList {
+    margin: 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.entityManager .entityItem {
+    padding: 6px 0;
+}
+
+.entityManager .entityDisplay {
+    gap: 8px;
+    min-height: 32px;
+}
+
+.entityManager .entityIdentity {
+    min-width: 0;
+    gap: 7px;
+}
+
+.entityManager .entityIdentity strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entityManager .entityActions {
+    gap: 2px;
+}
+
+.entityManager .editEntity {
+    --icon-size: 15px;
+    width: 30px;
+    height: 30px;
+}
+
+.entityManager .deleteEntity {
+    padding: 5px 6px;
+    border-color: transparent;
+    background: transparent;
+    color: #b42318;
+}
+
+.entityManager .entityEditForm {
+    gap: 5px;
+}
+
+.entityManager .entityEditForm input,
+.entityManager .entityEditForm button {
+    min-height: 32px;
+    border-radius: 6px;
+}
+
+@media (max-width: 760px) {
+
+    .entityCreateManager > summary {
+        min-height: 44px;
+    }
+
+    .entityCreateManager #entityForm {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+    }
+
+    .entityCreateManager #entityForm button {
+        grid-column: 1 / -1;
+    }
+
+    .entityCreateManager #entityForm input,
+    .entityCreateManager #entityForm button,
+    .entityManager .entityEditForm input,
+    .entityManager .entityEditForm button {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .entityManager .entityDisplay {
+        min-height: 44px;
+    }
+
+    .entityManager .editEntity {
+        --icon-size: 17px;
+        width: 44px;
+        height: 44px;
+    }
+
+}
