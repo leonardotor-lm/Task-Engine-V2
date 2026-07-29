@@ -88,7 +88,36 @@ test("oculta Organización cuando no hay acciones disponibles", () => {
 
     assert.doesNotMatch(
         html,
-        /<h4>Organización<\/h4>/
+        /<summary>\s*Organización\s*<\/summary>/
+    );
+
+});
+
+test("mantiene la organización bajo demanda", () => {
+
+    const parent = new Goal({
+        id: "parent",
+        title: "Principal"
+    });
+
+    const child = new Goal({
+        id: "child",
+        title: "Secundario",
+        parentGoalId: parent.id
+    });
+
+    const html = new GoalEditor().render(
+        child,
+        [parent, child]
+    );
+
+    assert.match(
+        html,
+        /<details class="goalHierarchySection">/
+    );
+    assert.doesNotMatch(
+        html,
+        /<details class="goalHierarchySection"\s+open/
     );
 
 });
