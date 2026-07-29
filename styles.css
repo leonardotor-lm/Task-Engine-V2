@@ -1422,7 +1422,7 @@ h3 {
 .taskQuickActions {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     margin-left: auto;
     opacity: 0;
     pointer-events: none;
@@ -1436,21 +1436,33 @@ h3 {
 }
 
 .quickAddSubtask {
-    min-width: 24px;
-    padding: 1px 6px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
     color: #475569;
     cursor: pointer;
-    font: inherit;
-    font-weight: 700;
 }
 
 .quickAddSubtask:hover,
 .quickAddSubtask:focus-visible {
-    border-color: #2563eb;
+    background: #eff6ff;
     color: #2563eb;
+}
+
+.quickAddSubtask:active {
+    background: #dbeafe;
+}
+
+.quickActionIcon {
+    --icon-size: 18px;
 }
 
 .inlineSubtaskForm {
@@ -1534,14 +1546,16 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    padding: 1px 6px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    background: #fff;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
     color: #475569;
     cursor: pointer;
-    font-weight: 700;
     list-style: none;
 }
 
@@ -1551,8 +1565,14 @@ h3 {
 
 .quickMoreActions > summary:hover,
 .quickMoreActions > summary:focus-visible {
-    border-color: #2563eb;
+    background: #eff6ff;
     color: #2563eb;
+}
+
+.quickMoreActions[open] > summary,
+.quickMoreActions > summary:active {
+    background: #dbeafe;
+    color: #1d4ed8;
 }
 
 .quickMoreMenu {
@@ -1761,10 +1781,11 @@ h3 {
 
     .quickMoreActions > summary {
         box-sizing: border-box;
-        min-width: 34px;
-        min-height: 32px;
-        padding: 4px 8px;
-        font-size: 18px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0;
     }
 
     .quickMoreMenu {
@@ -1909,11 +1930,10 @@ h3 {
     }
 
     .quickActionsSheetHeader .closeQuickActions {
-        width: 38px;
-        min-height: 38px;
+        width: 44px;
+        min-height: 44px;
         padding: 0;
         text-align: center;
-        font-size: 20px;
     }
 
     .taskCompletionNotice {
