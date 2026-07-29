@@ -114,6 +114,7 @@ Las operaciones destructivas deben conservar una denominación explícita y una 
 - Evitar emojis, caracteres dependientes del sistema y mezclas de familias.
 - Mantener una caja visual, alineación y escala consistentes.
 - Permitir que el tema futuro modifique color y grosor sin cambiar el significado.
+- Utilizar una selección local de Lucide como fuente de los trazados SVG, sin dependencia de ejecución ni CDN.
 
 ### Accesibilidad
 
