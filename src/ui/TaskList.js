@@ -31,7 +31,8 @@ export class TaskList {
         headingActions = "",
         creationPlaceholder = "Nueva tarea",
         inlineSubtaskParentId = null,
-        contentBeforeList = ""
+        contentBeforeList = "",
+        goals = []
     ) {
 
         const form = allowCreate
@@ -133,6 +134,7 @@ export class TaskList {
                         areas,
                         contexts,
                         tags,
+                        goals,
                         bulkActionMode
                     )
                     : ""}
@@ -846,6 +848,7 @@ export class TaskList {
         areas,
         contexts,
         tags,
+        goals,
         bulkActionMode
     ) {
 
@@ -927,6 +930,17 @@ export class TaskList {
                 color: tag.color
             }));
 
+        const goalOptions =
+            goals
+                .filter(goal =>
+                    goal.status !== "DELETED" &&
+                    goal.status !== "ARCHIVED"
+                )
+                .map(goal => ({
+                    value: goal.id,
+                    label: goal.title
+                }));
+
         return `
             <section class="bulkToolbar">
 
@@ -1003,6 +1017,26 @@ export class TaskList {
                         compact: true,
                         managerLabel:
                             "Agregar etiquetas"
+                    })}
+
+                </div>
+
+                <div
+                    id="bulkGoals"
+                    class="bulkTagControl bulkGoalControl">
+
+                    ${this.searchableMultiSelect.render({
+                        id: "bulkGoalPicker",
+                        label: "Agregar objetivos",
+                        options: goalOptions,
+                        selectedValues: [],
+                        valueClass:
+                            "bulkGoalInput",
+                        emptyMessage:
+                            "No hay objetivos disponibles.",
+                        compact: true,
+                        managerLabel:
+                            "Agregar objetivos"
                     })}
 
                 </div>
