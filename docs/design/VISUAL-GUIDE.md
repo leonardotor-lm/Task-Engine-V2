@@ -207,6 +207,13 @@ Los colores que representan datos —por ejemplo, prioridades, áreas, contextos
 - Las acciones destructivas usan el color de peligro y no compiten visualmente con la acción primaria.
 - Los cuatro niveles comparten altura, radio, tipografía y estados interactivos.
 
+### Proyectos
+
+- La vista interna de un proyecto utiliza una jerarquía lineal, no tarjetas anidadas.
+- La profundidad se comunica mediante sangría y guías discretas.
+- Los proyectos internos se distinguen por tipografía y control de expansión, sin agregar superficies.
+- El título y el progreso se presentan por separado para reducir ruido.
+
 ## Criterio de revisión
 
 Antes de incorporar un elemento visible, debe comprobarse:
