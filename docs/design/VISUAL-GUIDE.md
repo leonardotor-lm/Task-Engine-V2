@@ -192,6 +192,13 @@ Los colores que representan datos —por ejemplo, prioridades, áreas, contextos
 - El color de texto sobre acciones destacadas debe definirse con un token propio; no debe inferirse del color general de las superficies.
 - Los divisores decorativos pueden conservar menor contraste cuando no comunican límites operables ni información.
 
+### Barra lateral
+
+- Los accesos de ejecución inmediata deben preceder a las vistas de planificación.
+- Historial y organización se presentan como grupos secundarios desplegables.
+- La búsqueda, los filtros y la selección múltiple sólo aparecen en vistas donde actúan sobre tareas.
+- Sincronización y copias de seguridad permanecen disponibles al final, fuera del recorrido principal.
+
 ## Criterio de revisión
 
 Antes de incorporar un elemento visible, debe comprobarse:
