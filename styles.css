@@ -40,12 +40,12 @@ body {
 }
 
 .sidebarButton:hover {
-    background: #f1f5f9;
+    background: var(--color-surface-hover);
 }
 
 .sidebarButton.active {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
     font-weight: 600;
 }
 
@@ -65,7 +65,7 @@ body {
 }
 
 .task.bulkSelectedTask {
-    background: #eff6ff;
+    background: var(--color-accent-soft);
 }
 
 .bulkTaskCheckbox {
@@ -73,15 +73,15 @@ body {
     flex: 0 0 auto;
     width: 17px;
     height: 17px;
-    border: 2px solid #2563eb;
+    border: 2px solid var(--color-accent);
     border-radius: 3px;
-    background: #fff;
+    background: var(--color-surface);
     cursor: pointer;
 }
 
 .bulkTaskCheckbox:checked {
-    background: #2563eb;
-    box-shadow: inset 0 0 0 3px #fff;
+    background: var(--color-accent);
+    box-shadow: inset 0 0 0 3px var(--color-surface);
 }
 
 .bulkToolbar {
@@ -93,7 +93,7 @@ body {
     padding: 12px;
     border: 1px solid #93c5fd;
     border-radius: 6px;
-    background: #eff6ff;
+    background: var(--color-accent-soft);
 }
 
 .bulkControl {
@@ -109,7 +109,7 @@ body {
 
 .bulkTagControl > span,
 .bulkTagControl small {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 11px;
 }
 
@@ -132,7 +132,7 @@ body {
 .bulkTagControl .searchableMultiSelect {
     min-width: 220px;
     margin: 0;
-    background: #fff;
+    background: var(--color-surface);
 }
 
 .bulkTagControl .searchableMultiSelectCompact {
@@ -173,9 +173,9 @@ body {
     .searchableMultiSelectManager summary,
 .bulkMoreActions summary {
     padding: 7px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
-    background: #fff;
+    background: var(--color-surface);
     cursor: pointer;
     list-style: none;
 }
@@ -194,9 +194,9 @@ body {
     left: 0;
     width: 240px;
     padding: 10px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
     box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
 }
 
@@ -213,13 +213,13 @@ body {
 
 .bulkToolbar .secondaryAction {
     margin-left: auto;
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .bulkToolbar .bulkPrimaryAction {
-    border-color: #2563eb;
-    background: #2563eb;
-    color: #fff;
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-surface);
     font-weight: 700;
 }
 
@@ -237,9 +237,9 @@ body {
     gap: 6px;
     min-width: 170px;
     padding: 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
     box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
 }
 
@@ -249,8 +249,8 @@ body {
 }
 
 .bulkStateActions .dangerAction {
-    border-color: #b42318;
-    color: #b42318;
+    border-color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 @media (max-width: 760px) {
@@ -322,8 +322,8 @@ body {
     padding: 2px 7px;
     border-left: 3px solid var(--meta-color);
     border-radius: 3px;
-    background: #f8fafc;
-    color: #334155;
+    background: var(--color-surface-subtle);
+    color: var(--color-text-subtle);
 }
 
 .taskMetaContext {
@@ -352,11 +352,11 @@ body {
 }
 
 .priority-1 {
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .priority-2 {
-    color: #2563eb;
+    color: var(--color-accent);
 }
 
 .priority-3 {
@@ -369,7 +369,7 @@ body {
 
 .emptyState {
     margin-top: 24px;
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .taskSearch {
@@ -433,7 +433,7 @@ body {
 }
 
 .searchableMultiSelectHeader {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
 }
 
@@ -449,9 +449,9 @@ body {
     gap: 5px;
     max-width: 100%;
     padding: 4px 7px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 999px;
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 .searchableMultiSelectChip > span {
@@ -479,7 +479,7 @@ body {
 
 .searchableMultiSelectEmpty,
 .searchableMultiSelectUnavailable {
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 12px;
 }
 
@@ -532,13 +532,13 @@ body {
 }
 
 .emptyTagMessage {
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 13px;
 }
 
 .task.subtask {
     padding-left: calc(10px + (var(--task-depth) * 22px));
-    border-left: 2px solid #dbeafe;
+    border-left: 2px solid var(--color-accent-muted);
 }
 
 .subtaskSection {
@@ -552,7 +552,7 @@ body {
 .subtaskLink {
     border: 0;
     background: transparent;
-    color: #1d4ed8;
+    color: var(--color-accent-strong);
     cursor: pointer;
     text-align: left;
 }
@@ -584,7 +584,7 @@ body {
     border: 0;
     background: transparent;
     cursor: pointer;
-    color: #475569;
+    color: var(--color-text-secondary);
 }
 
 .toggleSubtasksSpacer {
@@ -593,13 +593,13 @@ body {
 }
 
 .subtaskProgress {
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 12px;
 }
 
 .completedTask .taskTitle,
 .completedSubtaskLink {
-    color: #64748b;
+    color: var(--color-text-muted);
     text-decoration: line-through;
 }
 
@@ -632,14 +632,14 @@ body {
 }
 
 .postponementSummary {
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 13px;
 }
 
 
 .taskFilters {
     margin-bottom: 16px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     padding: 8px;
 }
@@ -657,7 +657,7 @@ body {
 }
 
 .taskFilters label {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
 }
 
@@ -688,7 +688,7 @@ body {
 }
 
 .taskSorting label {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
     font-weight: 600;
 }
@@ -702,7 +702,7 @@ body {
 
 .backupTools {
     margin-bottom: 16px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     padding: 8px;
 }
@@ -724,9 +724,9 @@ body {
     box-sizing: border-box;
     width: 100%;
     padding: 7px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
-    background: #fff;
+    background: var(--color-surface);
     color: #0f172a;
     font: inherit;
     font-size: 13px;
@@ -736,7 +736,7 @@ body {
 
 .backupActions button:hover,
 .importBackupButton:hover {
-    background: #f1f5f9;
+    background: var(--color-surface-hover);
 }
 
 .visuallyHidden {
@@ -754,7 +754,7 @@ body {
 
 .syncTools {
     margin-bottom: 16px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
     padding: 8px;
 }
@@ -776,7 +776,7 @@ body {
 }
 
 .syncStatus.disconnected {
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .syncTools form,
@@ -788,7 +788,7 @@ body {
 }
 
 .syncTools label {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
 }
 
@@ -806,7 +806,7 @@ body {
 }
 
 .syncTools .secondaryAction {
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 
@@ -818,39 +818,39 @@ body {
 .syncStatus.remote,
 .syncStatus.conflict,
 .syncStatus.error {
-    color: #b42318;
+    color: var(--color-danger);
     font-weight: 700;
 }
 
 .syncStatus.syncing {
-    color: #2563eb;
+    color: var(--color-accent);
     font-weight: 600;
 }
 
 .syncErrorHint {
     margin: 10px 0 0;
-    color: #b42318;
+    color: var(--color-danger);
     font-size: 11px;
     line-height: 1.4;
 }
 
 .syncLastSuccess {
     margin: 10px 0 0;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 11px;
     line-height: 1.4;
 }
 
 .syncConflictHint {
     margin: 0;
-    color: #b42318;
+    color: var(--color-danger);
     font-size: 12px;
     line-height: 1.4;
 }
 
 .syncTools .dangerAction {
-    border-color: #b42318;
-    color: #b42318;
+    border-color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 
@@ -859,21 +859,21 @@ body {
     width: 100%;
     margin-bottom: 16px;
     padding: 8px 10px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
-    color: #334155;
+    background: var(--color-surface);
+    color: var(--color-text-subtle);
     cursor: pointer;
 }
 
 .bulkModeButton:hover {
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 .bulkModeButton.active {
-    border-color: #2563eb;
-    background: #dbeafe;
-    color: #1d4ed8;
+    border-color: var(--color-accent);
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
     font-weight: 600;
 }
 
@@ -884,7 +884,7 @@ body {
     height: 17px;
     border: 2px solid #94a3b8;
     border-radius: 50%;
-    background: #fff;
+    background: var(--color-surface);
     cursor: pointer;
 }
 
@@ -900,7 +900,7 @@ body {
 
 .entityItem {
     padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .entityDisplay,
@@ -965,10 +965,10 @@ body {
 
 .taskMetadataToggle {
     padding: 5px 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 5px;
-    background: #fff;
-    color: #475569;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
     cursor: pointer;
 }
 
@@ -995,28 +995,28 @@ body {
     border: 1px solid transparent;
     border-radius: 6px;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
     cursor: pointer;
 }
 
 .iconButton:hover {
-    background: #f1f5f9;
+    background: var(--color-surface-hover);
     color: #1e293b;
 }
 
 .iconButton:focus-visible {
-    border-color: #2563eb;
+    border-color: var(--color-accent);
     outline: 2px solid #bfdbfe;
     outline-offset: 2px;
 }
 
 .iconButton:active {
-    background: #e2e8f0;
+    background: var(--color-border);
 }
 
 .iconButton[aria-pressed="true"] {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
 }
 
 .iconButton:disabled {
@@ -1032,25 +1032,41 @@ body {
 .bulkModeNotice {
     margin: 0 0 12px;
     padding: 8px 10px;
-    border-left: 4px solid #2563eb;
-    background: #dbeafe;
+    border-left: 4px solid var(--color-accent);
+    background: var(--color-accent-muted);
     color: #1e40af;
     font-size: 13px;
     font-weight: 600;
 }
 
 .taskDueDate {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-weight: 600;
 }
 
 .taskDueDate.overdue {
-    color: #b42318;
+    color: var(--color-danger);
 }
 
 
 /* Base visual: interfaz compacta */
 :root {
+    /* Paleta semántica del tema principal */
+    --color-text: #172033;
+    --color-text-subtle: #334155;
+    --color-text-secondary: #475569;
+    --color-text-muted: #64748b;
+    --color-surface: #fff;
+    --color-surface-subtle: #f8fafc;
+    --color-surface-hover: #f1f5f9;
+    --color-border: #e2e8f0;
+    --color-border-strong: #cbd5e1;
+    --color-accent: #2563eb;
+    --color-accent-strong: #1d4ed8;
+    --color-accent-soft: #eff6ff;
+    --color-accent-muted: #dbeafe;
+    --color-danger: #b42318;
+
     --ui-font:
         Inter,
         "Segoe UI",
@@ -1071,7 +1087,7 @@ body {
     font-family: var(--ui-font);
     font-size: var(--ui-font-size);
     line-height: var(--ui-line-height);
-    color: #172033;
+    color: var(--color-text);
 }
 
 button,
@@ -1273,17 +1289,17 @@ h3 {
     min-height: 36px;
     gap: 7px;
     padding: 7px 10px;
-    border: 1px solid #2563eb;
+    border: 1px solid var(--color-accent);
     border-radius: 6px;
-    background: #2563eb;
-    color: #fff;
+    background: var(--color-accent);
+    color: var(--color-surface);
     font-weight: 700;
     cursor: pointer;
 }
 
 .createActionButton:hover,
 .createActionButton:focus-visible {
-    background: #1d4ed8;
+    background: var(--color-accent-strong);
 }
 
 .createActionButton:focus-visible {
@@ -1320,7 +1336,7 @@ h3 {
 }
 
 #taskForm .secondaryAction {
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 
@@ -1344,8 +1360,8 @@ h3 {
         calc(100vw - 220px)
     );
     overflow-y: auto;
-    border-left: 1px solid #cbd5e1;
-    background: #fff;
+    border-left: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
     box-shadow:
         -12px 0 30px
         rgb(15 23 42 / 14%);
@@ -1360,8 +1376,8 @@ h3 {
     justify-content: space-between;
     margin: -12px -12px 12px;
     padding: 12px;
-    border-bottom: 1px solid #e2e8f0;
-    background: #fff;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
 }
 
 .taskEditorHeader h3 {
@@ -1372,24 +1388,24 @@ h3 {
     width: 30px;
     height: 30px;
     padding: 0;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 5px;
-    background: #fff;
-    color: #475569;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
 }
 
 #closeTaskEditor:hover {
-    background: #f1f5f9;
+    background: var(--color-surface-hover);
     color: #0f172a;
 }
 
 .taskDrawer > label {
     display: block;
     margin: 9px 0 4px;
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
     font-weight: 600;
 }
@@ -1454,13 +1470,13 @@ h3 {
 .hierarchyIcon {
     display: inline-block;
     margin-right: 3px;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-weight: 700;
     text-decoration: none;
 }
 
 .childTaskIcon {
-    color: #2563eb;
+    color: var(--color-accent);
 }
 
 
@@ -1492,18 +1508,18 @@ h3 {
     border: 1px solid transparent;
     border-radius: 6px;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
     cursor: pointer;
 }
 
 .quickAddSubtask:hover,
 .quickAddSubtask:focus-visible {
-    background: #eff6ff;
-    color: #2563eb;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
 }
 
 .quickAddSubtask:active {
-    background: #dbeafe;
+    background: var(--color-accent-muted);
 }
 
 .quickActionIcon {
@@ -1542,10 +1558,10 @@ h3 {
     justify-content: center;
     min-width: 24px;
     padding: 1px 6px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
-    background: #fff;
-    color: #475569;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
     cursor: pointer;
     font-weight: 700;
     list-style: none;
@@ -1557,8 +1573,8 @@ h3 {
 
 .quickPostpone > summary:hover,
 .quickPostpone > summary:focus-visible {
-    border-color: #2563eb;
-    color: #2563eb;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
 }
 
 .quickPostponeMenu {
@@ -1570,9 +1586,9 @@ h3 {
     min-width: 190px;
     gap: 6px;
     padding: 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
     box-shadow: 0 8px 20px rgb(15 23 42 / 14%);
 }
 
@@ -1599,7 +1615,7 @@ h3 {
     border: 1px solid transparent;
     border-radius: 6px;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
     cursor: pointer;
     list-style: none;
 }
@@ -1610,14 +1626,14 @@ h3 {
 
 .quickMoreActions > summary:hover,
 .quickMoreActions > summary:focus-visible {
-    background: #eff6ff;
-    color: #2563eb;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
 }
 
 .quickMoreActions[open] > summary,
 .quickMoreActions > summary:active {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
 }
 
 .quickMoreMenu {
@@ -1629,9 +1645,9 @@ h3 {
     min-width: 170px;
     gap: 4px;
     padding: 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
     box-shadow: 0 8px 20px rgb(15 23 42 / 14%);
 }
 
@@ -1648,11 +1664,11 @@ h3 {
 .quickMoreMenuDivider {
     height: 1px;
     margin: 2px 0;
-    background: #e2e8f0;
+    background: var(--color-border);
 }
 
 .quickMoreMenu .quickDuplicateTask {
-    color: #475569;
+    color: var(--color-text-secondary);
 }
 
 
@@ -1663,8 +1679,8 @@ h3 {
 @keyframes duplicateTaskHighlight {
 
     0% {
-        background: #dbeafe;
-        box-shadow: inset 3px 0 #2563eb;
+        background: var(--color-accent-muted);
+        box-shadow: inset 3px 0 var(--color-accent);
     }
 
     100% {
@@ -1705,18 +1721,18 @@ h3 {
         box-sizing: border-box;
         height: 48px;
         padding: 7px 10px;
-        border-bottom: 1px solid #cbd5e1;
-        background: #fff;
+        border-bottom: 1px solid var(--color-border-strong);
+        background: var(--color-surface);
     }
 
     .mobileMenuButton {
         width: 36px;
         height: 34px;
         padding: 0;
-        border: 1px solid #cbd5e1;
+        border: 1px solid var(--color-border-strong);
         border-radius: 5px;
-        background: #fff;
-        color: #334155;
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
         font-size: 20px;
         line-height: 1;
         cursor: pointer;
@@ -1731,8 +1747,8 @@ h3 {
         box-sizing: border-box;
         width: min(86vw, 320px);
         overflow-y: auto;
-        border-right: 1px solid #cbd5e1;
-        background: #fff;
+        border-right: 1px solid var(--color-border-strong);
+        background: var(--color-surface);
         box-shadow: 10px 0 24px rgb(15 23 42 / 18%);
         transform: translateX(-105%);
         transition: transform 180ms ease-out;
@@ -1866,7 +1882,7 @@ h3 {
         box-sizing: border-box;
         justify-content: flex-start;
         width: 100%;
-        border-color: #cbd5e1;
+        border-color: var(--color-border-strong);
         font-size: inherit;
         font-weight: 400;
     }
@@ -1911,7 +1927,7 @@ h3 {
 
     .task.swipingLeft {
         box-shadow:
-            96px 0 #dbeafe;
+            96px 0 var(--color-accent-muted);
     }
 
     .task.swipingRight::before,
@@ -1938,8 +1954,8 @@ h3 {
         left: 100%;
         justify-content: center;
         content: "⋯ Acciones";
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--color-accent-muted);
+        color: var(--color-accent-strong);
     }
 
 }
@@ -1970,8 +1986,8 @@ h3 {
         justify-content: space-between;
         margin: -12px -12px 4px;
         padding: 10px 12px;
-        border-bottom: 1px solid #e2e8f0;
-        background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-surface);
     }
 
     .quickActionsSheetHeader .closeQuickActions {
@@ -1996,8 +2012,8 @@ h3 {
         gap: 12px;
         padding: 11px 12px;
         border-radius: 8px;
-        background: #172033;
-        color: #fff;
+        background: var(--color-text);
+        color: var(--color-surface);
         box-shadow:
             0 10px 28px
             rgb(15 23 42 / 30%);
@@ -2078,8 +2094,8 @@ h3 {
         padding: 0;
         border: 0;
         border-radius: 6px;
-        background: #2563eb;
-        color: #fff;
+        background: var(--color-accent);
+        color: var(--color-surface);
         font: inherit;
         font-weight: 700;
     }
@@ -2127,8 +2143,8 @@ h3 {
     .taskEditorActions #deleteTask,
     .taskEditorActions #permanentlyDeleteTask {
         margin-top: 10px;
-        border-color: #b42318;
-        color: #b42318;
+        border-color: var(--color-danger);
+        color: var(--color-danger);
     }
 
     .subtaskForm input,
@@ -2158,9 +2174,9 @@ h3 {
 
     .editorSection {
         margin: 0 0 10px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--color-border);
         border-radius: 8px;
-        background: #fff;
+        background: var(--color-surface);
     }
 
     .editorSection > summary {
@@ -2169,17 +2185,17 @@ h3 {
         min-height: 44px;
         box-sizing: border-box;
         padding: 9px 11px;
-        color: #334155;
+        color: var(--color-text-subtle);
         font-weight: 700;
         cursor: pointer;
     }
 
     .editorSection > summary::marker {
-        color: #64748b;
+        color: var(--color-text-muted);
     }
 
     .editorSection[open] > summary {
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--color-border);
     }
 
     .editorSectionBody {
@@ -2190,7 +2206,7 @@ h3 {
     .editorSectionBody > label {
         display: block;
         margin: 13px 0 4px;
-        color: #475569;
+        color: var(--color-text-secondary);
         font-size: 13px;
         font-weight: 600;
     }
@@ -2210,7 +2226,7 @@ h3 {
     }
 
     .editorPrimarySection {
-        border-color: #cbd5e1;
+        border-color: var(--color-border-strong);
     }
 
     .editorSubtasksSection
@@ -2235,7 +2251,7 @@ h3 {
 .editorSectionBody > label {
     display: block;
     margin: 9px 0 4px;
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
     font-weight: 600;
 }
@@ -2288,13 +2304,13 @@ h3 {
     gap: 7px;
     margin-top: 10px;
     padding: 10px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 .recurrenceAdvancedFields > label {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
     font-weight: 600;
 }
@@ -2312,13 +2328,13 @@ h3 {
 }
 
 .recurrenceIntervalControl span {
-    color: #475569;
+    color: var(--color-text-secondary);
 }
 
 .recurrenceWeekdays {
     margin: 4px 0 0;
     padding: 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
 }
 
 .recurrenceWeekdays > div {
@@ -2344,17 +2360,17 @@ h3 {
     justify-content: center;
     width: 30px;
     height: 30px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 50%;
-    background: #fff;
-    color: #475569;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
 }
 
 .recurrenceWeekdayOption
     input:checked + span {
-    border-color: #2563eb;
-    background: #2563eb;
-    color: #fff;
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-surface);
     font-weight: 700;
 }
 
@@ -2393,7 +2409,7 @@ h3 {
 
 .sidebarSectionLabel {
     padding: 4px 8px 2px;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -2435,26 +2451,26 @@ h3 {
     width: 100%;
     margin-bottom: 8px;
     padding: 7px 9px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
-    color: #475569;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
     cursor: pointer;
 }
 
 .advancedSearchToggle:hover {
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 .advancedSearchToggle.active {
-    border-color: #2563eb;
-    background: #eff6ff;
-    color: #1d4ed8;
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
     font-weight: 600;
 }
 
 .taskSearch.advanced input {
-    border-color: #2563eb;
+    border-color: var(--color-accent);
 }
 
 #advancedSearchHelp,
@@ -2465,7 +2481,7 @@ h3 {
 }
 
 #advancedSearchHelp {
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .advancedSearchError {
@@ -2479,16 +2495,16 @@ h3 {
 .advancedSearchReference {
     margin-top: 8px;
     padding: 7px 8px;
-    border: 1px solid #dbeafe;
+    border: 1px solid var(--color-accent-muted);
     border-radius: 5px;
-    background: #f8fafc;
-    color: #475569;
+    background: var(--color-surface-subtle);
+    color: var(--color-text-secondary);
     font-size: 11px;
     line-height: 1.4;
 }
 
 .advancedSearchReference summary {
-    color: #1d4ed8;
+    color: var(--color-accent-strong);
     cursor: pointer;
     font-weight: 600;
 }
@@ -2504,7 +2520,7 @@ h3 {
 }
 
 .customFiltersSection > summary {
-    color: #475569;
+    color: var(--color-text-secondary);
     cursor: pointer;
     font-size: 11px;
     font-weight: 600;
@@ -2555,7 +2571,7 @@ h3 {
     border: 0;
     border-radius: 4px;
     background: transparent;
-    color: #334155;
+    color: var(--color-text-subtle);
     cursor: pointer;
 }
 
@@ -2567,17 +2583,17 @@ h3 {
 }
 
 .customFilterItem button:hover {
-    background: #f1f5f9;
+    background: var(--color-surface-hover);
 }
 
 .customFilterItem .showCustomFilter.active {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
     font-weight: 600;
 }
 
 .customFilterItem .deleteCustomFilter {
-    color: #b42318;
+    color: var(--color-danger);
 }
 
 
@@ -2610,9 +2626,9 @@ h3 {
     gap: 8px;
     margin-bottom: 18px;
     padding: 12px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 7px;
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 .goalStatusNavigation {
@@ -2623,9 +2639,9 @@ h3 {
 }
 
 .goalStatusNavigation button.active {
-    border-color: #2563eb;
-    background: #eff6ff;
-    color: #1d4ed8;
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
     font-weight: 700;
 }
 
@@ -2669,26 +2685,26 @@ h3 {
 .goalItem {
     margin-bottom: 7px;
     padding: 10px 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
 }
 
 .goalItem time {
     margin-left: 8px;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 11px;
 }
 
 .goalItem > p {
     margin: 5px 0 0;
-    color: #475569;
+    color: var(--color-text-secondary);
 }
 
 .goalChildren {
     margin-top: 8px;
     padding-left: 18px;
-    border-left: 2px solid #dbeafe;
+    border-left: 2px solid var(--color-accent-muted);
 }
 
 .goalChildren .goalItem {
@@ -2707,7 +2723,7 @@ h3 {
 }
 
 .openGoal:hover {
-    color: #1d4ed8;
+    color: var(--color-accent-strong);
 }
 
 .goalDrawer {
@@ -2720,8 +2736,8 @@ h3 {
     width: min(440px, 100vw);
     overflow-y: auto;
     padding: 14px;
-    border-left: 1px solid #cbd5e1;
-    background: #fff;
+    border-left: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
     box-shadow: -12px 0 28px rgb(15 23 42 / 14%);
 }
 
@@ -2771,20 +2787,20 @@ h3 {
 .goalSubgoalsSection {
     margin-top: 18px;
     padding-top: 12px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
 }
 
 .goalTasksSection {
     margin-top: 14px;
     padding-top: 12px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
 }
 
 .goalWorkspaceSummary {
     margin: 4px 0 14px;
     padding: 10px 12px;
-    border-left: 3px solid #2563eb;
-    background: #f8fafc;
+    border-left: 3px solid var(--color-accent);
+    background: var(--color-surface-subtle);
 }
 
 .goalWorkspaceSummary p {
@@ -2844,7 +2860,7 @@ h3 {
 
 .searchableSelectEmpty {
     margin: 0;
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .goalTaskList {
@@ -2861,7 +2877,7 @@ h3 {
     justify-content: space-between;
     gap: 8px;
     padding: 7px 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 5px;
 }
 
@@ -2878,7 +2894,7 @@ h3 {
 
 .goalTaskItem small,
 .emptyGoalTasks {
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .detachTaskFromGoal {
@@ -2902,7 +2918,7 @@ h3 {
 .goalHierarchySection {
     margin-top: 14px;
     padding-top: 12px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
 }
 
 .goalHierarchySection h4 {
@@ -3044,8 +3060,8 @@ h3 {
             -12px
             14px;
         padding: 8px 12px;
-        border-bottom: 1px solid #e2e8f0;
-        background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-surface);
     }
 
     .goalEditorHeader h3 {
@@ -3091,7 +3107,7 @@ h3 {
 
 /* Jerarquía visual de las listas */
 .taskList {
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
 }
 
 .task {
@@ -3107,12 +3123,12 @@ h3 {
 
 .task:hover,
 .task:focus-within {
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 .task.bulkSelectedTask {
-    background: #eff6ff;
-    box-shadow: inset 3px 0 #2563eb;
+    background: var(--color-accent-soft);
+    box-shadow: inset 3px 0 var(--color-accent);
 }
 
 .task.subtask {
@@ -3125,7 +3141,7 @@ h3 {
 }
 
 .taskTitle {
-    color: #172033;
+    color: var(--color-text);
     line-height: 1.25;
 }
 
@@ -3138,7 +3154,7 @@ h3 {
 }
 
 .subtaskProgress {
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 11px;
     font-weight: 400;
 }
@@ -3146,7 +3162,7 @@ h3 {
 .taskMeta {
     gap: 3px 7px;
     margin-top: 2px;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 11px;
     line-height: 1.35;
 }
@@ -3157,7 +3173,7 @@ h3 {
     padding: 0;
     border: 0;
     background: transparent;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-weight: 400;
 }
 
@@ -3202,7 +3218,7 @@ h3 {
 }
 
 .bulkTaskCheckbox:checked {
-    box-shadow: inset 0 0 0 2px #fff;
+    box-shadow: inset 0 0 0 2px var(--color-surface);
 }
 
 .quickActionIcon {
@@ -3217,16 +3233,16 @@ h3 {
 
 .priority-4 {
     border: 0;
-    color: #b42318;
+    color: var(--color-danger);
 }
 
 .taskDueDate {
-    color: #64748b;
+    color: var(--color-text-muted);
     font-weight: 500;
 }
 
 .taskDueDate.overdue {
-    color: #b42318;
+    color: var(--color-danger);
     font-weight: 700;
 }
 
@@ -3286,7 +3302,7 @@ h3 {
 }
 
 .taskDrawer .editorSection > summary {
-    color: #334155;
+    color: var(--color-text-subtle);
     font-weight: 600;
 }
 
@@ -3297,16 +3313,16 @@ h3 {
 .taskDrawer .editorSectionBody > input,
 .taskDrawer .editorSectionBody > select,
 .taskDrawer .editorSectionBody > textarea {
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
 }
 
 .taskDrawer .editorSectionBody > input:focus,
 .taskDrawer .editorSectionBody > select:focus,
 .taskDrawer .editorSectionBody > textarea:focus {
-    border-color: #2563eb;
-    outline: 2px solid #dbeafe;
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-accent-muted);
     outline-offset: 0;
 }
 
@@ -3320,14 +3336,14 @@ h3 {
 
 .taskDrawer .subtaskLink {
     padding: 3px 0;
-    color: #334155;
+    color: var(--color-text-subtle);
     line-height: 1.3;
 }
 
 .taskDrawer > hr {
     margin: 10px 0;
     border: 0;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
 }
 
 .taskDrawer .taskEditorActions {
@@ -3339,27 +3355,27 @@ h3 {
 }
 
 .taskDrawer #saveTask {
-    border-color: #2563eb;
-    background: #2563eb;
-    color: #fff;
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-surface);
 }
 
 .taskDrawer #archiveTask {
     border-color: transparent;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
 }
 
 .taskDrawer #deleteTask {
     border-color: transparent;
     background: transparent;
-    color: #b42318;
+    color: var(--color-danger);
 }
 
 @media (min-width: 761px) {
 
     .taskDrawer .editorSection {
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--color-border);
     }
 
     .taskDrawer .editorSection > summary {
@@ -3371,7 +3387,7 @@ h3 {
     }
 
     .taskDrawer .editorSection[open] > summary {
-        color: #172033;
+        color: var(--color-text);
     }
 
     .taskDrawer .editorSectionBody {
@@ -3409,22 +3425,22 @@ h3 {
 
 #goalEditorForm > label {
     margin-top: 6px;
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 12px;
     font-weight: 600;
 }
 
 #goalEditorForm > input,
 #goalEditorForm > textarea {
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
 }
 
 #goalEditorForm > input:focus,
 #goalEditorForm > textarea:focus {
-    border-color: #2563eb;
-    outline: 2px solid #dbeafe;
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-accent-muted);
     outline-offset: 0;
 }
 
@@ -3440,21 +3456,21 @@ h3 {
 #goalEditorForm
     .goalEditorActions
     button[type="submit"] {
-    border-color: #2563eb;
-    background: #2563eb;
-    color: #fff;
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-surface);
 }
 
 #goalEditorForm #archiveGoal {
     border-color: transparent;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
 }
 
 #goalEditorForm #deleteGoalFromEditor {
     border-color: transparent;
     background: transparent;
-    color: #b42318;
+    color: var(--color-danger);
 }
 
 .goalTasksSection,
@@ -3469,7 +3485,7 @@ h3 {
     min-height: 32px;
     box-sizing: border-box;
     padding: 5px 2px;
-    color: #334155;
+    color: var(--color-text-subtle);
     font-weight: 600;
     cursor: pointer;
 }
@@ -3481,7 +3497,7 @@ h3 {
 
 .goalSubgoalsSection h4 {
     margin-bottom: 6px;
-    color: #334155;
+    color: var(--color-text-subtle);
     font-size: 13px;
 }
 
@@ -3529,7 +3545,7 @@ h3 {
     padding: 4px 7px;
     border: 1px solid transparent;
     border-radius: 6px;
-    color: #2563eb;
+    color: var(--color-accent);
     font-weight: 600;
     cursor: pointer;
     list-style: none;
@@ -3540,7 +3556,7 @@ h3 {
 }
 
 .entityCreateManager > summary:hover {
-    background: #eff6ff;
+    background: var(--color-accent-soft);
 }
 
 .entityCreateIcon {
@@ -3575,7 +3591,7 @@ h3 {
 
 .entityManager .entityList {
     margin: 0;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
 }
 
 .entityManager .entityItem {
@@ -3612,7 +3628,7 @@ h3 {
     padding: 5px 6px;
     border-color: transparent;
     background: transparent;
-    color: #b42318;
+    color: var(--color-danger);
 }
 
 .entityManager .entityEditForm {
@@ -3668,14 +3684,14 @@ h3 {
 }
 
 .taskSearch input {
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
-    background: #fff;
+    background: var(--color-surface);
 }
 
 .taskSearch input:focus {
-    border-color: #2563eb;
-    outline: 2px solid #dbeafe;
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-accent-muted);
     outline-offset: 0;
 }
 
@@ -3702,21 +3718,21 @@ h3 {
     padding: 3px 2px;
     border: 0;
     background: transparent;
-    color: #64748b;
+    color: var(--color-text-muted);
     font-size: 11px;
     text-align: left;
 }
 
 .advancedSearchToggle:hover {
     background: transparent;
-    color: #1d4ed8;
+    color: var(--color-accent-strong);
     text-decoration: underline;
 }
 
 .advancedSearchToggle.active {
     border: 0;
     background: transparent;
-    color: #1d4ed8;
+    color: var(--color-accent-strong);
 }
 
 .taskFilters,
@@ -3724,7 +3740,7 @@ h3 {
     margin-bottom: 8px;
     padding: 0;
     border: 0;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
     border-radius: 0;
     background: transparent;
 }
@@ -3734,7 +3750,7 @@ h3 {
     min-height: 32px;
     box-sizing: border-box;
     padding: 6px 2px;
-    color: #475569;
+    color: var(--color-text-secondary);
     font-weight: 600;
     cursor: pointer;
 }
@@ -3756,13 +3772,13 @@ h3 {
     padding: 6px;
     border-color: transparent;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
     text-align: left;
 }
 
 .taskViewOptions .viewOptionButton.active {
-    background: #eff6ff;
-    color: #1d4ed8;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
 }
 
 #toggleBulkMode {
@@ -3771,17 +3787,17 @@ h3 {
     padding: 6px 8px;
     border-color: transparent;
     background: transparent;
-    color: #475569;
+    color: var(--color-text-secondary);
     text-align: left;
 }
 
 #toggleBulkMode:hover {
-    background: #f8fafc;
+    background: var(--color-surface-subtle);
 }
 
 #toggleBulkMode.active {
-    background: #eff6ff;
-    color: #1d4ed8;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
 }
 
 .bulkModeNotice {

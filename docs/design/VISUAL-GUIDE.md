@@ -172,6 +172,12 @@ Ningún estado debe comunicarse solamente mediante un cambio de color difícil d
 - Los temas futuros podrán sustituir tokens visuales, pero no deben cambiar la jerarquía funcional ni el significado de los íconos.
 - La guía define el comportamiento del tema principal; los demás temas deberán conservar accesibilidad y coherencia.
 
+### Paleta semántica inicial
+
+El tema principal distingue tokens para texto, texto secundario, texto atenuado, superficies, bordes, acento y peligro. Los componentes deben consumir estos tokens en lugar de repetir valores cromáticos.
+
+Los colores que representan datos —por ejemplo, prioridades, áreas, contextos y etiquetas— permanecen separados de la paleta estructural. Un tema puede adaptar su presentación, pero no debe borrar su significado ni reducir el contraste.
+
 ## Criterio de revisión
 
 Antes de incorporar un elemento visible, debe comprobarse:

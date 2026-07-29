@@ -36,12 +36,12 @@ test("el editor distingue acciones principales y destructivas", () => {
 
     assert.match(
         styles,
-        /#saveTask\s*\{[\s\S]*?background:\s*#2563eb/
+        /#saveTask\s*\{[\s\S]*?background:\s*var\(--color-accent\)/
     );
 
     assert.match(
         styles,
-        /#deleteTask\s*\{[\s\S]*?color:\s*#b42318/
+        /#deleteTask\s*\{[\s\S]*?color:\s*var\(--color-danger\)/
     );
 
 });
