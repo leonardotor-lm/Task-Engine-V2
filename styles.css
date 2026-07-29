@@ -1071,6 +1071,7 @@ body {
     --color-danger: #b42318;
     --color-danger-soft: #fef2f2;
     --disabled-opacity: 0.48;
+    --button-radius: 0;
 
     --ui-font:
         Inter,
@@ -1314,6 +1315,16 @@ h3 {
 
 .dangerAction:hover {
     background: var(--color-danger-soft);
+}
+
+button,
+.importBackupButton,
+.searchableMultiSelectManager summary,
+.bulkMoreActions summary,
+.quickPostpone > summary,
+.quickMoreActions > summary,
+.entityCreateManager > summary {
+    border-radius: var(--button-radius) !important;
 }
 
 .bulkToolbar select,
