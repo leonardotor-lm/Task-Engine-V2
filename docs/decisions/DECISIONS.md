@@ -105,3 +105,14 @@ La simplificación visual no elimina funcionalidad: reduce herramientas permanen
 
 Estado:
 Aceptada.
+
+---
+
+## D-010
+
+En celular, el encabezado de un objetivo reserva una fila completa para el título y ubica todas sus acciones en una fila inferior.
+
+La adaptación es exclusiva de la vista móvil y no altera la distribución de escritorio. El reemplazo general de textos por íconos se mantiene como una decisión posterior y sistemática.
+
+Estado:
+Aceptada.

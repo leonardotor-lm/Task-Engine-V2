@@ -46,13 +46,6 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Mantener información esencial visible y administración bajo demanda.
 - Conservar una interfaz sobria, compacta y fácil de recorrer.
 
-### Encabezado móvil de objetivos
-
-- **Estado:** Pendiente.
-- En celular, ubicar las acciones del objetivo debajo del título.
-- Reservar para el título todo el ancho disponible y evitar cortes innecesarios en dos líneas.
-- Mantener una jerarquía visual clara entre nombre, estado y acciones.
-
 ### Botones e iconografía
 
 - **Estado:** Pendiente para una etapa visual cercana.
