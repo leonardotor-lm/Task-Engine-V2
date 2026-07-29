@@ -291,6 +291,7 @@ body {
 
 }
 
+
 .taskTitle {
     display: block;
 }
@@ -1048,15 +1049,15 @@ body {
 }
 
 
-/* Prueba visual: interfaz compacta y monoespaciada */
+/* Base visual: interfaz compacta */
 :root {
     --ui-font:
-        ui-monospace,
-        "Cascadia Code",
-        "Segoe UI Mono",
-        Consolas,
-        "Liberation Mono",
-        monospace;
+        Inter,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
     --ui-font-size: 14px;
     --ui-line-height: 1.35;
     --panel-padding: 12px;
@@ -3083,6 +3084,197 @@ h3 {
     #subgoalForm button {
         min-height: 44px;
         font-size: 16px;
+    }
+
+}
+
+
+/* Jerarquía visual de las listas */
+.taskList {
+    border-top: 1px solid #e2e8f0;
+}
+
+.task {
+    padding:
+        6px
+        6px;
+    border-bottom: 1px solid #edf1f5;
+    background: transparent;
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.task:hover,
+.task:focus-within {
+    background: #f8fafc;
+}
+
+.task.bulkSelectedTask {
+    background: #eff6ff;
+    box-shadow: inset 3px 0 #2563eb;
+}
+
+.task.subtask {
+    padding-left:
+        calc(
+            6px +
+            (var(--task-depth) * 20px)
+        );
+    border-left: 0;
+}
+
+.taskTitle {
+    color: #172033;
+    line-height: 1.25;
+}
+
+.projectTask .taskTitle {
+    font-weight: 600;
+}
+
+.childTaskIcon {
+    display: none;
+}
+
+.subtaskProgress {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.taskMeta {
+    gap: 3px 7px;
+    margin-top: 2px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.taskMetaArea,
+.taskMetaContext {
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.taskMetaTag {
+    color: var(--meta-color);
+    font-weight: 500;
+    opacity: 0.82;
+}
+
+.taskMetaColor {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.priorityIndicator {
+    align-self: center;
+}
+
+.taskHeader {
+    gap: 4px;
+}
+
+.taskTitleLine {
+    min-height: 16px;
+}
+
+.toggleSubtasks,
+.toggleSubtasksSpacer {
+    width: 18px;
+}
+
+.taskCompleteCheckbox,
+.bulkTaskCheckbox {
+    box-sizing: border-box;
+    width: 13px;
+    height: 13px;
+}
+
+.bulkTaskCheckbox {
+    border-width: 1.5px;
+}
+
+.bulkTaskCheckbox:checked {
+    box-shadow: inset 0 0 0 2px #fff;
+}
+
+.quickActionIcon {
+    --icon-size: 16px;
+}
+
+.task .iconButton {
+    --icon-size: 16px;
+    width: 30px;
+    height: 30px;
+}
+
+.priority-4 {
+    border: 0;
+    color: #b42318;
+}
+
+.taskDueDate {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.taskDueDate.overdue {
+    color: #b42318;
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+
+    .task {
+        min-height: 44px;
+        padding:
+            7px
+            4px;
+    }
+
+    .task.subtask {
+        padding-left:
+            calc(
+                4px +
+                (var(--task-depth) * 18px)
+            );
+    }
+
+    .taskMeta {
+        margin-top: 2px;
+        line-height: 1.35;
+    }
+
+    .taskHeader {
+        gap: 6px;
+    }
+
+    .taskTitleLine {
+        min-height: 20px;
+    }
+
+    .taskCompleteCheckbox,
+    .bulkTaskCheckbox {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+    }
+
+    .quickActionIcon,
+    .task .iconButton {
+        --icon-size: 17px;
+    }
+
+    .task .iconButton {
+        width: 44px;
+        height: 44px;
     }
 
 }

@@ -469,7 +469,7 @@ export class TaskList {
 
                 html += `
                     <li
-                        class="task ${depth > 0 ? "subtask" : ""} ${task.isCompleted() ? "completedTask" : ""} ${selectedTaskIds.has(task.id) ? "bulkSelectedTask" : ""}"
+                        class="task ${depth > 0 ? "subtask" : ""} ${hasAnySubtasks ? "projectTask" : ""} ${task.isCompleted() ? "completedTask" : ""} ${selectedTaskIds.has(task.id) ? "bulkSelectedTask" : ""}"
                         style="--task-depth:${depth}"
                         data-id="${escapeHtml(task.id)}">
 
