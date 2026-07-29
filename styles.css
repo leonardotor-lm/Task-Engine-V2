@@ -1069,6 +1069,7 @@ body {
     --color-on-dark: #fff;
     --color-focus-ring: #2563eb;
     --color-danger: #b42318;
+    --color-danger-soft: #fef2f2;
     --disabled-opacity: 0.48;
 
     --ui-font:
@@ -1252,6 +1253,67 @@ h3 {
     gap: var(--compact-gap);
     margin-bottom: 12px;
     padding: 8px;
+}
+
+
+/* Jerarquía común de acciones */
+.primaryAction,
+.secondaryAction,
+.tertiaryAction,
+.dangerAction {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 34px;
+    padding: 6px 9px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+.primaryAction:hover {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
+}
+
+.secondaryAction {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text-subtle);
+}
+
+.secondaryAction:hover {
+    background: var(--color-surface-hover);
+}
+
+.tertiaryAction {
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-text-secondary);
+}
+
+.tertiaryAction:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+}
+
+.dangerAction {
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-danger);
+}
+
+.dangerAction:hover {
+    background: var(--color-danger-soft);
 }
 
 .bulkToolbar select,
