@@ -45,7 +45,9 @@ export class EntityManager {
                             value="#3b82f6"
                             aria-label="Color">
 
-                        <button type="submit">
+                        <button
+                            type="submit"
+                            class="primaryAction">
                             Crear
                         </button>
 
@@ -101,7 +103,7 @@ export class EntityManager {
 
                                 <button
                                     type="button"
-                                    class="deleteEntity"
+                                    class="deleteEntity dangerAction"
                                     data-id="${escapeHtml(entity.id)}">
                                     Eliminar
                                 </button>
@@ -131,13 +133,13 @@ export class EntityManager {
 
                             <button
                                 type="button"
-                                class="saveEntityEdit">
+                                class="saveEntityEdit primaryAction">
                                 Guardar
                             </button>
 
                             <button
                                 type="button"
-                                class="cancelEntityEdit">
+                                class="cancelEntityEdit tertiaryAction">
                                 Cancelar
                             </button>
 
