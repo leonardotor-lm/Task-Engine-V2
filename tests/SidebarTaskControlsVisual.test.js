@@ -1,0 +1,74 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+import { Sidebar } from "../src/ui/Sidebar.js";
+import { View } from "../src/core/View.js";
+
+const styles = await readFile(
+    new URL(
+        "../styles.css",
+        import.meta.url
+    ),
+    "utf8"
+);
+
+test("orden y tareas completadas se agrupan bajo Vista", () => {
+
+    const html = new Sidebar().render(
+        View.INBOX
+    );
+
+    assert.match(
+        html,
+        /<details\s+class="taskViewOptions"/
+    );
+
+    assert.match(
+        html,
+        /<summary>Vista<\/summary>/
+    );
+
+    assert.match(
+        html,
+        /id="taskSort"/
+    );
+
+    assert.match(
+        html,
+        /id="toggleCompletedTasks"/
+    );
+
+});
+
+test("la búsqueda simple precede al acceso avanzado", () => {
+
+    const html = new Sidebar().render(
+        View.INBOX
+    );
+
+    assert.ok(
+        html.indexOf("taskSearchForm") <
+        html.indexOf("toggleAdvancedSearch")
+    );
+
+    assert.match(
+        html,
+        /Usar búsqueda avanzada/
+    );
+
+});
+
+test("los controles usan una jerarquía visual compacta", () => {
+
+    assert.match(
+        styles,
+        /\/\* Ajustes finales de búsqueda filtros y selección \*\//
+    );
+
+    assert.match(
+        styles,
+        /\.advancedSearchToggle\s*\{[\s\S]*?border:\s*0/
+    );
+
+});

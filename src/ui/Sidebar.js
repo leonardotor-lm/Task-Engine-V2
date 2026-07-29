@@ -225,59 +225,97 @@ export class Sidebar {
             `
             : "";
 
-        const sorting = taskViews.includes(activeView)
+        const viewOptions =
+            taskViews.includes(activeView) ||
+            activeView === View.PROJECT
             ? `
-                <div class="taskSorting">
+                <details
+                    class="taskViewOptions"
+                    ${taskSort !== "MANUAL" ||
+                        showCompletedTasks
+                        ? "open"
+                        : ""}>
 
-                    <label for="taskSort">
-                        Ordenar por
-                    </label>
+                    <summary>Vista</summary>
 
-                    <select id="taskSort">
+                    <div class="taskViewOptionsBody">
 
-                        <option
-                            value="MANUAL"
-                            ${taskSort === "MANUAL"
-                                ? "selected"
-                                : ""}>
-                            Orden manual
-                        </option>
+                        ${taskViews.includes(activeView)
+                            ? `
+                        <div class="taskSorting">
 
-                        <option
-                            value="DUE_DATE"
-                            ${taskSort === "DUE_DATE"
-                                ? "selected"
-                                : ""}>
-                            Vencimiento próximo
-                        </option>
+                            <label for="taskSort">
+                                Ordenar por
+                            </label>
 
-                        <option
-                            value="PRIORITY"
-                            ${taskSort === "PRIORITY"
-                                ? "selected"
-                                : ""}>
-                            Prioridad
-                        </option>
+                            <select id="taskSort">
 
-                        <option
-                            value="CREATED_NEWEST"
-                            ${taskSort === "CREATED_NEWEST"
-                                ? "selected"
-                                : ""}>
-                            Más recientes
-                        </option>
+                                <option
+                                    value="MANUAL"
+                                    ${taskSort === "MANUAL"
+                                        ? "selected"
+                                        : ""}>
+                                    Orden manual
+                                </option>
 
-                        <option
-                            value="CREATED_OLDEST"
-                            ${taskSort === "CREATED_OLDEST"
-                                ? "selected"
-                                : ""}>
-                            Más antiguas
-                        </option>
+                                <option
+                                    value="DUE_DATE"
+                                    ${taskSort === "DUE_DATE"
+                                        ? "selected"
+                                        : ""}>
+                                    Vencimiento próximo
+                                </option>
 
-                    </select>
+                                <option
+                                    value="PRIORITY"
+                                    ${taskSort === "PRIORITY"
+                                        ? "selected"
+                                        : ""}>
+                                    Prioridad
+                                </option>
 
-                </div>
+                                <option
+                                    value="CREATED_NEWEST"
+                                    ${taskSort === "CREATED_NEWEST"
+                                        ? "selected"
+                                        : ""}>
+                                    Más recientes
+                                </option>
+
+                                <option
+                                    value="CREATED_OLDEST"
+                                    ${taskSort === "CREATED_OLDEST"
+                                        ? "selected"
+                                        : ""}>
+                                    Más antiguas
+                                </option>
+
+                            </select>
+
+                        </div>
+                            `
+                            : ""}
+
+                        ${completedToggleViews.includes(
+                            activeView
+                        )
+                            ? `
+                                <button
+                                    id="toggleCompletedTasks"
+                                    type="button"
+                                    class="viewOptionButton bulkModeButton ${showCompletedTasks
+                                        ? "active"
+                                        : ""}">
+                                    ${showCompletedTasks
+                                        ? "Ocultar completadas"
+                                        : "Mostrar completadas"}
+                                </button>
+                            `
+                            : ""}
+
+                    </div>
+
+                </details>
             `
             : "";
 
@@ -498,18 +536,6 @@ export class Sidebar {
                     </span>
                 </button>
 
-                <button
-                    id="toggleAdvancedSearch"
-                    type="button"
-                    class="advancedSearchToggle ${advancedSearchMode
-                        ? "active"
-                        : ""}"
-                    aria-pressed="${advancedSearchMode}">
-                    ${advancedSearchMode
-                        ? "Búsqueda avanzada activa"
-                        : "Usar búsqueda avanzada"}
-                </button>
-
                 <form
                     id="taskSearchForm"
                     class="taskSearch ${advancedSearchMode
@@ -588,24 +614,21 @@ export class Sidebar {
 
                 </form>
 
+                <button
+                    id="toggleAdvancedSearch"
+                    type="button"
+                    class="advancedSearchToggle ${advancedSearchMode
+                        ? "active"
+                        : ""}"
+                    aria-pressed="${advancedSearchMode}">
+                    ${advancedSearchMode
+                        ? "Búsqueda avanzada activa"
+                        : "Usar búsqueda avanzada"}
+                </button>
+
                 ${filters}
 
-                ${sorting}
-
-                ${completedToggleViews.includes(activeView)
-                    ? `
-                        <button
-                            id="toggleCompletedTasks"
-                            type="button"
-                            class="bulkModeButton ${showCompletedTasks
-                                ? "active"
-                                : ""}">
-                            ${showCompletedTasks
-                                ? "Ocultar completadas"
-                                : "Mostrar completadas"}
-                        </button>
-                    `
-                    : ""}
+                ${viewOptions}
 
                 ${taskViews.includes(activeView)
                     ? `
