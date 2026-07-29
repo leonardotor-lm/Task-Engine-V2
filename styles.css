@@ -3287,6 +3287,74 @@ h3 {
     font-weight: 600;
 }
 
+.projectWorkspace .taskListHeading {
+    align-items: flex-start;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.projectWorkspace .taskListHeading h2 {
+    margin-bottom: 0;
+}
+
+.projectWorkspaceSummary {
+    margin: 2px 0 8px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.projectWorkspace .taskList {
+    margin-top: 0;
+    border-top: 0;
+}
+
+.projectWorkspace .task {
+    position: relative;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-bottom: 0;
+}
+
+.projectWorkspace .task + .task {
+    border-top: 1px solid var(--color-surface-hover);
+}
+
+.projectWorkspace .task.subtask::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left:
+        calc(
+            14px +
+            ((var(--task-depth) - 1) * 20px)
+        );
+    border-left: 1px solid var(--color-border);
+}
+
+.projectWorkspace .projectTask .taskTitle {
+    color: var(--color-text-subtle);
+    font-weight: 650;
+}
+
+.projectWorkspace .subtaskProgress {
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+
+    .projectWorkspace .taskListHeadingActions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .projectWorkspace .taskListHeadingActions
+        .primaryAction {
+        flex: 1 1 100%;
+    }
+
+}
+
 .childTaskIcon {
     display: none;
 }

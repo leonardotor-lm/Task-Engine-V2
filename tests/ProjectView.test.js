@@ -42,7 +42,12 @@ test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
 
     assert.match(
         html,
-        /Proyecto &lt;escolar&gt; · 0\/2/
+        /<h2>Proyecto &lt;escolar&gt;<\/h2>/
+    );
+    assert.match(html, /0 de 2 completadas/);
+    assert.match(
+        html,
+        /<main class="content projectWorkspace">/
     );
 
     assert.match(html, /Primera etapa/);

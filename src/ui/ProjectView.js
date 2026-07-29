@@ -33,7 +33,7 @@ export class ProjectView {
             <button
                 id="closeProjectView"
                 type="button"
-                class="secondaryAction">
+                class="tertiaryAction">
                 ${state.projectNavigationDepth > 0
                     ? "Volver al proyecto anterior"
                     : "Volver"}
@@ -52,15 +52,24 @@ export class ProjectView {
                 : `
                     <button
                         id="openProjectTaskCreation"
-                        type="button">
+                        type="button"
+                        class="primaryAction">
                         Agregar subtarea
                     </button>
                 `}
         `;
 
+        const projectSummary = `
+            <div class="projectWorkspaceSummary">
+                <span>
+                    ${completed} de ${total} completadas
+                </span>
+            </div>
+        `;
+
         return this.taskList.render(
             state.tasks,
-            `${project.title} · ${completed}/${total}`,
+            project.title,
             state.projectTaskCreationOpen,
             state.areas,
             state.contexts,
@@ -76,7 +85,10 @@ export class ProjectView {
             state.allTasks,
             headingActions,
             "Nueva subtarea",
-            state.inlineSubtaskParentId
+            state.inlineSubtaskParentId,
+            projectSummary,
+            [],
+            "projectWorkspace"
         );
 
     }
