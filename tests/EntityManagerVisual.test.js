@@ -62,7 +62,7 @@ test("editar usa un ícono accesible y eliminar conserva texto", () => {
 
     assert.match(
         html,
-        /class="deleteEntity"[\s\S]*?Eliminar/
+        /class="[^"]*\bdeleteEntity\b[^"]*"[\s\S]*?Eliminar/
     );
 
 });

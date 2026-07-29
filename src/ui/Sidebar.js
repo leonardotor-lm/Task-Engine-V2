@@ -208,7 +208,9 @@ export class Sidebar {
 
                         <div class="taskFilterActions">
 
-                            <button type="submit">
+                            <button
+                                type="submit"
+                                class="primaryAction">
                                 Aplicar
                             </button>
 
@@ -216,7 +218,8 @@ export class Sidebar {
                                 ? `
                                     <button
                                         id="clearTaskFilters"
-                                        type="button">
+                                        type="button"
+                                        class="tertiaryAction">
                                         Limpiar
                                     </button>
                                 `
@@ -412,7 +415,9 @@ export class Sidebar {
                             : "Token de sincronización"}"
                         autocomplete="new-password">
 
-                    <button type="submit">
+                    <button
+                        type="submit"
+                        class="primaryAction">
                         Guardar conexión
                     </button>
 
@@ -454,13 +459,15 @@ export class Sidebar {
                                 : `
                                     <button
                                         id="pushToCloud"
-                                        type="button">
+                                        type="button"
+                                        class="secondaryAction">
                                         Subir a la nube
                                     </button>
 
                                     <button
                                         id="pullFromCloud"
-                                        type="button">
+                                        type="button"
+                                        class="secondaryAction">
                                         Descargar de la nube
                                     </button>
                                 `}
@@ -468,7 +475,7 @@ export class Sidebar {
                             <button
                                 id="clearSyncConfig"
                                 type="button"
-                                class="secondaryAction">
+                                class="tertiaryAction">
                                 Quitar conexión
                             </button>
 
@@ -488,12 +495,13 @@ export class Sidebar {
 
                     <button
                         id="exportBackup"
-                        type="button">
+                        type="button"
+                        class="secondaryAction">
                         Descargar copia
                     </button>
 
                     <label
-                        class="importBackupButton"
+                        class="importBackupButton secondaryAction"
                         for="importBackup">
                         Importar copia
                     </label>
@@ -508,7 +516,8 @@ export class Sidebar {
                         ? `
                             <button
                                 id="restoreLastImportBackup"
-                                type="button">
+                                type="button"
+                                class="secondaryAction">
                                 Deshacer última importación
                             </button>
                         `
@@ -591,7 +600,9 @@ export class Sidebar {
 
                     <div class="taskSearchActions">
 
-                        <button type="submit">
+                        <button
+                            type="submit"
+                            class="primaryAction">
                             Buscar
                         </button>
 
@@ -601,7 +612,8 @@ export class Sidebar {
                             ? `
                                 <button
                                     id="saveCustomFilter"
-                                    type="button">
+                                    type="button"
+                                    class="secondaryAction">
                                     Guardar filtro
                                 </button>
                             `
@@ -611,7 +623,8 @@ export class Sidebar {
                             ? `
                                 <button
                                     id="clearTaskSearch"
-                                    type="button">
+                                    type="button"
+                                    class="tertiaryAction">
                                     Limpiar
                                 </button>
                             `

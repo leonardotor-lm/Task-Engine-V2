@@ -34,7 +34,7 @@ test("muestra nombre y color actuales en el editor de entidades", () => {
 
     assert.match(
         html,
-        /class="cancelEntityEdit"/
+        /class="[^"]*\bcancelEntityEdit\b[^"]*"/
     );
 
 });

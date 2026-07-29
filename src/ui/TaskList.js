@@ -47,14 +47,16 @@ export class TaskList {
                         autocomplete="off"
                         autofocus>
 
-                    <button type="submit">
+                    <button
+                        type="submit"
+                        class="primaryAction">
                         Agregar
                     </button>
 
                     <button
                         id="cancelTaskCreation"
                         type="button"
-                        class="secondaryAction">
+                        class="tertiaryAction">
                         Cancelar
                     </button>
 

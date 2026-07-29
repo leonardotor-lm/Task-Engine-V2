@@ -334,7 +334,9 @@ export class TaskEditor {
         if (isCompleted) {
 
             actions = `
-                <button id="reopenTask">
+                <button
+                    id="reopenTask"
+                    class="primaryAction">
                     Marcar pendiente
                 </button>
             `;
@@ -342,11 +344,15 @@ export class TaskEditor {
         } else if (isArchived) {
 
             actions = `
-                <button id="restoreArchivedTask">
+                <button
+                    id="restoreArchivedTask"
+                    class="primaryAction">
                     Restaurar
                 </button>
 
-                <button id="deleteTask">
+                <button
+                    id="deleteTask"
+                    class="dangerAction">
                     Mover a la papelera
                 </button>
             `;
@@ -354,11 +360,15 @@ export class TaskEditor {
         } else if (isDeleted) {
 
             actions = `
-                <button id="restoreDeletedTask">
+                <button
+                    id="restoreDeletedTask"
+                    class="primaryAction">
                     Restaurar
                 </button>
 
-                <button id="permanentlyDeleteTask">
+                <button
+                    id="permanentlyDeleteTask"
+                    class="dangerAction">
                     Eliminar definitivamente
                 </button>
             `;
@@ -366,25 +376,35 @@ export class TaskEditor {
         } else {
 
             actions = `
-                <button id="saveTask">
+                <button
+                    id="saveTask"
+                    class="primaryAction">
                     Guardar cambios
                 </button>
 
-                <button id="toggleTask">
+                <button
+                    id="toggleTask"
+                    class="secondaryAction">
                     Completar
                 </button>
 
-                <button id="archiveTask">
+                <button
+                    id="archiveTask"
+                    class="tertiaryAction">
                     Archivar
                 </button>
 
-                <button id="deleteTask">
+                <button
+                    id="deleteTask"
+                    class="dangerAction">
                     Eliminar
                 </button>
 
                 ${task.recurrence
                     ? `
-                        <button id="skipRecurringTask">
+                        <button
+                            id="skipRecurringTask"
+                            class="tertiaryAction">
                             Saltear esta vez
                         </button>
                     `
@@ -762,11 +782,15 @@ export class TaskEditor {
                     Esta tarea no puede editarse mientras permanezca archivada.
                 </p>
 
-                <button id="restoreArchivedTask">
+                <button
+                    id="restoreArchivedTask"
+                    class="primaryAction">
                     Reactivar
                 </button>
 
-                <button id="deleteTask">
+                <button
+                    id="deleteTask"
+                    class="dangerAction">
                     Enviar a Papelera
                 </button>
 
@@ -804,11 +828,15 @@ export class TaskEditor {
                     Esta tarea fue enviada a Papelera.
                 </p>
 
-                <button id="restoreDeletedTask">
+                <button
+                    id="restoreDeletedTask"
+                    class="primaryAction">
                     Restaurar
                 </button>
 
-                <button id="permanentlyDeleteTask">
+                <button
+                    id="permanentlyDeleteTask"
+                    class="dangerAction">
                     Eliminar definitivamente
                 </button>
 

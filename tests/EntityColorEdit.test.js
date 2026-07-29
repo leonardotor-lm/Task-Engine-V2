@@ -22,7 +22,7 @@ test("guardar una entidad requiere una acción explícita", () => {
 
     assert.match(
         manager,
-        /class="saveEntityEdit"/
+        /class="[^"]*\bsaveEntityEdit\b[^"]*"/
     );
 
     assert.doesNotMatch(
