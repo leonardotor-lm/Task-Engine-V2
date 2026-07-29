@@ -1151,6 +1151,13 @@ h3 {
     padding: var(--panel-padding);
 }
 
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
 .content {
     padding: var(--content-padding);
 }
@@ -1159,8 +1166,46 @@ h3 {
     gap: 4px;
 }
 
+.sidebar nav > .sidebarSectionLabel:not(:first-child) {
+    margin-top: 7px;
+}
+
 .sidebarButton {
     padding: 6px 8px;
+}
+
+.sidebarNavigationGroup {
+    margin-top: 6px;
+    border-top: 1px solid var(--color-border);
+}
+
+.sidebarNavigationGroup > summary {
+    box-sizing: border-box;
+    min-height: 32px;
+    padding: 7px 8px;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sidebarNavigationGroupBody,
+.sidebarAreaViews {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-left: 6px;
+}
+
+.sidebarNavigationGroupBody .sidebarButton,
+.sidebarAreaViews .sidebarButton {
+    width: 100%;
+}
+
+.sidebarSystemTools {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-border);
 }
 
 .taskList {
@@ -2435,10 +2480,7 @@ h3 {
 
 /* Vistas dinámicas de áreas */
 .sidebarAreaViews {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin: 5px 0;
+    margin: 0 0 5px;
 }
 
 .sidebarSectionLabel {
