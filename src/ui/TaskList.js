@@ -4,6 +4,7 @@ import { flattenTaskTree } from "../core/TaskTree.js";
 import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
+import { Icon } from "./Icon.js";
 
 export class TaskList {
 
@@ -109,10 +110,26 @@ export class TaskList {
                         <button
                             id="toggleTaskMetadata"
                             type="button"
-                            class="taskMetadataToggle">
-                            ${showTaskMetadata
+                            class="taskMetadataToggle responsiveIconButton"
+                            aria-label="${showTaskMetadata
                                 ? "Ocultar detalles"
-                                : "Mostrar detalles"}
+                                : "Mostrar detalles"}"
+                            title="${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}"
+                            aria-pressed="${showTaskMetadata}">
+                            <span class="responsiveButtonIcon">
+                                ${Icon.render(
+                                    showTaskMetadata
+                                        ? "eye-off"
+                                        : "eye"
+                                )}
+                            </span>
+                            <span class="responsiveButtonLabel">
+                                ${showTaskMetadata
+                                    ? "Ocultar detalles"
+                                    : "Mostrar detalles"}
+                            </span>
                         </button>
 
                     </div>

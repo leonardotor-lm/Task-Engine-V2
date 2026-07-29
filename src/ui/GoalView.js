@@ -1,5 +1,6 @@
 import { TaskList } from "./TaskList.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { Icon } from "./Icon.js";
 
 export class GoalView {
 
@@ -29,15 +30,29 @@ export class GoalView {
             <button
                 id="closeGoalView"
                 type="button"
-                class="secondaryAction goalHeadingAction">
-                Volver
+                class="secondaryAction goalHeadingAction responsiveIconButton"
+                aria-label="Volver a objetivos"
+                title="Volver a objetivos">
+                <span class="responsiveButtonIcon">
+                    ${Icon.render("back")}
+                </span>
+                <span class="responsiveButtonLabel">
+                    Volver
+                </span>
             </button>
 
             <button
                 id="editGoal"
                 type="button"
-                class="secondaryAction goalHeadingAction">
-                Editar objetivo
+                class="secondaryAction goalHeadingAction responsiveIconButton"
+                aria-label="Editar objetivo"
+                title="Editar objetivo">
+                <span class="responsiveButtonIcon">
+                    ${Icon.render("edit")}
+                </span>
+                <span class="responsiveButtonLabel">
+                    Editar objetivo
+                </span>
             </button>
         `;
 

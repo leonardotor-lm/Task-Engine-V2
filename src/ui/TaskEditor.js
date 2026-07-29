@@ -4,6 +4,7 @@ import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
 import { SearchableSelect } from "./SearchableSelect.js";
+import { Icon } from "./Icon.js";
 import {
     RecurrenceFrequency,
     RecurrenceWeekday
@@ -398,8 +399,10 @@ export class TaskEditor {
                     <button
                         id="saveTaskMobile"
                         type="button"
-                        class="mobileEditorSave">
-                        Guardar
+                        class="mobileEditorSave iconButton"
+                        aria-label="Guardar cambios"
+                        title="Guardar cambios">
+                        ${Icon.render("save")}
                     </button>
                 `
                 : "";
@@ -417,10 +420,10 @@ export class TaskEditor {
                         aria-label="Cerrar editor"
                         title="Cerrar editor">
                         <span class="desktopCloseSymbol">
-                            ×
+                            ${Icon.render("close")}
                         </span>
                         <span class="mobileBackSymbol">
-                            ←
+                            ${Icon.render("back")}
                         </span>
                     </button>
 
@@ -748,7 +751,7 @@ export class TaskEditor {
                         type="button"
                         aria-label="Cerrar panel"
                         title="Cerrar panel">
-                        ×
+                        ${Icon.render("close")}
                     </button>
 
                 </div>
@@ -790,7 +793,7 @@ export class TaskEditor {
                         type="button"
                         aria-label="Cerrar panel"
                         title="Cerrar panel">
-                        ×
+                        ${Icon.render("close")}
                     </button>
 
                 </div>
