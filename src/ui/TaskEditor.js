@@ -459,7 +459,7 @@ export class TaskEditor {
 
                         <textarea
                             id="taskDescriptionEdit"
-                            rows="6"
+                            rows="4"
                             ${disabled}>${escapeHtml(task.description)}</textarea>
 
                         <label for="taskPriority">
@@ -487,9 +487,8 @@ export class TaskEditor {
                 </details>
 
                 <details
-                    class="editorSection"
-                    data-mobile-collapsed="true"
-                    open>
+                    class="editorSection editorSecondarySection"
+                    data-mobile-collapsed="true">
 
                     <summary>
                         Organización
@@ -590,9 +589,8 @@ export class TaskEditor {
                 </details>
 
                 <details
-                    class="editorSection"
-                    data-mobile-collapsed="true"
-                    open>
+                    class="editorSection editorSecondarySection"
+                    data-mobile-collapsed="true">
 
                     <summary>
                         Planificación
