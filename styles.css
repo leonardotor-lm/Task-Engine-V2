@@ -1319,11 +1319,9 @@ h3 {
 
 button,
 .importBackupButton,
-.searchableMultiSelectManager summary,
-.bulkMoreActions summary,
-.quickPostpone > summary,
-.quickMoreActions > summary,
-.entityCreateManager > summary {
+details > summary,
+select,
+input[type="search"] {
     border-radius: var(--button-radius) !important;
 }
 
