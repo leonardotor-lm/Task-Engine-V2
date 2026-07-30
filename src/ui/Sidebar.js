@@ -31,7 +31,9 @@ export class Sidebar {
         customFilters = [],
         currentCustomFilterId = null,
         taskViewCounts = {},
-        advancedSearchDialogOpen = false
+        advancedSearchDialogOpen = false,
+        taskToolsDialogOpen = false,
+        showTaskMetadata = true
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -132,16 +134,11 @@ export class Sidebar {
             taskViews.includes(activeView) &&
             !advancedSearchMode
             ? `
-                <details
-                    class="taskFilters"
-                    ${Object.values(taskFilters).some(Boolean)
-                        ? "open"
-                        : ""}>
+                <section class="taskToolsSection taskFilters">
 
-                    <summary>Filtros</summary>
+                    <h3>Filtros</h3>
 
                     <form id="taskFilterForm">
-
                         <label for="filterArea">Área</label>
                         <select id="filterArea">
                             <option value="">Todas</option>
@@ -239,7 +236,7 @@ export class Sidebar {
 
                     </form>
 
-                </details>
+                </section>
             `
             : "";
 
@@ -247,14 +244,9 @@ export class Sidebar {
             taskViews.includes(activeView) ||
             activeView === View.PROJECT
             ? `
-                <details
-                    class="taskViewOptions"
-                    ${taskSort !== "MANUAL" ||
-                        showCompletedTasks
-                        ? "open"
-                        : ""}>
+                <section class="taskToolsSection taskViewOptions">
 
-                    <summary>Vista</summary>
+                    <h3>Vista</h3>
 
                     <div class="taskViewOptionsBody">
 
@@ -331,9 +323,27 @@ export class Sidebar {
                             `
                             : ""}
 
+                        <button
+                            id="toggleTaskMetadata"
+                            type="button"
+                            class="viewOptionButton bulkModeButton ${showTaskMetadata
+                                ? ""
+                                : "active"}"
+                            aria-label="${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}"
+                            title="${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}"
+                            aria-pressed="${showTaskMetadata}">
+                            ${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}
+                        </button>
+
                     </div>
 
-                </details>
+                </section>
             `
             : "";
 
@@ -903,9 +913,60 @@ export class Sidebar {
                         `
                         : ""}
 
-                    ${filters}
+                    ${filters || viewOptions
+                        ? `
+                            <button
+                                id="openTaskTools"
+                                type="button"
+                                class="taskToolsButton ${Object.values(taskFilters).some(Boolean) ||
+                                    taskSort !== "MANUAL" ||
+                                    showCompletedTasks ||
+                                    !showTaskMetadata
+                                    ? "active"
+                                    : ""}">
+                                Filtros y vista
+                            </button>
 
-                    ${viewOptions}
+                            <dialog
+                                id="taskToolsDialog"
+                                class="taskToolsDialog"
+                                aria-labelledby="taskToolsTitle"
+                                data-requested-open="${taskToolsDialogOpen}">
+
+                                <div class="taskToolsDialogHeader">
+
+                                    <h2 id="taskToolsTitle">
+                                        Filtros y vista
+                                    </h2>
+
+                                    <button
+                                        id="closeTaskTools"
+                                        type="button"
+                                        class="iconButton"
+                                        aria-label="Cerrar filtros y vista"
+                                        title="Cerrar">
+                                        ${Icon.render("close")}
+                                    </button>
+
+                                </div>
+
+                                <div class="taskToolsDialogBody">
+                                    ${filters}
+                                    ${viewOptions}
+                                </div>
+
+                                <div class="taskToolsDialogFooter">
+                                    <button
+                                        id="cancelTaskTools"
+                                        type="button"
+                                        class="tertiaryAction">
+                                        Cerrar
+                                    </button>
+                                </div>
+
+                            </dialog>
+                        `
+                        : ""}
 
                     <span class="sidebarSectionLabel">
                         Planificación
