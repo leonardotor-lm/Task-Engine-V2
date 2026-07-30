@@ -19,9 +19,10 @@ test("ofrece la familia inicial de íconos", () => {
             "chevron-down",
             "chevron-right",
             "clock",
-            "repeat",
-            "menu",
-            "check"
+        "repeat",
+        "menu",
+        "check",
+        "search"
         ]
     );
 
