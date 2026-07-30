@@ -1255,7 +1255,7 @@ h3 {
     align-items: center;
 }
 
-.taskSearchField input {
+.taskSearch .taskSearchField input {
     width: 100%;
     min-height: 34px;
     padding-right: 34px;
@@ -1343,7 +1343,7 @@ h3 {
 
 @media (max-width: 760px) {
 
-    .taskSearchField input {
+    .taskSearch .taskSearchField input {
         min-height: 44px;
         padding-right: 44px;
         padding-left: 44px;
