@@ -52,6 +52,18 @@ export class ViewRouter {
 
     render(state) {
 
+        const titleWithCount = (
+            title,
+            countKey
+        ) => {
+
+            const count =
+                state.taskViewCounts?.[countKey] ?? 0;
+
+            return `${title} (${count})`;
+
+        };
+
         switch (state.view) {
 
             case View.PROJECT:
@@ -74,29 +86,51 @@ export class ViewRouter {
 
                 return this.renderTaskList(
                     state,
-                    "Hoy y atrasadas"
+                    titleWithCount(
+                        "Hoy y atrasadas",
+                        "today"
+                    )
+                );
+
+            case View.TOMORROW:
+
+                return this.renderTaskList(
+                    state,
+                    titleWithCount(
+                        "Mañana",
+                        "tomorrow"
+                    )
                 );
 
             case View.UPCOMING:
 
                 return this.renderTaskList(
                     state,
-                    "Próximas"
+                    titleWithCount(
+                        "Próximas",
+                        "upcoming"
+                    )
                 );
 
             case View.ALL:
 
                 return this.renderTaskList(
                     state,
-                    "Todas"
+                    titleWithCount(
+                        "Todas",
+                        "all"
+                    )
                 );
 
             case View.AREA:
 
                 return this.renderTaskList(
                     state,
-                    state.activeArea?.name ??
-                        "Área"
+                    titleWithCount(
+                        state.activeArea?.name ??
+                            "Área",
+                        `area:${state.activeArea?.id ?? ""}`
+                    )
                 );
 
             case View.COMPLETED:
@@ -158,7 +192,10 @@ export class ViewRouter {
 
                 return this.renderTaskList(
                     state,
-                    "Inbox"
+                    titleWithCount(
+                        "Inbox",
+                        "inbox"
+                    )
                 );
 
         }
