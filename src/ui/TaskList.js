@@ -110,6 +110,31 @@ export class TaskList {
 
                         ${headingActions}
 
+                        <button
+                            id="toggleTaskMetadata"
+                            type="button"
+                            class="taskMetadataToggle responsiveIconButton"
+                            aria-label="${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}"
+                            title="${showTaskMetadata
+                                ? "Ocultar detalles"
+                                : "Mostrar detalles"}"
+                            aria-pressed="${showTaskMetadata}">
+                            <span class="responsiveButtonIcon">
+                                ${Icon.render(
+                                    showTaskMetadata
+                                        ? "eye-off"
+                                        : "eye"
+                                )}
+                            </span>
+                            <span class="responsiveButtonLabel">
+                                ${showTaskMetadata
+                                    ? "Ocultar detalles"
+                                    : "Mostrar detalles"}
+                            </span>
+                        </button>
+
                     </div>
 
                 </div>
