@@ -27,6 +27,25 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ## Prioridad media
 
+### Paneles compactos de la barra lateral
+
+- **Estado:** Pendiente; la reorganización básica de navegación se desarrolla por separado.
+- Reemplazar el botón textual de búsqueda simple por una lupa integrada al campo, conservando una acción clara para limpiar la consulta.
+- Abrir la búsqueda avanzada en un panel modal que conserve los criterios, permita aplicar o limpiar y se cierre al mostrar los resultados.
+- Reunir filtros, orden y opciones de visualización en un panel emergente: anclado en escritorio y modal o inferior en celular.
+- Retirar de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad.
+- Incorporar al final de la barra un acceso **Configuración** con engranaje y texto.
+- Desde Configuración, ofrecer Organización, Sincronización y Copia de seguridad como tres accesos independientes a sus respectivos paneles.
+- Mantener diferenciadas la navegación por Áreas y la administración de áreas, contextos y etiquetas.
+
+### Seleccionar todas en acciones múltiples
+
+- **Estado:** Pendiente.
+- Incorporar una casilla **Seleccionar todas** al modo de selección múltiple.
+- Limitar su alcance a las tareas seleccionables visibles en la vista y filtros actuales.
+- Permitir desmarcar el conjunto completo sin afectar tareas ocultas.
+- Comunicar con claridad cuántas tareas quedaron seleccionadas.
+
 ### Objetivos en la búsqueda avanzada
 
 - **Estado:** Pendiente.
@@ -79,6 +98,13 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Al cambiar de vista desde la barra lateral, desplazar el contenido al inicio.
 - Verificar este comportamiento en escritorio y celular.
 
+### Fecha y hora
+
+- **Estado:** Pendiente.
+- Permitir elegir una hora optativa junto con la fecha de vencimiento.
+- Definir la compatibilidad con recurrencias, posposición, búsquedas, orden y sincronización.
+- Mantener una selección simple cuando la tarea sólo necesite fecha.
+
 ### Temas visuales
 
 - **Estado:** Postergado.
@@ -87,6 +113,13 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Preservar un diseño compacto y sobrio.
 
 ## Prioridad futura
+
+### Vista de calendario
+
+- **Estado:** Postergado hasta terminar el pulido de las vistas existentes.
+- Incorporar una vista de calendario para revisar y planificar tareas fechadas.
+- Definir alcance mensual, semanal o combinado después de estabilizar fecha y hora.
+- Conservar el minimalismo funcional y evitar duplicar el editor de tareas dentro del calendario.
 
 ### Adjuntos
 
