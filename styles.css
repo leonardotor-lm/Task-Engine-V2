@@ -2904,6 +2904,12 @@ input[type="date"],
     margin: 0 0 5px;
 }
 
+.sidebarAreaGroup {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+
 .sidebarSectionLabel {
     padding: 4px 8px 2px;
     color: var(--color-text-muted);
@@ -3013,7 +3019,13 @@ input[type="date"],
 
 .customFiltersSection {
     margin: 10px 0;
-    padding: 6px 0;
+    padding: 6px 0 10px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.sidebarListControls {
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .customFiltersSection > summary {
