@@ -213,27 +213,6 @@ export class Sidebar {
                             </option>
                         </select>
 
-                        <div class="taskFilterActions">
-
-                            <button
-                                type="submit"
-                                class="primaryAction">
-                                Aplicar
-                            </button>
-
-                            ${Object.values(taskFilters).some(Boolean)
-                                ? `
-                                    <button
-                                        id="clearTaskFilters"
-                                        type="button"
-                                        class="tertiaryAction">
-                                        Limpiar
-                                    </button>
-                                `
-                                : ""}
-
-                        </div>
-
                     </form>
 
                 </section>
@@ -695,21 +674,6 @@ export class Sidebar {
 
                 </dialog>
 
-                ${taskViews.includes(activeView)
-                    ? `
-                        <button
-                            id="toggleBulkMode"
-                            type="button"
-                            class="bulkModeButton ${bulkSelectionMode
-                                ? "active"
-                                : ""}">
-                            ${bulkSelectionMode
-                                ? "Salir de selección"
-                                : "Selección múltiple"}
-                        </button>
-                    `
-                    : ""}
-
                     `
                     : ""}
 
@@ -873,8 +837,25 @@ export class Sidebar {
                         `
                         : ""}
 
-                    ${filters || viewOptions
-                        ? `
+                    <div class="sidebarListControls">
+
+                        ${taskViews.includes(activeView)
+                            ? `
+                                <button
+                                    id="toggleBulkMode"
+                                    type="button"
+                                    class="taskToolsButton ${bulkSelectionMode
+                                        ? "active"
+                                        : ""}">
+                                    ${bulkSelectionMode
+                                        ? "Salir de selección"
+                                        : "Selección múltiple"}
+                                </button>
+                            `
+                            : ""}
+
+                        ${filters || viewOptions
+                            ? `
                             <button
                                 id="openTaskTools"
                                 type="button"
@@ -920,26 +901,51 @@ export class Sidebar {
                                         class="tertiaryAction">
                                         Cerrar
                                     </button>
+
+                                    ${filters &&
+                                        Object.values(taskFilters).some(Boolean)
+                                        ? `
+                                            <button
+                                                id="clearTaskFilters"
+                                                type="button"
+                                                class="tertiaryAction">
+                                                Limpiar
+                                            </button>
+                                        `
+                                        : ""}
+
+                                    ${filters
+                                        ? `
+                                            <button
+                                                type="submit"
+                                                form="taskFilterForm"
+                                                class="primaryAction">
+                                                Aplicar
+                                            </button>
+                                        `
+                                        : ""}
                                 </div>
 
                             </dialog>
-                        `
-                        : ""}
+                            `
+                            : ""}
 
-                    ${completedToggleViews.includes(activeView)
-                        ? `
-                            <button
-                                id="toggleCompletedTasks"
-                                type="button"
-                                class="viewOptionButton bulkModeButton ${showCompletedTasks
-                                    ? "active"
-                                    : ""}">
-                                ${showCompletedTasks
-                                    ? "Ocultar completadas"
-                                    : "Mostrar completadas"}
-                            </button>
-                        `
-                        : ""}
+                        ${completedToggleViews.includes(activeView)
+                            ? `
+                                <button
+                                    id="toggleCompletedTasks"
+                                    type="button"
+                                    class="taskToolsButton ${showCompletedTasks
+                                        ? "active"
+                                        : ""}">
+                                    ${showCompletedTasks
+                                        ? "Ocultar completadas"
+                                        : "Mostrar completadas"}
+                                </button>
+                            `
+                            : ""}
+
+                    </div>
 
                     <span class="sidebarSectionLabel">
                         Planificación
