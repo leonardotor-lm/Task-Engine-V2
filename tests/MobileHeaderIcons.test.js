@@ -6,7 +6,8 @@ import { Task } from "../src/domain/Task.js";
 import { GoalEditor } from "../src/ui/GoalEditor.js";
 import { GoalView } from "../src/ui/GoalView.js";
 import { TaskEditor } from "../src/ui/TaskEditor.js";
-import { TaskList } from "../src/ui/TaskList.js";
+import { Sidebar } from "../src/ui/Sidebar.js";
+import { View } from "../src/core/View.js";
 
 test("el objetivo ofrece volver y editar con íconos accesibles", () => {
 
@@ -35,37 +36,40 @@ test("el objetivo ofrece volver y editar con íconos accesibles", () => {
 
 test("el control de detalles representa ambos estados", () => {
 
-    const visible = new TaskList().render(
-        [],
-        "Tareas",
-        false,
-        [],
-        [],
-        [],
+    const renderSidebar = showTaskMetadata =>
+        new Sidebar().render(
+        View.TODAY,
         "",
-        new Set(),
+        [],
+        null,
+        [],
+        [],
+        {},
+        "MANUAL",
         false,
-        new Set(),
+        false,
+        "",
+        0,
+        false,
+        "",
+        null,
+        false,
+        false,
         false,
         null,
-        true
+        false,
+        false,
+        "",
+        [],
+        null,
+        {},
+        false,
+        false,
+        showTaskMetadata
     );
 
-    const hidden = new TaskList().render(
-        [],
-        "Tareas",
-        false,
-        [],
-        [],
-        [],
-        "",
-        new Set(),
-        false,
-        new Set(),
-        false,
-        null,
-        false
-    );
+    const visible = renderSidebar(true);
+    const hidden = renderSidebar(false);
 
     assert.match(visible, /aria-label="Ocultar detalles"/);
     assert.match(visible, /aria-pressed="true"/);
