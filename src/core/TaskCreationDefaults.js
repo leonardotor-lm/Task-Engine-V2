@@ -15,6 +15,23 @@ export function getTaskCreationDefaults(
                 dueDate: today
             };
 
+        case View.TOMORROW: {
+
+            const tomorrow = new Date(
+                `${today}T12:00:00Z`
+            );
+
+            tomorrow.setUTCDate(
+                tomorrow.getUTCDate() + 1
+            );
+
+            return {
+                dueDate:
+                    tomorrow.toISOString().slice(0, 10)
+            };
+
+        }
+
         case View.AREA:
             return areaId
                 ? { areaId }
@@ -32,6 +49,7 @@ export function getTaskCreationView(view) {
     const directViews = [
         View.INBOX,
         View.TODAY,
+        View.TOMORROW,
         View.UPCOMING,
         View.ALL,
         View.AREA
@@ -49,7 +67,10 @@ export function getPostCreationView(
 ) {
 
     if (
-        view === View.UPCOMING &&
+        (
+            view === View.TOMORROW ||
+            view === View.UPCOMING
+        ) &&
         !task.dueDate
     ) {
         return View.INBOX;
