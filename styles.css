@@ -1354,6 +1354,12 @@ h3 {
     cursor: pointer;
 }
 
+.sidebarListControls {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
 .taskToolsButton:hover,
 .taskToolsButton.active {
     background: var(--color-surface-hover);
@@ -1456,6 +1462,7 @@ h3 {
     bottom: 0;
     display: flex;
     justify-content: flex-end;
+    gap: 6px;
     padding: 8px 14px;
     border-top: 1px solid var(--color-border);
     background: var(--color-surface);
