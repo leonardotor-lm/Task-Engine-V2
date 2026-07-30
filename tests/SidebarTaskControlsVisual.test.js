@@ -13,7 +13,7 @@ const styles = await readFile(
     "utf8"
 );
 
-test("orden y tareas completadas se agrupan bajo Vista", () => {
+test("los filtros rápidos agrupan filtros y orden", () => {
 
     const html = new Sidebar().render(
         View.INBOX
@@ -21,12 +21,12 @@ test("orden y tareas completadas se agrupan bajo Vista", () => {
 
     assert.match(
         html,
-        /<details\s+class="taskViewOptions"/
+        /id="openTaskTools"[\s\S]*?Filtros rápidos/
     );
 
     assert.match(
         html,
-        /<summary>Vista<\/summary>/
+        /id="taskToolsDialog"/
     );
 
     assert.match(
@@ -37,6 +37,41 @@ test("orden y tareas completadas se agrupan bajo Vista", () => {
     assert.match(
         html,
         /id="toggleCompletedTasks"/
+    );
+
+    assert.ok(
+        html.indexOf("toggleBulkMode") <
+        html.indexOf("openTaskTools")
+    );
+
+    assert.ok(
+        html.indexOf("openTaskTools") <
+        html.indexOf("toggleCompletedTasks")
+    );
+
+    assert.ok(
+        html.indexOf("taskToolsDialog") <
+        html.indexOf("toggleCompletedTasks")
+    );
+
+    assert.match(
+        html,
+        /id="toggleBulkMode"[\s\S]*?class="taskToolsButton/
+    );
+
+    assert.match(
+        html,
+        /id="toggleCompletedTasks"[\s\S]*?class="taskToolsButton/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /id="toggleTaskMetadata"/
+    );
+
+    assert.match(
+        html,
+        /type="submit"\s+form="taskFilterForm"[\s\S]*?>\s*Aplicar/
     );
 
 });
@@ -69,6 +104,23 @@ test("los controles usan una jerarquía visual compacta", () => {
     assert.match(
         styles,
         /\.advancedSearchToggle\s*\{[\s\S]*?border:\s*0/
+    );
+
+});
+
+test("las secciones principales tienen separadores discretos", () => {
+
+    assert.match(
+        styles,
+        /\.sidebarAreaGroup\s*\{[\s\S]*?border-bottom:\s*1px solid var\(--color-border\)/
+    );
+    assert.match(
+        styles,
+        /\.customFiltersSection\s*\{[\s\S]*?border-bottom:\s*1px solid var\(--color-border\)/
+    );
+    assert.match(
+        styles,
+        /\.sidebarListControls\s*\{[\s\S]*?border-bottom:\s*1px solid var\(--color-border\)/
     );
 
 });

@@ -1341,6 +1341,133 @@ h3 {
     margin-top: 8px;
 }
 
+.taskToolsButton {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidebarListControls {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.taskToolsButton:hover,
+.taskToolsButton.active {
+    background: var(--color-surface-hover);
+    color: var(--color-accent-strong);
+}
+
+.taskToolsButton.active {
+    font-weight: 600;
+}
+
+.taskToolsDialog {
+    position: fixed;
+    z-index: 100;
+    top: 96px;
+    left: 220px;
+    box-sizing: border-box;
+    width: min(380px, calc(100vw - 236px));
+    max-height: calc(100dvh - 112px);
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 14px 34px rgb(15 23 42 / 20%);
+}
+
+.taskToolsDialog::backdrop {
+    background: rgb(15 23 42 / 38%);
+}
+
+.taskToolsDialogHeader {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.taskToolsDialogHeader h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.taskToolsDialogBody {
+    display: grid;
+    gap: 14px;
+    padding: 14px;
+}
+
+.taskToolsDialog .taskToolsSection {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.taskToolsDialog
+    .taskToolsSection +
+    .taskToolsSection {
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+}
+
+.taskToolsDialog .taskToolsSection h3 {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+.taskToolsDialog .taskFilters form,
+.taskToolsDialog .taskViewOptionsBody {
+    display: grid;
+    gap: 7px;
+}
+
+.taskToolsDialog select,
+.taskToolsDialog button {
+    box-sizing: border-box;
+    min-height: 34px;
+    font: inherit;
+}
+
+.taskToolsDialog select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+}
+
+.taskToolsDialogFooter {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 8px 14px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
 @media (max-width: 760px) {
 
     .taskSearch .taskSearchField input {
@@ -1365,6 +1492,24 @@ h3 {
     .advancedSearchDialogActions {
         display: grid;
         grid-template-columns: 1fr;
+    }
+
+    .taskToolsButton {
+        min-height: 44px;
+    }
+
+    .taskToolsDialog {
+        top: auto;
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+        width: auto;
+        max-height: calc(100dvh - 16px);
+    }
+
+    .taskToolsDialog select,
+    .taskToolsDialog button {
+        min-height: 44px;
     }
 
 }
@@ -2759,6 +2904,12 @@ input[type="date"],
     margin: 0 0 5px;
 }
 
+.sidebarAreaGroup {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+
 .sidebarSectionLabel {
     padding: 4px 8px 2px;
     color: var(--color-text-muted);
@@ -2868,7 +3019,13 @@ input[type="date"],
 
 .customFiltersSection {
     margin: 10px 0;
-    padding: 6px 0;
+    padding: 6px 0 10px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.sidebarListControls {
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .customFiltersSection > summary {

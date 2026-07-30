@@ -87,6 +87,7 @@ export class App {
         this.searchQuery = "";
         this.advancedSearchMode = false;
         this.advancedSearchDialogOpen = false;
+        this.taskToolsDialogOpen = false;
         this.advancedSearchExpression = null;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
@@ -584,6 +585,7 @@ export class App {
             onApplyTaskFilters: (filters) => {
 
                 this.taskFilters = { ...filters };
+                this.taskToolsDialogOpen = false;
 
                 this.selectedTask = null;
 
@@ -601,6 +603,7 @@ export class App {
                     due: ""
                 };
 
+                this.taskToolsDialogOpen = false;
                 this.selectedTask = null;
 
                 this.render();
@@ -613,6 +616,20 @@ export class App {
 
                 this.selectedTask = null;
 
+                this.render();
+
+            },
+
+            onOpenTaskTools: () => {
+
+                this.taskToolsDialogOpen = true;
+                this.render();
+
+            },
+
+            onCloseTaskTools: () => {
+
+                this.taskToolsDialogOpen = false;
                 this.render();
 
             },
@@ -1617,6 +1634,7 @@ export class App {
         }
 
         this.bulkSelectionMode = false;
+        this.taskToolsDialogOpen = false;
         this.currentCustomFilterId = null;
         this.selectedTaskIds.clear();
         this.selectedTask = null;
@@ -1952,6 +1970,7 @@ export class App {
         this.searchQuery = "";
         this.advancedSearchExpression = null;
         this.advancedSearchDialogOpen = false;
+        this.taskToolsDialogOpen = false;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
         this.taskFilters = {
@@ -2414,6 +2433,8 @@ export class App {
                 this.advancedSearchMode,
             advancedSearchDialogOpen:
                 this.advancedSearchDialogOpen,
+            taskToolsDialogOpen:
+                this.taskToolsDialogOpen,
             advancedSearchError:
                 this.advancedSearchError,
             customFilters:

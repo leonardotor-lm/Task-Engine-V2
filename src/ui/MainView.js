@@ -49,6 +49,7 @@ export class MainView {
             searchQuery,
             advancedSearchMode,
             advancedSearchDialogOpen,
+            taskToolsDialogOpen,
             advancedSearchError,
             customFilters,
             currentCustomFilterId,
@@ -66,6 +67,7 @@ export class MainView {
             syncLastError,
             bulkSelectionMode,
             showCompletedTasks,
+            showTaskMetadata,
             taskViewCounts
         } = state;
 
@@ -122,7 +124,9 @@ export class MainView {
                     customFilters,
                     currentCustomFilterId,
                     taskViewCounts,
-                    advancedSearchDialogOpen
+                    advancedSearchDialogOpen,
+                    taskToolsDialogOpen,
+                    showTaskMetadata
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -160,6 +164,29 @@ export class MainView {
             !advancedSearchDialog.open
         ) {
             advancedSearchDialog.showModal();
+        }
+
+        const taskToolsDialog =
+            document.getElementById(
+                "taskToolsDialog"
+            );
+
+        if (
+            taskToolsDialogOpen &&
+            taskToolsDialog &&
+            !taskToolsDialog.open
+        ) {
+
+            if (
+                window.matchMedia(
+                    "(max-width: 760px)"
+                ).matches
+            ) {
+                taskToolsDialog.showModal();
+            } else {
+                taskToolsDialog.show();
+            }
+
         }
 
         this.searchableMultiSelect.bind(
@@ -852,6 +879,49 @@ export class MainView {
 
                 event.preventDefault();
                 closeAdvancedSearch();
+
+            }
+        );
+
+        document.getElementById(
+            "openTaskTools"
+        )?.addEventListener(
+            "click",
+            () => {
+
+                this.callbacks.onOpenTaskTools();
+
+            }
+        );
+
+        const closeTaskTools = () => {
+
+            this.callbacks.onCloseTaskTools();
+
+        };
+
+        document.getElementById(
+            "closeTaskTools"
+        )?.addEventListener(
+            "click",
+            closeTaskTools
+        );
+
+        document.getElementById(
+            "cancelTaskTools"
+        )?.addEventListener(
+            "click",
+            closeTaskTools
+        );
+
+        document.getElementById(
+            "taskToolsDialog"
+        )?.addEventListener(
+            "cancel",
+            event => {
+
+                event.preventDefault();
+                closeTaskTools();
 
             }
         );

@@ -31,7 +31,9 @@ export class Sidebar {
         customFilters = [],
         currentCustomFilterId = null,
         taskViewCounts = {},
-        advancedSearchDialogOpen = false
+        advancedSearchDialogOpen = false,
+        taskToolsDialogOpen = false,
+        showTaskMetadata = true
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -132,16 +134,11 @@ export class Sidebar {
             taskViews.includes(activeView) &&
             !advancedSearchMode
             ? `
-                <details
-                    class="taskFilters"
-                    ${Object.values(taskFilters).some(Boolean)
-                        ? "open"
-                        : ""}>
+                <section class="taskToolsSection taskFilters">
 
-                    <summary>Filtros</summary>
+                    <h3>Filtros</h3>
 
                     <form id="taskFilterForm">
-
                         <label for="filterArea">Área</label>
                         <select id="filterArea">
                             <option value="">Todas</option>
@@ -216,50 +213,21 @@ export class Sidebar {
                             </option>
                         </select>
 
-                        <div class="taskFilterActions">
-
-                            <button
-                                type="submit"
-                                class="primaryAction">
-                                Aplicar
-                            </button>
-
-                            ${Object.values(taskFilters).some(Boolean)
-                                ? `
-                                    <button
-                                        id="clearTaskFilters"
-                                        type="button"
-                                        class="tertiaryAction">
-                                        Limpiar
-                                    </button>
-                                `
-                                : ""}
-
-                        </div>
-
                     </form>
 
-                </details>
+                </section>
             `
             : "";
 
         const viewOptions =
-            taskViews.includes(activeView) ||
-            activeView === View.PROJECT
+            taskViews.includes(activeView)
             ? `
-                <details
-                    class="taskViewOptions"
-                    ${taskSort !== "MANUAL" ||
-                        showCompletedTasks
-                        ? "open"
-                        : ""}>
+                <section class="taskToolsSection taskViewOptions">
 
-                    <summary>Vista</summary>
+                    <h3>Orden</h3>
 
                     <div class="taskViewOptionsBody">
 
-                        ${taskViews.includes(activeView)
-                            ? `
                         <div class="taskSorting">
 
                             <label for="taskSort">
@@ -311,29 +279,10 @@ export class Sidebar {
                             </select>
 
                         </div>
-                            `
-                            : ""}
-
-                        ${completedToggleViews.includes(
-                            activeView
-                        )
-                            ? `
-                                <button
-                                    id="toggleCompletedTasks"
-                                    type="button"
-                                    class="viewOptionButton bulkModeButton ${showCompletedTasks
-                                        ? "active"
-                                        : ""}">
-                                    ${showCompletedTasks
-                                        ? "Ocultar completadas"
-                                        : "Mostrar completadas"}
-                                </button>
-                            `
-                            : ""}
 
                     </div>
 
-                </details>
+                </section>
             `
             : "";
 
@@ -725,21 +674,6 @@ export class Sidebar {
 
                 </dialog>
 
-                ${taskViews.includes(activeView)
-                    ? `
-                        <button
-                            id="toggleBulkMode"
-                            type="button"
-                            class="bulkModeButton ${bulkSelectionMode
-                                ? "active"
-                                : ""}">
-                            ${bulkSelectionMode
-                                ? "Salir de selección"
-                                : "Selección múltiple"}
-                        </button>
-                    `
-                    : ""}
-
                     `
                     : ""}
 
@@ -903,9 +837,115 @@ export class Sidebar {
                         `
                         : ""}
 
-                    ${filters}
+                    <div class="sidebarListControls">
 
-                    ${viewOptions}
+                        ${taskViews.includes(activeView)
+                            ? `
+                                <button
+                                    id="toggleBulkMode"
+                                    type="button"
+                                    class="taskToolsButton ${bulkSelectionMode
+                                        ? "active"
+                                        : ""}">
+                                    ${bulkSelectionMode
+                                        ? "Salir de selección"
+                                        : "Selección múltiple"}
+                                </button>
+                            `
+                            : ""}
+
+                        ${filters || viewOptions
+                            ? `
+                            <button
+                                id="openTaskTools"
+                                type="button"
+                                class="taskToolsButton ${Object.values(taskFilters).some(Boolean) ||
+                                    taskSort !== "MANUAL"
+                                    ? "active"
+                                    : ""}">
+                                Filtros rápidos
+                            </button>
+
+                            <dialog
+                                id="taskToolsDialog"
+                                class="taskToolsDialog"
+                                aria-labelledby="taskToolsTitle"
+                                data-requested-open="${taskToolsDialogOpen}">
+
+                                <div class="taskToolsDialogHeader">
+
+                                    <h2 id="taskToolsTitle">
+                                        Filtros rápidos
+                                    </h2>
+
+                                    <button
+                                        id="closeTaskTools"
+                                        type="button"
+                                        class="iconButton"
+                                        aria-label="Cerrar filtros rápidos"
+                                        title="Cerrar">
+                                        ${Icon.render("close")}
+                                    </button>
+
+                                </div>
+
+                                <div class="taskToolsDialogBody">
+                                    ${filters}
+                                    ${viewOptions}
+                                </div>
+
+                                <div class="taskToolsDialogFooter">
+                                    <button
+                                        id="cancelTaskTools"
+                                        type="button"
+                                        class="tertiaryAction">
+                                        Cerrar
+                                    </button>
+
+                                    ${filters &&
+                                        Object.values(taskFilters).some(Boolean)
+                                        ? `
+                                            <button
+                                                id="clearTaskFilters"
+                                                type="button"
+                                                class="tertiaryAction">
+                                                Limpiar
+                                            </button>
+                                        `
+                                        : ""}
+
+                                    ${filters
+                                        ? `
+                                            <button
+                                                type="submit"
+                                                form="taskFilterForm"
+                                                class="primaryAction">
+                                                Aplicar
+                                            </button>
+                                        `
+                                        : ""}
+                                </div>
+
+                            </dialog>
+                            `
+                            : ""}
+
+                        ${completedToggleViews.includes(activeView)
+                            ? `
+                                <button
+                                    id="toggleCompletedTasks"
+                                    type="button"
+                                    class="taskToolsButton ${showCompletedTasks
+                                        ? "active"
+                                        : ""}">
+                                    ${showCompletedTasks
+                                        ? "Ocultar completadas"
+                                        : "Mostrar completadas"}
+                                </button>
+                            `
+                            : ""}
+
+                    </div>
 
                     <span class="sidebarSectionLabel">
                         Planificación
