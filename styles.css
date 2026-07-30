@@ -1366,6 +1366,7 @@ h3 {
 
 .taskToolsDialog {
     position: fixed;
+    z-index: 100;
     top: 96px;
     left: 220px;
     box-sizing: border-box;
