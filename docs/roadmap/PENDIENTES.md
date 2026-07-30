@@ -40,7 +40,8 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 - **Estado:** En desarrollo por bloques.
 - **Búsqueda simple y avanzada:** implementadas en la rama de paneles de búsqueda; pendientes de verificación visual.
-- **Filtros y vista:** implementados en la rama de panel visual; pendientes de verificación visual.
+- **Filtros rápidos:** implementados en la rama de panel visual con filtros y orden; pendientes de verificación visual.
+- **Preferencias de presentación:** mostrar completadas permanece bajo Filtros rápidos y el control de detalles vuelve al encabezado de las tareas.
 - Retirar de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad.
 - Incorporar al final de la barra un acceso **Configuración** con engranaje y texto.
 - Desde Configuración, ofrecer Organización, Sincronización y Copia de seguridad como tres accesos independientes a sus respectivos paneles.
