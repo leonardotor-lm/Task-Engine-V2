@@ -29,7 +29,8 @@ export class Sidebar {
         advancedSearchMode = false,
         advancedSearchError = "",
         customFilters = [],
-        currentCustomFilterId = null
+        currentCustomFilterId = null,
+        taskViewCounts = {}
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -63,9 +64,16 @@ export class Sidebar {
 
         };
 
+        const count = key => `
+            <span class="sidebarTaskCount">
+                (${taskViewCounts[key] ?? 0})
+            </span>
+        `;
+
         const taskViews = [
             View.INBOX,
             View.TODAY,
+            View.TOMORROW,
             View.UPCOMING,
             View.ALL,
             View.AREA,
@@ -77,6 +85,7 @@ export class Sidebar {
         const completedToggleViews = [
             View.INBOX,
             View.TODAY,
+            View.TOMORROW,
             View.UPCOMING,
             View.ALL,
             View.AREA,
@@ -646,10 +655,6 @@ export class Sidebar {
                         : "Usar búsqueda avanzada"}
                 </button>
 
-                ${filters}
-
-                ${viewOptions}
-
                 ${taskViews.includes(activeView)
                     ? `
                         <button
@@ -675,37 +680,31 @@ export class Sidebar {
                     </span>
 
                     <button
-                        id="showToday"
-                        class="${buttonClass(View.TODAY)}">
-                        Hoy
+                        id="showInbox"
+                        class="${buttonClass(View.INBOX)}">
+                        <span>Inbox</span>
+                        ${count("inbox")}
                     </button>
 
                     <button
-                        id="showInbox"
-                        class="${buttonClass(View.INBOX)}">
-                        Inbox
+                        id="showToday"
+                        class="${buttonClass(View.TODAY)}">
+                        <span>Hoy</span>
+                        ${count("today")}
+                    </button>
+
+                    <button
+                        id="showTomorrow"
+                        class="${buttonClass(View.TOMORROW)}">
+                        <span>Mañana</span>
+                        ${count("tomorrow")}
                     </button>
 
                     <button
                         id="showUpcoming"
                         class="${buttonClass(View.UPCOMING)}">
-                        Próximas
-                    </button>
-
-                    <span class="sidebarSectionLabel">
-                        Planificación
-                    </span>
-
-                    <button
-                        id="showAll"
-                        class="${buttonClass(View.ALL)}">
-                        Todas
-                    </button>
-
-                    <button
-                        id="showGoals"
-                        class="${buttonClass(View.GOALS)}">
-                        Objetivos
+                        <span>Próximas</span>
+                        ${count("upcoming")}
                     </button>
 
                     ${areas.length > 0
@@ -740,6 +739,10 @@ export class Sidebar {
                                         <span>
                                             ${escapeHtml(area.name)}
                                         </span>
+
+                                        ${count(
+                                            `area:${area.id}`
+                                        )}
 
                                     </button>
                                 `).join("")}
@@ -829,6 +832,27 @@ export class Sidebar {
                             </details>
                         `
                         : ""}
+
+                    ${filters}
+
+                    ${viewOptions}
+
+                    <span class="sidebarSectionLabel">
+                        Planificación
+                    </span>
+
+                    <button
+                        id="showAll"
+                        class="${buttonClass(View.ALL)}">
+                        <span>Todas</span>
+                        ${count("all")}
+                    </button>
+
+                    <button
+                        id="showGoals"
+                        class="${buttonClass(View.GOALS)}">
+                        Objetivos
+                    </button>
 
                     <details
                         class="sidebarNavigationGroup"
