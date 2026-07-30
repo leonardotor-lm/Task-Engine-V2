@@ -17,6 +17,11 @@ const taskListSource = await readFile(
     "utf8"
 );
 
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
+
 test("el panel visual tiene apertura y cierre explícitos", () => {
 
     assert.match(
@@ -39,6 +44,10 @@ test("el panel es anclado en escritorio y modal en celular", () => {
     assert.match(
         mainViewSource,
         /max-width: 760px[\s\S]*?taskToolsDialog\.showModal\(\)[\s\S]*?taskToolsDialog\.show\(\)/
+    );
+    assert.match(
+        styles,
+        /\.taskToolsDialog\s*\{[\s\S]*?z-index:\s*100;/
     );
 
 });
