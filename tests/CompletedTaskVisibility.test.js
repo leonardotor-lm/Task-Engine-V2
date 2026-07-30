@@ -145,7 +145,7 @@ test("indica visualmente cuando se muestran las completadas", () => {
 
     assert.match(
         html,
-        /bulkModeButton active/
+        /taskToolsButton active/
     );
 
 });
