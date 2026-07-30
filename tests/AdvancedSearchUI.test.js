@@ -1,8 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import { View } from "../src/core/View.js";
 import { Sidebar } from "../src/ui/Sidebar.js";
+
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
 
 function renderSidebar({
     advanced = false,
@@ -108,6 +114,11 @@ test("la búsqueda simple usa una lupa dentro del campo", () => {
     assert.doesNotMatch(
         html,
         />\s*Buscar\s*</
+    );
+
+    assert.match(
+        styles,
+        /\.taskSearch \.taskSearchField input\s*\{[\s\S]*?padding-left:\s*34px/
     );
 
 });
