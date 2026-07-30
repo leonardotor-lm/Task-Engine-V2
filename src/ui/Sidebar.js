@@ -241,17 +241,14 @@ export class Sidebar {
             : "";
 
         const viewOptions =
-            taskViews.includes(activeView) ||
-            activeView === View.PROJECT
+            taskViews.includes(activeView)
             ? `
                 <section class="taskToolsSection taskViewOptions">
 
-                    <h3>Vista</h3>
+                    <h3>Orden</h3>
 
                     <div class="taskViewOptionsBody">
 
-                        ${taskViews.includes(activeView)
-                            ? `
                         <div class="taskSorting">
 
                             <label for="taskSort">
@@ -303,43 +300,6 @@ export class Sidebar {
                             </select>
 
                         </div>
-                            `
-                            : ""}
-
-                        ${completedToggleViews.includes(
-                            activeView
-                        )
-                            ? `
-                                <button
-                                    id="toggleCompletedTasks"
-                                    type="button"
-                                    class="viewOptionButton bulkModeButton ${showCompletedTasks
-                                        ? "active"
-                                        : ""}">
-                                    ${showCompletedTasks
-                                        ? "Ocultar completadas"
-                                        : "Mostrar completadas"}
-                                </button>
-                            `
-                            : ""}
-
-                        <button
-                            id="toggleTaskMetadata"
-                            type="button"
-                            class="viewOptionButton bulkModeButton ${showTaskMetadata
-                                ? ""
-                                : "active"}"
-                            aria-label="${showTaskMetadata
-                                ? "Ocultar detalles"
-                                : "Mostrar detalles"}"
-                            title="${showTaskMetadata
-                                ? "Ocultar detalles"
-                                : "Mostrar detalles"}"
-                            aria-pressed="${showTaskMetadata}">
-                            ${showTaskMetadata
-                                ? "Ocultar detalles"
-                                : "Mostrar detalles"}
-                        </button>
 
                     </div>
 
@@ -919,12 +879,10 @@ export class Sidebar {
                                 id="openTaskTools"
                                 type="button"
                                 class="taskToolsButton ${Object.values(taskFilters).some(Boolean) ||
-                                    taskSort !== "MANUAL" ||
-                                    showCompletedTasks ||
-                                    !showTaskMetadata
+                                    taskSort !== "MANUAL"
                                     ? "active"
                                     : ""}">
-                                Filtros y vista
+                                Filtros rápidos
                             </button>
 
                             <dialog
@@ -936,14 +894,14 @@ export class Sidebar {
                                 <div class="taskToolsDialogHeader">
 
                                     <h2 id="taskToolsTitle">
-                                        Filtros y vista
+                                        Filtros rápidos
                                     </h2>
 
                                     <button
                                         id="closeTaskTools"
                                         type="button"
                                         class="iconButton"
-                                        aria-label="Cerrar filtros y vista"
+                                        aria-label="Cerrar filtros rápidos"
                                         title="Cerrar">
                                         ${Icon.render("close")}
                                     </button>
@@ -965,6 +923,21 @@ export class Sidebar {
                                 </div>
 
                             </dialog>
+                        `
+                        : ""}
+
+                    ${completedToggleViews.includes(activeView)
+                        ? `
+                            <button
+                                id="toggleCompletedTasks"
+                                type="button"
+                                class="viewOptionButton bulkModeButton ${showCompletedTasks
+                                    ? "active"
+                                    : ""}">
+                                ${showCompletedTasks
+                                    ? "Ocultar completadas"
+                                    : "Mostrar completadas"}
+                            </button>
                         `
                         : ""}
 
