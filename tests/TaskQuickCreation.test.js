@@ -24,6 +24,23 @@ test("crear desde Hoy hereda la fecha actual", () => {
 
 });
 
+test("crear desde Mañana hereda el día siguiente", () => {
+
+    assert.deepEqual(
+        getTaskCreationDefaults(
+            View.TOMORROW,
+            "2026-07-31"
+        ),
+        { dueDate: "2026-08-01" }
+    );
+
+    assert.equal(
+        getTaskCreationView(View.TOMORROW),
+        View.TOMORROW
+    );
+
+});
+
 test("crear desde Inbox no fuerza propiedades", () => {
 
     assert.deepEqual(

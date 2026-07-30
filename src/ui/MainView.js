@@ -64,7 +64,8 @@ export class MainView {
             syncInProgress,
             syncLastError,
             bulkSelectionMode,
-            showCompletedTasks
+            showCompletedTasks,
+            taskViewCounts
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -118,7 +119,8 @@ export class MainView {
                     advancedSearchMode,
                     advancedSearchError,
                     customFilters,
-                    currentCustomFilterId
+                    currentCustomFilterId,
+                    taskViewCounts
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -895,6 +897,7 @@ export class MainView {
         const navigationActions = [
             ["showInbox", "onShowInbox"],
             ["showToday", "onShowToday"],
+            ["showTomorrow", "onShowTomorrow"],
             ["showUpcoming", "onShowUpcoming"],
             ["showAll", "onShowAll"],
             ["showCompleted", "onShowCompleted"],
@@ -1517,6 +1520,7 @@ export class MainView {
 
             View.INBOX,
             View.TODAY,
+            View.TOMORROW,
             View.UPCOMING,
             View.ALL,
             View.AREA,
