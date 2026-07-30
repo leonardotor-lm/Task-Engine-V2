@@ -4,6 +4,8 @@ export const View = Object.freeze({
 
     TODAY: "today",
 
+    TOMORROW: "tomorrow",
+
     UPCOMING: "upcoming",
 
     ALL: "all",
