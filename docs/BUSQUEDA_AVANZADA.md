@@ -1,6 +1,6 @@
 # Guía de búsqueda avanzada
 
-La búsqueda avanzada permite encontrar tareas combinando texto, propiedades, fechas y relaciones. Se activa desde la barra lateral con **Usar búsqueda avanzada**.
+La búsqueda avanzada permite encontrar tareas combinando texto, propiedades, fechas y relaciones. Se abre desde la barra lateral con **Búsqueda avanzada**. Los criterios se editan en un panel emergente y, al aplicar una consulta válida, los resultados aparecen en la vista central.
 
 ## Uso básico
 
