@@ -107,3 +107,20 @@ test("los controles usan una jerarquía visual compacta", () => {
     );
 
 });
+
+test("las secciones principales tienen separadores discretos", () => {
+
+    assert.match(
+        styles,
+        /\.sidebarAreaGroup\s*\{[\s\S]*?border-bottom:\s*1px solid var\(--color-border\)/
+    );
+    assert.match(
+        styles,
+        /\.customFiltersSection\s*\{[\s\S]*?border-bottom:\s*1px solid var\(--color-border\)/
+    );
+    assert.match(
+        styles,
+        /\.sidebarListControls\s*\{[\s\S]*?border-bottom:\s*1px solid var\(--color-border\)/
+    );
+
+});
