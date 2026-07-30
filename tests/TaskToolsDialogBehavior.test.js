@@ -65,9 +65,9 @@ test("aplicar o limpiar filtros cierra el panel", () => {
 
 });
 
-test("el control de detalles deja el encabezado de tareas", () => {
+test("el control de detalles vuelve al encabezado de tareas", () => {
 
-    assert.doesNotMatch(
+    assert.match(
         taskListSource,
         /id="toggleTaskMetadata"/
     );
