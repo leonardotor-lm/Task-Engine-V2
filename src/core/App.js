@@ -1205,6 +1205,12 @@ export class App {
 
             },
 
+            onShowTomorrow: () => {
+
+                this.navigateTo(View.TOMORROW);
+
+            },
+
             onShowUpcoming: () => {
 
                 this.navigateTo(View.UPCOMING);
@@ -1968,6 +1974,11 @@ export class App {
 
                 return this.taskService.getTodayTasks(today);
 
+            case View.TOMORROW:
+
+                return this.taskService
+                    .getTomorrowTasks(today);
+
             case View.UPCOMING:
 
                 return this.taskService.getUpcomingTasks(today);
@@ -2063,12 +2074,36 @@ export class App {
                         task.dueDate <= today
                 );
 
-            case View.UPCOMING:
+            case View.TOMORROW: {
+
+                const tomorrow =
+                    this.taskService
+                        .getDateAfterDays(today, 1);
+
+                return completedTasks.filter(
+                    task =>
+                        task.dueDate === tomorrow
+                );
+
+            }
+
+            case View.UPCOMING: {
+
+                const startDate =
+                    this.taskService
+                        .getDateAfterDays(today, 2);
+                const endDate =
+                    this.taskService
+                        .getDateAfterDays(today, 7);
+
                 return completedTasks.filter(
                     task =>
                         task.dueDate !== null &&
-                        task.dueDate > today
+                        task.dueDate >= startDate &&
+                        task.dueDate <= endDate
                 );
+
+            }
 
             case View.ALL:
                 return completedTasks;
@@ -2099,6 +2134,7 @@ export class App {
         const activeViews = [
             View.INBOX,
             View.TODAY,
+            View.TOMORROW,
             View.UPCOMING,
             View.ALL,
             View.AREA
@@ -2201,6 +2237,7 @@ export class App {
         const bulkModes = {
             [View.INBOX]: "ACTIVE",
             [View.TODAY]: "ACTIVE",
+            [View.TOMORROW]: "ACTIVE",
             [View.UPCOMING]: "ACTIVE",
             [View.ALL]: "ACTIVE",
             [View.AREA]: "ACTIVE",
@@ -2268,6 +2305,38 @@ export class App {
         const syncFingerprint =
             this.getCurrentSyncFingerprint();
 
+        const today = this.getTodayString();
+        const allActiveTasks =
+            this.taskService.getAllActiveTasks();
+        const taskViewCounts = {
+            inbox:
+                this.taskService
+                    .getInboxTasks().length,
+            today:
+                this.taskService
+                    .getTodayTasks(today).length,
+            tomorrow:
+                this.taskService
+                    .getTomorrowTasks(today).length,
+            upcoming:
+                this.taskService
+                    .getUpcomingTasks(today).length,
+            all: allActiveTasks.length
+        };
+
+        for (
+            const area of
+            this.areaService.getAllAreas()
+        ) {
+
+            taskViewCounts[`area:${area.id}`] =
+                allActiveTasks.filter(
+                    task =>
+                        task.areaId === area.id
+                ).length;
+
+        }
+
         this.mainView.render({
 
             view: this.currentView,
@@ -2324,7 +2393,8 @@ export class App {
                 this.taskDisplayPreferences
                     .isMetadataVisible(),
             showCompletedTasks,
-            today: this.getTodayString(),
+            taskViewCounts,
+            today,
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),
             syncConfigured:
