@@ -18,6 +18,15 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ## Prioridad alta
 
+### Desactivar filtros guardados al cambiar de vista
+
+- **Estado:** Pendiente.
+- Tratar cada filtro guardado de la búsqueda avanzada como una vista exclusiva.
+- Al navegar a Hoy, Mañana, Próximas, Inbox, Todas, un área o cualquier otra vista, desactivar automáticamente el filtro guardado activo y su expresión de búsqueda.
+- Evitar que el filtro continúe ocultando tareas fuera de la vista desde la que fue abierto.
+- Conservar el filtro guardado para volver a utilizarlo, sin obligar a limpiar manualmente la búsqueda avanzada.
+- Agregar pruebas de navegación entre filtros guardados y vistas normales.
+
 ### Verificación del despliegue de seguridad
 
 - **Estado:** Pendiente de comprobación operativa.
