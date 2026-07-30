@@ -13,7 +13,7 @@ const styles = await readFile(
     "utf8"
 );
 
-test("orden y tareas completadas se agrupan bajo Vista", () => {
+test("filtros orden y completadas se agrupan en un panel", () => {
 
     const html = new Sidebar().render(
         View.INBOX
@@ -21,12 +21,12 @@ test("orden y tareas completadas se agrupan bajo Vista", () => {
 
     assert.match(
         html,
-        /<details\s+class="taskViewOptions"/
+        /id="openTaskTools"[\s\S]*?Filtros y vista/
     );
 
     assert.match(
         html,
-        /<summary>Vista<\/summary>/
+        /id="taskToolsDialog"/
     );
 
     assert.match(
@@ -37,6 +37,11 @@ test("orden y tareas completadas se agrupan bajo Vista", () => {
     assert.match(
         html,
         /id="toggleCompletedTasks"/
+    );
+
+    assert.match(
+        html,
+        /id="toggleTaskMetadata"/
     );
 
 });
