@@ -29,9 +29,8 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Paneles compactos de la barra lateral
 
-- **Estado:** Pendiente; la reorganización básica de navegación se desarrolla por separado.
-- Reemplazar el botón textual de búsqueda simple por una lupa integrada al campo, conservando una acción clara para limpiar la consulta.
-- Abrir la búsqueda avanzada en un panel modal que conserve los criterios, permita aplicar o limpiar y se cierre al mostrar los resultados.
+- **Estado:** En desarrollo por bloques.
+- **Búsqueda simple y avanzada:** implementadas en la rama de paneles de búsqueda; pendientes de verificación visual.
 - Reunir filtros, orden y opciones de visualización en un panel emergente: anclado en escritorio y modal o inferior en celular.
 - Retirar de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad.
 - Incorporar al final de la barra un acceso **Configuración** con engranaje y texto.
