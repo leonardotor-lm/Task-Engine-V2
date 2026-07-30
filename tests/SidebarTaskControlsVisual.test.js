@@ -13,7 +13,7 @@ const styles = await readFile(
     "utf8"
 );
 
-test("filtros orden y completadas se agrupan en un panel", () => {
+test("los filtros rápidos agrupan filtros y orden", () => {
 
     const html = new Sidebar().render(
         View.INBOX
@@ -21,7 +21,7 @@ test("filtros orden y completadas se agrupan en un panel", () => {
 
     assert.match(
         html,
-        /id="openTaskTools"[\s\S]*?Filtros y vista/
+        /id="openTaskTools"[\s\S]*?Filtros rápidos/
     );
 
     assert.match(
@@ -39,7 +39,12 @@ test("filtros orden y completadas se agrupan en un panel", () => {
         /id="toggleCompletedTasks"/
     );
 
-    assert.match(
+    assert.ok(
+        html.indexOf("taskToolsDialog") <
+        html.indexOf("toggleCompletedTasks")
+    );
+
+    assert.doesNotMatch(
         html,
         /id="toggleTaskMetadata"/
     );
