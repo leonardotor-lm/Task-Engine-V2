@@ -27,9 +27,27 @@ function createService() {
         },
 
         {
-            id: "upcoming",
+            id: "tomorrow",
+            status: TaskStatus.PENDING,
+            dueDate: "2026-07-24"
+        },
+
+        {
+            id: "upcoming-start",
+            status: TaskStatus.PENDING,
+            dueDate: "2026-07-25"
+        },
+
+        {
+            id: "upcoming-end",
             status: TaskStatus.PENDING,
             dueDate: "2026-07-30"
+        },
+
+        {
+            id: "later",
+            status: TaskStatus.PENDING,
+            dueDate: "2026-07-31"
         },
 
         {
@@ -94,13 +112,24 @@ test("Hoy muestra tareas de hoy y atrasadas", () => {
 
 });
 
-test("Próximas muestra tareas posteriores a hoy", () => {
+test("Mañana muestra únicamente el día siguiente", () => {
+
+    const service = createService();
+
+    assert.deepEqual(
+        getIds(service.getTomorrowTasks("2026-07-23")),
+        ["tomorrow"]
+    );
+
+});
+
+test("Próximas abarca desde pasado mañana hasta siete días", () => {
 
     const service = createService();
 
     assert.deepEqual(
         getIds(service.getUpcomingTasks("2026-07-23")),
-        ["upcoming"]
+        ["upcoming-start", "upcoming-end"]
     );
 
 });
@@ -111,7 +140,15 @@ test("Todas excluye tareas completadas, archivadas y eliminadas", () => {
 
     assert.deepEqual(
         getIds(service.getAllActiveTasks()),
-        ["inbox", "overdue", "today", "upcoming"]
+        [
+            "inbox",
+            "overdue",
+            "today",
+            "tomorrow",
+            "upcoming-start",
+            "upcoming-end",
+            "later"
+        ]
     );
 
 });
