@@ -86,7 +86,7 @@ test("el editor de objetivos conserva la misma jerarquía", () => {
     );
 });
 
-test("la búsqueda lateral distingue buscar, guardar y limpiar", () => {
+test("la búsqueda lateral distingue lupa y acciones avanzadas", () => {
     const html = new Sidebar().render(
         View.TODAY,
         "prioridad:alta",
@@ -113,14 +113,14 @@ test("la búsqueda lateral distingue buscar, guardar y limpiar", () => {
 
     assert.match(
         html,
-        /type="submit"\s+class="primaryAction"[\s\S]*?Buscar/
+        /class="taskSearchSubmit iconButton"[\s\S]*?aria-label="Buscar tareas"/
+    );
+    assert.match(
+        html,
+        /id="advancedSearchForm"[\s\S]*?class="primaryAction"[\s\S]*?Aplicar/
     );
     assert.match(
         html,
         /id="saveCustomFilter"[\s\S]*?class="secondaryAction"/
-    );
-    assert.match(
-        html,
-        /id="clearTaskSearch"[\s\S]*?class="tertiaryAction"/
     );
 });

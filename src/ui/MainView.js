@@ -48,6 +48,7 @@ export class MainView {
             tags,
             searchQuery,
             advancedSearchMode,
+            advancedSearchDialogOpen,
             advancedSearchError,
             customFilters,
             currentCustomFilterId,
@@ -120,7 +121,8 @@ export class MainView {
                     advancedSearchError,
                     customFilters,
                     currentCustomFilterId,
-                    taskViewCounts
+                    taskViewCounts,
+                    advancedSearchDialogOpen
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -146,6 +148,20 @@ export class MainView {
         `;
 
         this.searchableSelect.bindAll();
+
+        const advancedSearchDialog =
+            document.getElementById(
+                "advancedSearchDialog"
+            );
+
+        if (
+            advancedSearchDialogOpen &&
+            advancedSearchDialog &&
+            !advancedSearchDialog.open
+        ) {
+            advancedSearchDialog.showModal();
+        }
+
         this.searchableMultiSelect.bind(
             "bulkTagPicker"
         );
@@ -787,9 +803,58 @@ export class MainView {
                 .getElementById("taskSearchInput")
                 .value;
 
+            this.callbacks.onSearchSimpleTasks(query);
+
+        });
+
+        document.getElementById(
+            "advancedSearchForm"
+        )?.addEventListener("submit", event => {
+
+            event.preventDefault();
+
+            const query = document
+                .getElementById(
+                    "advancedSearchInput"
+                )
+                .value;
+
             this.callbacks.onSearchTasks(query);
 
         });
+
+        const closeAdvancedSearch = () => {
+
+            this.callbacks
+                .onCloseAdvancedSearch();
+
+        };
+
+        document.getElementById(
+            "closeAdvancedSearch"
+        )?.addEventListener(
+            "click",
+            closeAdvancedSearch
+        );
+
+        document.getElementById(
+            "cancelAdvancedSearch"
+        )?.addEventListener(
+            "click",
+            closeAdvancedSearch
+        );
+
+        document.getElementById(
+            "advancedSearchDialog"
+        )?.addEventListener(
+            "cancel",
+            event => {
+
+                event.preventDefault();
+                closeAdvancedSearch();
+
+            }
+        );
 
         document.getElementById("clearTaskSearch")?.addEventListener("click", () => {
 

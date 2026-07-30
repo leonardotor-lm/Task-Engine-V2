@@ -1249,6 +1249,126 @@ h3 {
     font-variant-numeric: tabular-nums;
 }
 
+.taskSearchField {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.taskSearch .taskSearchField input {
+    width: 100%;
+    min-height: 34px;
+    padding-right: 34px;
+    padding-left: 34px;
+}
+
+.taskSearchField .taskSearchSubmit,
+.taskSearchField .taskSearchClear {
+    position: absolute;
+    z-index: 1;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-muted);
+}
+
+.taskSearchField .taskSearchSubmit {
+    left: 2px;
+}
+
+.taskSearchField .taskSearchClear {
+    right: 2px;
+}
+
+.advancedSearchDialog {
+    box-sizing: border-box;
+    width: min(620px, calc(100vw - 32px));
+    max-height: min(760px, calc(100dvh - 32px));
+    padding: 0;
+    overflow: auto;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 18px 48px rgb(15 23 42 / 24%);
+}
+
+.advancedSearchDialog::backdrop {
+    background: rgb(15 23 42 / 38%);
+}
+
+.advancedSearchDialogHeader {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.advancedSearchDialogHeader h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.advancedSearchDialog form {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+}
+
+.advancedSearchDialog input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid var(--color-border-strong);
+    font: inherit;
+}
+
+.advancedSearchDialogActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+@media (max-width: 760px) {
+
+    .taskSearch .taskSearchField input {
+        min-height: 44px;
+        padding-right: 44px;
+        padding-left: 44px;
+    }
+
+    .taskSearchField .taskSearchSubmit,
+    .taskSearchField .taskSearchClear {
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .advancedSearchDialog {
+        width: calc(100vw - 16px);
+        max-height: calc(100dvh - 16px);
+    }
+
+    .advancedSearchDialogActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+}
+
 .taskList {
     margin: 8px 0 0;
 }

@@ -86,6 +86,7 @@ export class App {
         this.taskCreationOpen = false;
         this.searchQuery = "";
         this.advancedSearchMode = false;
+        this.advancedSearchDialogOpen = false;
         this.advancedSearchExpression = null;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
@@ -414,18 +415,36 @@ export class App {
 
                         this.advancedSearchExpression =
                             compileAdvancedSearch(query);
+                        this.advancedSearchDialogOpen =
+                            false;
 
                     } catch (error) {
 
                         this.advancedSearchExpression = null;
                         this.advancedSearchError =
                             error.message;
+                        this.advancedSearchDialogOpen =
+                            true;
 
                     }
 
                 }
 
                 this.selectedTask = null;
+                this.render();
+
+            },
+
+            onSearchSimpleTasks: (query) => {
+
+                this.advancedSearchMode = false;
+                this.advancedSearchDialogOpen = false;
+                this.advancedSearchExpression = null;
+                this.advancedSearchError = "";
+                this.currentCustomFilterId = null;
+                this.searchQuery = query;
+                this.selectedTask = null;
+
                 this.render();
 
             },
@@ -445,14 +464,34 @@ export class App {
 
             onToggleAdvancedSearch: () => {
 
-                this.advancedSearchMode =
-                    !this.advancedSearchMode;
+                if (!this.advancedSearchMode) {
 
-                this.searchQuery = "";
-                this.advancedSearchExpression = null;
-                this.advancedSearchError = "";
-                this.currentCustomFilterId = null;
+                    this.advancedSearchMode = true;
+                    this.searchQuery = "";
+                    this.advancedSearchExpression = null;
+                    this.advancedSearchError = "";
+                    this.currentCustomFilterId = null;
+
+                }
+
+                this.advancedSearchDialogOpen = true;
                 this.selectedTask = null;
+
+                this.render();
+
+            },
+
+            onCloseAdvancedSearch: () => {
+
+                this.advancedSearchDialogOpen = false;
+
+                if (!this.advancedSearchExpression) {
+
+                    this.advancedSearchMode = false;
+                    this.searchQuery = "";
+                    this.advancedSearchError = "";
+
+                }
 
                 this.render();
 
@@ -499,6 +538,7 @@ export class App {
                 this.projectTaskId = null;
                 this.projectHistory = [];
                 this.advancedSearchMode = true;
+                this.advancedSearchDialogOpen = false;
                 this.searchQuery = filter.query;
                 this.advancedSearchExpression =
                     compileAdvancedSearch(
@@ -1911,6 +1951,7 @@ export class App {
         this.taskCreationOpen = false;
         this.searchQuery = "";
         this.advancedSearchExpression = null;
+        this.advancedSearchDialogOpen = false;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
         this.taskFilters = {
@@ -2371,6 +2412,8 @@ export class App {
             searchQuery: this.searchQuery,
             advancedSearchMode:
                 this.advancedSearchMode,
+            advancedSearchDialogOpen:
+                this.advancedSearchDialogOpen,
             advancedSearchError:
                 this.advancedSearchError,
             customFilters:

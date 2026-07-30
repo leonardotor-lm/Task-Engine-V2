@@ -30,7 +30,8 @@ export class Sidebar {
         advancedSearchError = "",
         customFilters = [],
         currentCustomFilterId = null,
-        taskViewCounts = {}
+        taskViewCounts = {},
+        advancedSearchDialogOpen = false
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -563,78 +564,37 @@ export class Sidebar {
                     ? `
                 <form
                     id="taskSearchForm"
-                    class="taskSearch ${advancedSearchMode
-                        ? "advanced"
-                        : ""}">
+                    class="taskSearch">
 
-                    <input
-                        id="taskSearchInput"
-                        type="search"
-                        value="${escapeHtml(searchQuery)}"
-                        placeholder="${advancedSearchMode
-                            ? "Ej.: prioridad:alta AND fecha:hoy"
-                            : "Buscar tareas"}"
-                        aria-describedby="${advancedSearchMode
-                            ? "advancedSearchHelp"
-                            : ""}"
-                        autocomplete="off">
-
-                    ${advancedSearchMode
-                        ? `
-                            <p id="advancedSearchHelp">
-                                Usá AND, OR, NOT, paréntesis y criterios específicos.
-                            </p>
-
-                            <details class="advancedSearchReference">
-                                <summary>Ver criterios disponibles</summary>
-
-                                <p><strong>Contenido:</strong> titulo, descripcion.</p>
-                                <p><strong>Organización:</strong> area, areaContiene, contexto, contextoContiene, etiqueta, etiquetaContiene.</p>
-                                <p><strong>Fechas:</strong> fecha, fechaAntes, fechaDespues, fechaDentro, fechaEntre, completada, creada, actualizada y sus variantes Entre.</p>
-                                <p><strong>Propiedades:</strong> prioridad, estado, tieneFecha, tieneEtiquetas, tieneSubtareas, esSubtarea, recurrente, repeticion, posposiciones.</p>
-                                <p><strong>Valores útiles:</strong> hoy, ayer, mañana, viernes, “en 3 dias”, 15/08, &gt;3 y rangos entre fechas.</p>
-                            </details>
-                        `
-                        : ""}
-
-                    ${advancedSearchError
-                        ? `
-                            <p
-                                class="advancedSearchError"
-                                role="alert">
-                                ${escapeHtml(advancedSearchError)}
-                            </p>
-                        `
-                        : ""}
-
-                    <div class="taskSearchActions">
+                    <div class="taskSearchField">
 
                         <button
                             type="submit"
-                            class="primaryAction">
-                            Buscar
+                            class="taskSearchSubmit iconButton"
+                            aria-label="Buscar tareas"
+                            title="Buscar">
+                            ${Icon.render("search")}
                         </button>
 
-                        ${advancedSearchMode &&
-                            searchQuery.trim() &&
-                            !advancedSearchError
-                            ? `
-                                <button
-                                    id="saveCustomFilter"
-                                    type="button"
-                                    class="secondaryAction">
-                                    Guardar filtro
-                                </button>
-                            `
-                            : ""}
+                        <input
+                            id="taskSearchInput"
+                            type="search"
+                            value="${advancedSearchMode
+                                ? ""
+                                : escapeHtml(searchQuery)}"
+                            placeholder="Buscar tareas"
+                            autocomplete="off">
 
-                        ${searchQuery
+                        ${!advancedSearchMode &&
+                            searchQuery
                             ? `
                                 <button
                                     id="clearTaskSearch"
                                     type="button"
-                                    class="tertiaryAction">
-                                    Limpiar
+                                    class="taskSearchClear iconButton"
+                                    aria-label="Limpiar búsqueda"
+                                    title="Limpiar búsqueda">
+                                    ${Icon.render("close")}
                                 </button>
                             `
                             : ""}
@@ -651,9 +611,119 @@ export class Sidebar {
                         : ""}"
                     aria-pressed="${advancedSearchMode}">
                     ${advancedSearchMode
-                        ? "Búsqueda avanzada activa"
-                        : "Usar búsqueda avanzada"}
+                        ? "Editar búsqueda avanzada"
+                        : "Búsqueda avanzada"}
                 </button>
+
+                <dialog
+                    id="advancedSearchDialog"
+                    class="advancedSearchDialog"
+                    aria-labelledby="advancedSearchTitle"
+                    data-requested-open="${advancedSearchDialogOpen}">
+
+                    <div class="advancedSearchDialogHeader">
+
+                        <h2 id="advancedSearchTitle">
+                            Búsqueda avanzada
+                        </h2>
+
+                        <button
+                            id="closeAdvancedSearch"
+                            type="button"
+                            class="iconButton"
+                            aria-label="Cerrar búsqueda avanzada"
+                            title="Cerrar">
+                            ${Icon.render("close")}
+                        </button>
+
+                    </div>
+
+                    <form id="advancedSearchForm">
+
+                        <label for="advancedSearchInput">
+                            Criterios
+                        </label>
+
+                        <input
+                            id="advancedSearchInput"
+                            type="search"
+                            value="${advancedSearchMode
+                                ? escapeHtml(searchQuery)
+                                : ""}"
+                            placeholder="Ej.: prioridad:alta AND fecha:hoy"
+                            aria-describedby="advancedSearchHelp"
+                            autocomplete="off"
+                            autofocus>
+
+                        <p id="advancedSearchHelp">
+                            Usá AND, OR, NOT, paréntesis y criterios específicos.
+                        </p>
+
+                        ${advancedSearchError
+                            ? `
+                                <p
+                                    class="advancedSearchError"
+                                    role="alert">
+                                    ${escapeHtml(advancedSearchError)}
+                                </p>
+                            `
+                            : ""}
+
+                        <details class="advancedSearchReference">
+                            <summary>Ver criterios disponibles</summary>
+
+                            <p><strong>Contenido:</strong> titulo, descripcion.</p>
+                            <p><strong>Organización:</strong> area, areaContiene, contexto, contextoContiene, etiqueta, etiquetaContiene.</p>
+                            <p><strong>Fechas:</strong> fecha, fechaAntes, fechaDespues, fechaDentro, fechaEntre, completada, creada, actualizada y sus variantes Entre.</p>
+                            <p><strong>Propiedades:</strong> prioridad, estado, tieneFecha, tieneEtiquetas, tieneSubtareas, esSubtarea, recurrente, repeticion, posposiciones.</p>
+                            <p><strong>Valores útiles:</strong> hoy, ayer, mañana, viernes, “en 3 dias”, 15/08, &gt;3 y rangos entre fechas.</p>
+                        </details>
+
+                        <div class="advancedSearchDialogActions">
+
+                            <button
+                                type="submit"
+                                class="primaryAction">
+                                Aplicar
+                            </button>
+
+                            ${advancedSearchMode &&
+                                searchQuery.trim() &&
+                                !advancedSearchError
+                                ? `
+                                    <button
+                                        id="saveCustomFilter"
+                                        type="button"
+                                        class="secondaryAction">
+                                        Guardar filtro
+                                    </button>
+                                `
+                                : ""}
+
+                            ${advancedSearchMode &&
+                                searchQuery
+                                ? `
+                                    <button
+                                        id="clearTaskSearch"
+                                        type="button"
+                                        class="tertiaryAction">
+                                        Limpiar
+                                    </button>
+                                `
+                                : ""}
+
+                            <button
+                                id="cancelAdvancedSearch"
+                                type="button"
+                                class="tertiaryAction">
+                                Cancelar
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </dialog>
 
                 ${taskViews.includes(activeView)
                     ? `

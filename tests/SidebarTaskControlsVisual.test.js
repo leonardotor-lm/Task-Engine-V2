@@ -54,7 +54,7 @@ test("la búsqueda simple precede al acceso avanzado", () => {
 
     assert.match(
         html,
-        /Usar búsqueda avanzada/
+        />\s*Búsqueda avanzada\s*</
     );
 
 });
