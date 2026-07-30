@@ -6,7 +6,8 @@ import { Sidebar } from "../src/ui/Sidebar.js";
 
 function renderSidebar({
     advanced = false,
-    error = ""
+    error = "",
+    dialogOpen = false
 } = {}) {
 
     return new Sidebar().render(
@@ -31,25 +32,40 @@ function renderSidebar({
         null,
         false,
         advanced,
-        error
+        error,
+        [],
+        null,
+        {},
+        dialogOpen
     );
 
 }
 
-test("permite activar la búsqueda avanzada", () => {
+test("permite editar la búsqueda avanzada en un diálogo", () => {
 
     const html = renderSidebar({
-        advanced: true
+        advanced: true,
+        dialogOpen: true
     });
 
     assert.match(
         html,
-        /Búsqueda avanzada activa/
+        /Editar búsqueda avanzada/
     );
 
     assert.match(
         html,
         /prioridad:alta AND fecha:hoy/
+    );
+
+    assert.match(
+        html,
+        /id="advancedSearchDialog"/
+    );
+
+    assert.match(
+        html,
+        /id="advancedSearchForm"/
     );
 
     assert.doesNotMatch(
@@ -65,7 +81,7 @@ test("mantiene la búsqueda simple como modo inicial", () => {
 
     assert.match(
         html,
-        /Usar búsqueda avanzada/
+        />\s*Búsqueda avanzada\s*</
     );
 
     assert.match(
@@ -76,6 +92,22 @@ test("mantiene la búsqueda simple como modo inicial", () => {
     assert.match(
         html,
         /id="taskFilterForm"/
+    );
+
+});
+
+test("la búsqueda simple usa una lupa dentro del campo", () => {
+
+    const html = renderSidebar();
+
+    assert.match(
+        html,
+        /class="taskSearchField"[\s\S]*?class="taskSearchSubmit iconButton"[\s\S]*?<svg/
+    );
+
+    assert.doesNotMatch(
+        html,
+        />\s*Buscar\s*</
     );
 
 });
