@@ -1201,7 +1201,30 @@ export class TaskService {
 
     }
 
+    getTomorrowTasks(today) {
+
+        const tomorrow =
+            this.getDateAfterDays(today, 1);
+
+        return this.repository
+            .getAll()
+            .filter(task => {
+
+                return (
+                    this.isActiveTask(task) &&
+                    task.dueDate === tomorrow
+                );
+
+            });
+
+    }
+
     getUpcomingTasks(today) {
+
+        const startDate =
+            this.getDateAfterDays(today, 2);
+        const endDate =
+            this.getDateAfterDays(today, 7);
 
         return this.repository
             .getAll()
@@ -1210,10 +1233,25 @@ export class TaskService {
                 return (
                     this.isActiveTask(task) &&
                     task.dueDate !== null &&
-                    task.dueDate > today
+                    task.dueDate >= startDate &&
+                    task.dueDate <= endDate
                 );
 
             });
+
+    }
+
+    getDateAfterDays(dateString, days) {
+
+        const date = new Date(
+            `${dateString}T12:00:00Z`
+        );
+
+        date.setUTCDate(
+            date.getUTCDate() + days
+        );
+
+        return date.toISOString().slice(0, 10);
 
     }
 
