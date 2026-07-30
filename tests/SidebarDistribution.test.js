@@ -13,13 +13,83 @@ test("la barra lateral prioriza ejecución antes que planificación", () => {
             html.indexOf("Planificación")
     );
     assert.ok(
+        html.indexOf('id="showInbox"') <
+            html.indexOf('id="showToday"')
+    );
+    assert.ok(
         html.indexOf('id="showToday"') <
+            html.indexOf('id="showTomorrow"')
+    );
+    assert.ok(
+        html.indexOf('id="showTomorrow"') <
+            html.indexOf('id="showUpcoming"')
+    );
+    assert.ok(
+        html.indexOf('id="showUpcoming"') <
             html.indexOf('id="showAll"')
     );
     assert.ok(
         html.indexOf('id="showAll"') <
             html.indexOf("Historial")
     );
+});
+
+test("muestra contadores en vistas temporales, todas y áreas", () => {
+
+    const html = sidebar.render(
+        View.TODAY,
+        "",
+        [
+            {
+                id: "area-1",
+                name: "Trabajo",
+                color: "#3b82f6"
+            }
+        ],
+        null,
+        [],
+        [],
+        {},
+        "MANUAL",
+        false,
+        false,
+        "",
+        0,
+        false,
+        "",
+        null,
+        false,
+        false,
+        false,
+        null,
+        false,
+        false,
+        "",
+        [],
+        null,
+        {
+            inbox: 2,
+            today: 10,
+            tomorrow: 3,
+            upcoming: 7,
+            all: 22,
+            "area:area-1": 5
+        }
+    );
+
+    assert.match(
+        html,
+        /id="showToday"[\s\S]*?Hoy[\s\S]*?\(10\)/
+    );
+    assert.match(
+        html,
+        /id="showTomorrow"[\s\S]*?Mañana[\s\S]*?\(3\)/
+    );
+    assert.match(
+        html,
+        /data-id="area-1"[\s\S]*?Trabajo[\s\S]*?\(5\)/
+    );
+
 });
 
 test("historial y organización permanecen agrupados", () => {
