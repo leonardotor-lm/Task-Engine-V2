@@ -271,6 +271,7 @@ export class App {
 
             onRevealTask: (id) => {
 
+                this.deactivateCurrentCustomFilter();
                 this.currentView = View.ALL;
                 this.projectTaskId = null;
                 this.projectHistory = [];
@@ -732,6 +733,8 @@ export class App {
                     this.taskService.getTaskById(id);
 
                 if (!project) return;
+
+                this.deactivateCurrentCustomFilter();
 
                 if (this.currentView !== View.PROJECT) {
 
@@ -1622,6 +1625,7 @@ export class App {
 
     navigateTo(view) {
 
+        this.deactivateCurrentCustomFilter();
         this.currentView = view;
 
         if (view !== View.GOAL) {
@@ -1640,6 +1644,19 @@ export class App {
         this.selectedTask = null;
 
         this.render();
+
+    }
+
+    deactivateCurrentCustomFilter() {
+
+        if (!this.currentCustomFilterId) return;
+
+        this.searchQuery = "";
+        this.advancedSearchMode = false;
+        this.advancedSearchDialogOpen = false;
+        this.advancedSearchExpression = null;
+        this.advancedSearchError = "";
+        this.currentCustomFilterId = null;
 
     }
 
