@@ -41,3 +41,34 @@ test("cambiar de vista desactiva y limpia la selección múltiple", () => {
     assert.equal(renders, 1);
 
 });
+
+test("cambiar de vista desactiva por completo el filtro guardado", () => {
+
+    const app = Object.create(App.prototype);
+
+    app.currentView = View.ALL;
+    app.currentCustomFilterId = "filter-1";
+    app.searchQuery = "prioridad:alta";
+    app.advancedSearchMode = true;
+    app.advancedSearchDialogOpen = false;
+    app.advancedSearchExpression = {
+        type: "FIELD"
+    };
+    app.advancedSearchError = "";
+    app.bulkSelectionMode = false;
+    app.taskToolsDialogOpen = false;
+    app.selectedTaskIds = new Set();
+    app.selectedTask = null;
+    app.currentAreaId = null;
+    app.render = () => {};
+
+    app.navigateTo(View.TODAY);
+
+    assert.equal(app.currentView, View.TODAY);
+    assert.equal(app.currentCustomFilterId, null);
+    assert.equal(app.searchQuery, "");
+    assert.equal(app.advancedSearchMode, false);
+    assert.equal(app.advancedSearchExpression, null);
+    assert.equal(app.advancedSearchError, "");
+
+});
