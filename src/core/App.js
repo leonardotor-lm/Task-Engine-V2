@@ -670,7 +670,13 @@ export class App {
 
             onBackSettings: () => {
 
-                this.settingsSection = null;
+                this.settingsSection = [
+                    "areas",
+                    "contexts",
+                    "tags"
+                ].includes(this.settingsSection)
+                    ? "organization"
+                    : null;
                 this.render();
 
             },
