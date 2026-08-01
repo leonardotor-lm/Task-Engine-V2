@@ -3085,10 +3085,20 @@ export class MainView {
 
         }
 
+        const settingsEntityViews = {
+            areas: View.AREAS,
+            contexts: View.CONTEXTS,
+            tags: View.TAGS
+        };
+
+        const entityView =
+            settingsEntityViews[settingsSection] ??
+            view;
+
         if (
-            view === View.AREAS ||
-            view === View.CONTEXTS ||
-            view === View.TAGS
+            entityView === View.AREAS ||
+            entityView === View.CONTEXTS ||
+            entityView === View.TAGS
         ) {
 
             const config = {
@@ -3120,7 +3130,7 @@ export class MainView {
                     remove: this.callbacks.onDeleteTag
                 }
 
-            }[view];
+            }[entityView];
 
             document.getElementById("entityForm")?.addEventListener("submit", event => {
 
