@@ -22,7 +22,8 @@ test("ofrece la familia inicial de íconos", () => {
         "repeat",
         "menu",
         "check",
-        "search"
+        "search",
+        "settings"
         ]
     );
 

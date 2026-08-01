@@ -20,6 +20,7 @@ function renderSync({
         View.INBOX,
         "",
         [],
+        null,
         [],
         [],
         {},
@@ -34,7 +35,18 @@ function renderSync({
         remoteUpdateAvailable,
         false,
         inProgress,
-        lastError
+        lastError,
+        false,
+        false,
+        "",
+        [],
+        null,
+        {},
+        false,
+        false,
+        true,
+        true,
+        "sync"
     );
 
 }

@@ -39,12 +39,10 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 ### Paneles compactos de la barra lateral
 
 - **Estado:** En desarrollo por bloques.
-- **Búsqueda simple y avanzada:** implementadas en la rama de paneles de búsqueda; pendientes de verificación visual.
-- **Filtros rápidos:** implementados en la rama de panel visual con filtros y orden; pendientes de verificación visual.
+- **Búsqueda simple y avanzada:** implementadas y verificadas.
+- **Filtros rápidos:** implementados y verificados, con filtros y orden en un panel compacto.
 - **Preferencias de presentación:** mostrar completadas permanece bajo Filtros rápidos y el control de detalles vuelve al encabezado de las tareas.
-- Retirar de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad.
-- Incorporar al final de la barra un acceso **Configuración** con engranaje y texto.
-- Desde Configuración, ofrecer Organización, Sincronización y Copia de seguridad como tres accesos independientes a sus respectivos paneles.
+- **Configuración:** implementada en la rama de trabajo y pendiente de verificación visual. Retira de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad, y los reúne como tres accesos independientes detrás de un botón con engranaje.
 - Mantener diferenciadas la navegación por Áreas y la administración de áreas, contextos y etiquetas.
 
 ### Seleccionar todas en acciones múltiples

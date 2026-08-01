@@ -1242,6 +1242,157 @@ h3 {
     border-top: 1px solid var(--color-border);
 }
 
+.settingsButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 36px;
+    padding: 7px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.settingsButton:hover,
+.settingsButton.active {
+    border-color: var(--color-border);
+    background: var(--color-surface-hover);
+    color: var(--color-accent-strong);
+}
+
+.settingsDialog {
+    position: fixed;
+    z-index: 110;
+    top: 72px;
+    left: 220px;
+    box-sizing: border-box;
+    width: min(420px, calc(100vw - 236px));
+    max-height: calc(100dvh - 88px);
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 14px 34px rgb(15 23 42 / 20%);
+}
+
+.settingsDialog::backdrop {
+    background: rgb(15 23 42 / 38%);
+}
+
+.settingsDialogHeader {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.settingsDialogHeader h2 {
+    flex: 1;
+    margin: 0;
+    font-size: 17px;
+}
+
+.settingsDialogBody {
+    padding: 14px;
+}
+
+.settingsMenu,
+.settingsOrganizationActions {
+    display: grid;
+    gap: 6px;
+}
+
+.settingsMenu button,
+.settingsOrganizationActions button {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.settingsMenu button:hover,
+.settingsOrganizationActions button:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-accent-strong);
+}
+
+.settingsDialog .settingsToolPanel {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.settingsToolPanel h3,
+.settingsToolHeader h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.settingsToolHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.settingsToolHeader .syncStatus {
+    margin-top: 0;
+    text-align: right;
+}
+
+.settingsDialogFooter {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 14px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+@media (max-width: 760px) {
+
+    .settingsButton {
+        min-height: 44px;
+    }
+
+    .settingsDialog {
+        top: auto;
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+        width: auto;
+        max-height: calc(100dvh - 16px);
+    }
+
+    .settingsMenu button,
+    .settingsOrganizationActions button,
+    .settingsDialog button,
+    .settingsDialog input {
+        min-height: 44px;
+    }
+
+}
+
 .sidebarTaskCount {
     margin-left: auto;
     color: var(--color-text-muted);
@@ -4113,6 +4264,14 @@ input[type="date"],
 /* Ajustes finales de los gestores de entidades */
 .entityManager h2 {
     margin-bottom: 10px;
+}
+
+.settingsEntityManager {
+    min-width: 0;
+}
+
+.settingsEntityManager .emptyState {
+    margin: 8px 0 0;
 }
 
 .entityCreateManager {

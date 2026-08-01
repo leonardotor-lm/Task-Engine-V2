@@ -88,6 +88,8 @@ export class App {
         this.advancedSearchMode = false;
         this.advancedSearchDialogOpen = false;
         this.taskToolsDialogOpen = false;
+        this.settingsDialogOpen = false;
+        this.settingsSection = null;
         this.advancedSearchExpression = null;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
@@ -477,6 +479,9 @@ export class App {
                 }
 
                 this.advancedSearchDialogOpen = true;
+                this.taskToolsDialogOpen = false;
+                this.settingsDialogOpen = false;
+                this.settingsSection = null;
                 this.selectedTask = null;
 
                 this.render();
@@ -624,6 +629,9 @@ export class App {
             onOpenTaskTools: () => {
 
                 this.taskToolsDialogOpen = true;
+                this.advancedSearchDialogOpen = false;
+                this.settingsDialogOpen = false;
+                this.settingsSection = null;
                 this.render();
 
             },
@@ -631,6 +639,44 @@ export class App {
             onCloseTaskTools: () => {
 
                 this.taskToolsDialogOpen = false;
+                this.render();
+
+            },
+
+            onOpenSettings: () => {
+
+                this.settingsDialogOpen = true;
+                this.settingsSection = null;
+                this.advancedSearchDialogOpen = false;
+                this.taskToolsDialogOpen = false;
+                this.render();
+
+            },
+
+            onCloseSettings: () => {
+
+                this.settingsDialogOpen = false;
+                this.settingsSection = null;
+                this.render();
+
+            },
+
+            onOpenSettingsSection: (section) => {
+
+                this.settingsSection = section;
+                this.render();
+
+            },
+
+            onBackSettings: () => {
+
+                this.settingsSection = [
+                    "areas",
+                    "contexts",
+                    "tags"
+                ].includes(this.settingsSection)
+                    ? "organization"
+                    : null;
                 this.render();
 
             },
@@ -1639,6 +1685,8 @@ export class App {
 
         this.bulkSelectionMode = false;
         this.taskToolsDialogOpen = false;
+        this.settingsDialogOpen = false;
+        this.settingsSection = null;
         this.currentCustomFilterId = null;
         this.selectedTaskIds.clear();
         this.selectedTask = null;
@@ -1988,6 +2036,8 @@ export class App {
         this.advancedSearchExpression = null;
         this.advancedSearchDialogOpen = false;
         this.taskToolsDialogOpen = false;
+        this.settingsDialogOpen = false;
+        this.settingsSection = null;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
         this.taskFilters = {
@@ -2452,6 +2502,10 @@ export class App {
                 this.advancedSearchDialogOpen,
             taskToolsDialogOpen:
                 this.taskToolsDialogOpen,
+            settingsDialogOpen:
+                this.settingsDialogOpen,
+            settingsSection:
+                this.settingsSection,
             advancedSearchError:
                 this.advancedSearchError,
             customFilters:

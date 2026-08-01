@@ -2,6 +2,7 @@ import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { PriorityOptions } from "./PriorityOptions.js";
 import { Icon } from "./Icon.js";
+import { EntityManager } from "./EntityManager.js";
 
 export class Sidebar {
 
@@ -33,7 +34,9 @@ export class Sidebar {
         taskViewCounts = {},
         advancedSearchDialogOpen = false,
         taskToolsDialogOpen = false,
-        showTaskMetadata = true
+        showTaskMetadata = true,
+        settingsDialogOpen = false,
+        settingsSection = null
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -321,22 +324,16 @@ export class Sidebar {
                                     : `Sincronizada · rev. ${syncRevision}`;
 
         const syncTools = `
-            <details
-                class="syncTools"
-                ${!syncConfigured ||
-                    syncPendingChanges ||
-                    syncRemoteUpdateAvailable ||
-                    syncInProgress ||
-                    syncLastError
-                    ? "open"
-                    : ""}>
+            <section class="syncTools settingsToolPanel">
 
-                <summary>
+                <header class="settingsToolHeader">
+                    <h3>
                     Sincronización
+                    </h3>
                     <span class="syncStatus ${syncStatusClass}">
                         ${syncStatusText}
                     </span>
-                </summary>
+                </header>
 
                 ${syncLastError
                     ? `
@@ -442,13 +439,13 @@ export class Sidebar {
                     `
                     : ""}
 
-            </details>
+            </section>
         `;
 
         const backupTools = `
-            <details class="backupTools">
+            <section class="backupTools settingsToolPanel">
 
-                <summary>Copia de seguridad</summary>
+                <h3>Copia de seguridad</h3>
 
                 <div class="backupActions">
 
@@ -484,8 +481,102 @@ export class Sidebar {
 
                 </div>
 
-            </details>
+            </section>
         `;
+
+        const organizationTools = `
+            <section class="settingsToolPanel organizationTools">
+
+                <h3>Organización</h3>
+
+                <div class="settingsOrganizationActions">
+                    <button
+                        class="openSettingsSection"
+                        data-section="areas"
+                        type="button">
+                        Áreas
+                    </button>
+
+                    <button
+                        class="openSettingsSection"
+                        data-section="contexts"
+                        type="button">
+                        Contextos
+                    </button>
+
+                    <button
+                        class="openSettingsSection"
+                        data-section="tags"
+                        type="button">
+                        Etiquetas
+                    </button>
+                </div>
+
+            </section>
+        `;
+
+        const settingsSectionTitles = {
+            organization: "Organización",
+            areas: "Áreas",
+            contexts: "Contextos",
+            tags: "Etiquetas",
+            sync: "Sincronización",
+            backup: "Copia de seguridad"
+        };
+
+        const entityManager = new EntityManager();
+
+        const settingsSectionContent = {
+            organization: organizationTools,
+            areas: entityManager.render(
+                "Áreas",
+                areas,
+                { embedded: true }
+            ),
+            contexts: entityManager.render(
+                "Contextos",
+                contexts,
+                { embedded: true }
+            ),
+            tags: entityManager.render(
+                "Etiquetas",
+                tags,
+                { embedded: true }
+            ),
+            sync: syncTools,
+            backup: backupTools
+        };
+
+        const activeSettingsTitle =
+            settingsSectionTitles[settingsSection] ||
+            "Configuración";
+
+        const activeSettingsContent =
+            settingsSectionContent[settingsSection] ||
+            `
+                <div class="settingsMenu">
+                    <button
+                        type="button"
+                        class="openSettingsSection"
+                        data-section="organization">
+                        Organización
+                    </button>
+
+                    <button
+                        type="button"
+                        class="openSettingsSection"
+                        data-section="sync">
+                        Sincronización
+                    </button>
+
+                    <button
+                        type="button"
+                        class="openSettingsSection"
+                        data-section="backup">
+                        Copia de seguridad
+                    </button>
+                </div>
+            `;
 
         return `
             <aside
@@ -996,43 +1087,72 @@ export class Sidebar {
                         </div>
                     </details>
 
-                    <details
-                        class="sidebarNavigationGroup"
-                        ${[
-                            View.AREAS,
-                            View.CONTEXTS,
-                            View.TAGS
-                        ].includes(activeView)
-                            ? "open"
-                            : ""}>
-                        <summary>Organización</summary>
-
-                        <div class="sidebarNavigationGroupBody">
-                            <button
-                                id="manageAreas"
-                                class="${buttonClass(View.AREAS)}">
-                                Áreas
-                            </button>
-
-                            <button
-                                id="manageContexts"
-                                class="${buttonClass(View.CONTEXTS)}">
-                                Contextos
-                            </button>
-
-                            <button
-                                id="manageTags"
-                                class="${buttonClass(View.TAGS)}">
-                                Etiquetas
-                            </button>
-                        </div>
-                    </details>
-
                 </nav>
 
                 <div class="sidebarSystemTools">
-                    ${syncTools}
-                    ${backupTools}
+
+                    <button
+                        id="openSettings"
+                        type="button"
+                        class="settingsButton ${settingsDialogOpen
+                            ? "active"
+                            : ""}"
+                        aria-haspopup="dialog">
+                        ${Icon.render("settings")}
+                        <span>Configuración</span>
+                    </button>
+
+                    <dialog
+                        id="settingsDialog"
+                        class="settingsDialog"
+                        aria-labelledby="settingsTitle"
+                        data-requested-open="${settingsDialogOpen}">
+
+                        <div class="settingsDialogHeader">
+
+                            ${settingsSection
+                                ? `
+                                    <button
+                                        id="backSettings"
+                                        type="button"
+                                        class="iconButton"
+                                        aria-label="Volver a configuración"
+                                        title="Volver">
+                                        ${Icon.render("back")}
+                                    </button>
+                                `
+                                : ""}
+
+                            <h2 id="settingsTitle">
+                                ${activeSettingsTitle}
+                            </h2>
+
+                            <button
+                                id="closeSettings"
+                                type="button"
+                                class="iconButton"
+                                aria-label="Cerrar configuración"
+                                title="Cerrar">
+                                ${Icon.render("close")}
+                            </button>
+
+                        </div>
+
+                        <div class="settingsDialogBody">
+                            ${activeSettingsContent}
+                        </div>
+
+                        <div class="settingsDialogFooter">
+                            <button
+                                id="cancelSettings"
+                                type="button"
+                                class="tertiaryAction">
+                                Cerrar
+                            </button>
+                        </div>
+
+                    </dialog>
+
                 </div>
 
             </aside>
