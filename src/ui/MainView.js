@@ -321,6 +321,33 @@ export class MainView {
 
     }
 
+    preserveContentScroll(callback) {
+
+        const content =
+            document.querySelector(".content");
+        const contentScrollTop =
+            content?.scrollTop ?? 0;
+        const windowScrollX = window.scrollX;
+        const windowScrollY = window.scrollY;
+
+        callback();
+
+        const renderedContent =
+            document.querySelector(".content");
+
+        if (renderedContent) {
+            renderedContent.scrollTop =
+                contentScrollTop;
+        }
+
+        window.scrollTo({
+            top: windowScrollY,
+            left: windowScrollX,
+            behavior: "auto"
+        });
+
+    }
+
     setupMobileBackNavigation(state) {
 
         if (
@@ -1745,11 +1772,14 @@ export class MainView {
                     "change",
                     () => {
 
-                        this.callbacks
-                            .onToggleBulkSelection(
-                                checkbox.dataset.id,
-                                checkbox.checked
-                            );
+                        this.preserveContentScroll(
+                            () =>
+                                this.callbacks
+                                    .onToggleBulkSelection(
+                                        checkbox.dataset.id,
+                                        checkbox.checked
+                                    )
+                        );
 
                     }
                 );
