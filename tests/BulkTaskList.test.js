@@ -53,10 +53,65 @@ test("muestra una casilla para seleccionar tareas activas", () => {
         /class="bulkTaskCheckbox"/
     );
 
+    assert.match(html, /id="bulkSelectAll"/);
+    assert.match(html, /Seleccionar todas/);
+    assert.match(html, /0 de 1/);
+
     assert.doesNotMatch(
         html,
         /id="applyBulkChanges"/
     );
+
+});
+
+test("seleccionar todas refleja el conjunto visible", () => {
+
+    const html = render({
+        selectedTaskIds:
+            new Set(["task-1"])
+    });
+
+    assert.match(
+        html,
+        /id="bulkSelectAll"[\s\S]*?checked/
+    );
+    assert.match(html, /1 de 1/);
+
+});
+
+test("muestra estado parcial cuando sólo parte de la vista está seleccionada", () => {
+
+    const tasks = [
+        new Task({
+            id: "task-1",
+            title: "Primera"
+        }),
+        new Task({
+            id: "task-2",
+            title: "Segunda"
+        })
+    ];
+
+    const html = new TaskList().render(
+        tasks,
+        "Todas",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(),
+        false,
+        new Set(["task-1"]),
+        true,
+        "ACTIVE"
+    );
+
+    assert.match(
+        html,
+        /id="bulkSelectAll"[\s\S]*?data-indeterminate="true"/
+    );
+    assert.match(html, /1 de 2/);
 
 });
 
