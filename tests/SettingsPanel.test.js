@@ -65,10 +65,23 @@ test("organización reúne sus tres administradores", () => {
 
     const html = renderSettings("organization");
 
-    assert.match(html, /id="manageAreas"/);
-    assert.match(html, /id="manageContexts"/);
-    assert.match(html, /id="manageTags"/);
+    assert.match(html, /data-section="areas"/);
+    assert.match(html, /data-section="contexts"/);
+    assert.match(html, /data-section="tags"/);
     assert.match(html, /id="backSettings"/);
+
+});
+
+test("los administradores se renderizan dentro de configuración", () => {
+
+    const areas = renderSettings("areas");
+    const contexts = renderSettings("contexts");
+    const tags = renderSettings("tags");
+
+    assert.match(areas, /class="settingsEntityManager entityManager"/);
+    assert.match(contexts, /Nuevo contexto/);
+    assert.match(tags, /Nueva etiqueta/);
+    assert.doesNotMatch(areas, /<main class="content entityManager">/);
 
 });
 
