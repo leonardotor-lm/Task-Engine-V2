@@ -4367,9 +4367,9 @@ input[type="date"],
 
 #toggleBulkMode {
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 0;
     padding: 6px 8px;
-    border-color: transparent;
+    border-color: var(--color-border);
     background: transparent;
     color: var(--color-text-secondary);
     text-align: left;
