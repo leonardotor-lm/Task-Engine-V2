@@ -57,7 +57,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Conservar el desplazamiento en selección múltiple
 
-- **Estado:** Pendiente; error funcional.
+- **Estado:** En desarrollo.
 - Al marcar o desmarcar una tarea en modo de selección múltiple, conservar la posición actual de la lista.
 - Evitar que cada renderizado desplace la pantalla hacia el comienzo de la vista.
 - Mantener visible, siempre que sea posible, la tarea sobre la que se acaba de actuar.
@@ -77,7 +77,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Densidad y jerarquía visual
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo por ajustes progresivos.
 - Revisar editores, barras y paneles para reducir ruido sin perder capacidades.
 - Mantener información esencial visible y administración bajo demanda.
 - Conservar una interfaz sobria, compacta y fácil de recorrer.
@@ -87,7 +87,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Botones e iconografía
 
-- **Estado:** Pendiente para una etapa visual cercana.
+- **Estado:** En desarrollo por ajustes progresivos.
 - Aplicar los criterios establecidos en `docs/design/VISUAL-GUIDE.md`.
 - Utilizar la base reutilizable `src/ui/Icon.js` y los estilos `.icon` y `.iconButton`.
 - Revisar de forma sistemática los botones de escritorio y celular.
