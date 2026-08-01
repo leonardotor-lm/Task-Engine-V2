@@ -540,6 +540,7 @@ export class MainView {
             areas,
             contexts,
             tags,
+            settingsSection,
             syncPendingChanges,
             syncRemoteUpdateAvailable
         } = state;
