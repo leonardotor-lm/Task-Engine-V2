@@ -17,5 +17,9 @@ test("la selección múltiple conserva el desplazamiento", () => {
         mainViewSource,
         /\.bulkTaskCheckbox[\s\S]*?preserveContentScroll[\s\S]*?onToggleBulkSelection/
     );
+    assert.match(
+        mainViewSource,
+        /bulkSelectAll[\s\S]*?preserveContentScroll[\s\S]*?onSetVisibleBulkSelection/
+    );
 
 });
