@@ -38,16 +38,16 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Paneles compactos de la barra lateral
 
-- **Estado:** En desarrollo por bloques.
+- **Estado:** Terminado y verificado en la PR #135.
 - **Búsqueda simple y avanzada:** implementadas y verificadas.
 - **Filtros rápidos:** implementados y verificados, con filtros y orden en un panel compacto.
 - **Preferencias de presentación:** mostrar completadas permanece bajo Filtros rápidos y el control de detalles vuelve al encabezado de las tareas.
-- **Configuración:** implementada en la rama de trabajo y pendiente de verificación visual. Retira de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad, y los reúne como tres accesos independientes detrás de un botón con engranaje.
+- **Configuración:** implementada y verificada. Retira de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad, y los reúne como tres accesos independientes detrás de un botón con engranaje.
 - Mantener diferenciadas la navegación por Áreas y la administración de áreas, contextos y etiquetas.
 
 ### Seleccionar todas en acciones múltiples
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - Incorporar una casilla **Seleccionar todas** al modo de selección múltiple.
 - Limitar su alcance a las tareas seleccionables visibles en la vista y filtros actuales.
 - Permitir desmarcar el conjunto completo sin afectar tareas ocultas.
@@ -55,7 +55,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Conservar el desplazamiento en selección múltiple
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #134.
 - Al marcar o desmarcar una tarea en modo de selección múltiple, conservar la posición actual de la lista.
 - Evitar que cada renderizado desplace la pantalla hacia el comienzo de la vista.
 - Mantener visible, siempre que sea posible, la tarea sobre la que se acaba de actuar.
