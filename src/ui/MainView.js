@@ -1867,6 +1867,44 @@ export class MainView {
 
             });
 
+            const bulkSelectAll =
+                document.getElementById(
+                    "bulkSelectAll"
+                );
+
+            if (bulkSelectAll) {
+
+                bulkSelectAll.indeterminate =
+                    bulkSelectAll.dataset
+                        .indeterminate === "true";
+
+                bulkSelectAll.addEventListener(
+                    "change",
+                    () => {
+
+                        const visibleIds = [
+                            ...document.querySelectorAll(
+                                ".bulkTaskCheckbox"
+                            )
+                        ].map(
+                            checkbox =>
+                                checkbox.dataset.id
+                        );
+
+                        this.preserveContentScroll(
+                            () =>
+                                this.callbacks
+                                    .onSetVisibleBulkSelection(
+                                        visibleIds,
+                                        bulkSelectAll.checked
+                                    )
+                        );
+
+                    }
+                );
+
+            }
+
             document.getElementById(
                 "clearBulkSelection"
             )?.addEventListener("click", () => {
