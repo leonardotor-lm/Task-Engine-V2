@@ -2,6 +2,7 @@ import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { PriorityOptions } from "./PriorityOptions.js";
 import { Icon } from "./Icon.js";
+import { EntityManager } from "./EntityManager.js";
 
 export class Sidebar {
 
@@ -490,19 +491,22 @@ export class Sidebar {
 
                 <div class="settingsOrganizationActions">
                     <button
-                        id="manageAreas"
+                        class="openSettingsSection"
+                        data-section="areas"
                         type="button">
                         Áreas
                     </button>
 
                     <button
-                        id="manageContexts"
+                        class="openSettingsSection"
+                        data-section="contexts"
                         type="button">
                         Contextos
                     </button>
 
                     <button
-                        id="manageTags"
+                        class="openSettingsSection"
+                        data-section="tags"
                         type="button">
                         Etiquetas
                     </button>
@@ -513,12 +517,32 @@ export class Sidebar {
 
         const settingsSectionTitles = {
             organization: "Organización",
+            areas: "Áreas",
+            contexts: "Contextos",
+            tags: "Etiquetas",
             sync: "Sincronización",
             backup: "Copia de seguridad"
         };
 
+        const entityManager = new EntityManager();
+
         const settingsSectionContent = {
             organization: organizationTools,
+            areas: entityManager.render(
+                "Áreas",
+                areas,
+                { embedded: true }
+            ),
+            contexts: entityManager.render(
+                "Contextos",
+                contexts,
+                { embedded: true }
+            ),
+            tags: entityManager.render(
+                "Etiquetas",
+                tags,
+                { embedded: true }
+            ),
             sync: syncTools,
             backup: backupTools
         };
