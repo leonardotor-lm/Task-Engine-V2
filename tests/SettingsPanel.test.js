@@ -114,3 +114,16 @@ test("el panel tiene apertura cierre y presentación responsive", () => {
     );
 
 });
+
+test("los eventos reciben la sección activa de configuración", () => {
+
+    assert.match(
+        mainViewSource,
+        /bindEvents\(state\)[\s\S]*?const \{[\s\S]*?settingsSection,[\s\S]*?\} = state;/
+    );
+    assert.match(
+        mainViewSource,
+        /settingsEntityViews\[settingsSection\]/
+    );
+
+});
