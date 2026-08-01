@@ -92,7 +92,7 @@ test("muestra contadores en vistas temporales, todas y áreas", () => {
 
 });
 
-test("historial y organización permanecen agrupados", () => {
+test("historial permanece agrupado y organización pasa a configuración", () => {
     const html = sidebar.render(View.ARCHIVED);
 
     assert.match(
@@ -101,7 +101,11 @@ test("historial y organización permanecen agrupados", () => {
     );
     assert.match(
         html,
-        /<summary>Organización<\/summary>[\s\S]*?id="manageAreas"[\s\S]*?id="manageContexts"[\s\S]*?id="manageTags"/
+        /id="openSettings"[\s\S]*?Configuración/
+    );
+    assert.doesNotMatch(
+        html,
+        /<summary>Organización<\/summary>/
     );
 });
 
@@ -114,7 +118,7 @@ test("los controles de tareas se ocultan fuera de sus vistas", () => {
     assert.doesNotMatch(goalHtml, /id="toggleBulkMode"/);
 });
 
-test("sincronización y copia quedan después de la navegación", () => {
+test("configuración queda después de la navegación", () => {
     const html = sidebar.render(View.TODAY);
 
     assert.ok(
@@ -123,6 +127,6 @@ test("sincronización y copia quedan después de la navegación", () => {
     );
     assert.ok(
         html.indexOf('class="sidebarSystemTools"') <
-            html.indexOf("Sincronización")
+            html.indexOf('id="openSettings"')
     );
 });
