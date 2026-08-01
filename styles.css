@@ -4266,6 +4266,14 @@ input[type="date"],
     margin-bottom: 10px;
 }
 
+.settingsEntityManager {
+    min-width: 0;
+}
+
+.settingsEntityManager .emptyState {
+    margin: 8px 0 0;
+}
+
 .entityCreateManager {
     margin-bottom: 10px;
 }
