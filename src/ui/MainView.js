@@ -50,6 +50,8 @@ export class MainView {
             advancedSearchMode,
             advancedSearchDialogOpen,
             taskToolsDialogOpen,
+            settingsDialogOpen,
+            settingsSection,
             advancedSearchError,
             customFilters,
             currentCustomFilterId,
@@ -126,7 +128,9 @@ export class MainView {
                     taskViewCounts,
                     advancedSearchDialogOpen,
                     taskToolsDialogOpen,
-                    showTaskMetadata
+                    showTaskMetadata,
+                    settingsDialogOpen,
+                    settingsSection
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -185,6 +189,29 @@ export class MainView {
                 taskToolsDialog.showModal();
             } else {
                 taskToolsDialog.show();
+            }
+
+        }
+
+        const settingsDialog =
+            document.getElementById(
+                "settingsDialog"
+            );
+
+        if (
+            settingsDialogOpen &&
+            settingsDialog &&
+            !settingsDialog.open
+        ) {
+
+            if (
+                window.matchMedia(
+                    "(max-width: 760px)"
+                ).matches
+            ) {
+                settingsDialog.showModal();
+            } else {
+                settingsDialog.show();
             }
 
         }
@@ -1053,6 +1080,59 @@ export class MainView {
         )?.addEventListener("click", () => {
 
             this.callbacks.onToggleBulkMode();
+
+        });
+
+        document.getElementById(
+            "openSettings"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onOpenSettings();
+
+        });
+
+        const closeSettings = () => {
+
+            this.callbacks.onCloseSettings();
+
+        };
+
+        document.getElementById(
+            "closeSettings"
+        )?.addEventListener("click", closeSettings);
+
+        document.getElementById(
+            "cancelSettings"
+        )?.addEventListener("click", closeSettings);
+
+        document.getElementById(
+            "backSettings"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onBackSettings();
+
+        });
+
+        document.querySelectorAll(
+            ".openSettingsSection"
+        ).forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                this.callbacks.onOpenSettingsSection(
+                    button.dataset.section
+                );
+
+            });
+
+        });
+
+        document.getElementById(
+            "settingsDialog"
+        )?.addEventListener("cancel", event => {
+
+            event.preventDefault();
+            closeSettings();
 
         });
 
