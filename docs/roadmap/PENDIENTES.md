@@ -20,7 +20,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Desactivar filtros guardados al cambiar de vista
 
-- **Estado:** En desarrollo; implementado en rama y pendiente de verificación funcional.
+- **Estado:** Terminado y verificado en la PR #133.
 - Tratar cada filtro guardado de la búsqueda avanzada como una vista exclusiva.
 - Al navegar a Hoy, Mañana, Próximas, Inbox, Todas, un área o cualquier otra vista, desactivar automáticamente el filtro guardado activo y su expresión de búsqueda.
 - Evitar que el filtro continúe ocultando tareas fuera de la vista desde la que fue abierto.
@@ -55,6 +55,14 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Permitir desmarcar el conjunto completo sin afectar tareas ocultas.
 - Comunicar con claridad cuántas tareas quedaron seleccionadas.
 
+### Conservar el desplazamiento en selección múltiple
+
+- **Estado:** En desarrollo.
+- Al marcar o desmarcar una tarea en modo de selección múltiple, conservar la posición actual de la lista.
+- Evitar que cada renderizado desplace la pantalla hacia el comienzo de la vista.
+- Mantener visible, siempre que sea posible, la tarea sobre la que se acaba de actuar.
+- Verificar el comportamiento al seleccionar tareas consecutivas en listas largas, tanto en escritorio como en celular.
+
 ### Objetivos en la búsqueda avanzada
 
 - **Estado:** Pendiente.
@@ -69,14 +77,17 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Densidad y jerarquía visual
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo por ajustes progresivos.
 - Revisar editores, barras y paneles para reducir ruido sin perder capacidades.
 - Mantener información esencial visible y administración bajo demanda.
 - Conservar una interfaz sobria, compacta y fácil de recorrer.
+- En celular, aumentar la legibilidad de la tipografía de tareas sin perder densidad.
+- Reducir el espacio vertical entre el título de la tarea y sus metadatos.
+- Revisar conjuntamente tamaño de fuente, altura de línea y separación para evitar una lista pequeña o dispersa.
 
 ### Botones e iconografía
 
-- **Estado:** Pendiente para una etapa visual cercana.
+- **Estado:** En desarrollo por ajustes progresivos.
 - Aplicar los criterios establecidos en `docs/design/VISUAL-GUIDE.md`.
 - Utilizar la base reutilizable `src/ui/Icon.js` y los estilos `.icon` y `.iconButton`.
 - Revisar de forma sistemática los botones de escritorio y celular.
@@ -84,6 +95,8 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Evaluar, entre otros, flecha hacia la izquierda para **Volver**, disquete para **Guardar** y ojo abierto o cerrado para **Mostrar u ocultar detalles**.
 - Mantener etiquetas accesibles, títulos descriptivos y estados visuales claros en todos los botones con sólo ícono.
 - Conservar texto cuando un ícono aislado pueda resultar ambiguo.
+- Agregar un contorno fino y uniforme a **Selección múltiple**, **Filtros rápidos** y **Mostrar completadas** para que se reconozcan inmediatamente como botones.
+- Conservar en los tres controles la misma geometría, grosor de borde y tratamiento de estados activo, foco y desplazamiento del puntero.
 
 ### Selector de colores
 

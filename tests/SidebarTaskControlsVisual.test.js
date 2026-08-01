@@ -124,3 +124,20 @@ test("las secciones principales tienen separadores discretos", () => {
     );
 
 });
+
+test("los controles principales se perciben como botones", () => {
+
+    assert.match(
+        styles,
+        /\.taskToolsButton\s*\{[\s\S]*?border:\s*1px solid var\(--color-border\)/
+    );
+    assert.match(
+        styles,
+        /#toggleBulkMode\s*\{[\s\S]*?border-color:\s*var\(--color-border\)/
+    );
+    assert.doesNotMatch(
+        styles,
+        /#toggleBulkMode\s*\{[\s\S]*?border-color:\s*transparent/
+    );
+
+});
