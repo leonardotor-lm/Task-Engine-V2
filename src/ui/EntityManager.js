@@ -3,7 +3,11 @@ import { Icon } from "./Icon.js";
 
 export class EntityManager {
 
-    render(title, entities = []) {
+    render(
+        title,
+        entities = [],
+        { embedded = false } = {}
+    ) {
 
         const createLabels = {
             "Áreas": "Nueva área",
@@ -15,10 +19,15 @@ export class EntityManager {
             createLabels[title] ??
             "Nuevo elemento";
 
-        let html = `
-            <main class="content entityManager">
+        const containerTag =
+            embedded ? "section" : "main";
 
-                <h2>${escapeHtml(title)}</h2>
+        let html = `
+            <${containerTag} class="${embedded ? "settingsEntityManager" : "content"} entityManager">
+
+                ${embedded
+                    ? ""
+                    : `<h2>${escapeHtml(title)}</h2>`}
 
                 <details class="entityCreateManager">
 
@@ -157,7 +166,7 @@ export class EntityManager {
         }
 
         html += `
-            </main>
+            </${containerTag}>
         `;
 
         return html;
