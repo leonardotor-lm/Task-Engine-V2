@@ -29,7 +29,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Verificación del despliegue de seguridad
 
-- **Estado:** Pendiente de comprobación operativa.
+- **Estado:** Terminado y verificado el 2 de agosto de 2026.
 - Confirmar que el despliegue activo de Apps Script utiliza la versión actual de `google-apps-script/Code.gs`.
 - Probar una descarga y una subida con el despliegue actualizado.
 - Verificar que todas las colecciones, incluidos los objetivos, se conservan.
