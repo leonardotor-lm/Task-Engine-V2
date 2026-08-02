@@ -47,7 +47,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Seleccionar todas en acciones múltiples
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #136.
 - Incorporar una casilla **Seleccionar todas** al modo de selección múltiple.
 - Limitar su alcance a las tareas seleccionables visibles en la vista y filtros actuales.
 - Permitir desmarcar el conjunto completo sin afectar tareas ocultas.
@@ -76,8 +76,8 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 ### Densidad y jerarquía visual
 
 - **Estado:** En desarrollo por ajustes progresivos.
-- **Densidad móvil de tareas:** ajuste en desarrollo para aumentar la tipografía y retirar el espacio vertical provocado por las acciones rápidas.
-- **Barra lateral móvil:** ajuste en desarrollo para aumentar la legibilidad de navegación, títulos de sección y contadores sin modificar escritorio.
+- **Densidad móvil de tareas:** terminada y verificada en la PR #137; aumenta la tipografía y retira el espacio vertical provocado por las acciones rápidas.
+- **Barra lateral móvil:** terminada y verificada en la PR #138; aumenta la legibilidad de navegación, títulos de sección y contadores sin modificar escritorio.
 - Revisar editores, barras y paneles para reducir ruido sin perder capacidades.
 - Mantener información esencial visible y administración bajo demanda.
 - Conservar una interfaz sobria, compacta y fácil de recorrer.
