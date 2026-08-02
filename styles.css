@@ -508,6 +508,12 @@ body {
     max-height: 180px;
 }
 
+.searchableMultiSelectManagerActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
 .taskMoveField {
     display: grid;
     gap: 8px;
