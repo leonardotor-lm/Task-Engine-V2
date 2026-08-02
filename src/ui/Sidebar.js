@@ -595,7 +595,7 @@ export class Sidebar {
                 aria-label="Navegación principal">
 
                 <div class="sidebarBrand">
-                    <h3>Task Engine</h3>
+                    <h3>Mis tareas</h3>
 
                     <span
                         class="sidebarSyncStatus ${syncStatusClass}"
