@@ -323,6 +323,16 @@ export class Sidebar {
                                     ? `Cambios pendientes · rev. ${syncRevision}`
                                     : `Sincronizada · rev. ${syncRevision}`;
 
+        const sidebarSyncStatusText = {
+            disconnected: "Desconectado",
+            error: "Error de sincronización",
+            syncing: "Sincronizando…",
+            conflict: "Conflicto de sincronización",
+            remote: "Actualización disponible",
+            pending: "Cambios pendientes",
+            configured: "Sincronizado"
+        }[syncStatusClass];
+
         const syncTools = `
             <section class="syncTools settingsToolPanel">
 
@@ -584,7 +594,21 @@ export class Sidebar {
                 class="sidebar"
                 aria-label="Navegación principal">
 
-                <h3>Task Engine</h3>
+                <div class="sidebarBrand">
+                    <h3>Task Engine</h3>
+
+                    <span
+                        class="sidebarSyncStatus ${syncStatusClass}"
+                        role="status"
+                        aria-live="polite"
+                        title="${escapeHtml(syncStatusText)}">
+                        <span
+                            class="sidebarSyncStatusDot"
+                            aria-hidden="true">
+                        </span>
+                        <span>${sidebarSyncStatusText}</span>
+                    </span>
+                </div>
 
                 <button
                     id="openTaskCreation"
