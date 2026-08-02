@@ -862,6 +862,49 @@ body {
     font-weight: 600;
 }
 
+.sidebarBrand {
+    margin-bottom: 12px;
+}
+
+.sidebarBrand h3 {
+    margin-bottom: 3px;
+}
+
+.sidebarSyncStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+.sidebarSyncStatusDot {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.sidebarSyncStatus.configured {
+    color: #15803d;
+}
+
+.sidebarSyncStatus.syncing {
+    color: var(--color-accent);
+}
+
+.sidebarSyncStatus.pending {
+    color: #b45309;
+}
+
+.sidebarSyncStatus.remote,
+.sidebarSyncStatus.conflict,
+.sidebarSyncStatus.error {
+    color: var(--color-danger);
+}
+
 .syncErrorHint {
     margin: 10px 0 0;
     color: var(--color-danger);
@@ -2355,10 +2398,6 @@ input[type="date"],
 }
 
 @media (max-width: 760px) {
-
-    body > h1 {
-        display: none;
-    }
 
     .layout {
         display: block;

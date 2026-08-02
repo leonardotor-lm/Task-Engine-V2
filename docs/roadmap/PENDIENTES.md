@@ -43,6 +43,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Filtros rápidos:** implementados y verificados, con filtros y orden en un panel compacto.
 - **Preferencias de presentación:** mostrar completadas permanece bajo Filtros rápidos y el control de detalles vuelve al encabezado de las tareas.
 - **Configuración:** implementada y verificada. Retira de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad, y los reúne como tres accesos independientes detrás de un botón con engranaje.
+- **Estado de sincronización visible:** en desarrollo; muestra debajo del título de la barra el estado actual sin abrir Configuración.
 - Mantener diferenciadas la navegación por Áreas y la administración de áreas, contextos y etiquetas.
 
 ### Seleccionar todas en acciones múltiples
