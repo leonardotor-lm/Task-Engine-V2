@@ -88,7 +88,7 @@ export class MainView {
                         ${Icon.render("menu")}
                     </button>
 
-                    <strong>Task Engine</strong>
+                    <strong>Mis tareas</strong>
 
                 </header>
 
