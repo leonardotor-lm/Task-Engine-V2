@@ -44,19 +44,17 @@ No deben publicarse en el repositorio, capturas, mensajes ni documentos comparti
 
 El control de frecuencia propio se aplica después de autenticar la solicitud. Reduce errores o abuso desde un cliente autorizado, pero no sustituye los límites de la plataforma ni impide por sí solo intentos anónimos contra un endpoint público.
 
-## Comprobación operativa pendiente
+## Comprobación operativa
 
-El repositorio no permite determinar qué versión de `google-apps-script/Code.gs` está efectivamente desplegada en la cuenta de Google.
+La comprobación operativa se completó el 2 de agosto de 2026:
 
-Antes de considerar verificado el entorno productivo se debe:
-
-1. copiar la versión actual de `google-apps-script/Code.gs` en el proyecto de Apps Script;
-2. crear una nueva versión del despliegue;
-3. comprobar una descarga y una subida desde la aplicación;
-4. confirmar que objetivos, tareas y demás colecciones se conservan.
+1. se verificó que el archivo copiado coincidiera exactamente con la versión actual de `google-apps-script/Code.gs`;
+2. se creó una nueva versión de la implementación conservando la URL existente;
+3. se completaron correctamente una subida y una descarga desde la aplicación;
+4. se confirmó la conservación de objetivos, tareas y demás colecciones.
 
 ## Dictamen
 
 La implementación versionada cuenta con una base de seguridad adecuada para el uso personal previsto y es compatible con GitHub Pages. No se requiere una reescritura ni una migración del backend.
 
-La auditoría del código queda cerrada. La seguridad operativa queda condicionada a confirmar que el despliegue de Apps Script utiliza la versión actual.
+La auditoría del código y la comprobación operativa del despliegue quedan cerradas.
