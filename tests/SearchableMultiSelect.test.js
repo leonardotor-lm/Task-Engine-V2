@@ -48,6 +48,8 @@ test("muestra seleccionadas como chips y oculta las casillas", () => {
         /class="searchableMultiSelectColor"/
     );
     assert.match(html, /id="taskTagsSearch"/);
+    assert.match(html, /id="taskTagsCancel"/);
+    assert.match(html, />\s*Cancelar\s*</);
     assert.doesNotMatch(
         html,
         /type="checkbox"/
@@ -99,7 +101,20 @@ test("cierra el selector después de agregar una opción", () => {
 
     assert.match(
         source,
-        /add\.addEventListener\("click"[\s\S]*?manager\.open = false;[\s\S]*?querySelector\("summary"\)/
+        /closeManager[\s\S]*?manager\.open = false;[\s\S]*?querySelector\("summary"\)[\s\S]*?add\.addEventListener\("click"[\s\S]*?closeManager\(\)/
+    );
+
+});
+
+test("permite cancelar sin agregar una opción", () => {
+
+    assert.match(
+        source,
+        /cancel\.addEventListener\([\s\S]*?"click",[\s\S]*?closeManager/
+    );
+    assert.match(
+        source,
+        /const closeManager[\s\S]*?search\.value = "";[\s\S]*?refresh\(\)/
     );
 
 });
