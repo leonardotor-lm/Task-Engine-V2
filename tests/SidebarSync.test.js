@@ -61,6 +61,40 @@ test("muestra el formulario cuando no hay conexión", () => {
 
 });
 
+test("muestra el estado de sincronización debajo del título", () => {
+
+    assert.match(
+        renderSync(),
+        /class="sidebarSyncStatus disconnected"[\s\S]*?Desconectado/
+    );
+    assert.match(
+        renderSync({ configured: true }),
+        /class="sidebarSyncStatus configured"[\s\S]*?Sincronizado/
+    );
+    assert.match(
+        renderSync({
+            configured: true,
+            inProgress: true
+        }),
+        /class="sidebarSyncStatus syncing"[\s\S]*?Sincronizando…/
+    );
+    assert.match(
+        renderSync({
+            configured: true,
+            pendingChanges: true
+        }),
+        /class="sidebarSyncStatus pending"[\s\S]*?Cambios pendientes/
+    );
+    assert.match(
+        renderSync({
+            configured: true,
+            lastError: "Sin conexión"
+        }),
+        /class="sidebarSyncStatus error"[\s\S]*?Error de sincronización/
+    );
+
+});
+
 test("muestra acciones y revisión cuando está conectada", () => {
 
     const html = renderSync({
