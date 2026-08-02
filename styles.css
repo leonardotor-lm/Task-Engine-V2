@@ -3103,6 +3103,25 @@ input[type="date"],
         min-height: 40px;
     }
 
+    .sidebar {
+        font-size: 16px;
+        line-height: 1.3;
+    }
+
+    .sidebarSectionLabel,
+    .customFiltersSection > summary {
+        font-size: 13px;
+        letter-spacing: 0.03em;
+    }
+
+    .sidebarNavigationGroup > summary {
+        font-size: 15px;
+    }
+
+    .sidebarTaskCount {
+        font-size: 13px;
+    }
+
 }
 
 
