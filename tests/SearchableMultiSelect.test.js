@@ -1,9 +1,23 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import {
     SearchableMultiSelect
 } from "../src/ui/SearchableMultiSelect.js";
+
+const source = await readFile(
+    new URL(
+        "../src/ui/SearchableMultiSelect.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
 
 test("muestra seleccionadas como chips y oculta las casillas", () => {
 
@@ -34,6 +48,8 @@ test("muestra seleccionadas como chips y oculta las casillas", () => {
         /class="searchableMultiSelectColor"/
     );
     assert.match(html, /id="taskTagsSearch"/);
+    assert.match(html, /id="taskTagsCancel"/);
+    assert.match(html, />\s*Cancelar\s*</);
     assert.doesNotMatch(
         html,
         /type="checkbox"/
@@ -78,5 +94,40 @@ test("escapa las opciones y las etiquetas", () => {
 
     assert.doesNotMatch(html, /<script>/);
     assert.match(html, /&lt;script&gt;/);
+
+});
+
+test("cierra el selector después de agregar una opción", () => {
+
+    assert.match(
+        source,
+        /closeManager[\s\S]*?manager\.open = false;[\s\S]*?querySelector\("summary"\)[\s\S]*?add\.addEventListener\("click"[\s\S]*?closeManager\(\)/
+    );
+
+});
+
+test("permite cancelar sin agregar una opción", () => {
+
+    assert.match(
+        source,
+        /cancel\.addEventListener\([\s\S]*?"click",[\s\S]*?closeManager/
+    );
+    assert.match(
+        source,
+        /const closeManager[\s\S]*?search\.value = "";[\s\S]*?refresh\(\)/
+    );
+
+});
+
+test("mantiene compactos los chips de acciones múltiples", () => {
+
+    assert.match(
+        styles,
+        /\.bulkToolbar \.searchableMultiSelectChip\s*\{[\s\S]*?max-width:\s*180px;[\s\S]*?min-height:\s*28px;/
+    );
+    assert.match(
+        styles,
+        /\.searchableMultiSelectChip[\s\S]*?\.searchableMultiSelectRemove\s*\{[\s\S]*?width:\s*26px;[\s\S]*?min-height:\s*26px;/
+    );
 
 });

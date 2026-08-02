@@ -105,11 +105,19 @@ export class SearchableMultiSelect {
                                     hidden>
                                     No hay coincidencias.
                                 </p>
-                                <button
-                                    id="${escapeHtml(id)}Add"
-                                    type="button">
-                                    Agregar
-                                </button>
+                                <div class="searchableMultiSelectManagerActions">
+                                    <button
+                                        id="${escapeHtml(id)}Add"
+                                        type="button">
+                                        Agregar
+                                    </button>
+                                    <button
+                                        id="${escapeHtml(id)}Cancel"
+                                        type="button"
+                                        class="tertiaryAction">
+                                        Cancelar
+                                    </button>
+                                </div>
                             </div>
                         </details>
                     `
@@ -192,11 +200,23 @@ export class SearchableMultiSelect {
         const add = document.getElementById(
             `${id}Add`
         );
+        const cancel = document.getElementById(
+            `${id}Cancel`
+        );
         const selected = document.getElementById(
             `${id}Selected`
         );
+        const manager = root.querySelector(
+            ".searchableMultiSelectManager"
+        );
 
-        if (!search || !select || !add || !selected) {
+        if (
+            !search ||
+            !select ||
+            !add ||
+            !cancel ||
+            !selected
+        ) {
             return;
         }
 
@@ -238,6 +258,19 @@ export class SearchableMultiSelect {
 
         search.addEventListener("input", refresh);
 
+        const closeManager = () => {
+
+            search.value = "";
+            refresh();
+
+            if (manager) {
+                manager.open = false;
+                manager.querySelector("summary")
+                    ?.focus();
+            }
+
+        };
+
         add.addEventListener("click", () => {
 
             const option =
@@ -262,11 +295,15 @@ export class SearchableMultiSelect {
                 })
             );
 
-            search.value = "";
-            refresh();
             this.updateCount(id, selected);
+            closeManager();
 
         });
+
+        cancel.addEventListener(
+            "click",
+            closeManager
+        );
 
         selected.addEventListener(
             "click",

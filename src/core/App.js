@@ -914,6 +914,19 @@ export class App {
 
             },
 
+            onSetVisibleBulkSelection: (
+                ids,
+                selected
+            ) => {
+
+                this.selectedTaskIds = selected
+                    ? new Set(ids)
+                    : new Set();
+
+                this.render();
+
+            },
+
             onClearBulkSelection: () => {
 
                 this.selectedTaskIds.clear();

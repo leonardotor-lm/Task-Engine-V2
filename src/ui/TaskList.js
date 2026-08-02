@@ -99,6 +99,31 @@ export class TaskList {
                 : expandedTaskIds
         );
 
+        const visibleSelectableIds =
+            visibleRows
+                .map(({ task }) => task)
+                .filter(task =>
+                    this.isBulkSelectable(
+                        task,
+                        bulkActionMode
+                    )
+                )
+                .map(task => task.id);
+
+        const selectedVisibleCount =
+            visibleSelectableIds.filter(id =>
+                selectedTaskIds.has(id)
+            ).length;
+
+        const allVisibleSelected =
+            visibleSelectableIds.length > 0 &&
+            selectedVisibleCount ===
+                visibleSelectableIds.length;
+
+        const someVisibleSelected =
+            selectedVisibleCount > 0 &&
+            !allVisibleSelected;
+
         let html = `
             <main class="content ${escapeHtml(contentClass)}">
 
@@ -141,9 +166,28 @@ export class TaskList {
 
                 ${bulkSelectionEnabled
                     ? `
-                        <p class="bulkModeNotice">
-                            Modo de selección múltiple activo
-                        </p>
+                        <div class="bulkSelectionHeader">
+                            <p class="bulkModeNotice">
+                                Modo de selección múltiple activo
+                            </p>
+
+                            <label class="bulkSelectAllControl">
+                                <input
+                                    id="bulkSelectAll"
+                                    type="checkbox"
+                                    ${allVisibleSelected
+                                        ? "checked"
+                                        : ""}
+                                    data-indeterminate="${someVisibleSelected}"
+                                    ${visibleSelectableIds.length === 0
+                                        ? "disabled"
+                                        : ""}>
+                                <span>Seleccionar todas</span>
+                                <span class="bulkSelectionCount">
+                                    ${selectedVisibleCount} de ${visibleSelectableIds.length}
+                                </span>
+                            </label>
+                        </div>
                     `
                     : ""}
 
