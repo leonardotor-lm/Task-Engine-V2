@@ -76,6 +76,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 ### Densidad y jerarquía visual
 
 - **Estado:** En desarrollo por ajustes progresivos.
+- **Densidad móvil de tareas:** ajuste en desarrollo para aumentar la tipografía y retirar el espacio vertical provocado por las acciones rápidas.
 - Revisar editores, barras y paneles para reducir ruido sin perder capacidades.
 - Mantener información esencial visible y administración bajo demanda.
 - Conservar una interfaz sobria, compacta y fácil de recorrer.
