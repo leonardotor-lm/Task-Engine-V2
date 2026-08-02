@@ -195,6 +195,9 @@ export class SearchableMultiSelect {
         const selected = document.getElementById(
             `${id}Selected`
         );
+        const manager = root.querySelector(
+            ".searchableMultiSelectManager"
+        );
 
         if (!search || !select || !add || !selected) {
             return;
@@ -265,6 +268,12 @@ export class SearchableMultiSelect {
             search.value = "";
             refresh();
             this.updateCount(id, selected);
+
+            if (manager) {
+                manager.open = false;
+                manager.querySelector("summary")
+                    ?.focus();
+            }
 
         });
 
