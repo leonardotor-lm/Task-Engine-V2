@@ -514,7 +514,7 @@ export class MainView {
 
             if (
                 !Dialog.confirm(
-                    "¿Salir de Task Engine?"
+                    "¿Salir de Mis tareas?"
                 )
             ) {
 
