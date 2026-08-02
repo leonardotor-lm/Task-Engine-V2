@@ -2399,10 +2399,6 @@ input[type="date"],
 
 @media (max-width: 760px) {
 
-    body > h1 {
-        display: none;
-    }
-
     .layout {
         display: block;
         height: 100dvh;
