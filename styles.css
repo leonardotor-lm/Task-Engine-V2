@@ -3935,18 +3935,22 @@ input[type="time"],
         white-space: nowrap;
     }
 
-    .taskListHeading:has(.goalHeadingAction) {
+    .taskListHeading:has(.goalHeadingAction),
+    .taskListHeading:has(.projectHeadingAction) {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
         align-items: stretch;
     }
 
-    .taskListHeading:has(.goalHeadingAction) > h2 {
+    .taskListHeading:has(.goalHeadingAction) > h2,
+    .taskListHeading:has(.projectHeadingAction) > h2 {
         min-width: 0;
         margin-bottom: 0;
     }
 
     .taskListHeading:has(.goalHeadingAction)
+        .taskListHeadingActions,
+    .taskListHeading:has(.projectHeadingAction)
         .taskListHeadingActions {
         width: 100%;
         flex-wrap: wrap;
