@@ -42,6 +42,13 @@ test("una búsqueda avanzada válida cierra el panel", () => {
 
 });
 
+test("una búsqueda avanzada válida se comporta como una vista global", () => {
+    assert.match(
+        appSource,
+        /compileAdvancedSearch\(query\);[\s\S]*?this\.currentView = View\.ALL;[\s\S]*?this\.currentAreaId = null;[\s\S]*?this\.advancedSearchDialogOpen =\s*false;/
+    );
+});
+
 test("el diálogo se abre como modal y puede cancelarse", () => {
 
     assert.match(
