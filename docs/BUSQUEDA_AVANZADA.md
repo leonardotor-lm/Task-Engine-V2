@@ -121,6 +121,8 @@ estado:incompleta AND prioridad:alta
 | `fechaDentro` | Vencimientos dentro de un período futuro | `fechaDentro:"7 dias"` |
 | `fechaEntre` | Vencimientos entre dos fechas, inclusive | `fechaEntre:"2026-08-01,2026-08-31"` |
 | `tieneFecha` | Presencia o ausencia de fecha | `tieneFecha:no` |
+| `hora` | Hora exacta de vencimiento | `hora:"18:30"` |
+| `tieneHora` | Presencia o ausencia de hora | `tieneHora:si` |
 
 Valores relativos admitidos para `fecha`:
 
