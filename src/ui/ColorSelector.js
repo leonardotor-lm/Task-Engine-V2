@@ -157,6 +157,19 @@ export class ColorSelector {
                         <small id="${escapeHtml(id)}ColorHelp">
                             Usá un código hexadecimal, por ejemplo #3b82f6.
                         </small>
+
+                        <div class="colorSelectorActions">
+                            <button
+                                type="button"
+                                class="colorSelectorCancel tertiaryAction">
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                class="colorSelectorApply primaryAction">
+                                Aplicar
+                            </button>
+                        </div>
                     </div>
                 </details>
             </div>
@@ -185,6 +198,27 @@ export class ColorSelector {
             const panel = selector.querySelector(
                 ".colorSelectorPanel"
             );
+            const cancelButton = selector.querySelector(
+                ".colorSelectorCancel"
+            );
+            const applyButton = selector.querySelector(
+                ".colorSelectorApply"
+            );
+            let committedColor = valueInput.value;
+            let skipNextCloseRestore = false;
+
+            const stopDismissListeners = () => {
+                document.removeEventListener(
+                    "pointerdown",
+                    dismissFromOutside,
+                    true
+                );
+                document.removeEventListener(
+                    "keydown",
+                    dismissWithEscape,
+                    true
+                );
+            };
 
             const select = (rawColor, remember = false) => {
                 const color = this.normalize(rawColor, "");
@@ -219,12 +253,65 @@ export class ColorSelector {
                 return true;
             };
 
+            const closePanel = () => {
+                skipNextCloseRestore = true;
+                panel.removeAttribute("open");
+                stopDismissListeners();
+            };
+
+            const cancel = () => {
+                select(committedColor);
+                closePanel();
+            };
+
+            const apply = () => {
+                if (!select(hexInput.value)) return;
+                committedColor = valueInput.value;
+                this.remember(committedColor);
+                closePanel();
+            };
+
+            function dismissFromOutside(event) {
+                if (!selector.contains(event.target)) {
+                    cancel();
+                }
+            }
+
+            function dismissWithEscape(event) {
+                if (event.key !== "Escape") return;
+                event.preventDefault();
+                event.stopPropagation();
+                cancel();
+            }
+
+            panel.addEventListener("toggle", () => {
+                if (panel.open) {
+                    committedColor = valueInput.value;
+                    document.addEventListener(
+                        "pointerdown",
+                        dismissFromOutside,
+                        true
+                    );
+                    document.addEventListener(
+                        "keydown",
+                        dismissWithEscape,
+                        true
+                    );
+                } else {
+                    if (skipNextCloseRestore) {
+                        skipNextCloseRestore = false;
+                    } else {
+                        select(committedColor);
+                    }
+                    stopDismissListeners();
+                }
+            });
+
             selector.querySelectorAll(
                 ".colorSwatch"
             ).forEach(button => {
                 button.addEventListener("click", () => {
                     select(button.dataset.color);
-                    panel.removeAttribute("open");
                 });
             });
 
@@ -233,9 +320,7 @@ export class ColorSelector {
             });
 
             hexInput.addEventListener("change", () => {
-                if (select(hexInput.value, true)) {
-                    panel.removeAttribute("open");
-                } else {
+                if (!select(hexInput.value)) {
                     hexInput.value = valueInput.value;
                     hexInput.removeAttribute("aria-invalid");
                 }
@@ -246,8 +331,11 @@ export class ColorSelector {
             });
 
             nativeInput.addEventListener("change", () => {
-                select(nativeInput.value, true);
+                select(nativeInput.value);
             });
+
+            cancelButton.addEventListener("click", cancel);
+            applyButton.addEventListener("click", apply);
 
         });
 
