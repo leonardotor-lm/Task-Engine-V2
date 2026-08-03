@@ -90,6 +90,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 - **Estado:** En desarrollo por ajustes progresivos.
 - **Encabezado móvil de proyectos:** terminado y verificado en la PR #147; unifica Volver, Editar y Agregar subtarea con el patrón responsive de Objetivos.
+- **Ventanas emergentes:** en desarrollo; reemplazar avisos y confirmaciones del sistema por diálogos propios, coherentes con la estética Flat 2.0.
 - Aplicar los criterios establecidos en `docs/design/VISUAL-GUIDE.md`.
 - Utilizar la base reutilizable `src/ui/Icon.js` y los estilos `.icon` y `.iconButton`.
 - Revisar de forma sistemática los botones de escritorio y celular.
