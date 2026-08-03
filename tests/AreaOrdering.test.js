@@ -104,3 +104,23 @@ test("la interfaz conecta los controles con el servicio", () => {
         /\.moveEntity[\s\S]*?config\.move/
     );
 });
+
+test("los controles de orden no se comprimen en el panel", () => {
+    const styles = fs.readFileSync(
+        new URL("../styles.css", import.meta.url),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /\.entityManager \.entityActions\s*\{[\s\S]*?flex:\s*0 0 auto/
+    );
+    assert.match(
+        styles,
+        /\.entityManager \.moveEntity\s*\{[\s\S]*?flex:\s*0 0 30px[\s\S]*?border-color:\s*var\(--color-border\)/
+    );
+    assert.match(
+        styles,
+        /@media \(max-width: 760px\)[\s\S]*?\.entityManager \.moveEntity\s*\{[\s\S]*?flex-basis:\s*44px/
+    );
+});
