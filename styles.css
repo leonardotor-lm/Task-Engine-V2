@@ -3508,6 +3508,80 @@ input[type="time"],
     text-align: right;
 }
 
+.appDialog {
+    width: min(440px, calc(100vw - 28px));
+    max-width: none;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 18px 48px rgb(15 23 42 / 18%);
+}
+
+.appDialog::backdrop {
+    background: rgb(15 23 42 / 32%);
+}
+
+.appDialogHeader,
+.appDialogActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+}
+
+.appDialogHeader {
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.appDialogHeader h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.appDialogBody {
+    padding: 18px 14px;
+}
+
+.appDialogBody p {
+    margin: 0;
+    line-height: 1.45;
+}
+
+.appDialogActions {
+    justify-content: flex-end;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface-subtle);
+}
+
+.appDialogActions button {
+    min-width: 96px;
+}
+
+.appDialog--danger .appDialogHeader {
+    border-top: 3px solid var(--color-danger);
+}
+
+@media (max-width: 760px) {
+
+    .appDialog {
+        width: calc(100vw - 20px);
+    }
+
+    .appDialogActions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .appDialogActions button {
+        width: 100%;
+        min-height: 44px;
+    }
+
+}
+
 @media (max-width: 760px) {
 
     .calendarHeader {
