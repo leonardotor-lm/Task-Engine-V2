@@ -11,10 +11,11 @@ const source = readFileSync(
     "utf8"
 );
 
-function loadBackend() {
+function loadBackend(overrides = {}) {
 
     const context = {
-        console
+        console,
+        ...overrides
     };
 
     vm.createContext(context);
@@ -22,6 +23,19 @@ function loadBackend() {
 
     return context;
 
+}
+
+function attachmentMetadata(overrides = {}) {
+    return {
+        id: "attachment-1",
+        driveFileId: "drive-file-1",
+        name: "Documento.pdf",
+        mimeType: "application/pdf",
+        size: 1024,
+        url: "https://drive.google.com/file/d/drive-file-1/view",
+        createdAt: "2026-08-03T20:00:00.000Z",
+        ...overrides
+    };
 }
 
 function snapshot(overrides = {}) {
@@ -295,4 +309,169 @@ test("rechaza entidades que exceden el límite de una celda", () => {
             error.code === "ENTITY_TOO_LARGE"
     );
 
+});
+
+test("valida metadatos de adjuntos sin exigirlos en copias anteriores", () => {
+    const backend = loadBackend();
+
+    assert.doesNotThrow(
+        () => backend.validateSnapshot_(
+            snapshot({
+                tasks: [
+                    entity("task-old", {
+                        tagIds: []
+                    }),
+                    entity("task-new", {
+                        tagIds: [],
+                        attachments: [
+                            attachmentMetadata()
+                        ]
+                    })
+                ]
+            })
+        )
+    );
+
+    assert.throws(
+        () => backend.validateSnapshot_(
+            snapshot({
+                tasks: [
+                    entity("task-1", {
+                        tagIds: [],
+                        attachments: [
+                            attachmentMetadata({
+                                url: "https://example.com/file"
+                            })
+                        ]
+                    })
+                ]
+            })
+        ),
+        error =>
+            error.code ===
+                "INVALID_ATTACHMENT"
+    );
+});
+
+function driveFixture({
+    parentFolderId = "attachments-folder"
+} = {}) {
+    const properties = new Map();
+    const trashed = [];
+    const file = {
+        getId: () => "drive-file-1",
+        getName: () => "Documento.pdf",
+        getMimeType: () => "application/pdf",
+        getSize: () => 3,
+        getUrl: () => "https://drive.google.com/file/d/drive-file-1/view",
+        setDescription: () => {},
+        setTrashed: value => trashed.push(value),
+        getParents: () => {
+            let consumed = false;
+            return {
+                hasNext: () => !consumed,
+                next: () => {
+                    consumed = true;
+                    return {
+                        getId: () => parentFolderId
+                    };
+                }
+            };
+        }
+    };
+    const folder = {
+        getId: () => "attachments-folder",
+        isTrashed: () => false,
+        createFile: () => file
+    };
+
+    return {
+        trashed,
+        context: {
+            PropertiesService: {
+                getScriptProperties: () => ({
+                    getProperty: key =>
+                        properties.get(key) ?? null,
+                    setProperty: (key, value) =>
+                        properties.set(key, value)
+                })
+            },
+            DriveApp: {
+                createFolder: () => folder,
+                getFolderById: () => folder,
+                getFileById: () => file
+            },
+            Utilities: {
+                base64Decode: value =>
+                    Array.from(
+                        Buffer.from(value, "base64")
+                    ),
+                newBlob: (bytes, mimeType, name) => ({
+                    bytes,
+                    mimeType,
+                    name
+                }),
+                getUuid: () => "attachment-1"
+            }
+        }
+    };
+}
+
+test("sube un adjunto a la carpeta propia de Drive", () => {
+    const fixture = driveFixture();
+    const backend = loadBackend(
+        fixture.context
+    );
+    const result = backend.uploadAttachment_({
+        name: "Documento.pdf",
+        mimeType: "application/pdf",
+        base64Data: Buffer.from("pdf")
+            .toString("base64")
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(
+        result.attachment.driveFileId,
+        "drive-file-1"
+    );
+    assert.equal(
+        result.attachment.size,
+        3
+    );
+});
+
+test("sólo envía a papelera archivos de la carpeta propia", () => {
+    const fixture = driveFixture();
+    const backend = loadBackend(
+        fixture.context
+    );
+
+    backend.trashAttachment_(
+        "drive-file-1"
+    );
+
+    assert.deepEqual(
+        fixture.trashed,
+        [true]
+    );
+
+    const foreignFixture = driveFixture({
+        parentFolderId: "other-folder"
+    });
+    const foreignBackend = loadBackend(
+        foreignFixture.context
+    );
+
+    assert.throws(
+        () => foreignBackend.trashAttachment_(
+            "drive-file-1"
+        ),
+        error =>
+            error.code ===
+                "ATTACHMENT_FORBIDDEN"
+    );
+    assert.deepEqual(
+        foreignFixture.trashed,
+        []
+    );
 });
