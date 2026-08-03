@@ -3136,10 +3136,14 @@ export class MainView {
 
                 });
 
-                document.getElementById("skipRecurringTask")?.addEventListener("click", () => {
+                document.getElementById("skipRecurringTask")?.addEventListener("click", async () => {
 
-                    if (!Dialog.confirm(
-                        "¿Saltear esta vez y avanzar a la próxima fecha?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Saltear esta vez y avanzar a la próxima fecha?",
+                        {
+                            title: "Saltear recurrencia",
+                            confirmLabel: "Saltear esta vez"
+                        }
                     )) {
                         return;
                     }
@@ -3158,9 +3162,15 @@ export class MainView {
 
                 });
 
-                document.getElementById("archiveTask")?.addEventListener("click", () => {
+                document.getElementById("archiveTask")?.addEventListener("click", async () => {
 
-                    if (!Dialog.confirm("¿Archivar esta tarea?")) {
+                    if (!await Dialog.confirmAsync(
+                        "¿Archivar esta tarea?",
+                        {
+                            title: "Archivar tarea",
+                            confirmLabel: "Archivar"
+                        }
+                    )) {
                         return;
                     }
 
@@ -3176,7 +3186,7 @@ export class MainView {
 
                 });
 
-                document.getElementById("deleteTask")?.addEventListener("click", () => {
+                document.getElementById("deleteTask")?.addEventListener("click", async () => {
 
                     const hasSubtasks = allTasks.some(
                         task => task.parentTaskId === selectedTask.id
@@ -3186,7 +3196,11 @@ export class MainView {
                         ? "¿Mover esta tarea y todas sus subtareas a la papelera?"
                         : "¿Mover esta tarea a la papelera?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(message, {
+                        title: "Enviar a la papelera",
+                        confirmLabel: "Enviar a la papelera",
+                        variant: "danger"
+                    })) {
                         return;
                     }
 
@@ -3206,7 +3220,7 @@ export class MainView {
 
                 });
 
-                document.getElementById("permanentlyDeleteTask")?.addEventListener("click", () => {
+                document.getElementById("permanentlyDeleteTask")?.addEventListener("click", async () => {
 
                     const hasSubtasks = allTasks.some(
                         task => task.parentTaskId === selectedTask.id
@@ -3216,7 +3230,22 @@ export class MainView {
                         ? "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea y todas sus subtareas?"
                         : "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(message, {
+                        title: "Eliminar tarea",
+                        confirmLabel: "Continuar",
+                        variant: "danger"
+                    })) {
+                        return;
+                    }
+
+                    if (!await Dialog.confirmAsync(
+                        "Confirmá nuevamente la eliminación definitiva. La tarea no podrá recuperarse.",
+                        {
+                            title: "Confirmación final",
+                            confirmLabel: "Eliminar definitivamente",
+                            variant: "danger"
+                        }
+                    )) {
                         return;
                     }
 
@@ -3335,7 +3364,7 @@ export class MainView {
                     "moveTaskFromEditor"
                 )?.addEventListener(
                     "click",
-                    () => {
+                    async () => {
 
                         const targetId = document
                             .getElementById(
@@ -3361,10 +3390,20 @@ export class MainView {
                             return;
                         }
 
-                        if (!Dialog.confirm(
-                            targetId === "__ROOT__"
+                        const detachTask = targetId === "__ROOT__";
+
+                        if (!await Dialog.confirmAsync(
+                            detachTask
                                 ? "¿Convertir esta subtarea en una tarea principal?"
-                                : "¿Mover esta tarea y todo su árbol al proyecto seleccionado?"
+                                : "¿Mover esta tarea y todo su árbol al proyecto seleccionado?",
+                            {
+                                title: detachTask
+                                    ? "Convertir en tarea principal"
+                                    : "Mover tarea",
+                                confirmLabel: detachTask
+                                    ? "Convertir"
+                                    : "Mover"
+                            }
                         )) {
                             return;
                         }
