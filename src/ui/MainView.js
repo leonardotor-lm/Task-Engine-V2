@@ -3148,6 +3148,24 @@ export class MainView {
 
                 });
 
+                document.getElementById(
+                    "openParentTask"
+                )?.addEventListener("click", async event => {
+
+                    if (
+                        !await this.confirmDiscardTaskChanges(
+                            selectedTask
+                        )
+                    ) {
+                        return;
+                    }
+
+                    this.callbacks.onOpenProject(
+                        event.currentTarget.dataset.id
+                    );
+
+                });
+
                 document.getElementById("toggleTask")?.addEventListener("click", () => {
 
                     try {

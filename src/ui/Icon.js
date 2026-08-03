@@ -62,6 +62,11 @@ const icons = Object.freeze({
         <path d="m15 18-6-6 6-6"></path>
     `,
 
+    "corner-down-right": `
+        <polyline points="15 10 20 15 15 20"></polyline>
+        <path d="M4 4v7a4 4 0 0 0 4 4h12"></path>
+    `,
+
     clock: `
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M12 6v6h4"></path>
