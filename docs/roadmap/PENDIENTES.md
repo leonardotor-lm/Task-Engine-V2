@@ -64,7 +64,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Objetivos en la búsqueda avanzada
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - Extender el motor de búsqueda avanzada para contemplar la entidad Objetivo y sus asociaciones, incorporada después del diseño inicial del buscador.
 - Permitir buscar tareas y proyectos por objetivo o subobjetivo asociado, con coincidencias parciales y normalización de mayúsculas y tildes.
 - Incorporar criterios para distinguir elementos con o sin objetivos asociados.
@@ -120,6 +120,15 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Estado:** Terminado y verificado.
 - Al cambiar de vista desde la barra lateral, desplazar el contenido al inicio.
 - Verificar este comportamiento en escritorio y celular.
+
+### Cierre rápido del editor de tareas
+
+- **Estado:** Pendiente.
+- En escritorio, permitir cerrar el editor de tareas mediante la tecla `Escape`.
+- Permitir cerrarlo haciendo clic fuera del panel para agilizar la carga sucesiva de tareas.
+- No cerrar el editor cuando el clic ocurra dentro de él.
+- Si existen cambios sin guardar, solicitar confirmación antes de descartarlos.
+- Mantener el comportamiento móvil y la navegación hacia atrás sin regresiones.
 
 ### Fecha y hora
 

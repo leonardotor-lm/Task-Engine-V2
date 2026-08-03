@@ -4,6 +4,7 @@ import { ProjectView } from "./ProjectView.js";
 import { GoalList } from "./GoalList.js";
 import { GoalView } from "./GoalView.js";
 import { View } from "../core/View.js";
+import { escapeHtml } from "./escapeHtml.js";
 
 export class ViewRouter {
 
@@ -22,6 +23,30 @@ export class ViewRouter {
         title,
         headingActions = ""
     ) {
+
+        const activeSearchNotice =
+            state.advancedSearchMode &&
+            state.searchQuery
+                ? `
+                    <aside
+                        class="advancedSearchActiveNotice"
+                        role="status">
+                        <span>
+                            <strong>Búsqueda avanzada activa</strong>
+                            <span class="advancedSearchActiveQuery">
+                                ${escapeHtml(state.searchQuery)}
+                            </span>
+                        </span>
+
+                        <button
+                            id="clearActiveAdvancedSearch"
+                            type="button"
+                            class="tertiaryAction">
+                            Limpiar
+                        </button>
+                    </aside>
+                `
+                : "";
 
         return this.taskList.render(
 
@@ -43,7 +68,7 @@ export class ViewRouter {
             headingActions,
             "Nueva tarea",
             state.inlineSubtaskParentId,
-            "",
+            activeSearchNotice,
             state.goals
 
         );

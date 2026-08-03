@@ -419,6 +419,10 @@ export class App {
 
                         this.advancedSearchExpression =
                             compileAdvancedSearch(query);
+                        this.currentView = View.ALL;
+                        this.currentAreaId = null;
+                        this.projectTaskId = null;
+                        this.projectHistory = [];
                         this.advancedSearchDialogOpen =
                             false;
 
@@ -456,6 +460,8 @@ export class App {
             onClearSearch: () => {
 
                 this.searchQuery = "";
+                this.advancedSearchMode = false;
+                this.advancedSearchDialogOpen = false;
                 this.advancedSearchExpression = null;
                 this.advancedSearchError = "";
                 this.currentCustomFilterId = null;
@@ -2368,6 +2374,8 @@ export class App {
                             this.contextService.getAllContexts(),
                         tags:
                             this.tagService.getAllTags(),
+                        goals:
+                            this.goalService.getAllGoals(),
                         today: this.getTodayString()
                     }
                 );

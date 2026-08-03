@@ -53,6 +53,20 @@ const FIELD_ALIASES = Object.freeze({
     contextocontiene: "contextContains",
     tagcontains: "tagContains",
     etiquetacontiene: "tagContains",
+    goal: "goal",
+    objetivo: "goal",
+    goalhierarchy: "goalHierarchy",
+    objetivojerarquia: "goalHierarchy",
+    goaldescription: "goalDescription",
+    objetivodescripcion: "goalDescription",
+    goalstatus: "goalStatus",
+    objetivoestado: "goalStatus",
+    goaldue: "goalDue",
+    objetivofecha: "goalDue",
+    goallevel: "goalLevel",
+    objetivonivel: "goalLevel",
+    hasgoals: "hasGoals",
+    tieneobjetivos: "hasGoals",
     istagged: "isTagged",
     tieneetiquetas: "isTagged",
     hasduedate: "hasDueDate",
@@ -467,6 +481,65 @@ function containsEntityName(
         );
 
     });
+
+}
+
+function matchingGoalIds(
+    value,
+    goals = [],
+    includeDescendants = false
+) {
+
+    const normalizedValue =
+        normalizeSearchText(value);
+    const matchingIds = new Set(
+        goals
+            .filter(goal =>
+                normalizeSearchText(
+                    goal.title ?? ""
+                ).includes(normalizedValue)
+            )
+            .map(goal => goal.id)
+    );
+
+    if (!includeDescendants) {
+        return matchingIds;
+    }
+
+    let changed = true;
+
+    while (changed) {
+
+        changed = false;
+
+        for (const goal of goals) {
+
+            if (
+                goal.parentGoalId &&
+                matchingIds.has(goal.parentGoalId) &&
+                !matchingIds.has(goal.id)
+            ) {
+                matchingIds.add(goal.id);
+                changed = true;
+            }
+
+        }
+
+    }
+
+    return matchingIds;
+
+}
+
+function associatedGoals(task, goals = []) {
+
+    const taskGoalIds = new Set(
+        task.goalIds ?? []
+    );
+
+    return goals.filter(
+        goal => taskGoalIds.has(goal.id)
+    );
 
 }
 
@@ -965,6 +1038,99 @@ function matchesField(task, node, context) {
                 context.tags
             );
 
+        case "goal": {
+            const goalIds = matchingGoalIds(
+                node.value,
+                context.goals
+            );
+            return (task.goalIds ?? []).some(
+                goalId => goalIds.has(goalId)
+            );
+        }
+
+        case "goalHierarchy": {
+            const goalIds = matchingGoalIds(
+                node.value,
+                context.goals,
+                true
+            );
+            return (task.goalIds ?? []).some(
+                goalId => goalIds.has(goalId)
+            );
+        }
+
+        case "hasGoals": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                ((task.goalIds ?? []).length > 0) ===
+                    expected;
+        }
+
+        case "goalDescription":
+            return associatedGoals(
+                task,
+                context.goals
+            ).some(goal =>
+                normalizeSearchText(
+                    goal.description ?? ""
+                ).includes(normalizedValue)
+            );
+
+        case "goalStatus": {
+            const values = {
+                activo: "ACTIVE",
+                active: "ACTIVE",
+                completado: "COMPLETED",
+                completed: "COMPLETED",
+                archivado: "ARCHIVED",
+                archived: "ARCHIVED",
+                eliminado: "DELETED",
+                deleted: "DELETED"
+            };
+            return associatedGoals(
+                task,
+                context.goals
+            ).some(goal =>
+                goal.status === values[normalizedValue]
+            );
+        }
+
+        case "goalDue":
+            return associatedGoals(
+                task,
+                context.goals
+            ).some(goal =>
+                matchesDueDate(
+                    { dueDate: goal.dueDate },
+                    node.value,
+                    context.today
+                )
+            );
+
+        case "goalLevel": {
+            const expectsRoot = [
+                "principal",
+                "root"
+            ].includes(normalizedValue);
+            const expectsChild = [
+                "subobjetivo",
+                "subgoal"
+            ].includes(normalizedValue);
+
+            if (!expectsRoot && !expectsChild) {
+                return false;
+            }
+
+            return associatedGoals(
+                task,
+                context.goals
+            ).some(goal =>
+                expectsRoot
+                    ? !goal.parentGoalId
+                    : Boolean(goal.parentGoalId)
+            );
+        }
+
         case "isTagged": {
             const expected = parseBoolean(node.value);
             return expected !== null &&
@@ -1257,6 +1423,7 @@ export function matchesAdvancedSearch(
         areas: context.areas ?? [],
         contexts: context.contexts ?? [],
         tags: context.tags ?? [],
+        goals: context.goals ?? [],
         tasks: context.tasks ?? [],
         today: context.today ?? ""
     };

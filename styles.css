@@ -54,6 +54,38 @@ body {
     list-style: none;
 }
 
+.advancedSearchActiveNotice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 8px;
+    padding: 6px 8px;
+    border-left: 2px solid var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-text-secondary);
+    font-size: 12px;
+}
+
+.advancedSearchActiveNotice > span {
+    min-width: 0;
+}
+
+.advancedSearchActiveQuery {
+    display: block;
+    overflow: hidden;
+    margin-top: 2px;
+    color: var(--color-text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.advancedSearchActiveNotice button {
+    flex: 0 0 auto;
+    min-height: 30px;
+    padding: 4px 7px;
+}
+
 .task {
     cursor: pointer;
     padding: 10px;

@@ -66,6 +66,13 @@ bibliografia
 | `etiqueta` | Una etiqueta determinada | `etiqueta:Importante` |
 | `etiquetaContiene` | Parte del nombre de una etiqueta | `etiquetaContiene:import` |
 | `tieneEtiquetas` | Si posee alguna etiqueta | `tieneEtiquetas:si` |
+| `objetivo` | Título parcial de un objetivo asociado directamente | `objetivo:"Leer clásicos"` |
+| `objetivoJerarquia` | Objetivo indicado o cualquiera de sus subobjetivos | `objetivoJerarquia:Lectura` |
+| `tieneObjetivos` | Si posee algún objetivo asociado | `tieneObjetivos:si` |
+| `objetivoDescripcion` | Texto parcial en la descripción de un objetivo asociado | `objetivoDescripcion:literatura` |
+| `objetivoEstado` | Estado del objetivo asociado | `objetivoEstado:activo` |
+| `objetivoFecha` | Fecha límite del objetivo asociado | `objetivoFecha:hoy` |
+| `objetivoNivel` | Objetivo principal o subobjetivo | `objetivoNivel:subobjetivo` |
 
 Los criterios booleanos aceptan `si` y `no`.
 
