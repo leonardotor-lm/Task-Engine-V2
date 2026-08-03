@@ -115,3 +115,29 @@ test("el borrado definitivo de objetivos exige dos confirmaciones", () => {
     );
     assert.match(block, /no puede deshacerse/);
 });
+
+test("las acciones rápidas de tareas usan diálogos propios", () => {
+    for (const className of [
+        "quickDuplicateTask",
+        "quickSkipRecurringTask",
+        "quickEndRecurrence",
+        "quickArchiveTask",
+        "quickDeleteTask"
+    ]) {
+        const start = mainViewSource.indexOf(
+            `".${className}"`
+        );
+        const nextAction = mainViewSource.indexOf(
+            "document.querySelectorAll(",
+            start + 30
+        );
+        const block = mainViewSource.slice(
+            start,
+            nextAction
+        );
+
+        assert.notEqual(start, -1);
+        assert.match(block, /Dialog\.confirmAsync\(/);
+        assert.doesNotMatch(block, /Dialog\.confirm\(/);
+    }
+});
