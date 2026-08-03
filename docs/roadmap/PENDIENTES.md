@@ -148,7 +148,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Vista de calendario
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #146.
 - Incorporar únicamente una vista mensual de consulta.
 - Marcar los días que contienen tareas pendientes.
 - Al elegir un día, abrir un modal con las tareas pendientes fechadas para esa jornada.
