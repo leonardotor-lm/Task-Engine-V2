@@ -99,6 +99,39 @@ export class TaskService {
 
     }
 
+    removeGoalAssociations(goalIds) {
+
+        const removedGoalIds = new Set(goalIds);
+
+        if (removedGoalIds.size === 0) {
+            return [];
+        }
+
+        const updatedTasks = this.repository
+            .getAll()
+            .filter(task =>
+                (task.goalIds ?? []).some(
+                    id => removedGoalIds.has(id)
+                )
+            )
+            .map(task => {
+                const copy = new Task(task.toJSON());
+                copy.update({
+                    goalIds: copy.goalIds.filter(
+                        id => !removedGoalIds.has(id)
+                    )
+                });
+                return copy;
+            });
+
+        if (updatedTasks.length > 0) {
+            this.repository.updateMany(updatedTasks);
+        }
+
+        return updatedTasks;
+
+    }
+
     updateTasks(
         ids,
         data,
