@@ -334,12 +334,7 @@ export class MainView {
 
         this.clearTaskEditorEscapeBinding();
 
-        if (
-            !task ||
-            !window.matchMedia(
-                "(min-width: 761px)"
-            ).matches
-        ) {
+        if (!task) {
             return;
         }
 
@@ -608,6 +603,12 @@ export class MainView {
         } = state;
 
         this.clearTaskEditorEscapeBinding();
+
+        if (selectedTask) {
+            this.bindTaskEditorDismissal(
+                selectedTask
+            );
+        }
 
         this.taskSwipeController.bind({
             onComplete: id => {
@@ -2772,10 +2773,6 @@ export class MainView {
             });
 
             if (selectedTask) {
-
-                this.bindTaskEditorDismissal(
-                    selectedTask
-                );
 
                 const recurrenceSelect =
                     document.getElementById(
