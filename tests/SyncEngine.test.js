@@ -362,6 +362,69 @@ test("la subida usa texto plano para evitar preflight de CORS", async () => {
 
 });
 
+test("sube adjuntos con autenticación en el cuerpo", async () => {
+    let request;
+    const gateway = new CloudGateway({
+        fetchFn: async (url, options) => {
+            request = { url, options };
+            return response({
+                ok: true,
+                attachment: {
+                    id: "attachment-1"
+                }
+            });
+        }
+    });
+
+    await gateway.uploadAttachment({
+        url: "https://example.com/exec?token=legacy",
+        token: "abc",
+        name: "Documento.pdf",
+        mimeType: "application/pdf",
+        base64Data: "cGRm"
+    });
+
+    assert.equal(
+        new URL(request.url)
+            .searchParams.has("token"),
+        false
+    );
+    assert.deepEqual(
+        JSON.parse(request.options.body),
+        {
+            action: "uploadAttachment",
+            token: "abc",
+            attachment: {
+                name: "Documento.pdf",
+                mimeType: "application/pdf",
+                base64Data: "cGRm"
+            }
+        }
+    );
+});
+
+test("envía a papelera un adjunto por su identificador de Drive", async () => {
+    let body;
+    const gateway = new CloudGateway({
+        fetchFn: async (_url, options) => {
+            body = JSON.parse(options.body);
+            return response({ ok: true });
+        }
+    });
+
+    await gateway.trashAttachment({
+        url: "https://example.com/exec",
+        token: "abc",
+        driveFileId: "drive-file-1"
+    });
+
+    assert.deepEqual(body, {
+        action: "trashAttachment",
+        token: "abc",
+        driveFileId: "drive-file-1"
+    });
+});
+
 test("convierte conflictos remotos en un error específico", async () => {
 
     const gateway = new CloudGateway({
