@@ -2368,6 +2368,8 @@ export class App {
                             this.contextService.getAllContexts(),
                         tags:
                             this.tagService.getAllTags(),
+                        goals:
+                            this.goalService.getAllGoals(),
                         today: this.getTodayString()
                     }
                 );
