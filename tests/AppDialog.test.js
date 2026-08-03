@@ -31,6 +31,80 @@ test("renderiza un diálogo propio y escapa su contenido", () => {
     assert.match(html, /data-dialog-action="cancel"/);
 });
 
+test("renderiza una solicitud de texto con la estética propia", () => {
+    const html = Dialog.render({
+        id: "dialog-prompt",
+        title: "Guardar filtro",
+        message: "Elegí un nombre.",
+        confirmLabel: "Guardar",
+        cancelLabel: "Cancelar",
+        variant: "prompt",
+        input: true,
+        inputLabel: "Nombre del filtro",
+        defaultValue: "<Hoy>"
+    });
+
+    assert.match(html, /data-dialog-input/);
+    assert.match(html, /Nombre del filtro/);
+    assert.match(html, /value="&lt;Hoy&gt;"/);
+    assert.doesNotMatch(html, /value="<Hoy>"/);
+});
+
+test("las confirmaciones restantes usan el diálogo propio", () => {
+    assert.doesNotMatch(
+        mainViewSource,
+        /Dialog\.(?:confirm|prompt)\(/
+    );
+
+    for (const id of [
+        "clearSyncConfig",
+        "pushToCloud",
+        "pullFromCloud",
+        "overwriteCloud",
+        "importBackup",
+        "restoreLastImportBackup",
+        "saveCustomFilter",
+        "bulkRestoreTasks",
+        "bulkCompleteTasks",
+        "bulkArchiveTasks",
+        "bulkDeleteTasks"
+    ]) {
+        const start = mainViewSource.indexOf(`"${id}"`);
+        const block = mainViewSource.slice(start, start + 1400);
+
+        assert.notEqual(start, -1);
+        assert.match(
+            block,
+            id === "saveCustomFilter"
+                ? /Dialog\.promptAsync\(/
+                : /Dialog\.confirmAsync\(/
+        );
+    }
+});
+
+test("las eliminaciones masivas definitivas exigen confirmación doble", () => {
+    for (const id of [
+        "bulkPermanentlyDeleteTasks",
+        "emptyTrash"
+    ]) {
+        const start = mainViewSource.indexOf(`"${id}"`);
+        const nextAction = mainViewSource.indexOf(
+            "document.getElementById(",
+            start + 30
+        );
+        const block = mainViewSource.slice(
+            start,
+            nextAction === -1 ? start + 1900 : nextAction
+        );
+
+        assert.equal(
+            block.match(/Dialog\.confirmAsync\(/g)?.length,
+            2
+        );
+        assert.match(block, /Confirmación final/);
+    }
+});
+
 test("las eliminaciones de organización usan confirmación propia", () => {
     const deletionStart = mainViewSource.indexOf(
         'document.querySelectorAll(".deleteEntity")'

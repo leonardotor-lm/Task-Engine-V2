@@ -3554,6 +3554,32 @@ input[type="time"],
     line-height: 1.45;
 }
 
+.appDialogInputLabel {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+.appDialogInput {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+}
+
+.appDialogInput:focus {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-accent-muted);
+    outline-offset: 1px;
+}
+
 .appDialogActions {
     justify-content: flex-end;
     border-top: 1px solid var(--color-border);
