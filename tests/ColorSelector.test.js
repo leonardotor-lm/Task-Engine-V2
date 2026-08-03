@@ -20,6 +20,8 @@ test("ofrece una paleta común y un color hexadecimal personalizado", () => {
     assert.match(html, /class="savedColor"/);
     assert.match(html, /value="#22c55e"/);
     assert.match(html, /class="colorSelectorPalette"/);
+    assert.match(html, /class="colorSelectorNative"/);
+    assert.match(html, /type="color"/);
     assert.match(html, /class="colorSelectorHex"/);
     assert.match(html, /#3b82f6/);
     assert.match(html, /#fca5a5/);
@@ -38,6 +40,35 @@ test("normaliza colores válidos y rechaza valores inválidos", () => {
         ColorSelector.normalize("#fff", ""),
         ""
     );
+});
+
+test("recuerda hasta doce colores personalizados", () => {
+    const values = new Map();
+    const previousStorage = globalThis.localStorage;
+
+    globalThis.localStorage = {
+        getItem: key => values.get(key) ?? null,
+        setItem: (key, value) => values.set(key, value)
+    };
+
+    try {
+        for (let index = 0; index < 14; index += 1) {
+            ColorSelector.remember(
+                `#${(index + 16).toString(16).padStart(6, "0")}`
+            );
+        }
+
+        assert.equal(
+            ColorSelector.recentColors().length,
+            12
+        );
+    } finally {
+        if (previousStorage === undefined) {
+            delete globalThis.localStorage;
+        } else {
+            globalThis.localStorage = previousStorage;
+        }
+    }
 });
 
 test("el selector conserva geometría propia y adaptación móvil", () => {
