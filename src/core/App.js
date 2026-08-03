@@ -49,6 +49,13 @@ export class App {
             new CustomFilterService();
         this.goalService = new GoalService();
 
+        this.taskService
+            .removeMissingGoalAssociations(
+                this.goalService
+                    .getAllGoals()
+                    .map(goal => goal.id)
+            );
+
         this.backupService = new BackupService({
             taskRepository: this.taskService.repository,
             areaRepository: this.areaService.repository,
