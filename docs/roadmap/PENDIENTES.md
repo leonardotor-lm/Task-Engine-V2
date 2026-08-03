@@ -94,6 +94,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Objetivos:** migrar completar, archivar y enviar a papelera; exigir doble confirmación para la eliminación definitiva del objetivo y sus subobjetivos.
 - **Integridad al eliminar objetivos:** conservar las tareas y quitar únicamente sus asociaciones con el objetivo y los subobjetivos eliminados.
 - **Reparación de asociaciones históricas:** al iniciar, quitar de las tareas solamente referencias a objetivos que ya no existen, para recuperar copias locales anteriores sin perder información válida.
+- **Editor de tareas:** preservar asociaciones con objetivos temporalmente archivados o en papelera sin mostrarlas como opciones activas y sin producir falsos avisos de cambios.
 - Aplicar los criterios establecidos en `docs/design/VISUAL-GUIDE.md`.
 - Utilizar la base reutilizable `src/ui/Icon.js` y los estilos `.icon` y `.iconButton`.
 - Revisar de forma sistemática los botones de escritorio y celular.
