@@ -47,7 +47,7 @@ test("escape y la capa reutilizan la confirmación de descarte", () => {
     );
 });
 
-test("enlaza y ejecuta ambos mecanismos cuando el editor existe", () => {
+test("enlaza y ejecuta ambos mecanismos cuando el editor existe", async () => {
     const originalDocument = globalThis.document;
     const backdropListeners = new Map();
     const documentListeners = new Map();
@@ -87,6 +87,9 @@ test("enlaza y ejecuta ambos mecanismos cuando el editor existe", () => {
             key: "Escape",
             preventDefault() {}
         });
+
+        await Promise.resolve();
+        await Promise.resolve();
 
         assert.equal(closeCount, 2);
     } finally {
