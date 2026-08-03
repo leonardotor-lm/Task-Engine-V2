@@ -123,7 +123,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Cierre rápido del editor de tareas
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - En escritorio, permitir cerrar el editor de tareas mediante la tecla `Escape`.
 - Permitir cerrarlo haciendo clic fuera del panel para agilizar la carga sucesiva de tareas.
 - No cerrar el editor cuando el clic ocurra dentro de él.
