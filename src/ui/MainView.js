@@ -4,6 +4,7 @@ import { GoalEditor } from "./GoalEditor.js";
 import { ViewRouter } from "./ViewRouter.js";
 import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
+import { ColorSelector } from "./ColorSelector.js";
 import { TaskSwipeController } from "./TaskSwipeController.js";
 import { hasTaskEditorChanges } from "./TaskEditorDraft.js";
 import { SearchableSelect } from "./SearchableSelect.js";
@@ -3665,6 +3666,12 @@ export class MainView {
                 }
 
             }[entityView];
+
+            ColorSelector.bind(
+                document.querySelector(
+                    ".entityManager"
+                ) ?? document
+            );
 
             document.getElementById("entityForm")?.addEventListener("submit", event => {
 
