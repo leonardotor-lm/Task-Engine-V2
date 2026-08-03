@@ -657,8 +657,12 @@ export class MainView {
             }
 
             if (
-                !Dialog.confirm(
-                    "¿Salir de Mis tareas?"
+                !await Dialog.confirmAsync(
+                    "¿Salir de Mis tareas?",
+                    {
+                        title: "Salir de la aplicación",
+                        confirmLabel: "Salir"
+                    }
                 )
             ) {
 
@@ -830,10 +834,15 @@ export class MainView {
 
         });
 
-        document.getElementById("clearSyncConfig")?.addEventListener("click", () => {
+        document.getElementById("clearSyncConfig")?.addEventListener("click", async () => {
 
-            if (!Dialog.confirm(
-                "¿Quitar la conexión? Los datos locales no se eliminarán."
+            if (!await Dialog.confirmAsync(
+                "¿Quitar la conexión? Los datos locales no se eliminarán.",
+                {
+                    title: "Quitar conexión",
+                    confirmLabel: "Quitar",
+                    variant: "danger"
+                }
             )) {
                 return;
             }
@@ -844,8 +853,12 @@ export class MainView {
 
         document.getElementById("pushToCloud")?.addEventListener("click", async () => {
 
-            if (!Dialog.confirm(
-                "¿Subir el estado local completo a Google Sheets?"
+            if (!await Dialog.confirmAsync(
+                "¿Subir el estado local completo a Google Sheets?",
+                {
+                    title: "Subir a la nube",
+                    confirmLabel: "Subir"
+                }
             )) {
                 return;
             }
@@ -884,10 +897,15 @@ export class MainView {
                 syncPendingChanges &&
                 syncRemoteUpdateAvailable;
 
-            if (!Dialog.confirm(
+            if (!await Dialog.confirmAsync(
                 conflict
                     ? "Hay cambios locales y remotos. Conservar la versión de la nube reemplazará los datos locales, pero guardará una copia para poder deshacerlo. ¿Continuar?"
-                    : "La descarga reemplazará los datos locales y guardará una copia para poder deshacerla. ¿Continuar?"
+                    : "La descarga reemplazará los datos locales y guardará una copia para poder deshacerla. ¿Continuar?",
+                {
+                    title: "Descargar de la nube",
+                    confirmLabel: "Descargar",
+                    variant: "danger"
+                }
             )) {
                 return;
             }
@@ -912,8 +930,13 @@ export class MainView {
 
         document.getElementById("overwriteCloud")?.addEventListener("click", async () => {
 
-            if (!Dialog.confirm(
-                "Hay cambios locales y remotos. Conservar la versión local reemplazará en la nube los cambios hechos en otro dispositivo. Esta decisión no se puede deshacer desde la nube. ¿Continuar?"
+            if (!await Dialog.confirmAsync(
+                "Hay cambios locales y remotos. Conservar la versión local reemplazará en la nube los cambios hechos en otro dispositivo. Esta decisión no se puede deshacer desde la nube. ¿Continuar?",
+                {
+                    title: "Sobrescribir la nube",
+                    confirmLabel: "Sobrescribir",
+                    variant: "danger"
+                }
             )) {
                 return;
             }
@@ -968,8 +991,13 @@ export class MainView {
 
             if (!file) return;
 
-            if (!Dialog.confirm(
-                "La importación reemplazará los datos actuales. Se guardará una copia para poder deshacerla. ¿Continuar?"
+            if (!await Dialog.confirmAsync(
+                "La importación reemplazará los datos actuales. Se guardará una copia para poder deshacerla. ¿Continuar?",
+                {
+                    title: "Importar copia de seguridad",
+                    confirmLabel: "Importar",
+                    variant: "danger"
+                }
             )) {
 
                 event.target.value = "";
@@ -995,10 +1023,14 @@ export class MainView {
 
         });
 
-        document.getElementById("restoreLastImportBackup")?.addEventListener("click", () => {
+        document.getElementById("restoreLastImportBackup")?.addEventListener("click", async () => {
 
-            if (!Dialog.confirm(
-                "¿Restaurar los datos anteriores a la última importación?"
+            if (!await Dialog.confirmAsync(
+                "¿Restaurar los datos anteriores a la última importación?",
+                {
+                    title: "Restaurar copia anterior",
+                    confirmLabel: "Restaurar"
+                }
             )) {
                 return;
             }
@@ -1149,11 +1181,15 @@ export class MainView {
 
         document.getElementById(
             "saveCustomFilter"
-        )?.addEventListener("click", () => {
+        )?.addEventListener("click", async () => {
 
-            const name = Dialog.prompt(
-                "Nombre del filtro personalizado:",
-                ""
+            const name = await Dialog.promptAsync(
+                "Elegí un nombre para identificar esta búsqueda.",
+                {
+                    title: "Guardar filtro personalizado",
+                    inputLabel: "Nombre del filtro",
+                    confirmLabel: "Guardar"
+                }
             );
 
             if (name === null || !name.trim()) {
@@ -1996,10 +2032,15 @@ export class MainView {
 
             button.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (!Dialog.confirm(
-                        "¿Eliminar este filtro personalizado?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Eliminar este filtro personalizado?",
+                        {
+                            title: "Eliminar filtro",
+                            confirmLabel: "Eliminar",
+                            variant: "danger"
+                        }
                     )) {
                         return;
                     }
@@ -2171,15 +2212,21 @@ export class MainView {
 
             document.getElementById(
                 "bulkRestoreTasks"
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
                 const action =
                     view === View.COMPLETED
                         ? "reactivar"
                         : "restaurar";
 
-                if (!Dialog.confirm(
-                    `¿${action === "reactivar" ? "Reactivar" : "Restaurar"} las tareas seleccionadas y sus subtareas?`
+                if (!await Dialog.confirmAsync(
+                    `¿${action === "reactivar" ? "Reactivar" : "Restaurar"} las tareas seleccionadas y sus subtareas?`,
+                    {
+                        title: `${action === "reactivar" ? "Reactivar" : "Restaurar"} tareas`,
+                        confirmLabel: action === "reactivar"
+                            ? "Reactivar"
+                            : "Restaurar"
+                    }
                 )) {
                     return;
                 }
@@ -2341,10 +2388,14 @@ export class MainView {
 
             document.getElementById(
                 "bulkCompleteTasks"
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
-                if (!Dialog.confirm(
-                    "¿Completar todas las tareas seleccionadas?"
+                if (!await Dialog.confirmAsync(
+                    "¿Completar todas las tareas seleccionadas?",
+                    {
+                        title: "Completar tareas",
+                        confirmLabel: "Completar"
+                    }
                 )) {
                     return;
                 }
@@ -2369,10 +2420,14 @@ export class MainView {
 
             document.getElementById(
                 "bulkArchiveTasks"
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
-                if (!Dialog.confirm(
-                    "¿Archivar todas las tareas seleccionadas?"
+                if (!await Dialog.confirmAsync(
+                    "¿Archivar todas las tareas seleccionadas?",
+                    {
+                        title: "Archivar tareas",
+                        confirmLabel: "Archivar"
+                    }
                 )) {
                     return;
                 }
@@ -2397,10 +2452,15 @@ export class MainView {
 
             document.getElementById(
                 "bulkDeleteTasks"
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
-                if (!Dialog.confirm(
-                    "¿Enviar a la papelera las tareas seleccionadas? Las subtareas descendientes también serán enviadas."
+                if (!await Dialog.confirmAsync(
+                    "¿Enviar a la papelera las tareas seleccionadas? Las subtareas descendientes también serán enviadas.",
+                    {
+                        title: "Enviar tareas a la papelera",
+                        confirmLabel: "Enviar",
+                        variant: "danger"
+                    }
                 )) {
                     return;
                 }
@@ -2425,10 +2485,26 @@ export class MainView {
 
             document.getElementById(
                 "bulkPermanentlyDeleteTasks"
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
-                if (!Dialog.confirm(
-                    "¿Eliminar definitivamente las tareas seleccionadas y sus subtareas? Esta acción no se puede deshacer."
+                if (!await Dialog.confirmAsync(
+                    "¿Eliminar definitivamente las tareas seleccionadas y sus subtareas? Esta acción no se puede deshacer.",
+                    {
+                        title: "Eliminar tareas definitivamente",
+                        confirmLabel: "Continuar",
+                        variant: "danger"
+                    }
+                )) {
+                    return;
+                }
+
+                if (!await Dialog.confirmAsync(
+                    "Confirmá nuevamente la eliminación definitiva. Las tareas no podrán recuperarse.",
+                    {
+                        title: "Confirmación final",
+                        confirmLabel: "Eliminar definitivamente",
+                        variant: "danger"
+                    }
                 )) {
                     return;
                 }
@@ -2453,14 +2529,30 @@ export class MainView {
 
             document.getElementById(
                 "emptyTrash"
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
                 const count = allTasks.filter(
                     task => task.isDeleted()
                 ).length;
 
-                if (!Dialog.confirm(
-                    `¿Eliminar definitivamente las ${count} ${count === 1 ? "tarea" : "tareas"} de la papelera? Esta acción no se puede deshacer.`
+                if (!await Dialog.confirmAsync(
+                    `¿Eliminar definitivamente las ${count} ${count === 1 ? "tarea" : "tareas"} de la papelera? Esta acción no se puede deshacer.`,
+                    {
+                        title: "Vaciar papelera",
+                        confirmLabel: "Continuar",
+                        variant: "danger"
+                    }
+                )) {
+                    return;
+                }
+
+                if (!await Dialog.confirmAsync(
+                    "Confirmá nuevamente que querés vaciar la papelera. Las tareas no podrán recuperarse.",
+                    {
+                        title: "Confirmación final",
+                        confirmLabel: "Vaciar definitivamente",
+                        variant: "danger"
+                    }
                 )) {
                     return;
                 }
