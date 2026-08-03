@@ -92,6 +92,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Encabezado móvil de proyectos:** terminado y verificado en la PR #147; unifica Volver, Editar y Agregar subtarea con el patrón responsive de Objetivos.
 - **Ventanas emergentes:** en desarrollo; reemplazar avisos y confirmaciones del sistema por diálogos propios, coherentes con la estética Flat 2.0. Las eliminaciones irreversibles de áreas, contextos y etiquetas requieren doble confirmación por su impacto transversal.
 - **Validación previa de Organización:** comprobar si un área, contexto o etiqueta está en uso antes de pedir confirmación; bloquear la eliminación y explicar el motivo de inmediato.
+- **Acciones rápidas de tareas:** migrar Duplicar, Saltear recurrencia, Finalizar recurrencia, Archivar y Enviar a papelera al diálogo visual propio.
 - **Objetivos:** migrar completar, archivar y enviar a papelera; exigir doble confirmación para la eliminación definitiva del objetivo y sus subobjetivos.
 - **Integridad al eliminar objetivos:** conservar las tareas y quitar únicamente sus asociaciones con el objetivo y los subobjetivos eliminados.
 - **Reparación de asociaciones históricas:** al iniciar, quitar de las tareas solamente referencias a objetivos que ya no existen, para recuperar copias locales anteriores sin perder información válida.
