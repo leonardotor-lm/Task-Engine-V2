@@ -49,6 +49,13 @@ export class App {
             new CustomFilterService();
         this.goalService = new GoalService();
 
+        this.taskService
+            .removeMissingGoalAssociations(
+                this.goalService
+                    .getAllGoals()
+                    .map(goal => goal.id)
+            );
+
         this.backupService = new BackupService({
             taskRepository: this.taskService.repository,
             areaRepository: this.areaService.repository,
@@ -1132,6 +1139,9 @@ export class App {
 
             },
 
+            onIsAreaInUse: (id) =>
+                this.taskService.hasTasksInArea(id),
+
             onMoveArea: (id, direction) => {
 
                 this.areaService.moveArea(
@@ -1182,6 +1192,9 @@ export class App {
 
             },
 
+            onIsContextInUse: (id) =>
+                this.taskService.hasTasksInContext(id),
+
             onCreateTag: (name, color) => {
 
                 this.tagService.createTag({ name, color });
@@ -1215,6 +1228,9 @@ export class App {
                 this.render();
 
             },
+
+            onIsTagInUse: (id) =>
+                this.taskService.hasTasksWithTag(id),
 
             onSaveSyncConfig: ({
                 url,
@@ -1712,6 +1728,15 @@ export class App {
             },
 
             onPermanentlyDeleteGoal: (id) => {
+
+                const removedGoalIds =
+                    this.goalService
+                        .getPermanentDeletionGoalIds(id);
+
+                this.taskService
+                    .removeGoalAssociations(
+                        removedGoalIds
+                    );
 
                 this.goalService
                     .permanentlyDeleteGoal(id);

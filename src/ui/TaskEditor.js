@@ -90,6 +90,24 @@ export class TaskEditor {
                 value: goal.id,
                 label: goal.title
             }));
+        const visibleGoalIds = new Set(
+            goalOptionItems.map(
+                option => String(option.value)
+            )
+        );
+        const preservedGoalInputs = [
+            ...(task.goalIds ?? [])
+        ]
+            .filter(
+                id => !visibleGoalIds.has(String(id))
+            )
+            .map(id => `
+                <input
+                    type="hidden"
+                    class="taskGoal taskGoalPreserved"
+                    value="${escapeHtml(id)}">
+            `)
+            .join("");
 
         const descendantIds =
             this.getDescendantIds(
@@ -598,6 +616,8 @@ export class TaskEditor {
                                 "No hay objetivos activos.",
                             disabled: isLocked
                         })}
+
+                        ${preservedGoalInputs}
 
                         ${moveOptions.length > 0
                             ? `

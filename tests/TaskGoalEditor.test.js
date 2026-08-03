@@ -69,3 +69,38 @@ test("el editor oculta objetivos archivados", () => {
     );
 
 });
+
+test("preserva ocultas las asociaciones con objetivos en papelera", () => {
+    const deletedGoal = new Goal({
+        id: "goal-deleted",
+        title: "Objetivo en papelera",
+        status: "DELETED"
+    });
+    const activeGoal = new Goal({
+        id: "goal-active",
+        title: "Objetivo activo"
+    });
+    const task = new Task({
+        title: "Tarea asociada",
+        goalIds: [deletedGoal.id, activeGoal.id]
+    });
+
+    const html = new TaskEditor().render(
+        task,
+        [],
+        [],
+        [],
+        [],
+        [deletedGoal, activeGoal]
+    );
+
+    assert.doesNotMatch(
+        html,
+        /Objetivo en papelera/
+    );
+    assert.match(
+        html,
+        /class="taskGoal taskGoalPreserved"[\s\S]*?value="goal-deleted"/
+    );
+    assert.match(html, /Objetivo activo/);
+});

@@ -100,6 +100,14 @@ test("elimina definitivamente sólo desde la papelera", () => {
     );
 
     service.deleteGoal(parent.id);
+
+    assert.deepEqual(
+        service.getPermanentDeletionGoalIds(
+            parent.id
+        ),
+        [parent.id, child.id]
+    );
+
     service.permanentlyDeleteGoal(parent.id);
 
     assert.equal(

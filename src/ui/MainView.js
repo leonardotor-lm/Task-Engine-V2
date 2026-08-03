@@ -314,7 +314,7 @@ export class MainView {
 
     }
 
-    confirmDiscardTaskChanges(task) {
+    async confirmDiscardTaskChanges(task) {
 
         if (
             !this.hasUnsavedTaskEdit(task)
@@ -322,8 +322,13 @@ export class MainView {
             return true;
         }
 
-        return Dialog.confirm(
-            "Hay cambios sin guardar. ¿Descartarlos?"
+        return Dialog.confirmAsync(
+            "Hay cambios sin guardar. ¿Querés descartarlos?",
+            {
+                title: "Descartar cambios",
+                confirmLabel: "Descartar",
+                variant: "danger"
+            }
         );
 
     }
@@ -350,9 +355,9 @@ export class MainView {
             return;
         }
 
-        const dismiss = () => {
+        const dismiss = async () => {
 
-            if (!this.confirmDiscardTaskChanges(task)) {
+            if (!await this.confirmDiscardTaskChanges(task)) {
                 return;
             }
 
@@ -479,7 +484,7 @@ export class MainView {
 
         }
 
-        window.onpopstate = () => {
+        window.onpopstate = async () => {
 
             const restoreGuard = () => {
 
@@ -529,7 +534,7 @@ export class MainView {
             if (state.selectedTask) {
 
                 if (
-                    !this.confirmDiscardTaskChanges(
+                    !await this.confirmDiscardTaskChanges(
                         state.selectedTask
                     )
                 ) {
@@ -1247,11 +1252,11 @@ export class MainView {
 
             document.getElementById(
                 elementId
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
                 if (
                     selectedTask &&
-                    !this.confirmDiscardTaskChanges(
+                    !await this.confirmDiscardTaskChanges(
                         selectedTask
                     )
                 ) {
@@ -1334,16 +1339,34 @@ export class MainView {
 
                     button.addEventListener(
                         "click",
-                        () => {
+                        async () => {
 
                             if (
                                 className ===
-                                    "permanentlyDeleteGoal" &&
-                                !Dialog.confirm(
-                                    "¿Eliminar definitivamente este objetivo y sus subobjetivos?"
-                                )
+                                    "permanentlyDeleteGoal"
                             ) {
-                                return;
+                                if (!await Dialog.confirmAsync(
+                                    "Se eliminarán definitivamente este objetivo y sus subobjetivos. Las tareas se conservarán, pero dejarán de estar asociadas. ¿Querés continuar?",
+                                    {
+                                        title: "Eliminar objetivo",
+                                        confirmLabel: "Continuar",
+                                        variant: "danger"
+                                    }
+                                )) {
+                                    return;
+                                }
+
+                                if (!await Dialog.confirmAsync(
+                                    "Esta acción no puede deshacerse. ¿Confirmás la eliminación definitiva?",
+                                    {
+                                        title: "Confirmación definitiva",
+                                        confirmLabel:
+                                            "Eliminar definitivamente",
+                                        variant: "danger"
+                                    }
+                                )) {
+                                    return;
+                                }
                             }
 
                             this.callbacks[
@@ -1545,16 +1568,22 @@ export class MainView {
                 "completeGoal"
             )?.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (Dialog.confirm(
-                        "¿Marcar este objetivo como completado?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Marcar este objetivo como completado?",
+                        {
+                            title: "Completar objetivo",
+                            confirmLabel: "Completar"
+                        }
                     )) {
-                        this.callbacks
-                            .onCompleteGoal(
-                                selectedGoal.id
-                            );
+                        return;
                     }
+
+                    this.callbacks
+                        .onCompleteGoal(
+                            selectedGoal.id
+                        );
 
                 }
             );
@@ -1563,16 +1592,22 @@ export class MainView {
                 "archiveGoal"
             )?.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (Dialog.confirm(
-                        "¿Archivar este objetivo?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Archivar este objetivo?",
+                        {
+                            title: "Archivar objetivo",
+                            confirmLabel: "Archivar"
+                        }
                     )) {
-                        this.callbacks
-                            .onArchiveGoal(
-                                selectedGoal.id
-                            );
+                        return;
                     }
+
+                    this.callbacks
+                        .onArchiveGoal(
+                            selectedGoal.id
+                        );
 
                 }
             );
@@ -1581,15 +1616,22 @@ export class MainView {
                 "deleteGoalFromEditor"
             )?.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (Dialog.confirm(
-                        "¿Mover este objetivo y sus subobjetivos a la papelera?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Mover este objetivo y sus subobjetivos a la papelera?",
+                        {
+                            title: "Mover objetivo a la papelera",
+                            confirmLabel: "Mover a la papelera",
+                            variant: "danger"
+                        }
                     )) {
-                        this.callbacks.onDeleteGoal(
-                            selectedGoal.id
-                        );
+                        return;
                     }
+
+                    this.callbacks.onDeleteGoal(
+                        selectedGoal.id
+                    );
 
                 }
             );
@@ -1730,11 +1772,11 @@ export class MainView {
 
             button.addEventListener(
                 "click",
-                () => {
+                async () => {
 
                     if (
                         selectedTask &&
-                        !this.confirmDiscardTaskChanges(
+                        !await this.confirmDiscardTaskChanges(
                             selectedTask
                         )
                     ) {
@@ -1760,11 +1802,11 @@ export class MainView {
 
             button.addEventListener(
                 "click",
-                () => {
+                async () => {
 
                     if (
                         selectedTask &&
-                        !this.confirmDiscardTaskChanges(
+                        !await this.confirmDiscardTaskChanges(
                             selectedTask
                         )
                     ) {
@@ -2449,7 +2491,7 @@ export class MainView {
                 ".quickDuplicateTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
@@ -2467,7 +2509,13 @@ export class MainView {
                         ? "¿Duplicar esta tarea y todo su árbol como un proyecto nuevo?"
                         : "¿Duplicar esta tarea?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(
+                        message,
+                        {
+                            title: "Duplicar tarea",
+                            confirmLabel: "Duplicar"
+                        }
+                    )) {
                         return;
                     }
 
@@ -2533,12 +2581,16 @@ export class MainView {
                 ".quickSkipRecurringTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
-                    if (!Dialog.confirm(
-                        "¿Saltear esta instancia y avanzar a la próxima fecha?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Saltear esta instancia y avanzar a la próxima fecha?",
+                        {
+                            title: "Saltear recurrencia",
+                            confirmLabel: "Saltear"
+                        }
                     )) {
                         return;
                     }
@@ -2566,12 +2618,16 @@ export class MainView {
                 ".quickEndRecurrence"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
-                    if (!Dialog.confirm(
-                        "¿Finalizar la recurrencia? La tarea conservará su fecha actual, pero dejará de repetirse."
+                    if (!await Dialog.confirmAsync(
+                        "¿Finalizar la recurrencia? La tarea conservará su fecha actual, pero dejará de repetirse.",
+                        {
+                            title: "Finalizar recurrencia",
+                            confirmLabel: "Finalizar"
+                        }
                     )) {
                         return;
                     }
@@ -2599,12 +2655,16 @@ export class MainView {
                 ".quickArchiveTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
-                    if (!Dialog.confirm(
-                        "¿Archivar esta tarea?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Archivar esta tarea?",
+                        {
+                            title: "Archivar tarea",
+                            confirmLabel: "Archivar"
+                        }
                     )) {
                         return;
                     }
@@ -2631,7 +2691,7 @@ export class MainView {
                 ".quickDeleteTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
@@ -2649,7 +2709,15 @@ export class MainView {
                         ? "¿Mover esta tarea y todas sus subtareas a la papelera?"
                         : "¿Mover esta tarea a la papelera?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(
+                        message,
+                        {
+                            title: "Mover a la papelera",
+                            confirmLabel:
+                                "Mover a la papelera",
+                            variant: "danger"
+                        }
+                    )) {
                         return;
                     }
 
@@ -2969,10 +3037,10 @@ export class MainView {
 
                 document.getElementById(
                     "closeTaskEditor"
-                )?.addEventListener("click", () => {
+                )?.addEventListener("click", async () => {
 
                     if (
-                        !this.confirmDiscardTaskChanges(
+                        !await this.confirmDiscardTaskChanges(
                             selectedTask
                         )
                     ) {
@@ -3068,10 +3136,14 @@ export class MainView {
 
                 });
 
-                document.getElementById("skipRecurringTask")?.addEventListener("click", () => {
+                document.getElementById("skipRecurringTask")?.addEventListener("click", async () => {
 
-                    if (!Dialog.confirm(
-                        "¿Saltear esta vez y avanzar a la próxima fecha?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Saltear esta vez y avanzar a la próxima fecha?",
+                        {
+                            title: "Saltear recurrencia",
+                            confirmLabel: "Saltear esta vez"
+                        }
                     )) {
                         return;
                     }
@@ -3090,9 +3162,15 @@ export class MainView {
 
                 });
 
-                document.getElementById("archiveTask")?.addEventListener("click", () => {
+                document.getElementById("archiveTask")?.addEventListener("click", async () => {
 
-                    if (!Dialog.confirm("¿Archivar esta tarea?")) {
+                    if (!await Dialog.confirmAsync(
+                        "¿Archivar esta tarea?",
+                        {
+                            title: "Archivar tarea",
+                            confirmLabel: "Archivar"
+                        }
+                    )) {
                         return;
                     }
 
@@ -3108,7 +3186,7 @@ export class MainView {
 
                 });
 
-                document.getElementById("deleteTask")?.addEventListener("click", () => {
+                document.getElementById("deleteTask")?.addEventListener("click", async () => {
 
                     const hasSubtasks = allTasks.some(
                         task => task.parentTaskId === selectedTask.id
@@ -3118,7 +3196,11 @@ export class MainView {
                         ? "¿Mover esta tarea y todas sus subtareas a la papelera?"
                         : "¿Mover esta tarea a la papelera?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(message, {
+                        title: "Enviar a la papelera",
+                        confirmLabel: "Enviar a la papelera",
+                        variant: "danger"
+                    })) {
                         return;
                     }
 
@@ -3138,7 +3220,7 @@ export class MainView {
 
                 });
 
-                document.getElementById("permanentlyDeleteTask")?.addEventListener("click", () => {
+                document.getElementById("permanentlyDeleteTask")?.addEventListener("click", async () => {
 
                     const hasSubtasks = allTasks.some(
                         task => task.parentTaskId === selectedTask.id
@@ -3148,7 +3230,22 @@ export class MainView {
                         ? "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea y todas sus subtareas?"
                         : "Esta acción no se puede deshacer. ¿Eliminar definitivamente esta tarea?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(message, {
+                        title: "Eliminar tarea",
+                        confirmLabel: "Continuar",
+                        variant: "danger"
+                    })) {
+                        return;
+                    }
+
+                    if (!await Dialog.confirmAsync(
+                        "Confirmá nuevamente la eliminación definitiva. La tarea no podrá recuperarse.",
+                        {
+                            title: "Confirmación final",
+                            confirmLabel: "Eliminar definitivamente",
+                            variant: "danger"
+                        }
+                    )) {
                         return;
                     }
 
@@ -3267,7 +3364,7 @@ export class MainView {
                     "moveTaskFromEditor"
                 )?.addEventListener(
                     "click",
-                    () => {
+                    async () => {
 
                         const targetId = document
                             .getElementById(
@@ -3293,10 +3390,20 @@ export class MainView {
                             return;
                         }
 
-                        if (!Dialog.confirm(
-                            targetId === "__ROOT__"
+                        const detachTask = targetId === "__ROOT__";
+
+                        if (!await Dialog.confirmAsync(
+                            detachTask
                                 ? "¿Convertir esta subtarea en una tarea principal?"
-                                : "¿Mover esta tarea y todo su árbol al proyecto seleccionado?"
+                                : "¿Mover esta tarea y todo su árbol al proyecto seleccionado?",
+                            {
+                                title: detachTask
+                                    ? "Convertir en tarea principal"
+                                    : "Mover tarea",
+                                confirmLabel: detachTask
+                                    ? "Convertir"
+                                    : "Mover"
+                            }
                         )) {
                             return;
                         }
@@ -3352,6 +3459,7 @@ export class MainView {
                     create: this.callbacks.onCreateArea,
                     update: this.callbacks.onUpdateArea,
                     remove: this.callbacks.onDeleteArea,
+                    isInUse: this.callbacks.onIsAreaInUse,
                     move: this.callbacks.onMoveArea
                 },
 
@@ -3361,7 +3469,9 @@ export class MainView {
                     prompt: "Nombre del contexto:",
                     create: this.callbacks.onCreateContext,
                     update: this.callbacks.onUpdateContext,
-                    remove: this.callbacks.onDeleteContext
+                    remove: this.callbacks.onDeleteContext,
+                    isInUse:
+                        this.callbacks.onIsContextInUse
                 },
 
                 [View.TAGS]: {
@@ -3370,7 +3480,8 @@ export class MainView {
                     prompt: "Nombre de la etiqueta:",
                     create: this.callbacks.onCreateTag,
                     update: this.callbacks.onUpdateTag,
-                    remove: this.callbacks.onDeleteTag
+                    remove: this.callbacks.onDeleteTag,
+                    isInUse: this.callbacks.onIsTagInUse
                 }
 
             }[entityView];
@@ -3395,13 +3506,45 @@ export class MainView {
 
             document.querySelectorAll(".deleteEntity").forEach(button => {
 
-                button.addEventListener("click", () => {
+                button.addEventListener("click", async () => {
 
                     const article = config.name === "contexto"
                         ? "este"
                         : "esta";
 
-                    if (!Dialog.confirm(`¿Eliminar ${article} ${config.name}?`)) {
+                    if (config.isInUse(
+                        button.dataset.id
+                    )) {
+                        await Dialog.alert(
+                            `No se puede eliminar ${article} ${config.name} porque está asignado a una o más tareas.`,
+                            {
+                                title:
+                                    `${config.name[0].toUpperCase()}${config.name.slice(1)} en uso`
+                            }
+                        );
+                        return;
+                    }
+
+                    if (!await Dialog.confirmAsync(
+                        `Eliminar ${article} ${config.name} puede afectar a múltiples tareas que lo utilizan. ¿Querés continuar?`,
+                        {
+                            title: `Eliminar ${config.name}`,
+                            confirmLabel: "Continuar",
+                            variant: "danger"
+                        }
+                    )) {
+                        return;
+                    }
+
+                    if (!await Dialog.confirmAsync(
+                        `Esta acción es definitiva y no puede deshacerse. ¿Confirmás la eliminación de ${article} ${config.name}?`,
+                        {
+                            title: "Confirmación definitiva",
+                            confirmLabel:
+                                "Eliminar definitivamente",
+                            variant: "danger"
+                        }
+                    )) {
                         return;
                     }
 
