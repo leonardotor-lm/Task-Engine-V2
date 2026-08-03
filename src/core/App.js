@@ -1713,6 +1713,15 @@ export class App {
 
             onPermanentlyDeleteGoal: (id) => {
 
+                const removedGoalIds =
+                    this.goalService
+                        .getPermanentDeletionGoalIds(id);
+
+                this.taskService
+                    .removeGoalAssociations(
+                        removedGoalIds
+                    );
+
                 this.goalService
                     .permanentlyDeleteGoal(id);
 
