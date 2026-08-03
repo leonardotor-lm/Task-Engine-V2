@@ -80,6 +80,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Densidad móvil de tareas:** terminada y verificada en la PR #137; aumenta la tipografía y retira el espacio vertical provocado por las acciones rápidas.
 - **Barra lateral móvil:** terminada y verificada en la PR #138; aumenta la legibilidad de navegación, títulos de sección y contadores sin modificar escritorio.
 - **Jerarquía de subtareas:** terminada y verificada en la PR #152; indicar en la lista que una tarea tiene una tarea padre mediante una marca visual compacta que complemente la sangría.
+- **Geometría de controles:** consolidación de campos de texto, selectores y botones pendiente de verificación manual; excluye deliberadamente casillas, chips y muestras circulares.
 - Mostrar en el editor la leyenda **Subtarea de:** seguida por el título de la tarea padre.
 - Permitir abrir desde esa referencia la tarea o el proyecto padre, incluso cuando no esté visible por los filtros actuales.
 - Mantener las acciones de mover o convertir en tarea principal dentro de la sección Organización, sin duplicarlas junto a la referencia jerárquica.
@@ -114,7 +115,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Selector de colores
 
-- **Estado:** En desarrollo; selector común implementado pendiente de verificación manual.
+- **Estado:** Terminado y verificado en la PR #154.
 - Ofrecer una paleta inicial de colores pastel y algunos colores intensos.
 - Permitir ingresar colores personalizados en formato hexadecimal.
 - Mostrar vista previa y validar el código.
