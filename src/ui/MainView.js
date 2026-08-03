@@ -53,6 +53,7 @@ export class MainView {
 
                 return {
                     selector,
+                    existed: Boolean(element),
                     top: element?.scrollTop ?? 0,
                     left: element?.scrollLeft ?? 0
                 };
@@ -78,6 +79,15 @@ export class MainView {
 
             element.scrollTop = position.top;
             element.scrollLeft = position.left;
+
+            if (
+                position.selector === ".taskDrawer" &&
+                position.existed
+            ) {
+                element.classList.add(
+                    "taskDrawerRestored"
+                );
+            }
 
         }
 
