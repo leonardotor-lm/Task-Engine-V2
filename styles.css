@@ -2061,6 +2061,20 @@ input[type="date"],
         rgb(15 23 42 / 14%);
 }
 
+.taskEditorBackdrop {
+    position: fixed;
+    z-index: 19;
+    inset:
+        0
+        min(480px, calc(100vw - 220px))
+        0
+        220px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
 .taskEditorHeader {
     position: sticky;
     z-index: 2;
@@ -2156,6 +2170,10 @@ input[type="date"],
     .taskDrawer {
         width: 100vw;
         border-left: 0;
+    }
+
+    .taskEditorBackdrop {
+        display: none;
     }
 
 }
