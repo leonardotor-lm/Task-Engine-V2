@@ -126,8 +126,11 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Navegación y desplazamiento
 
-- **Estado:** Terminado y verificado.
+- **Estado:** En desarrollo por conservación de posiciones independientes.
 - Al cambiar de vista desde la barra lateral, desplazar el contenido al inicio.
+- Conservar la posición de la barra lateral al abrir herramientas o actualizar el estado de sincronización.
+- Conservar la posición del editor y de los diálogos abiertos durante renderizados ajenos a su contenido.
+- No reconstruir una edición transitoria durante una actualización de sincronización.
 - Verificar este comportamiento en escritorio y celular.
 
 ### Cierre rápido del editor de tareas

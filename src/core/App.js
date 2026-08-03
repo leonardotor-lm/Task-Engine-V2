@@ -1816,7 +1816,7 @@ export class App {
         this.cancelAutomaticSync();
         this.autoSyncInProgress = true;
         this.syncLastError = null;
-        this.render();
+        this.render({ preserveTransientUi: true });
 
         try {
 
@@ -1858,7 +1858,7 @@ export class App {
         } finally {
 
             this.autoSyncInProgress = false;
-            this.render();
+            this.render({ preserveTransientUi: true });
 
         }
 
@@ -1969,7 +1969,7 @@ export class App {
 
         this.autoSyncInProgress = true;
         this.syncLastError = null;
-        this.render();
+        this.render({ preserveTransientUi: true });
 
         try {
 
@@ -2011,7 +2011,7 @@ export class App {
         } finally {
 
             this.autoSyncInProgress = false;
-            this.render();
+            this.render({ preserveTransientUi: true });
 
         }
 
@@ -2061,7 +2061,7 @@ export class App {
 
         this.syncCheckInProgress = true;
         this.syncLastError = null;
-        this.render();
+        this.render({ preserveTransientUi: true });
 
         try {
 
@@ -2114,7 +2114,7 @@ export class App {
 
             this.autoSyncInProgress = false;
             this.syncCheckInProgress = false;
-            this.render();
+            this.render({ preserveTransientUi: true });
 
         }
 
@@ -2354,7 +2354,23 @@ export class App {
 
     }
 
-    render() {
+    render({ preserveTransientUi = false } = {}) {
+
+        if (
+            preserveTransientUi &&
+            (
+                this.mainView
+                    ?.hasActiveEntityEdit() ||
+                this.mainView
+                    ?.hasActiveEntityCreation() ||
+                this.mainView
+                    ?.hasUnsavedTaskEdit(
+                        this.selectedTask
+                    )
+            )
+        ) {
+            return;
+        }
 
         const activeViews = [
             View.INBOX,

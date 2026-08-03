@@ -2148,6 +2148,10 @@ input[type="time"],
         ease-out;
 }
 
+.taskDrawer.taskDrawerRestored {
+    animation: none;
+}
+
 @media (max-width: 760px) {
 
     .createActionButton,
