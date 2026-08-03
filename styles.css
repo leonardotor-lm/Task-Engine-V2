@@ -1145,6 +1145,23 @@ body {
     font-size: 13px;
 }
 
+.colorSelectorCustomControls {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 7px;
+}
+
+.colorSelectorNative {
+    box-sizing: border-box;
+    width: 42px;
+    min-height: 36px;
+    padding: 3px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    cursor: pointer;
+}
+
 .colorSelectorHex {
     box-sizing: border-box;
     width: 100%;
@@ -4951,7 +4968,9 @@ input[type="time"],
 }
 
 .entityManager .colorSelectorHex,
-.entityCreateManager #entityForm .colorSelectorHex {
+.entityCreateManager #entityForm .colorSelectorHex,
+.entityManager .colorSelectorNative,
+.entityCreateManager #entityForm .colorSelectorNative {
     border-radius: 0;
 }
 
