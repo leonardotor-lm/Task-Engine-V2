@@ -306,7 +306,8 @@ export class TaskService {
                                 weekdays:
                                     task.recurrenceWeekdays
                             }
-                        )
+                        ),
+                    dueTime: task.dueTime
                 }));
 
         this.repository.replaceAll([
@@ -649,7 +650,8 @@ export class TaskService {
             recurrenceWeekdays: [
                 ...task.recurrenceWeekdays
             ],
-            dueDate: nextDueDate
+            dueDate: nextDueDate,
+            dueTime: task.dueTime
 
         });
 
@@ -955,6 +957,7 @@ export class TaskService {
                 recurrence: null,
                 manualOrder: source.manualOrder,
                 dueDate: source.dueDate,
+                dueTime: source.dueTime,
                 postponements: []
             });
 
