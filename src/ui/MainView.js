@@ -3394,6 +3394,7 @@ export class MainView {
                     create: this.callbacks.onCreateArea,
                     update: this.callbacks.onUpdateArea,
                     remove: this.callbacks.onDeleteArea,
+                    isInUse: this.callbacks.onIsAreaInUse,
                     move: this.callbacks.onMoveArea
                 },
 
@@ -3403,7 +3404,9 @@ export class MainView {
                     prompt: "Nombre del contexto:",
                     create: this.callbacks.onCreateContext,
                     update: this.callbacks.onUpdateContext,
-                    remove: this.callbacks.onDeleteContext
+                    remove: this.callbacks.onDeleteContext,
+                    isInUse:
+                        this.callbacks.onIsContextInUse
                 },
 
                 [View.TAGS]: {
@@ -3412,7 +3415,8 @@ export class MainView {
                     prompt: "Nombre de la etiqueta:",
                     create: this.callbacks.onCreateTag,
                     update: this.callbacks.onUpdateTag,
-                    remove: this.callbacks.onDeleteTag
+                    remove: this.callbacks.onDeleteTag,
+                    isInUse: this.callbacks.onIsTagInUse
                 }
 
             }[entityView];
@@ -3442,6 +3446,19 @@ export class MainView {
                     const article = config.name === "contexto"
                         ? "este"
                         : "esta";
+
+                    if (config.isInUse(
+                        button.dataset.id
+                    )) {
+                        await Dialog.alert(
+                            `No se puede eliminar ${article} ${config.name} porque está asignado a una o más tareas.`,
+                            {
+                                title:
+                                    `${config.name[0].toUpperCase()}${config.name.slice(1)} en uso`
+                            }
+                        );
+                        return;
+                    }
 
                     if (!await Dialog.confirmAsync(
                         `Eliminar ${article} ${config.name} puede afectar a múltiples tareas que lo utilizan. ¿Querés continuar?`,
