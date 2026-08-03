@@ -90,3 +90,55 @@ test("la aplicación desvincula tareas antes de borrar los objetivos", () => {
         block.indexOf("permanentlyDeleteGoal")
     );
 });
+
+test("repara referencias históricas y conserva objetivos válidos", () => {
+    const linked = new Task({
+        id: "task-linked",
+        title: "Tarea con historial",
+        goalIds: ["goal-valid", "goal-missing"]
+    });
+    const unaffected = new Task({
+        id: "task-unaffected",
+        title: "Tarea válida",
+        goalIds: ["goal-valid"]
+    });
+    let updatedTasks = [];
+    const service = new TaskService({
+        getAll: () => [linked, unaffected],
+        updateMany: tasks => {
+            updatedTasks = tasks;
+        }
+    });
+
+    const repaired =
+        service.removeMissingGoalAssociations([
+            "goal-valid"
+        ]);
+
+    assert.equal(repaired.length, 1);
+    assert.equal(updatedTasks.length, 1);
+    assert.equal(
+        updatedTasks[0].id,
+        linked.id
+    );
+    assert.deepEqual(
+        updatedTasks[0].goalIds,
+        ["goal-valid"]
+    );
+    assert.deepEqual(
+        unaffected.goalIds,
+        ["goal-valid"]
+    );
+});
+
+test("la aplicación repara asociaciones al iniciar", () => {
+    const cleanup = appSource.indexOf(
+        "removeMissingGoalAssociations"
+    );
+    const backup = appSource.indexOf(
+        "this.backupService = new BackupService"
+    );
+
+    assert.notEqual(cleanup, -1);
+    assert.ok(cleanup < backup);
+});
