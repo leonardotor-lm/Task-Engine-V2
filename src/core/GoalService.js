@@ -147,6 +147,26 @@ export class GoalService {
 
     permanentlyDeleteGoal(id) {
 
+        const goalIds =
+            this.getPermanentDeletionGoalIds(id);
+        const goalsById = new Map(
+            this.repository
+                .getAll()
+                .map(goal => [goal.id, goal])
+        );
+
+        for (const goalId of [...goalIds].reverse()) {
+            if (goalsById.has(goalId)) {
+                this.repository.remove(goalId);
+            }
+        }
+
+        return goalsById.get(id);
+
+    }
+
+    getPermanentDeletionGoalIds(id) {
+
         const goal = this.getRequiredGoal(id);
 
         if (
@@ -163,11 +183,7 @@ export class GoalService {
             ...this.getDescendants(id)
         ];
 
-        for (const item of [...tree].reverse()) {
-            this.repository.remove(item.id);
-        }
-
-        return goal;
+        return tree.map(item => item.id);
 
     }
 
