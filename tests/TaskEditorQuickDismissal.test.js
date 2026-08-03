@@ -3,6 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 
 import { Task } from "../src/domain/Task.js";
+import { MainView } from "../src/ui/MainView.js";
 import { TaskEditor } from "../src/ui/TaskEditor.js";
 
 const mainViewSource = fs.readFileSync(
@@ -44,4 +45,51 @@ test("escape y la capa reutilizan la confirmación de descarte", () => {
         mainViewSource,
         /clearTaskEditorEscapeBinding\(\)[\s\S]*?removeEventListener/
     );
+});
+
+test("enlaza y ejecuta ambos mecanismos cuando el editor existe", () => {
+    const originalDocument = globalThis.document;
+    const backdropListeners = new Map();
+    const documentListeners = new Map();
+    let closeCount = 0;
+
+    globalThis.document = {
+        getElementById(id) {
+            if (id !== "taskEditorBackdrop") {
+                return null;
+            }
+            return {
+                addEventListener(type, callback) {
+                    backdropListeners.set(type, callback);
+                }
+            };
+        },
+        addEventListener(type, callback) {
+            documentListeners.set(type, callback);
+        },
+        removeEventListener() {},
+        querySelector() {
+            return null;
+        }
+    };
+
+    try {
+        const view = new MainView({
+            onCloseTaskEditor() {
+                closeCount += 1;
+            }
+        });
+        view.confirmDiscardTaskChanges = () => true;
+        view.bindTaskEditorDismissal({ id: "task-1" });
+
+        backdropListeners.get("click")();
+        documentListeners.get("keydown")({
+            key: "Escape",
+            preventDefault() {}
+        });
+
+        assert.equal(closeCount, 2);
+    } finally {
+        globalThis.document = originalDocument;
+    }
 });
