@@ -8,6 +8,10 @@ const styles = await readFile(
     new URL("../styles.css", import.meta.url),
     "utf8"
 );
+const source = await readFile(
+    new URL("../src/ui/ColorSelector.js", import.meta.url),
+    "utf8"
+);
 
 test("ofrece una paleta común y un color hexadecimal personalizado", () => {
     const html = ColorSelector.render({
@@ -23,6 +27,8 @@ test("ofrece una paleta común y un color hexadecimal personalizado", () => {
     assert.match(html, /class="colorSelectorNative"/);
     assert.match(html, /type="color"/);
     assert.match(html, /class="colorSelectorHex"/);
+    assert.match(html, /class="colorSelectorCancel tertiaryAction"/);
+    assert.match(html, /class="colorSelectorApply primaryAction"/);
     assert.match(html, /#3b82f6/);
     assert.match(html, /#fca5a5/);
 });
@@ -81,4 +87,13 @@ test("el selector conserva geometría propia y adaptación móvil", () => {
         styles,
         /@media \(max-width: 760px\)[\s\S]*?\.colorSelectorPanel > summary[\s\S]*?min-height:\s*44px;/
     );
+});
+
+test("cancelar escape y clic exterior descartan la selección provisoria", () => {
+    assert.match(source, /const cancel = \(\) =>/);
+    assert.match(source, /select\(committedColor\)/);
+    assert.match(source, /event\.key !== "Escape"/);
+    assert.match(source, /"pointerdown"/);
+    assert.match(source, /colorSelectorCancel/);
+    assert.match(source, /colorSelectorApply/);
 });
