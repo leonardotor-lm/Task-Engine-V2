@@ -77,6 +77,9 @@ export class App {
         this.goalExpandedTaskIds = new Set();
         this.currentGoalStatus = "ACTIVE";
         this.currentView = View.TODAY;
+        this.calendarMonth =
+            new Date().toISOString().slice(0, 7);
+        this.calendarSelectedDate = null;
         this.currentAreaId = null;
         this.projectTaskId = null;
         this.previousProjectView = View.TODAY;
@@ -1359,6 +1362,46 @@ export class App {
 
             },
 
+            onShowCalendar: () => {
+
+                this.calendarSelectedDate = null;
+                this.navigateTo(View.CALENDAR);
+
+            },
+
+            onChangeCalendarMonth: (offset) => {
+
+                const [year, month] =
+                    this.calendarMonth
+                        .split("-")
+                        .map(Number);
+                const date = new Date(Date.UTC(
+                    year,
+                    month - 1 + offset,
+                    1
+                ));
+
+                this.calendarMonth =
+                    date.toISOString().slice(0, 7);
+                this.calendarSelectedDate = null;
+                this.render();
+
+            },
+
+            onOpenCalendarDay: (date) => {
+
+                this.calendarSelectedDate = date;
+                this.render();
+
+            },
+
+            onCloseCalendarDay: () => {
+
+                this.calendarSelectedDate = null;
+                this.render();
+
+            },
+
             onShowArea: id => {
 
                 if (
@@ -2562,6 +2605,9 @@ export class App {
             showCompletedTasks,
             taskViewCounts,
             today,
+            calendarMonth: this.calendarMonth,
+            calendarSelectedDate:
+                this.calendarSelectedDate,
             canRestoreBackup:
                 this.backupService.hasLastImportBackup(),
             syncConfigured:
