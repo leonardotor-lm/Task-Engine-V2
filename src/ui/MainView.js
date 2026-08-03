@@ -1341,7 +1341,7 @@ export class MainView {
                                     "permanentlyDeleteGoal"
                             ) {
                                 if (!await Dialog.confirmAsync(
-                                    "Se eliminarán definitivamente este objetivo, sus subobjetivos y sus asociaciones. ¿Querés continuar?",
+                                    "Se eliminarán definitivamente este objetivo y sus subobjetivos. Las tareas se conservarán, pero dejarán de estar asociadas. ¿Querés continuar?",
                                     {
                                         title: "Eliminar objetivo",
                                         confirmLabel: "Continuar",
