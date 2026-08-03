@@ -64,7 +64,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Objetivos en la búsqueda avanzada
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #142.
 - Extender el motor de búsqueda avanzada para contemplar la entidad Objetivo y sus asociaciones, incorporada después del diseño inicial del buscador.
 - Permitir buscar tareas y proyectos por objetivo o subobjetivo asociado, con coincidencias parciales y normalización de mayúsculas y tildes.
 - Incorporar criterios para distinguir elementos con o sin objetivos asociados.
@@ -110,7 +110,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Orden manual de áreas
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - Permitir reorganizar las áreas visibles en la barra lateral.
 - Persistir y sincronizar el orden.
 - Priorizar un mecanismo adecuado para escritorio y celular.
@@ -123,7 +123,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Cierre rápido del editor de tareas
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #143.
 - En escritorio, permitir cerrar el editor de tareas mediante la tecla `Escape`.
 - Permitir cerrarlo haciendo clic fuera del panel para agilizar la carga sucesiva de tareas.
 - No cerrar el editor cuando el clic ocurra dentro de él.
@@ -149,9 +149,10 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 ### Vista de calendario
 
 - **Estado:** Postergado hasta terminar el pulido de las vistas existentes.
-- Incorporar una vista de calendario para revisar y planificar tareas fechadas.
-- Definir alcance mensual, semanal o combinado después de estabilizar fecha y hora.
-- Conservar el minimalismo funcional y evitar duplicar el editor de tareas dentro del calendario.
+- Incorporar únicamente una vista mensual de consulta.
+- Marcar los días que contienen tareas pendientes.
+- Al elegir un día, abrir un modal con las tareas pendientes fechadas para esa jornada.
+- No incorporar edición dentro del calendario ni vistas semanal o diaria.
 
 ### Adjuntos
 

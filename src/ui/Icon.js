@@ -50,6 +50,10 @@ const icons = Object.freeze({
         <path d="m6 9 6 6 6-6"></path>
     `,
 
+    "chevron-up": `
+        <path d="m18 15-6-6-6 6"></path>
+    `,
+
     "chevron-right": `
         <path d="m9 18 6-6-6-6"></path>
     `,

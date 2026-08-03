@@ -541,7 +541,10 @@ export class Sidebar {
             areas: entityManager.render(
                 "Áreas",
                 areas,
-                { embedded: true }
+                {
+                    embedded: true,
+                    reorderable: true
+                }
             ),
             contexts: entityManager.render(
                 "Contextos",

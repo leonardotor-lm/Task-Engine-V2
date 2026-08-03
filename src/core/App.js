@@ -1129,6 +1129,17 @@ export class App {
 
             },
 
+            onMoveArea: (id, direction) => {
+
+                this.areaService.moveArea(
+                    id,
+                    direction
+                );
+
+                this.render();
+
+            },
+
             onCreateContext: (name, color) => {
 
                 this.contextService.createContext({ name, color });

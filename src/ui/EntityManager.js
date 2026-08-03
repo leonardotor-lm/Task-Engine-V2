@@ -6,7 +6,10 @@ export class EntityManager {
     render(
         title,
         entities = [],
-        { embedded = false } = {}
+        {
+            embedded = false,
+            reorderable = false
+        } = {}
     ) {
 
         const createLabels = {
@@ -79,7 +82,8 @@ export class EntityManager {
                 <ul class="entityList">
             `;
 
-            for (const entity of entities) {
+            for (const [index, entity] of
+                entities.entries()) {
 
                 html += `
                     <li
@@ -100,6 +104,32 @@ export class EntityManager {
                             </div>
 
                             <div class="entityActions">
+
+                                ${reorderable
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="moveEntity iconButton"
+                                            data-id="${escapeHtml(entity.id)}"
+                                            data-direction="UP"
+                                            aria-label="Subir ${escapeHtml(entity.name)}"
+                                            title="Subir"
+                                            ${index === 0 ? "disabled" : ""}>
+                                            ${Icon.render("chevron-up")}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="moveEntity iconButton"
+                                            data-id="${escapeHtml(entity.id)}"
+                                            data-direction="DOWN"
+                                            aria-label="Bajar ${escapeHtml(entity.name)}"
+                                            title="Bajar"
+                                            ${index === entities.length - 1 ? "disabled" : ""}>
+                                            ${Icon.render("chevron-down")}
+                                        </button>
+                                    `
+                                    : ""}
 
                                 <button
                                     type="button"
