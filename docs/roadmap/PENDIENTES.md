@@ -111,7 +111,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Mantener etiquetas accesibles, títulos descriptivos y estados visuales claros en todos los botones con sólo ícono.
 - Conservar texto cuando un ícono aislado pueda resultar ambiguo.
 - Agregar un contorno fino y uniforme a **Selección múltiple**, **Filtros rápidos** y **Mostrar completadas** para que se reconozcan inmediatamente como botones.
-- Conservar en los tres controles la misma geometría, grosor de borde y tratamiento de estados activo, foco y desplazamiento del puntero.
+- **Terminado y verificado en la PR #155:** conservar en los tres controles la misma geometría, grosor de borde y tratamiento de estados activo, foco y desplazamiento del puntero.
 
 ### Selector de colores
 
@@ -173,7 +173,9 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Adjuntos
 
-- **Estado:** Postergado.
+- **Estado:** En desarrollo por etapas.
+- **Base técnica:** modelo de metadatos, límites, compatibilidad con copias y operaciones autenticadas de Drive implementados; pendiente de verificación en la primera PR.
+- **Criterios acordados:** hasta diez archivos de 3 MB por tarea; conservarlos al enviar la tarea a la papelera y trasladarlos a la papelera de Drive sólo al quitar el adjunto o eliminar definitivamente la tarea.
 - Incorporar adjuntos mediante Google Drive.
 - Definir alta, apertura, eliminación y sincronización.
 - Añadir el criterio de búsqueda por adjuntos.

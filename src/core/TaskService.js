@@ -99,6 +99,40 @@ export class TaskService {
 
     }
 
+    addTaskAttachment(id, attachment) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) return null;
+
+        task.addAttachment(attachment);
+        this.repository.update(task);
+
+        return task;
+
+    }
+
+    removeTaskAttachment(
+        id,
+        attachmentId
+    ) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) return null;
+
+        const removed = task.removeAttachment(
+            attachmentId
+        );
+
+        if (!removed) return null;
+
+        this.repository.update(task);
+
+        return removed;
+
+    }
+
     removeGoalAssociations(goalIds) {
 
         const removedGoalIds = new Set(goalIds);

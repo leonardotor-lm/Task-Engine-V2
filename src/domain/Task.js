@@ -4,6 +4,11 @@ import {
     isValidRecurrenceFrequency,
     normalizeRecurrenceRule
 } from "./Recurrence.js";
+import {
+    MAX_ATTACHMENTS_PER_TASK,
+    normalizeAttachment,
+    normalizeAttachments
+} from "./Attachment.js";
 
 export class Task {
 
@@ -41,7 +46,9 @@ export class Task {
 
         this.goalIds = data.goalIds ?? [];
 
-        this.attachments = data.attachments ?? [];
+        this.attachments = normalizeAttachments(
+            data.attachments ?? []
+        );
 
         this.parentTaskId = data.parentTaskId ?? null;
 
@@ -295,6 +302,13 @@ export class Task {
         if (data.goalIds !== undefined)
             this.goalIds = [...data.goalIds];
 
+        if (data.attachments !== undefined) {
+            this.attachments =
+                normalizeAttachments(
+                    data.attachments
+                );
+        }
+
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
 
@@ -354,6 +368,58 @@ export class Task {
         }
 
         this.touch();
+
+    }
+
+    addAttachment(data) {
+
+        if (
+            this.attachments.length >=
+            MAX_ATTACHMENTS_PER_TASK
+        ) {
+            throw new Error(
+                `Una tarea admite hasta ${MAX_ATTACHMENTS_PER_TASK} adjuntos.`
+            );
+        }
+
+        const attachment =
+            normalizeAttachment(data);
+
+        if (
+            this.attachments.some(item =>
+                item.id === attachment.id ||
+                item.driveFileId ===
+                    attachment.driveFileId
+            )
+        ) {
+            throw new Error(
+                "El adjunto ya está asociado a la tarea."
+            );
+        }
+
+        this.attachments.push(attachment);
+        this.touch();
+
+        return attachment;
+
+    }
+
+    removeAttachment(attachmentId) {
+
+        const index = this.attachments
+            .findIndex(
+                attachment =>
+                    attachment.id ===
+                        attachmentId
+            );
+
+        if (index === -1) return null;
+
+        const [removed] =
+            this.attachments.splice(index, 1);
+
+        this.touch();
+        return removed;
 
     }
 
@@ -496,7 +562,11 @@ export class Task {
 
             goalIds: [...this.goalIds],
 
-            attachments: [...this.attachments],
+            attachments: this.attachments.map(
+                attachment => ({
+                    ...attachment
+                })
+            ),
 
             parentTaskId: this.parentTaskId,
 

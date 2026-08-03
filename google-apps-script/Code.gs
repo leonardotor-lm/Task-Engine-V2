@@ -1,12 +1,16 @@
 var TASK_ENGINE_SETTINGS = Object.freeze({
     SPREADSHEET_ID_PROPERTY: "TASK_ENGINE_SPREADSHEET_ID",
     TOKEN_PROPERTY: "TASK_ENGINE_TOKEN",
+    ATTACHMENTS_FOLDER_ID_PROPERTY: "TASK_ENGINE_ATTACHMENTS_FOLDER_ID",
+    ATTACHMENTS_FOLDER_NAME: "Mis tareas - Adjuntos",
     DATA_SHEET: "TaskEngineData",
     META_SHEET: "TaskEngineMeta",
     BACKUP_FORMAT: "task-engine-v2-backup",
     BACKUP_VERSION: 1,
     MAX_PAYLOAD_LENGTH: 45000,
     MAX_REQUEST_LENGTH: 5000000,
+    MAX_ATTACHMENT_BYTES: 3 * 1024 * 1024,
+    MAX_ATTACHMENT_NAME_LENGTH: 180,
     RATE_LIMIT_WINDOW_SECONDS: 60,
     MAX_REQUESTS_PER_WINDOW: 120
 });
@@ -66,6 +70,26 @@ function handleRequest_(event, method) {
                 )
             );
 
+        }
+
+        if (
+            method === "POST" &&
+            action === "uploadAttachment"
+        ) {
+            return jsonResponse_(
+                uploadAttachment_(body.attachment)
+            );
+        }
+
+        if (
+            method === "POST" &&
+            action === "trashAttachment"
+        ) {
+            return jsonResponse_(
+                trashAttachment_(
+                    body.driveFileId
+                )
+            );
         }
 
         throw protocolError_(
@@ -253,6 +277,204 @@ function parseRequestBody_(event) {
         );
 
     }
+
+}
+
+function getAttachmentsFolder_() {
+
+    var properties =
+        PropertiesService.getScriptProperties();
+    var folderId = properties.getProperty(
+        TASK_ENGINE_SETTINGS
+            .ATTACHMENTS_FOLDER_ID_PROPERTY
+    );
+    var folder = null;
+
+    if (folderId) {
+        try {
+            folder = DriveApp.getFolderById(
+                folderId
+            );
+
+            if (folder.isTrashed()) {
+                folder = null;
+            }
+        } catch (error) {
+            folder = null;
+        }
+    }
+
+    if (!folder) {
+        folder = DriveApp.createFolder(
+            TASK_ENGINE_SETTINGS
+                .ATTACHMENTS_FOLDER_NAME
+        );
+
+        properties.setProperty(
+            TASK_ENGINE_SETTINGS
+                .ATTACHMENTS_FOLDER_ID_PROPERTY,
+            folder.getId()
+        );
+    }
+
+    return folder;
+
+}
+
+function uploadAttachment_(attachment) {
+
+    if (!attachment) {
+        throw protocolError_(
+            "INVALID_ATTACHMENT",
+            "No se recibió ningún adjunto."
+        );
+    }
+
+    var name = String(
+        attachment.name || ""
+    ).trim();
+    var mimeType = String(
+        attachment.mimeType ||
+        "application/octet-stream"
+    ).trim();
+    var base64Data = String(
+        attachment.base64Data || ""
+    );
+
+    if (
+        !name ||
+        name.length >
+            TASK_ENGINE_SETTINGS
+                .MAX_ATTACHMENT_NAME_LENGTH ||
+        /[\u0000-\u001F\u007F]/.test(name)
+    ) {
+        throw protocolError_(
+            "INVALID_ATTACHMENT",
+            "El nombre del adjunto es inválido."
+        );
+    }
+
+    if (!mimeType || mimeType.length > 160) {
+        throw protocolError_(
+            "INVALID_ATTACHMENT",
+            "El tipo del adjunto es inválido."
+        );
+    }
+
+    if (
+        !base64Data ||
+        base64Data.length >
+            Math.ceil(
+                TASK_ENGINE_SETTINGS
+                    .MAX_ATTACHMENT_BYTES *
+                4 / 3
+            ) + 4
+    ) {
+        throw protocolError_(
+            "ATTACHMENT_TOO_LARGE",
+            "El adjunto supera el límite de 3 MB."
+        );
+    }
+
+    var bytes;
+
+    try {
+        bytes = Utilities.base64Decode(
+            base64Data
+        );
+    } catch (error) {
+        throw protocolError_(
+            "INVALID_ATTACHMENT",
+            "El contenido del adjunto es inválido."
+        );
+    }
+
+    if (
+        bytes.length === 0 ||
+        bytes.length >
+        TASK_ENGINE_SETTINGS
+            .MAX_ATTACHMENT_BYTES
+    ) {
+        throw protocolError_(
+            "ATTACHMENT_TOO_LARGE",
+            "El adjunto supera el límite de 3 MB."
+        );
+    }
+
+    var blob = Utilities.newBlob(
+        bytes,
+        mimeType,
+        name
+    );
+    var file = getAttachmentsFolder_()
+        .createFile(blob);
+
+    file.setDescription(
+        "Adjunto creado por Mis tareas."
+    );
+
+    return {
+        ok: true,
+        attachment: {
+            id: Utilities.getUuid(),
+            driveFileId: file.getId(),
+            name: file.getName(),
+            mimeType: file.getMimeType(),
+            size: file.getSize(),
+            url: file.getUrl(),
+            createdAt: new Date().toISOString()
+        }
+    };
+
+}
+
+function trashAttachment_(driveFileId) {
+
+    var id = String(driveFileId || "").trim();
+
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) {
+        throw protocolError_(
+            "INVALID_ATTACHMENT",
+            "El archivo de Drive es inválido."
+        );
+    }
+
+    var file;
+
+    try {
+        file = DriveApp.getFileById(id);
+    } catch (error) {
+        throw protocolError_(
+            "ATTACHMENT_NOT_FOUND",
+            "El adjunto ya no existe en Google Drive."
+        );
+    }
+
+    var folderId =
+        getAttachmentsFolder_().getId();
+    var parents = file.getParents();
+    var belongsToApp = false;
+
+    while (parents.hasNext()) {
+        if (parents.next().getId() === folderId) {
+            belongsToApp = true;
+            break;
+        }
+    }
+
+    if (!belongsToApp) {
+        throw protocolError_(
+            "ATTACHMENT_FORBIDDEN",
+            "El archivo no pertenece a la carpeta de adjuntos de Mis tareas."
+        );
+    }
+
+    file.setTrashed(true);
+
+    return {
+        ok: true,
+        driveFileId: id
+    };
 
 }
 
@@ -734,6 +956,10 @@ function validateTaskReferences_(
             );
         }
 
+        validateTaskAttachments_(
+            task.attachments
+        );
+
         if (
             task.parentTaskId &&
             !ids.tasks[task.parentTaskId]
@@ -831,6 +1057,81 @@ function validateTaskReferences_(
                 tasksById[current.parentTaskId];
 
         }
+
+    });
+
+}
+
+function validateTaskAttachments_(attachments) {
+
+    if (attachments === undefined) return;
+
+    if (
+        !Array.isArray(attachments) ||
+        attachments.length > 10
+    ) {
+        throw protocolError_(
+            "INVALID_ATTACHMENT",
+            "Una tarea contiene adjuntos inválidos."
+        );
+    }
+
+    var ids = {};
+    var driveFileIds = {};
+
+    attachments.forEach(function(attachment) {
+
+        var valid =
+            attachment &&
+            typeof attachment.id === "string" &&
+            /^[A-Za-z0-9_-]+$/.test(
+                attachment.id
+            ) &&
+            typeof attachment.driveFileId ===
+                "string" &&
+            /^[A-Za-z0-9_-]+$/.test(
+                attachment.driveFileId
+            ) &&
+            typeof attachment.name === "string" &&
+            attachment.name.trim().length > 0 &&
+            attachment.name.length <=
+                TASK_ENGINE_SETTINGS
+                    .MAX_ATTACHMENT_NAME_LENGTH &&
+            typeof attachment.mimeType ===
+                "string" &&
+            attachment.mimeType.length > 0 &&
+            attachment.mimeType.length <= 160 &&
+            Number.isInteger(attachment.size) &&
+            attachment.size > 0 &&
+            attachment.size <=
+                TASK_ENGINE_SETTINGS
+                    .MAX_ATTACHMENT_BYTES &&
+            typeof attachment.url === "string" &&
+            /^https:\/\/drive\.google\.com\//
+                .test(attachment.url) &&
+            typeof attachment.createdAt ===
+                "string" &&
+            !Number.isNaN(
+                Date.parse(attachment.createdAt)
+            );
+
+        if (
+            !valid ||
+            ids[attachment.id] ||
+            driveFileIds[
+                attachment.driveFileId
+            ]
+        ) {
+            throw protocolError_(
+                "INVALID_ATTACHMENT",
+                "Una tarea contiene adjuntos inválidos."
+            );
+        }
+
+        ids[attachment.id] = true;
+        driveFileIds[
+            attachment.driveFileId
+        ] = true;
 
     });
 

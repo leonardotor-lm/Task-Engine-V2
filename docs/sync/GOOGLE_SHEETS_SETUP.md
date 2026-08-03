@@ -10,6 +10,8 @@ Necesitás:
 - una hoja de cálculo vacía;
 - el archivo `google-apps-script/Code.gs` de este repositorio.
 
+La misma aplicación web administra los adjuntos en Google Drive. Los archivos se guardan en una carpeta propia; Google Sheets conserva únicamente sus metadatos.
+
 No publiques el token en GitHub, en capturas de pantalla ni en conversaciones.
 
 ## 1. Crear la hoja de cálculo
@@ -62,6 +64,8 @@ Copiá el resultado y guardalo en un lugar seguro. No lo agregues a ningún arch
 3. Pulsá **Ejecutar**.
 4. Aceptá los permisos solicitados por Google.
 
+Cuando se habiliten adjuntos, Google también solicitará permiso para crear y administrar archivos de la carpeta **Mis tareas - Adjuntos**. El backend comprueba que un archivo pertenezca a esa carpeta antes de enviarlo a la papelera.
+
 La hoja de cálculo debería incorporar dos pestañas:
 
 - `TaskEngineData`
@@ -93,6 +97,8 @@ Cuando cambie `Code.gs`:
 
 La URL `/exec` se mantiene.
 
+Las actualizaciones que incorporen adjuntos pueden solicitar una nueva autorización de Drive. Si Google la muestra al probar la primera subida, aceptala desde la misma cuenta propietaria del despliegue.
+
 ## Estructura de almacenamiento
 
 Cada entidad ocupa una fila con:
@@ -105,6 +111,8 @@ Cada entidad ocupa una fila con:
 - contenido JSON.
 
 Cada guardado crea una nueva generación y recién después actualiza la revisión activa. Esto evita que una escritura incompleta reemplace la última versión válida.
+
+Los archivos adjuntos no se convierten en filas ni se incluyen como texto Base64 en la hoja. Cada tarea conserva sólo el identificador de Drive, nombre, tipo, tamaño, enlace y fecha de creación.
 
 ## Resolución de conflictos
 
