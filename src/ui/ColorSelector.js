@@ -48,7 +48,7 @@ export class ColorSelector {
                     .map(color => this.normalize(color, ""))
                     .filter(Boolean)
                     .filter(color => !this.palette.includes(color))
-                    .slice(0, 6)
+                    .slice(0, 12)
                 : [];
         } catch {
             return [];
@@ -70,7 +70,7 @@ export class ColorSelector {
             ...this.recentColors().filter(
                 saved => saved !== color
             )
-        ].slice(0, 6);
+        ].slice(0, 12);
 
         try {
             localStorage.setItem(
@@ -137,14 +137,22 @@ export class ColorSelector {
 
                         <label class="colorSelectorCustom">
                             <span>Color personalizado</span>
-                            <input
-                                type="text"
-                                class="colorSelectorHex"
-                                value="${escapeHtml(selected)}"
-                                maxlength="7"
-                                inputmode="text"
-                                spellcheck="false"
-                                aria-describedby="${escapeHtml(id)}ColorHelp">
+                            <span class="colorSelectorCustomControls">
+                                <input
+                                    type="color"
+                                    class="colorSelectorNative"
+                                    value="${escapeHtml(selected)}"
+                                    aria-label="Abrir selector visual de color"
+                                    title="Elegir visualmente">
+                                <input
+                                    type="text"
+                                    class="colorSelectorHex"
+                                    value="${escapeHtml(selected)}"
+                                    maxlength="7"
+                                    inputmode="text"
+                                    spellcheck="false"
+                                    aria-describedby="${escapeHtml(id)}ColorHelp">
+                            </span>
                         </label>
                         <small id="${escapeHtml(id)}ColorHelp">
                             Usá un código hexadecimal, por ejemplo #3b82f6.
@@ -171,6 +179,9 @@ export class ColorSelector {
             const preview = selector.querySelector(
                 ".colorSelectorPreview"
             );
+            const nativeInput = selector.querySelector(
+                ".colorSelectorNative"
+            );
             const panel = selector.querySelector(
                 ".colorSelectorPanel"
             );
@@ -188,6 +199,7 @@ export class ColorSelector {
 
                 valueInput.value = color;
                 hexInput.value = color;
+                nativeInput.value = color;
                 hexInput.removeAttribute("aria-invalid");
                 preview.style.setProperty(
                     "--selected-color",
@@ -227,6 +239,14 @@ export class ColorSelector {
                     hexInput.value = valueInput.value;
                     hexInput.removeAttribute("aria-invalid");
                 }
+            });
+
+            nativeInput.addEventListener("input", () => {
+                select(nativeInput.value);
+            });
+
+            nativeInput.addEventListener("change", () => {
+                select(nativeInput.value, true);
             });
 
         });
