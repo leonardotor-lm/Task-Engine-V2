@@ -519,6 +519,17 @@ export class TaskEditor {
                             value="${escapeHtml(task.dueDate)}"
                             ${disabled}>
 
+                        <label for="taskDueTime">
+                            Hora de vencimiento (opcional)
+                        </label>
+
+                        <input
+                            id="taskDueTime"
+                            type="time"
+                            value="${escapeHtml(task.dueTime)}"
+                            ${!task.dueDate ? "disabled" : ""}
+                            ${disabled}>
+
                     </div>
 
                 </details>
