@@ -141,3 +141,49 @@ test("las acciones rápidas de tareas usan diálogos propios", () => {
         assert.doesNotMatch(block, /Dialog\.confirm\(/);
     }
 });
+
+test("las acciones del editor de tareas usan diálogos propios", () => {
+    for (const id of [
+        "skipRecurringTask",
+        "archiveTask",
+        "deleteTask",
+        "moveTaskFromEditor"
+    ]) {
+        const start = mainViewSource.indexOf(
+            `"${id}"`
+        );
+        const nextAction = mainViewSource.indexOf(
+            "document.getElementById(",
+            start + 30
+        );
+        const block = mainViewSource.slice(
+            start,
+            nextAction
+        );
+
+        assert.notEqual(start, -1);
+        assert.match(block, /Dialog\.confirmAsync\(/);
+        assert.doesNotMatch(block, /Dialog\.confirm\(/);
+    }
+});
+
+test("el borrado definitivo de tareas exige dos confirmaciones propias", () => {
+    const start = mainViewSource.indexOf(
+        '"permanentlyDeleteTask"'
+    );
+    const nextAction = mainViewSource.indexOf(
+        "document.getElementById(",
+        start + 30
+    );
+    const block = mainViewSource.slice(
+        start,
+        nextAction
+    );
+
+    assert.equal(
+        block.match(/Dialog\.confirmAsync\(/g)?.length,
+        2
+    );
+    assert.match(block, /Confirmación final/);
+    assert.doesNotMatch(block, /Dialog\.confirm\(/);
+});
