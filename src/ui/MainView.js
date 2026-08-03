@@ -988,6 +988,14 @@ export class MainView {
         });
 
         document.getElementById(
+            "clearActiveAdvancedSearch"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onClearSearch();
+
+        });
+
+        document.getElementById(
             "saveCustomFilter"
         )?.addEventListener("click", () => {
 
