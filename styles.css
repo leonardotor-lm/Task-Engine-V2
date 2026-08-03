@@ -4241,7 +4241,12 @@ input[type="time"],
 }
 
 .childTaskIcon {
-    display: none;
+    --icon-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 4px;
+    color: var(--color-text-muted);
+    vertical-align: -2px;
 }
 
 .subtaskProgress {
@@ -4410,6 +4415,46 @@ input[type="time"],
 /* Ajustes finales del editor de tareas */
 .taskDrawer .editorSection {
     margin: 0 0 8px;
+}
+
+.taskParentContext {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 0 10px;
+    padding: 6px 8px;
+    border-left: 2px solid var(--color-accent-muted);
+    background: var(--color-surface-subtle);
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.taskParentContextIcon {
+    --icon-size: 14px;
+    flex: 0 0 auto;
+}
+
+.taskParentContext button {
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    color: var(--color-accent-strong);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.taskParentContext button:hover {
+    text-decoration: underline;
+}
+
+.missingParentTask {
+    color: var(--color-danger);
 }
 
 .taskDrawer .editorSection > summary {
