@@ -1139,6 +1139,9 @@ export class App {
 
             },
 
+            onIsAreaInUse: (id) =>
+                this.taskService.hasTasksInArea(id),
+
             onMoveArea: (id, direction) => {
 
                 this.areaService.moveArea(
@@ -1189,6 +1192,9 @@ export class App {
 
             },
 
+            onIsContextInUse: (id) =>
+                this.taskService.hasTasksInContext(id),
+
             onCreateTag: (name, color) => {
 
                 this.tagService.createTag({ name, color });
@@ -1222,6 +1228,9 @@ export class App {
                 this.render();
 
             },
+
+            onIsTagInUse: (id) =>
+                this.taskService.hasTasksWithTag(id),
 
             onSaveSyncConfig: ({
                 url,
