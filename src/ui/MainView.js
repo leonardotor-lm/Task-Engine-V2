@@ -2034,6 +2034,11 @@ export class MainView {
                         "bulkDueDate"
                     ).value;
 
+                const dueTime = document
+                    .getElementById(
+                        "bulkDueTime"
+                    ).value;
+
                 const areaValue = document
                     .getElementById(
                         "bulkArea"
@@ -2067,6 +2072,8 @@ export class MainView {
 
                 if (dueDate) {
                     changes.dueDate = dueDate;
+                    changes.dueTime =
+                        dueTime || null;
                 }
 
                 if (areaValue !== "") {
@@ -2125,6 +2132,30 @@ export class MainView {
                 }
 
             });
+
+            const bulkDueDate =
+                document.getElementById(
+                    "bulkDueDate"
+                );
+            const bulkDueTime =
+                document.getElementById(
+                    "bulkDueTime"
+                );
+
+            bulkDueDate?.addEventListener(
+                "change",
+                () => {
+                    const hasDate =
+                        Boolean(bulkDueDate.value);
+
+                    bulkDueTime.disabled =
+                        !hasDate;
+
+                    if (!hasDate) {
+                        bulkDueTime.value = "";
+                    }
+                }
+            );
 
             document.getElementById(
                 "bulkCompleteTasks"
@@ -2841,6 +2872,31 @@ export class MainView {
 
                 updateRecurrenceControls();
 
+                const taskDueDate =
+                    document.getElementById(
+                        "taskDueDate"
+                    );
+                const taskDueTime =
+                    document.getElementById(
+                        "taskDueTime"
+                    );
+
+                const updateDueTimeControl = () => {
+                    if (!taskDueTime) return;
+                    taskDueTime.disabled =
+                        !taskDueDate?.value ||
+                        taskDueDate.disabled;
+                    if (!taskDueDate?.value) {
+                        taskDueTime.value = "";
+                    }
+                };
+
+                taskDueDate?.addEventListener(
+                    "change",
+                    updateDueTimeControl
+                );
+                updateDueTimeControl();
+
                 document.getElementById(
                     "closeTaskEditor"
                 )?.addEventListener("click", () => {
@@ -3055,6 +3111,9 @@ export class MainView {
                     const dueDate =
                         document.getElementById("taskDueDate").value || null;
 
+                    const dueTime =
+                        document.getElementById("taskDueTime").value || null;
+
                     const tagIds = Array
                         .from(document.querySelectorAll(".taskTag"))
                         .map(input => input.value);
@@ -3104,6 +3163,7 @@ export class MainView {
                             contextId,
                             priority,
                             dueDate,
+                            dueTime,
                             tagIds,
                             goalIds,
                             recurrence,
