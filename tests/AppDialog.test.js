@@ -32,9 +32,35 @@ test("renderiza un diálogo propio y escapa su contenido", () => {
 });
 
 test("las eliminaciones de organización usan confirmación propia", () => {
+    const deletionStart = mainViewSource.indexOf(
+        'document.querySelectorAll(".deleteEntity")'
+    );
+    const deletionEnd = mainViewSource.indexOf(
+        '".moveEntity"',
+        deletionStart
+    );
+    const deletionBlock = mainViewSource.slice(
+        deletionStart,
+        deletionEnd
+    );
+
     assert.match(
-        mainViewSource,
-        /deleteEntity[\s\S]*?Dialog\.confirmAsync\([\s\S]*?variant:\s*"danger"/
+        deletionBlock,
+        /Dialog\.confirmAsync\([\s\S]*?variant:\s*"danger"/
+    );
+    assert.equal(
+        deletionBlock.match(
+            /Dialog\.confirmAsync\(/g
+        )?.length,
+        2
+    );
+    assert.match(
+        deletionBlock,
+        /no puede deshacerse/
+    );
+    assert.match(
+        deletionBlock,
+        /Eliminar definitivamente/
     );
 });
 
