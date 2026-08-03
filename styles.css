@@ -4485,7 +4485,17 @@ input[type="date"],
 }
 
 .entityManager .entityActions {
+    flex: 0 0 auto;
     gap: 2px;
+}
+
+.entityManager .moveEntity {
+    --icon-size: 15px;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-color: var(--color-border);
+    background: var(--color-surface);
 }
 
 .entityManager .editEntity {
@@ -4541,6 +4551,13 @@ input[type="date"],
 
     .entityManager .editEntity {
         --icon-size: 17px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .entityManager .moveEntity {
+        --icon-size: 17px;
+        flex-basis: 44px;
         width: 44px;
         height: 44px;
     }
