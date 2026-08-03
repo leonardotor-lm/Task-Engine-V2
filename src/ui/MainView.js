@@ -34,7 +34,65 @@ export class MainView {
 
     }
 
+    captureScrollState() {
+
+        const selectors = [
+            "#appSidebar",
+            ".content",
+            ".taskDrawer",
+            "#advancedSearchDialog",
+            "#taskToolsDialog",
+            "#settingsDialog"
+        ];
+
+        return {
+            containers: selectors.map(selector => {
+
+                const element =
+                    document.querySelector(selector);
+
+                return {
+                    selector,
+                    top: element?.scrollTop ?? 0,
+                    left: element?.scrollLeft ?? 0
+                };
+
+            }),
+            windowX: window.scrollX,
+            windowY: window.scrollY
+        };
+
+    }
+
+    restoreScrollState(scrollState) {
+
+        if (!scrollState) return;
+
+        for (const position of scrollState.containers) {
+
+            const element = document.querySelector(
+                position.selector
+            );
+
+            if (!element) continue;
+
+            element.scrollTop = position.top;
+            element.scrollLeft = position.left;
+
+        }
+
+        window.scrollTo({
+            top: scrollState.windowY,
+            left: scrollState.windowX,
+            behavior: "auto"
+        });
+
+    }
+
     render(state) {
+
+        const scrollState =
+            this.captureScrollState();
 
         const {
             view,
@@ -235,6 +293,8 @@ export class MainView {
         ) {
             calendarDayDialog.showModal();
         }
+
+        this.restoreScrollState(scrollState);
 
     }
 
