@@ -346,6 +346,9 @@ export class TaskList {
                                     today
                                 )
                             )}
+                            ${task.dueTime
+                                ? ` · ${escapeHtml(task.dueTime)}`
+                                : ""}
                         </span>
                     `);
 
@@ -1061,6 +1064,12 @@ export class TaskList {
                         id="bulkDueDate"
                         type="date"
                         aria-label="Fecha para las tareas seleccionadas">
+
+                    <input
+                        id="bulkDueTime"
+                        type="time"
+                        aria-label="Hora para las tareas seleccionadas"
+                        disabled>
 
                 </div>
 

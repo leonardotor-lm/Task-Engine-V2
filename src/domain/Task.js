@@ -78,6 +78,12 @@ export class Task {
         this.completedAt = data.completedAt ?? null;
 
         this.dueDate = data.dueDate ?? null;
+        this.dueTime = data.dueTime ?? null;
+
+        this.validateDueTime(
+            this.dueTime,
+            this.dueDate
+        );
 
         this.validateRecurrence(
             this.recurrence,
@@ -155,6 +161,24 @@ export class Task {
 
     }
 
+    validateDueTime(dueTime, dueDate) {
+
+        if (dueTime === null) return;
+
+        if (!dueDate) {
+            throw new Error(
+                "La hora de vencimiento necesita una fecha."
+            );
+        }
+
+        if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(dueTime)) {
+            throw new Error(
+                "La hora de vencimiento es inválida."
+            );
+        }
+
+    }
+
     touch() {
 
         this.version += 1;
@@ -192,6 +216,18 @@ export class Task {
             data.dueDate !== undefined
                 ? data.dueDate
                 : this.dueDate;
+
+        const nextDueTime =
+            data.dueTime !== undefined
+                ? data.dueTime
+                : data.dueDate === null
+                    ? null
+                    : this.dueTime;
+
+        this.validateDueTime(
+            nextDueTime,
+            nextDueDate
+        );
 
         const nextRecurrenceInterval =
             data.recurrenceInterval !==
@@ -261,6 +297,13 @@ export class Task {
 
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
+
+        if (
+            data.dueTime !== undefined ||
+            data.dueDate === null
+        ) {
+            this.dueTime = nextDueTime;
+        }
 
         if (
             data.recurrenceInterval !==
@@ -478,6 +521,8 @@ export class Task {
             completedAt: this.completedAt,
 
             dueDate: this.dueDate,
+
+            dueTime: this.dueTime,
 
             postponements: [...this.postponements]
 

@@ -132,6 +132,12 @@ test("muestra las herramientas cuando hay una selección", () => {
         /id="applyBulkChanges"/
     );
 
+    assert.match(html, /id="bulkDueDate"/);
+    assert.match(
+        html,
+        /id="bulkDueTime"[\s\S]*?type="time"[\s\S]*?disabled/
+    );
+
     assert.doesNotMatch(
         html,
         /id="applyBulkPriority"/

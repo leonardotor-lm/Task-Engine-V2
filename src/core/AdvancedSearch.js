@@ -71,6 +71,10 @@ const FIELD_ALIASES = Object.freeze({
     tieneetiquetas: "isTagged",
     hasduedate: "hasDueDate",
     tienefecha: "hasDueDate",
+    duetime: "dueTime",
+    hora: "dueTime",
+    hasduetime: "hasDueTime",
+    tienehora: "hasDueTime",
     duebefore: "dueBefore",
     fechaantes: "dueBefore",
     dueafter: "dueAfter",
@@ -1141,6 +1145,16 @@ function matchesField(task, node, context) {
             const expected = parseBoolean(node.value);
             return expected !== null &&
                 Boolean(task.dueDate) === expected;
+        }
+
+        case "dueTime":
+            return (task.dueTime ?? "") ===
+                node.value.trim();
+
+        case "hasDueTime": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                Boolean(task.dueTime) === expected;
         }
 
         case "area":

@@ -110,7 +110,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Orden manual de áreas
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #144.
 - Permitir reorganizar las áreas visibles en la barra lateral.
 - Persistir y sincronizar el orden.
 - Priorizar un mecanismo adecuado para escritorio y celular.
@@ -132,7 +132,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Fecha y hora
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - Permitir elegir una hora optativa junto con la fecha de vencimiento.
 - Definir la compatibilidad con recurrencias, posposición, búsquedas, orden y sincronización.
 - Mantener una selección simple cuando la tarea sólo necesite fecha.
