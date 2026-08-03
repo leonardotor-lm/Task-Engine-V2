@@ -460,6 +460,8 @@ export class App {
             onClearSearch: () => {
 
                 this.searchQuery = "";
+                this.advancedSearchMode = false;
+                this.advancedSearchDialogOpen = false;
                 this.advancedSearchExpression = null;
                 this.advancedSearchError = "";
                 this.currentCustomFilterId = null;
