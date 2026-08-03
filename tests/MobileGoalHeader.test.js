@@ -18,11 +18,32 @@ const styles = await readFile(
     "utf8"
 );
 
+const projectView = await readFile(
+    new URL(
+        "../src/ui/ProjectView.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 test("identifica las acciones del encabezado de objetivos", () => {
 
     assert.equal(
         goalView.match(/goalHeadingAction/g)?.length,
         2
+    );
+
+});
+
+test("aplica el mismo encabezado responsive a proyectos", () => {
+
+    assert.equal(
+        projectView.match(/projectHeadingAction/g)?.length,
+        3
+    );
+    assert.match(
+        styles,
+        /\.taskListHeading:has\(\.projectHeadingAction\)/
     );
 
 });
