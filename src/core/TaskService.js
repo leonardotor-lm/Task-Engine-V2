@@ -132,6 +132,26 @@ export class TaskService {
 
     }
 
+    removeMissingGoalAssociations(validGoalIds) {
+
+        const existingGoalIds =
+            new Set(validGoalIds);
+        const missingGoalIds = new Set();
+
+        for (const task of this.repository.getAll()) {
+            for (const goalId of task.goalIds ?? []) {
+                if (!existingGoalIds.has(goalId)) {
+                    missingGoalIds.add(goalId);
+                }
+            }
+        }
+
+        return this.removeGoalAssociations(
+            missingGoalIds
+        );
+
+    }
+
     updateTasks(
         ids,
         data,
