@@ -171,4 +171,58 @@ export class CloudGateway {
 
     }
 
+    uploadAttachment({
+        url,
+        token,
+        name,
+        mimeType,
+        base64Data
+    }) {
+
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "uploadAttachment",
+                    token,
+                    attachment: {
+                        name,
+                        mimeType,
+                        base64Data
+                    }
+                })
+            }
+        );
+
+    }
+
+    trashAttachment({
+        url,
+        token,
+        driveFileId
+    }) {
+
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "trashAttachment",
+                    token,
+                    driveFileId
+                })
+            }
+        );
+
+    }
+
 }
