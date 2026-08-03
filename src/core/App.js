@@ -419,6 +419,10 @@ export class App {
 
                         this.advancedSearchExpression =
                             compileAdvancedSearch(query);
+                        this.currentView = View.ALL;
+                        this.currentAreaId = null;
+                        this.projectTaskId = null;
+                        this.projectHistory = [];
                         this.advancedSearchDialogOpen =
                             false;
 
