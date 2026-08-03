@@ -314,7 +314,7 @@ export class MainView {
 
     }
 
-    confirmDiscardTaskChanges(task) {
+    async confirmDiscardTaskChanges(task) {
 
         if (
             !this.hasUnsavedTaskEdit(task)
@@ -322,8 +322,13 @@ export class MainView {
             return true;
         }
 
-        return Dialog.confirm(
-            "Hay cambios sin guardar. ¿Descartarlos?"
+        return Dialog.confirmAsync(
+            "Hay cambios sin guardar. ¿Querés descartarlos?",
+            {
+                title: "Descartar cambios",
+                confirmLabel: "Descartar",
+                variant: "danger"
+            }
         );
 
     }
@@ -350,9 +355,9 @@ export class MainView {
             return;
         }
 
-        const dismiss = () => {
+        const dismiss = async () => {
 
-            if (!this.confirmDiscardTaskChanges(task)) {
+            if (!await this.confirmDiscardTaskChanges(task)) {
                 return;
             }
 
@@ -479,7 +484,7 @@ export class MainView {
 
         }
 
-        window.onpopstate = () => {
+        window.onpopstate = async () => {
 
             const restoreGuard = () => {
 
@@ -529,7 +534,7 @@ export class MainView {
             if (state.selectedTask) {
 
                 if (
-                    !this.confirmDiscardTaskChanges(
+                    !await this.confirmDiscardTaskChanges(
                         state.selectedTask
                     )
                 ) {
@@ -1247,11 +1252,11 @@ export class MainView {
 
             document.getElementById(
                 elementId
-            )?.addEventListener("click", () => {
+            )?.addEventListener("click", async () => {
 
                 if (
                     selectedTask &&
-                    !this.confirmDiscardTaskChanges(
+                    !await this.confirmDiscardTaskChanges(
                         selectedTask
                     )
                 ) {
@@ -1767,11 +1772,11 @@ export class MainView {
 
             button.addEventListener(
                 "click",
-                () => {
+                async () => {
 
                     if (
                         selectedTask &&
-                        !this.confirmDiscardTaskChanges(
+                        !await this.confirmDiscardTaskChanges(
                             selectedTask
                         )
                     ) {
@@ -1797,11 +1802,11 @@ export class MainView {
 
             button.addEventListener(
                 "click",
-                () => {
+                async () => {
 
                     if (
                         selectedTask &&
-                        !this.confirmDiscardTaskChanges(
+                        !await this.confirmDiscardTaskChanges(
                             selectedTask
                         )
                     ) {
@@ -3006,10 +3011,10 @@ export class MainView {
 
                 document.getElementById(
                     "closeTaskEditor"
-                )?.addEventListener("click", () => {
+                )?.addEventListener("click", async () => {
 
                     if (
-                        !this.confirmDiscardTaskChanges(
+                        !await this.confirmDiscardTaskChanges(
                             selectedTask
                         )
                     ) {
