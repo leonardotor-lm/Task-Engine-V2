@@ -53,6 +53,39 @@ export class TaskEditor {
             ? "disabled"
             : "";
 
+        const parentTask = task.parentTaskId
+            ? allTasks.find(
+                item => item.id === task.parentTaskId
+            ) ?? null
+            : null;
+
+        const parentContext = task.parentTaskId
+            ? `
+                <div class="taskParentContext">
+                    ${Icon.render(
+                        "corner-down-right",
+                        "taskParentContextIcon"
+                    )}
+                    <span>Subtarea de:</span>
+                    ${parentTask
+                        ? `
+                            <button
+                                id="openParentTask"
+                                type="button"
+                                data-id="${escapeHtml(parentTask.id)}"
+                                title="Abrir ${escapeHtml(parentTask.title)}">
+                                ${escapeHtml(parentTask.title)}
+                            </button>
+                        `
+                        : `
+                            <span class="missingParentTask">
+                                Tarea padre no disponible
+                            </span>
+                        `}
+                </div>
+            `
+            : "";
+
         const areaOptions = areas.map(area => `
 
             <option
@@ -487,6 +520,8 @@ export class TaskEditor {
                     ${mobileSaveAction}
 
                 </div>
+
+                ${parentContext}
 
                 <details
                     class="editorSection editorPrimarySection"
