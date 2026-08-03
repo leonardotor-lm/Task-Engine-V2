@@ -1,5 +1,6 @@
 import { escapeHtml } from "./escapeHtml.js";
 import { Icon } from "./Icon.js";
+import { ColorSelector } from "./ColorSelector.js";
 
 export class EntityManager {
 
@@ -51,11 +52,9 @@ export class EntityManager {
                             aria-label="Nombre"
                             autocomplete="off">
 
-                        <input
-                            id="entityColor"
-                            type="color"
-                            value="#3b82f6"
-                            aria-label="Color">
+                        ${ColorSelector.render({
+                            id: "entityColor"
+                        })}
 
                         <button
                             type="submit"
@@ -164,11 +163,11 @@ export class EntityManager {
                                 autocomplete="off"
                                 required>
 
-                            <input
-                                class="entityEditColor"
-                                type="color"
-                                value="${escapeHtml(entity.color)}"
-                                aria-label="Color">
+                            ${ColorSelector.render({
+                                id: `entityEditColor-${entity.id}`,
+                                value: entity.color,
+                                inputClass: "entityEditColor"
+                            })}
 
                             <button
                                 type="button"

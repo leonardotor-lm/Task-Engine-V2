@@ -1053,10 +1053,150 @@ body {
     padding: 6px;
 }
 
-.entityEditColor {
+.colorSelector {
+    position: relative;
+}
+
+.colorSelector > input[type="hidden"] {
+    display: none;
+}
+
+.colorSelectorPanel > summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    gap: 7px;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    list-style: none;
+}
+
+.colorSelectorPanel > summary::-webkit-details-marker {
+    display: none;
+}
+
+.colorSelectorPanel > summary:focus-visible {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-accent-muted);
+    outline-offset: 1px;
+}
+
+.colorSelectorPreview,
+.colorSwatch {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgb(15 23 42 / 24%);
+    border-radius: 50%;
+}
+
+.colorSelectorPreview {
+    background: var(--selected-color);
+}
+
+.colorSelectorContent {
+    position: absolute;
+    z-index: 25;
+    top: calc(100% + 4px);
+    right: 0;
+    width: min(260px, calc(100vw - 32px));
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    box-shadow: 0 10px 28px rgb(15 23 42 / 16%);
+}
+
+.colorSelectorPalette {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.colorSwatch {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: var(--swatch-color);
+    cursor: pointer;
+}
+
+.colorSwatch[aria-pressed="true"] {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.colorSwatch:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.colorSelectorCustom {
+    display: grid;
+    gap: 5px;
+    margin-top: 12px;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+.colorSelectorCustomControls {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 7px;
+}
+
+.colorSelectorNative {
+    box-sizing: border-box;
     width: 42px;
-    height: 32px;
-    padding: 2px;
+    min-height: 36px;
+    padding: 3px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    cursor: pointer;
+}
+
+.colorSelectorHex {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 36px;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+}
+
+.colorSelectorHex[aria-invalid="true"] {
+    border-color: var(--color-danger);
+    outline: 1px solid var(--color-danger);
+}
+
+.colorSelectorContent small {
+    display: block;
+    margin-top: 5px;
+    color: var(--color-text-muted);
+    line-height: 1.35;
+}
+
+.colorSelectorActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-border);
+}
+
+.colorSelectorActions button {
+    min-height: 34px;
 }
 
 
@@ -4774,9 +4914,8 @@ input[type="time"],
     font: inherit;
 }
 
-.entityCreateManager #entityColor {
-    width: 40px;
-    padding: 2px;
+.entityCreateManager .colorSelectorPanel > summary {
+    height: 100%;
 }
 
 .entityManager .entityList {
@@ -4841,6 +4980,13 @@ input[type="time"],
     border-radius: 6px;
 }
 
+.entityManager .colorSelectorHex,
+.entityCreateManager #entityForm .colorSelectorHex,
+.entityManager .colorSelectorNative,
+.entityCreateManager #entityForm .colorSelectorNative {
+    border-radius: 0;
+}
+
 @media (max-width: 760px) {
 
     .entityCreateManager > summary {
@@ -4863,6 +5009,19 @@ input[type="time"],
     .entityManager .entityEditForm button {
         min-height: 44px;
         font-size: 16px;
+    }
+
+    .colorSelectorPanel > summary {
+        min-height: 44px;
+    }
+
+    .colorSelectorActions button {
+        min-height: 44px;
+    }
+
+    .entityEditForm .colorSelectorContent {
+        right: auto;
+        left: 0;
     }
 
     .entityManager .entityDisplay {
