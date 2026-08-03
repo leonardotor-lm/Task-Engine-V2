@@ -58,6 +58,14 @@ test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
         html,
         /id="openProjectTaskCreation"/
     );
+    assert.equal(
+        html.match(/projectHeadingAction/g)?.length,
+        3
+    );
+    assert.match(html, /aria-label="Volver"/);
+    assert.match(html, /aria-label="Editar proyecto"/);
+    assert.match(html, /aria-label="Agregar subtarea"/);
+    assert.match(html, /responsiveButtonIcon/);
 
 });
 
@@ -117,7 +125,7 @@ test("indica cuando Volver regresa a un proyecto anterior", () => {
 
     assert.match(
         html,
-        /Volver al proyecto anterior/
+        /aria-label="Volver al proyecto anterior"/
     );
 
 });
