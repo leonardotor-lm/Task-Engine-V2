@@ -5,24 +5,6 @@ export class Dialog {
 
     static nextId = 0;
 
-    static prompt(title, defaultValue = "") {
-
-        const value = prompt(title, defaultValue);
-
-        if (value === null) {
-            return null;
-        }
-
-        return value.trim();
-
-    }
-
-    static confirm(message) {
-
-        return confirm(message);
-
-    }
-
     static alert(message, options = {}) {
 
         if (typeof document === "undefined") {
@@ -55,13 +37,42 @@ export class Dialog {
 
     }
 
+    static promptAsync(message, options = {}) {
+
+        if (typeof document === "undefined") {
+            const value = prompt(
+                message,
+                options.defaultValue ?? ""
+            );
+
+            return Promise.resolve(
+                value === null ? null : value.trim()
+            );
+        }
+
+        return this.open({
+            title: options.title ?? "Ingresar un nombre",
+            message,
+            confirmLabel: options.confirmLabel ?? "Guardar",
+            cancelLabel: options.cancelLabel ?? "Cancelar",
+            variant: options.variant ?? "prompt",
+            input: true,
+            defaultValue: options.defaultValue ?? "",
+            inputLabel: options.inputLabel ?? "Nombre"
+        });
+
+    }
+
     static render({
         id,
         title,
         message,
         confirmLabel,
         cancelLabel = null,
-        variant = "info"
+        variant = "info",
+        input = false,
+        defaultValue = "",
+        inputLabel = "Valor"
     }) {
 
         const destructive = variant === "danger";
@@ -89,6 +100,19 @@ export class Dialog {
                     <p id="${escapeHtml(id)}Message">
                         ${escapeHtml(message)}
                     </p>
+                    ${input
+                        ? `
+                            <label class="appDialogInputLabel">
+                                <span>${escapeHtml(inputLabel)}</span>
+                                <input
+                                    class="appDialogInput"
+                                    data-dialog-input
+                                    type="text"
+                                    value="${escapeHtml(defaultValue)}"
+                                    autocomplete="off">
+                            </label>
+                        `
+                        : ""}
                 </div>
                 <footer class="appDialogActions">
                     ${cancelLabel
@@ -140,15 +164,28 @@ export class Dialog {
                 resolve(value);
             };
 
+            const input = dialog.querySelector(
+                "[data-dialog-input]"
+            );
+
             dialog.querySelectorAll(
                 "[data-dialog-action]"
             ).forEach(button => {
                 button.addEventListener(
                     "click",
-                    () => finish(
-                        button.dataset.dialogAction ===
-                            "confirm"
-                    )
+                    () => {
+                        const confirmed =
+                            button.dataset.dialogAction ===
+                            "confirm";
+
+                        finish(
+                            input
+                                ? confirmed
+                                    ? input.value.trim()
+                                    : null
+                                : confirmed
+                        );
+                    }
                 );
             });
 
@@ -163,16 +200,22 @@ export class Dialog {
                 }
             });
 
+            input?.addEventListener("keydown", event => {
+                if (event.key !== "Enter") return;
+                event.preventDefault();
+                finish(input.value.trim());
+            });
+
             dialog.showModal();
 
             const initialFocus =
-                options.cancelLabel
+                input ?? (options.cancelLabel
                     ? dialog.querySelector(
                         '.appDialogActions [data-dialog-action="cancel"]'
                     )
                     : dialog.querySelector(
                         '[data-dialog-action="confirm"]'
-                    );
+                    ));
 
             initialFocus?.focus();
 
