@@ -2491,7 +2491,7 @@ export class MainView {
                 ".quickDuplicateTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
@@ -2509,7 +2509,13 @@ export class MainView {
                         ? "¿Duplicar esta tarea y todo su árbol como un proyecto nuevo?"
                         : "¿Duplicar esta tarea?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(
+                        message,
+                        {
+                            title: "Duplicar tarea",
+                            confirmLabel: "Duplicar"
+                        }
+                    )) {
                         return;
                     }
 
@@ -2575,12 +2581,16 @@ export class MainView {
                 ".quickSkipRecurringTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
-                    if (!Dialog.confirm(
-                        "¿Saltear esta instancia y avanzar a la próxima fecha?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Saltear esta instancia y avanzar a la próxima fecha?",
+                        {
+                            title: "Saltear recurrencia",
+                            confirmLabel: "Saltear"
+                        }
                     )) {
                         return;
                     }
@@ -2608,12 +2618,16 @@ export class MainView {
                 ".quickEndRecurrence"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
-                    if (!Dialog.confirm(
-                        "¿Finalizar la recurrencia? La tarea conservará su fecha actual, pero dejará de repetirse."
+                    if (!await Dialog.confirmAsync(
+                        "¿Finalizar la recurrencia? La tarea conservará su fecha actual, pero dejará de repetirse.",
+                        {
+                            title: "Finalizar recurrencia",
+                            confirmLabel: "Finalizar"
+                        }
                     )) {
                         return;
                     }
@@ -2641,12 +2655,16 @@ export class MainView {
                 ".quickArchiveTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
-                    if (!Dialog.confirm(
-                        "¿Archivar esta tarea?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Archivar esta tarea?",
+                        {
+                            title: "Archivar tarea",
+                            confirmLabel: "Archivar"
+                        }
                     )) {
                         return;
                     }
@@ -2673,7 +2691,7 @@ export class MainView {
                 ".quickDeleteTask"
             ).forEach(button => {
 
-                button.addEventListener("click", event => {
+                button.addEventListener("click", async event => {
 
                     event.stopPropagation();
 
@@ -2691,7 +2709,15 @@ export class MainView {
                         ? "¿Mover esta tarea y todas sus subtareas a la papelera?"
                         : "¿Mover esta tarea a la papelera?";
 
-                    if (!Dialog.confirm(message)) {
+                    if (!await Dialog.confirmAsync(
+                        message,
+                        {
+                            title: "Mover a la papelera",
+                            confirmLabel:
+                                "Mover a la papelera",
+                            variant: "danger"
+                        }
+                    )) {
                         return;
                     }
 
