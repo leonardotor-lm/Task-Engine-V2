@@ -72,3 +72,38 @@ test("el diálogo comparte geometría y adaptación móvil", () => {
         /@media \(max-width: 760px\)[\s\S]*?\.appDialogActions[\s\S]*?flex-direction:\s*column-reverse;/
     );
 });
+
+test("las acciones de objetivos usan diálogos propios", () => {
+    for (const id of [
+        "completeGoal",
+        "archiveGoal",
+        "deleteGoalFromEditor"
+    ]) {
+        const start = mainViewSource.indexOf(
+            `"${id}"`
+        );
+        const block = mainViewSource.slice(
+            start,
+            start + 900
+        );
+
+        assert.match(block, /Dialog\.confirmAsync\(/);
+        assert.doesNotMatch(block, /Dialog\.confirm\(/);
+    }
+});
+
+test("el borrado definitivo de objetivos exige dos confirmaciones", () => {
+    const start = mainViewSource.indexOf(
+        'className ===\n                                    "permanentlyDeleteGoal"'
+    );
+    const block = mainViewSource.slice(
+        start,
+        start + 1800
+    );
+
+    assert.equal(
+        block.match(/Dialog\.confirmAsync\(/g)?.length,
+        2
+    );
+    assert.match(block, /no puede deshacerse/);
+});
