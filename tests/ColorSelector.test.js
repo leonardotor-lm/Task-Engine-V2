@@ -1,0 +1,53 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+import { ColorSelector } from "../src/ui/ColorSelector.js";
+
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
+
+test("ofrece una paleta común y un color hexadecimal personalizado", () => {
+    const html = ColorSelector.render({
+        id: "testColor",
+        value: "#22C55E",
+        inputClass: "savedColor"
+    });
+
+    assert.match(html, /id="testColor"/);
+    assert.match(html, /class="savedColor"/);
+    assert.match(html, /value="#22c55e"/);
+    assert.match(html, /class="colorSelectorPalette"/);
+    assert.match(html, /class="colorSelectorHex"/);
+    assert.match(html, /#3b82f6/);
+    assert.match(html, /#fca5a5/);
+});
+
+test("normaliza colores válidos y rechaza valores inválidos", () => {
+    assert.equal(
+        ColorSelector.normalize(" #A855F7 "),
+        "#a855f7"
+    );
+    assert.equal(
+        ColorSelector.normalize("rojo", ""),
+        ""
+    );
+    assert.equal(
+        ColorSelector.normalize("#fff", ""),
+        ""
+    );
+});
+
+test("el selector conserva geometría propia y adaptación móvil", () => {
+    assert.match(
+        styles,
+        /\.colorSelectorPanel > summary[\s\S]*?border-radius:\s*0;/
+    );
+    assert.match(styles, /\.colorSelectorContent[\s\S]*?z-index:\s*25;/);
+    assert.match(
+        styles,
+        /@media \(max-width: 760px\)[\s\S]*?\.colorSelectorPanel > summary[\s\S]*?min-height:\s*44px;/
+    );
+});
