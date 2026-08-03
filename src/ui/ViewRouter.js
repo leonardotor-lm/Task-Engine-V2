@@ -195,7 +195,8 @@ export class ViewRouter {
 
                 return this.entityManager.render(
                     "Áreas",
-                    state.areas
+                    state.areas,
+                    { reorderable: true }
                 );
 
             case View.CONTEXTS:
