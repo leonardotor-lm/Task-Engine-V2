@@ -118,7 +118,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Ofrecer una paleta inicial de colores pastel y algunos colores intensos.
 - Permitir ingresar colores personalizados en formato hexadecimal.
 - Mostrar vista previa y validar el código.
-- Permitir reutilizar colores personalizados.
+- Permitir reutilizar hasta doce colores personalizados recientes.
 - Usar el mismo componente en áreas, contextos y etiquetas.
 
 ### Orden manual de áreas
