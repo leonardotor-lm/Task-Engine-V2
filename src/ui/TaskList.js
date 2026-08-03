@@ -574,7 +574,10 @@ export class TaskList {
                                                     class="hierarchyIcon childTaskIcon"
                                                     title="Subtarea"
                                                     aria-label="Subtarea">
-                                                    ↳
+                                                    ${Icon.render(
+                                                        "corner-down-right",
+                                                        "subtaskHierarchyIcon"
+                                                    )}
                                                 </span>
                                             `
                                             : ""}
