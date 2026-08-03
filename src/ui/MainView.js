@@ -1334,16 +1334,34 @@ export class MainView {
 
                     button.addEventListener(
                         "click",
-                        () => {
+                        async () => {
 
                             if (
                                 className ===
-                                    "permanentlyDeleteGoal" &&
-                                !Dialog.confirm(
-                                    "¿Eliminar definitivamente este objetivo y sus subobjetivos?"
-                                )
+                                    "permanentlyDeleteGoal"
                             ) {
-                                return;
+                                if (!await Dialog.confirmAsync(
+                                    "Se eliminarán definitivamente este objetivo, sus subobjetivos y sus asociaciones. ¿Querés continuar?",
+                                    {
+                                        title: "Eliminar objetivo",
+                                        confirmLabel: "Continuar",
+                                        variant: "danger"
+                                    }
+                                )) {
+                                    return;
+                                }
+
+                                if (!await Dialog.confirmAsync(
+                                    "Esta acción no puede deshacerse. ¿Confirmás la eliminación definitiva?",
+                                    {
+                                        title: "Confirmación definitiva",
+                                        confirmLabel:
+                                            "Eliminar definitivamente",
+                                        variant: "danger"
+                                    }
+                                )) {
+                                    return;
+                                }
                             }
 
                             this.callbacks[
@@ -1545,16 +1563,22 @@ export class MainView {
                 "completeGoal"
             )?.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (Dialog.confirm(
-                        "¿Marcar este objetivo como completado?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Marcar este objetivo como completado?",
+                        {
+                            title: "Completar objetivo",
+                            confirmLabel: "Completar"
+                        }
                     )) {
-                        this.callbacks
-                            .onCompleteGoal(
-                                selectedGoal.id
-                            );
+                        return;
                     }
+
+                    this.callbacks
+                        .onCompleteGoal(
+                            selectedGoal.id
+                        );
 
                 }
             );
@@ -1563,16 +1587,22 @@ export class MainView {
                 "archiveGoal"
             )?.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (Dialog.confirm(
-                        "¿Archivar este objetivo?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Archivar este objetivo?",
+                        {
+                            title: "Archivar objetivo",
+                            confirmLabel: "Archivar"
+                        }
                     )) {
-                        this.callbacks
-                            .onArchiveGoal(
-                                selectedGoal.id
-                            );
+                        return;
                     }
+
+                    this.callbacks
+                        .onArchiveGoal(
+                            selectedGoal.id
+                        );
 
                 }
             );
@@ -1581,15 +1611,22 @@ export class MainView {
                 "deleteGoalFromEditor"
             )?.addEventListener(
                 "click",
-                () => {
+                async () => {
 
-                    if (Dialog.confirm(
-                        "¿Mover este objetivo y sus subobjetivos a la papelera?"
+                    if (!await Dialog.confirmAsync(
+                        "¿Mover este objetivo y sus subobjetivos a la papelera?",
+                        {
+                            title: "Mover objetivo a la papelera",
+                            confirmLabel: "Mover a la papelera",
+                            variant: "danger"
+                        }
                     )) {
-                        this.callbacks.onDeleteGoal(
-                            selectedGoal.id
-                        );
+                        return;
                     }
+
+                    this.callbacks.onDeleteGoal(
+                        selectedGoal.id
+                    );
 
                 }
             );
