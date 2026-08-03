@@ -62,6 +62,14 @@ test("las eliminaciones de organización usan confirmación propia", () => {
         deletionBlock,
         /Eliminar definitivamente/
     );
+    assert.ok(
+        deletionBlock.indexOf("config.isInUse") <
+        deletionBlock.indexOf("Dialog.confirmAsync")
+    );
+    assert.match(
+        deletionBlock,
+        /Dialog\.alert\([\s\S]*?está asignado a una o más tareas/
+    );
 });
 
 test("el diálogo comparte geometría y adaptación móvil", () => {
