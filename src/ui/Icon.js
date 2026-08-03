@@ -58,6 +58,10 @@ const icons = Object.freeze({
         <path d="m9 18 6-6-6-6"></path>
     `,
 
+    "chevron-left": `
+        <path d="m15 18-6-6 6-6"></path>
+    `,
+
     clock: `
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M12 6v6h4"></path>
