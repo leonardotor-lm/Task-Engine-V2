@@ -18,6 +18,32 @@ const context = {
     tags: [
         { id: "important", name: "Muy importante" }
     ],
+    goals: [
+        {
+            id: "reading",
+            title: "Plan de lectura",
+            description: "Recorrido anual",
+            status: "ACTIVE",
+            dueDate: "2026-08-01",
+            parentGoalId: null
+        },
+        {
+            id: "classics",
+            title: "Clásicos argentinos",
+            description: "Literatura nacional",
+            status: "COMPLETED",
+            dueDate: "2026-07-27",
+            parentGoalId: "reading"
+        },
+        {
+            id: "writing",
+            title: "Taller de escritura",
+            description: "Producción creativa",
+            status: "ARCHIVED",
+            dueDate: null,
+            parentGoalId: null
+        }
+    ],
     tasks: []
 };
 
@@ -31,6 +57,7 @@ function task(overrides = {}) {
         areaId: overrides.areaId ?? null,
         contextId: overrides.contextId ?? null,
         tagIds: overrides.tagIds ?? [],
+        goalIds: overrides.goalIds ?? [],
         priority: overrides.priority ?? 0,
         dueDate: overrides.dueDate ?? null,
         completedAt: overrides.completedAt ?? null,
@@ -117,6 +144,99 @@ test("detecta presencia de etiquetas y fecha", () => {
 
     assert.equal(
         matches(item, "tieneFecha:no"),
+        false
+    );
+
+});
+
+test("busca objetivos directos con coincidencia parcial normalizada", () => {
+
+    const item = task({
+        goalIds: ["classics"]
+    });
+
+    assert.equal(
+        matches(item, "objetivo:clasicos"),
+        true
+    );
+    assert.equal(
+        matches(item, "objetivo:lectura"),
+        false
+    );
+    assert.equal(
+        matches(item, "goal:ARGENTINOS"),
+        true
+    );
+
+});
+
+test("la búsqueda jerárquica incluye subobjetivos", () => {
+
+    const item = task({
+        goalIds: ["classics"]
+    });
+
+    assert.equal(
+        matches(
+            item,
+            "objetivoJerarquia:lectura"
+        ),
+        true
+    );
+    assert.equal(
+        matches(
+            item,
+            "goalHierarchy:escritura"
+        ),
+        false
+    );
+
+});
+
+test("detecta tareas con o sin objetivos", () => {
+
+    assert.equal(
+        matches(
+            task({ goalIds: ["writing"] }),
+            "tieneObjetivos:si"
+        ),
+        true
+    );
+    assert.equal(
+        matches(
+            task(),
+            "hasGoals:no"
+        ),
+        true
+    );
+
+});
+
+test("busca propiedades de los objetivos asociados", () => {
+
+    const item = task({
+        goalIds: ["classics"]
+    });
+
+    assert.equal(
+        matches(
+            item,
+            "objetivoDescripcion:nacional AND objetivoEstado:completado"
+        ),
+        true
+    );
+    assert.equal(
+        matches(
+            item,
+            "objetivoFecha:hoy AND objetivoNivel:subobjetivo"
+        ),
+        true
+    );
+    assert.equal(
+        matches(
+            item,
+            "goalLevel:root OR goalStatus:active"
+        ),
         false
     );
 
