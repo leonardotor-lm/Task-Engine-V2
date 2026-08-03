@@ -79,7 +79,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - **Estado:** En desarrollo por ajustes progresivos.
 - **Densidad móvil de tareas:** terminada y verificada en la PR #137; aumenta la tipografía y retira el espacio vertical provocado por las acciones rápidas.
 - **Barra lateral móvil:** terminada y verificada en la PR #138; aumenta la legibilidad de navegación, títulos de sección y contadores sin modificar escritorio.
-- **Jerarquía de subtareas:** pendiente; indicar en la lista que una tarea tiene una tarea padre mediante una marca visual compacta que complemente la sangría.
+- **Jerarquía de subtareas:** en desarrollo; indicar en la lista que una tarea tiene una tarea padre mediante una marca visual compacta que complemente la sangría.
 - Mostrar en el editor la leyenda **Subtarea de:** seguida por el título de la tarea padre.
 - Permitir abrir desde esa referencia la tarea o el proyecto padre, incluso cuando no esté visible por los filtros actuales.
 - Mantener las acciones de mover o convertir en tarea principal dentro de la sección Organización, sin duplicarlas junto a la referencia jerárquica.
