@@ -3402,10 +3402,22 @@ export class MainView {
                         : "esta";
 
                     if (!await Dialog.confirmAsync(
-                        `¿Eliminar ${article} ${config.name}?`,
+                        `Eliminar ${article} ${config.name} puede afectar a múltiples tareas que lo utilizan. ¿Querés continuar?`,
                         {
                             title: `Eliminar ${config.name}`,
-                            confirmLabel: "Eliminar",
+                            confirmLabel: "Continuar",
+                            variant: "danger"
+                        }
+                    )) {
+                        return;
+                    }
+
+                    if (!await Dialog.confirmAsync(
+                        `Esta acción es definitiva y no puede deshacerse. ¿Confirmás la eliminación de ${article} ${config.name}?`,
+                        {
+                            title: "Confirmación definitiva",
+                            confirmLabel:
+                                "Eliminar definitivamente",
                             variant: "danger"
                         }
                     )) {
