@@ -3,6 +3,7 @@ import { EntityManager } from "./EntityManager.js";
 import { ProjectView } from "./ProjectView.js";
 import { GoalList } from "./GoalList.js";
 import { GoalView } from "./GoalView.js";
+import { CalendarView } from "./CalendarView.js";
 import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
 
@@ -15,6 +16,7 @@ export class ViewRouter {
         this.projectView = new ProjectView();
         this.goalList = new GoalList();
         this.goalView = new GoalView();
+        this.calendarView = new CalendarView();
 
     }
 
@@ -90,6 +92,10 @@ export class ViewRouter {
         };
 
         switch (state.view) {
+
+            case View.CALENDAR:
+
+                return this.calendarView.render(state);
 
             case View.PROJECT:
 

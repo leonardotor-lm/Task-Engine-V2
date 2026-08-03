@@ -224,6 +224,18 @@ export class MainView {
         );
         this.bindEvents(state);
 
+        const calendarDayDialog =
+            document.getElementById(
+                "calendarDayDialog"
+            );
+
+        if (
+            calendarDayDialog &&
+            !calendarDayDialog.open
+        ) {
+            calendarDayDialog.showModal();
+        }
+
     }
 
     downloadBackup(json) {
@@ -1216,6 +1228,7 @@ export class MainView {
             ["showTomorrow", "onShowTomorrow"],
             ["showUpcoming", "onShowUpcoming"],
             ["showAll", "onShowAll"],
+            ["showCalendar", "onShowCalendar"],
             ["showCompleted", "onShowCompleted"],
             ["showArchived", "onShowArchived"],
             ["showTrash", "onShowTrash"],
@@ -1396,6 +1409,63 @@ export class MainView {
                         dueDate
                     });
 
+                }
+            );
+
+        }
+
+        if (view === View.CALENDAR) {
+
+            document.getElementById(
+                "previousCalendarMonth"
+            )?.addEventListener(
+                "click",
+                () => this.callbacks
+                    .onChangeCalendarMonth(-1)
+            );
+
+            document.getElementById(
+                "nextCalendarMonth"
+            )?.addEventListener(
+                "click",
+                () => this.callbacks
+                    .onChangeCalendarMonth(1)
+            );
+
+            document.querySelectorAll(
+                ".calendarDay.hasPendingTasks"
+            ).forEach(button => {
+                button.addEventListener(
+                    "click",
+                    () => this.callbacks
+                        .onOpenCalendarDay(
+                            button.dataset.date
+                        )
+                );
+            });
+
+            const closeCalendarDay = () =>
+                this.callbacks.onCloseCalendarDay();
+
+            document.getElementById(
+                "closeCalendarDay"
+            )?.addEventListener(
+                "click",
+                closeCalendarDay
+            );
+            document.getElementById(
+                "closeCalendarDayAction"
+            )?.addEventListener(
+                "click",
+                closeCalendarDay
+            );
+            document.getElementById(
+                "calendarDayDialog"
+            )?.addEventListener(
+                "cancel",
+                event => {
+                    event.preventDefault();
+                    closeCalendarDay();
                 }
             );
 

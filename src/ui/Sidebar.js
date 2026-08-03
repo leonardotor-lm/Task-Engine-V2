@@ -1077,6 +1077,12 @@ export class Sidebar {
                     </button>
 
                     <button
+                        id="showCalendar"
+                        class="${buttonClass(View.CALENDAR)}">
+                        Calendario
+                    </button>
+
+                    <button
                         id="showGoals"
                         class="${buttonClass(View.GOALS)}">
                         Objetivos

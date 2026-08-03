@@ -10,6 +10,8 @@ export const View = Object.freeze({
 
     ALL: "all",
 
+    CALENDAR: "calendar",
+
     AREA: "area",
 
     COMPLETED: "completed",
