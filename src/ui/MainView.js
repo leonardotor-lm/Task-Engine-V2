@@ -3221,7 +3221,8 @@ export class MainView {
                     prompt: "Nombre del área:",
                     create: this.callbacks.onCreateArea,
                     update: this.callbacks.onUpdateArea,
-                    remove: this.callbacks.onDeleteArea
+                    remove: this.callbacks.onDeleteArea,
+                    move: this.callbacks.onMoveArea
                 },
 
                 [View.CONTEXTS]: {
@@ -3282,6 +3283,27 @@ export class MainView {
 
                         Dialog.alert(error.message);
 
+                    }
+
+                });
+
+            });
+
+            document.querySelectorAll(
+                ".moveEntity"
+            ).forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    if (!config.move) return;
+
+                    try {
+                        config.move(
+                            button.dataset.id,
+                            button.dataset.direction
+                        );
+                    } catch (error) {
+                        Dialog.alert(error.message);
                     }
 
                 });
