@@ -1186,6 +1186,19 @@ body {
     line-height: 1.35;
 }
 
+.colorSelectorActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-border);
+}
+
+.colorSelectorActions button {
+    min-height: 34px;
+}
+
 
 .taskListHeading {
     display: flex;
@@ -4999,6 +5012,10 @@ input[type="time"],
     }
 
     .colorSelectorPanel > summary {
+        min-height: 44px;
+    }
+
+    .colorSelectorActions button {
         min-height: 44px;
     }
 
