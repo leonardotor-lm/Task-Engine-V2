@@ -8,12 +8,24 @@ const appSource = await readFile(
     new URL("../src/core/App.js", import.meta.url),
     "utf8"
 );
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
 
 test("conserva el desplazamiento independiente de cada superficie", () => {
+    const restoredClasses = new Set();
     const elements = new Map([
         ["#appSidebar", { scrollTop: 420, scrollLeft: 0 }],
         [".content", { scrollTop: 180, scrollLeft: 3 }],
-        [".taskDrawer", { scrollTop: 760, scrollLeft: 0 }],
+        [".taskDrawer", {
+            scrollTop: 760,
+            scrollLeft: 0,
+            classList: {
+                add: className =>
+                    restoredClasses.add(className)
+            }
+        }],
         ["#settingsDialog", { scrollTop: 95, scrollLeft: 0 }]
     ]);
     const originalDocument = globalThis.document;
@@ -54,6 +66,10 @@ test("conserva el desplazamiento independiente de cada superficie", () => {
         assert.equal(
             elements.get(".taskDrawer").scrollTop,
             760
+        );
+        assert.equal(
+            restoredClasses.has("taskDrawerRestored"),
+            true
         );
         assert.equal(
             elements.get("#settingsDialog").scrollTop,
@@ -109,4 +125,11 @@ test("la sincronización protege ediciones transitorias", () => {
             /render\(\{ preserveTransientUi: true \}\)/
         );
     }
+});
+
+test("un editor restaurado no repite su animación de entrada", () => {
+    assert.match(
+        styles,
+        /\.taskDrawer\.taskDrawerRestored\s*\{[\s\S]*?animation:\s*none;/
+    );
 });
