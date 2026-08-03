@@ -132,7 +132,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Fecha y hora
 
-- **Estado:** En desarrollo.
+- **Estado:** Terminado y verificado en la PR #145.
 - Permitir elegir una hora optativa junto con la fecha de vencimiento.
 - Definir la compatibilidad con recurrencias, posposición, búsquedas, orden y sincronización.
 - Mantener una selección simple cuando la tarea sólo necesite fecha.
@@ -148,7 +148,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Vista de calendario
 
-- **Estado:** Postergado hasta terminar el pulido de las vistas existentes.
+- **Estado:** En desarrollo.
 - Incorporar únicamente una vista mensual de consulta.
 - Marcar los días que contienen tareas pendientes.
 - Al elegir un día, abrir un modal con las tareas pendientes fechadas para esa jornada.
