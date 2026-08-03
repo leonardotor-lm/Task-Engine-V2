@@ -44,8 +44,8 @@ export function compareTasks(
             if (!a.dueDate && b.dueDate) return 1;
 
             const dateDifference = compareText(
-                a.dueDate,
-                b.dueDate
+                `${a.dueDate ?? ""} ${a.dueTime ?? ""}`,
+                `${b.dueDate ?? ""} ${b.dueTime ?? ""}`
             );
 
             return dateDifference ||
