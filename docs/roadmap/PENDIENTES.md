@@ -126,7 +126,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Navegación y desplazamiento
 
-- **Estado:** En desarrollo por conservación de posiciones independientes.
+- **Estado:** Terminado y verificado en la PR #149.
 - Al cambiar de vista desde la barra lateral, desplazar el contenido al inicio.
 - Conservar la posición de la barra lateral al abrir herramientas o actualizar el estado de sincronización.
 - Conservar la posición del editor y de los diálogos abiertos durante renderizados ajenos a su contenido.
