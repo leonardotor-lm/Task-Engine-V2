@@ -437,6 +437,14 @@ export class TaskEditor {
                 : "";
 
         return `
+            <button
+                id="taskEditorBackdrop"
+                type="button"
+                class="taskEditorBackdrop"
+                aria-label="Cerrar editor de tarea"
+                tabindex="-1">
+            </button>
+
             <aside
                 class="details taskDrawer"
                 aria-label="Editor de tarea">
@@ -765,6 +773,14 @@ export class TaskEditor {
     renderArchivedPanel(task) {
 
         return `
+            <button
+                id="taskEditorBackdrop"
+                type="button"
+                class="taskEditorBackdrop"
+                aria-label="Cerrar editor de tarea"
+                tabindex="-1">
+            </button>
+
             <aside
                 class="details taskDrawer recoveryPanel"
                 aria-label="Acciones para tarea archivada">
@@ -811,6 +827,14 @@ export class TaskEditor {
     renderDeletedPanel(task) {
 
         return `
+            <button
+                id="taskEditorBackdrop"
+                type="button"
+                class="taskEditorBackdrop"
+                aria-label="Cerrar editor de tarea"
+                tabindex="-1">
+            </button>
+
             <aside
                 class="details taskDrawer recoveryPanel"
                 aria-label="Acciones para tarea borrada">

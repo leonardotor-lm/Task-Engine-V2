@@ -316,6 +316,63 @@ export class MainView {
 
     }
 
+    clearTaskEditorEscapeBinding() {
+
+        if (!this.taskEditorEscapeHandler) {
+            return;
+        }
+
+        document.removeEventListener(
+            "keydown",
+            this.taskEditorEscapeHandler
+        );
+        this.taskEditorEscapeHandler = null;
+
+    }
+
+    bindTaskEditorDismissal(task) {
+
+        this.clearTaskEditorEscapeBinding();
+
+        if (!task) {
+            return;
+        }
+
+        const dismiss = () => {
+
+            if (!this.confirmDiscardTaskChanges(task)) {
+                return;
+            }
+
+            this.callbacks.onCloseTaskEditor();
+
+        };
+
+        document.getElementById(
+            "taskEditorBackdrop"
+        )?.addEventListener("click", dismiss);
+
+        this.taskEditorEscapeHandler = event => {
+
+            if (
+                event.key !== "Escape" ||
+                document.querySelector("dialog[open]")
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+            dismiss();
+
+        };
+
+        document.addEventListener(
+            "keydown",
+            this.taskEditorEscapeHandler
+        );
+
+    }
+
     backupSummary(data) {
 
         return [
@@ -544,6 +601,14 @@ export class MainView {
             syncPendingChanges,
             syncRemoteUpdateAvailable
         } = state;
+
+        this.clearTaskEditorEscapeBinding();
+
+        if (selectedTask) {
+            this.bindTaskEditorDismissal(
+                selectedTask
+            );
+        }
 
         this.taskSwipeController.bind({
             onComplete: id => {
