@@ -3395,13 +3395,20 @@ export class MainView {
 
             document.querySelectorAll(".deleteEntity").forEach(button => {
 
-                button.addEventListener("click", () => {
+                button.addEventListener("click", async () => {
 
                     const article = config.name === "contexto"
                         ? "este"
                         : "esta";
 
-                    if (!Dialog.confirm(`¿Eliminar ${article} ${config.name}?`)) {
+                    if (!await Dialog.confirmAsync(
+                        `¿Eliminar ${article} ${config.name}?`,
+                        {
+                            title: `Eliminar ${config.name}`,
+                            confirmLabel: "Eliminar",
+                            variant: "danger"
+                        }
+                    )) {
                         return;
                     }
 
