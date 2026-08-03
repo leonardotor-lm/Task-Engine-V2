@@ -1,4 +1,5 @@
 import { TaskList } from "./TaskList.js";
+import { Icon } from "./Icon.js";
 
 export class ProjectView {
 
@@ -28,23 +29,39 @@ export class ProjectView {
             ).length;
 
         const total = state.tasks.length;
+        const backLabel =
+            state.projectNavigationDepth > 0
+                ? "Volver al proyecto anterior"
+                : "Volver";
 
         const headingActions = `
             <button
                 id="closeProjectView"
                 type="button"
-                class="tertiaryAction">
-                ${state.projectNavigationDepth > 0
-                    ? "Volver al proyecto anterior"
-                    : "Volver"}
+                class="tertiaryAction projectHeadingAction responsiveIconButton"
+                aria-label="${backLabel}"
+                title="${backLabel}">
+                <span class="responsiveButtonIcon">
+                    ${Icon.render("back")}
+                </span>
+                <span class="responsiveButtonLabel">
+                    ${backLabel}
+                </span>
             </button>
 
             <button
                 id="editProjectTask"
                 type="button"
-                class="secondaryAction"
-                data-id="${project.id}">
-                Editar proyecto
+                class="secondaryAction projectHeadingAction responsiveIconButton"
+                data-id="${project.id}"
+                aria-label="Editar proyecto"
+                title="Editar proyecto">
+                <span class="responsiveButtonIcon">
+                    ${Icon.render("edit")}
+                </span>
+                <span class="responsiveButtonLabel">
+                    Editar proyecto
+                </span>
             </button>
 
             ${state.projectTaskCreationOpen
@@ -53,8 +70,15 @@ export class ProjectView {
                     <button
                         id="openProjectTaskCreation"
                         type="button"
-                        class="primaryAction">
-                        Agregar subtarea
+                        class="primaryAction projectHeadingAction responsiveIconButton"
+                        aria-label="Agregar subtarea"
+                        title="Agregar subtarea">
+                        <span class="responsiveButtonIcon">
+                            ${Icon.render("plus")}
+                        </span>
+                        <span class="responsiveButtonLabel">
+                            Agregar subtarea
+                        </span>
                     </button>
                 `}
         `;
