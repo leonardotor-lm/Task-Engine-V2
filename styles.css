@@ -3371,6 +3371,172 @@ input[type="time"],
     color: var(--color-danger);
 }
 
+.calendarView {
+    overflow-y: auto;
+}
+
+.calendarHeader,
+.calendarMonthNavigation,
+.calendarDayDialog > header {
+    display: flex;
+    align-items: center;
+}
+
+.calendarHeader {
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.calendarHeader h2,
+.calendarDayDialog h3 {
+    margin: 0;
+}
+
+.calendarMonthNavigation {
+    gap: 10px;
+}
+
+.calendarMonthNavigation strong {
+    min-width: 150px;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.calendarWeekdays,
+.calendarGrid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendarWeekdays {
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.calendarWeekdays span {
+    padding: 7px 2px;
+}
+
+.calendarGrid {
+    gap: 2px;
+    padding-top: 4px;
+}
+
+.calendarDay,
+.calendarEmptyDay {
+    min-height: 68px;
+}
+
+.calendarDay {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+}
+
+.calendarDay:disabled {
+    opacity: 1;
+}
+
+.calendarDay.hasPendingTasks {
+    border-color: var(--color-border);
+    background: var(--color-surface-subtle);
+    cursor: pointer;
+}
+
+.calendarDay.hasPendingTasks:hover,
+.calendarDay.hasPendingTasks:focus-visible {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+}
+
+.calendarTaskMarker {
+    position: absolute;
+    bottom: 9px;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    transform: translateX(-50%);
+}
+
+.calendarDayDialog {
+    width: min(480px, calc(100vw - 28px));
+    max-height: min(620px, calc(100vh - 28px));
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+}
+
+.calendarDayDialog > header {
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.calendarDayDialog ul {
+    margin: 0;
+    padding: 8px 14px;
+    list-style: none;
+}
+
+.calendarDayDialog li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.calendarDayDialog time {
+    color: var(--color-text-muted);
+}
+
+.calendarDayDialog .dialogActions {
+    padding: 10px 14px;
+    border-top: 1px solid var(--color-border);
+    text-align: right;
+}
+
+@media (max-width: 760px) {
+
+    .calendarHeader {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .calendarMonthNavigation {
+        justify-content: space-between;
+    }
+
+    .calendarDay,
+    .calendarEmptyDay {
+        min-height: 48px;
+    }
+
+    .calendarDay {
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    .calendarTaskMarker {
+        bottom: 6px;
+        width: 6px;
+        height: 6px;
+    }
+
+}
+
 
 /* Primera vista de Objetivos */
 .goalsView {
