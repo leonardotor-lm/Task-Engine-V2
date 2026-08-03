@@ -94,7 +94,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 - **Estado:** En desarrollo por ajustes progresivos.
 - **Encabezado móvil de proyectos:** terminado y verificado en la PR #147; unifica Volver, Editar y Agregar subtarea con el patrón responsive de Objetivos.
-- **Ventanas emergentes:** implementación completa pendiente de verificación manual; avisos, confirmaciones y solicitudes de texto usan diálogos propios coherentes con la estética Flat 2.0. Las eliminaciones irreversibles de áreas, contextos, etiquetas, tareas y papelera requieren doble confirmación.
+- **Ventanas emergentes:** terminadas y verificadas en la PR #153; avisos, confirmaciones y solicitudes de texto usan diálogos propios coherentes con la estética Flat 2.0. Las eliminaciones irreversibles de áreas, contextos, etiquetas, tareas y papelera requieren doble confirmación.
 - **Validación previa de Organización:** comprobar si un área, contexto o etiqueta está en uso antes de pedir confirmación; bloquear la eliminación y explicar el motivo de inmediato.
 - **Acciones rápidas de tareas:** migrar Duplicar, Saltear recurrencia, Finalizar recurrencia, Archivar y Enviar a papelera al diálogo visual propio.
 - **Acciones del editor de tareas:** migrar Saltear recurrencia, Archivar, Enviar a papelera y Mover al diálogo propio; exigir doble confirmación para la eliminación definitiva.
@@ -114,7 +114,7 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 
 ### Selector de colores
 
-- **Estado:** Postergado hasta la etapa visual.
+- **Estado:** En desarrollo; selector común implementado pendiente de verificación manual.
 - Ofrecer una paleta inicial de colores pastel y algunos colores intensos.
 - Permitir ingresar colores personalizados en formato hexadecimal.
 - Mostrar vista previa y validar el código.
