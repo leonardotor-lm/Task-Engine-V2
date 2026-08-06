@@ -5,11 +5,17 @@ import {
 import {
     bindAttachmentSearchReference
 } from "./ui/AttachmentSearchReference.js";
+import {
+    WaitingController
+} from "./ui/WaitingController.js";
 
 const app = new App();
 const attachmentController =
     new AttachmentController(app);
+const waitingController =
+    new WaitingController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
+waitingController.start();
 app.start();
