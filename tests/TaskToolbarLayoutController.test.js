@@ -109,7 +109,7 @@ test("la aplicación carga el refinamiento de barra y grupos laterales", async (
     );
     const styles = await readFile(
         new URL(
-            "../task-toolbar-layout.css",
+            "../styles/task-interface.css",
             import.meta.url
         ),
         "utf8"
@@ -125,7 +125,7 @@ test("la aplicación carga el refinamiento de barra y grupos laterales", async (
     );
     assert.match(
         index,
-        /task-toolbar-layout\.css/
+        /styles\/task-interface\.css/
     );
     assert.match(
         styles,

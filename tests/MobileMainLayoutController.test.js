@@ -22,7 +22,7 @@ test("la aplicación carga la adaptación principal para celular", async () => {
     );
     const styles = await readFile(
         new URL(
-            "../mobile-main-layout.css",
+            "../styles/task-interface.css",
             import.meta.url
         ),
         "utf8"
@@ -38,7 +38,7 @@ test("la aplicación carga la adaptación principal para celular", async () => {
     );
     assert.match(
         index,
-        /mobile-main-layout\.css/
+        /styles\/task-interface\.css/
     );
     assert.match(
         controller,
