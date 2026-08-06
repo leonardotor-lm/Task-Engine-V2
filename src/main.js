@@ -27,6 +27,9 @@ import {
     TaskSortPreferencesController
 } from "./ui/TaskSortPreferencesController.js";
 import {
+    DesktopTaskEditorLayoutController
+} from "./ui/DesktopTaskEditorLayoutController.js";
+import {
     SyncOptionalDataBridge
 } from "./core/SyncOptionalDataBridge.js";
 import {
@@ -50,6 +53,8 @@ const directTaskCreationController =
     new DirectTaskCreationController(app);
 const taskSortPreferencesController =
     new TaskSortPreferencesController(app);
+const desktopTaskEditorLayoutController =
+    new DesktopTaskEditorLayoutController(app);
 const syncOptionalDataBridge =
     new SyncOptionalDataBridge(app);
 const smartSyncReconnectionController =
@@ -66,4 +71,5 @@ directTaskCreationController.start();
 taskSortPreferencesController.start();
 syncOptionalDataBridge.start();
 smartSyncReconnectionController.start();
+desktopTaskEditorLayoutController.start();
 app.start();
