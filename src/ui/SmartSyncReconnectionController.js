@@ -84,8 +84,10 @@ export class SmartSyncReconnectionController {
             this.app.syncLastError = null;
 
             if (
-                result.action ===
-                SyncReconnectionAction.PULL
+                [
+                    SyncReconnectionAction.PULL,
+                    SyncReconnectionAction.MERGE
+                ].includes(result.action)
             ) {
                 this.app.resetTransientState();
             }
