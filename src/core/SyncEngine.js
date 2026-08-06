@@ -289,6 +289,21 @@ export class SyncEngine {
                 };
             }
 
+            const mergedData =
+                this.backupService
+                    .parseAndValidate(
+                        JSON.stringify(mergedBackup)
+                    );
+
+            const saved = await this.gateway.save({
+                ...connection,
+                baseRevision: remoteRevision,
+                data: mergedBackup
+            });
+            const revision = this.validateRevision(
+                saved.revision
+            );
+
             this.backupService.importBackup(
                 JSON.stringify(mergedBackup)
             );
@@ -296,29 +311,12 @@ export class SyncEngine {
             const normalizedMergedBackup =
                 this.backupService.createBackup();
 
-            const saved = await this.gateway.save({
-                ...connection,
-                baseRevision: remoteRevision,
-                data: normalizedMergedBackup
-            });
-            const revision = this.validateRevision(
-                saved.revision
-            );
-
             this.config.setRevision(revision);
             this.config.markSynchronized(
                 createSyncFingerprint(
                     normalizedMergedBackup
                 )
             );
-
-            const mergedData =
-                this.backupService
-                    .parseAndValidate(
-                        JSON.stringify(
-                            normalizedMergedBackup
-                        )
-                    );
 
             return {
                 action,
