@@ -119,6 +119,22 @@
 
 @media (max-width: 760px) {
 
+    .taskContextToolbar {
+        margin-bottom: 6px;
+    }
+
+    .taskContextToolbarSummary {
+        min-height: 34px;
+        padding: 2px 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .taskContextToolbarSummary .icon {
+        width: 14px;
+        height: 14px;
+    }
+
     .taskContextToolbarUtilities {
         order: 1;
         margin-left: auto;
