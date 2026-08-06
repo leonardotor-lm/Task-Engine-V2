@@ -1,6 +1,8 @@
 export const SYNC_URL_KEY = "leo_db_url_key";
 export const SYNC_TOKEN_KEY =
     "leo_api_key_storage_key";
+export const SYNC_ENDPOINT_KEY =
+    "task-engine-v2-sync-endpoint";
 export const SYNC_REVISION_KEY =
     "task-engine-v2-sync-revision";
 export const SYNC_FINGERPRINT_KEY =
@@ -68,10 +70,13 @@ export class SyncConfig {
         };
 
         const current = this.get();
+        const knownEndpoint =
+            this.getKnownEndpoint() ||
+            current.url;
 
-        const connectionChanged =
-            current.url !== configuration.url ||
-            current.token !== configuration.token;
+        const endpointChanged =
+            Boolean(knownEndpoint) &&
+            knownEndpoint !== configuration.url;
 
         this.storage.setItem(
             SYNC_URL_KEY,
@@ -83,7 +88,12 @@ export class SyncConfig {
             configuration.token
         );
 
-        if (connectionChanged) {
+        this.storage.setItem(
+            SYNC_ENDPOINT_KEY,
+            configuration.url
+        );
+
+        if (endpointChanged) {
             this.clearSyncState();
         }
 
@@ -104,6 +114,14 @@ export class SyncConfig {
 
     }
 
+    getKnownEndpoint() {
+
+        return this.storage.getItem(
+            SYNC_ENDPOINT_KEY
+        ) ?? "";
+
+    }
+
     isConfigured() {
 
         const { url, token } = this.get();
@@ -112,10 +130,28 @@ export class SyncConfig {
 
     }
 
+    hasKnownSyncState() {
+
+        return Boolean(
+            this.getFingerprint() ||
+            this.getRevision() > 0
+        );
+
+    }
+
     clear() {
 
         this.storage.removeItem(SYNC_URL_KEY);
         this.storage.removeItem(SYNC_TOKEN_KEY);
+
+    }
+
+    forgetEndpoint() {
+
+        this.clear();
+        this.storage.removeItem(
+            SYNC_ENDPOINT_KEY
+        );
         this.clearSyncState();
 
     }
