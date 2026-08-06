@@ -76,22 +76,31 @@ export function createSyncFingerprint(
 
     }
 
-    const taskSortPreferences =
-        normalizeTaskSortPreferences(
-            data.taskSortPreferences
-        );
+    if (
+        Object.prototype.hasOwnProperty.call(
+            data,
+            "taskSortPreferences"
+        )
+    ) {
 
-    fingerprint.taskSortPreferences =
-        Object.entries(taskSortPreferences)
-            .map(([viewKey, sort]) => ({
-                viewKey,
-                sort
-            }))
-            .sort((a, b) =>
-                a.viewKey.localeCompare(
-                    b.viewKey
-                )
+        const taskSortPreferences =
+            normalizeTaskSortPreferences(
+                data.taskSortPreferences
             );
+
+        fingerprint.taskSortPreferences =
+            Object.entries(taskSortPreferences)
+                .map(([viewKey, sort]) => ({
+                    viewKey,
+                    sort
+                }))
+                .sort((a, b) =>
+                    a.viewKey.localeCompare(
+                        b.viewKey
+                    )
+                );
+
+    }
 
     return JSON.stringify(fingerprint);
 
