@@ -1,0 +1,426 @@
+/*
+ * Task list interface
+ *
+ * Consolidates the contextual toolbar, its sidebar layout support,
+ * and the related mobile main-view adaptations. Keep this order:
+ * base toolbar -> layout refinements -> mobile main layout.
+ */
+
+/* Contextual task toolbar */
+
+.taskContextToolbar {
+    margin: 0 0 12px;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.taskContextToolbarSummary {
+    display: none;
+}
+
+.taskContextToolbarBody {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 6px 0;
+}
+
+.taskContextToolbarButton,
+.taskContextToolbarSort select {
+    min-height: 34px;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+}
+
+.taskContextToolbarButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px 9px;
+    cursor: pointer;
+}
+
+.taskContextToolbarButton:hover,
+.taskContextToolbarSort select:hover {
+    background: var(--color-surface-hover);
+}
+
+.taskContextToolbarButton.active,
+.taskContextToolbarButton[aria-pressed="true"] {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-weight: 600;
+}
+
+.taskContextToolbarButton:focus-visible,
+.taskContextToolbarSort select:focus-visible,
+.taskContextToolbarSummary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.taskContextToolbarIcon {
+    display: inline-flex;
+    width: 17px;
+    height: 17px;
+}
+
+.taskContextToolbarIcon .icon {
+    width: 17px;
+    height: 17px;
+}
+
+.taskContextToolbarSort {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+.taskContextToolbarSort select {
+    min-width: 165px;
+    padding: 5px 28px 5px 8px;
+}
+
+.taskFiltersDialog .taskToolsDialogBody {
+    gap: 0;
+}
+
+.taskFiltersDialog .taskToolsSection {
+    border: 0;
+    padding: 0;
+}
+
+.sidebarListControls:empty {
+    display: none;
+}
+
+@media (min-width: 761px) {
+
+    .taskContextToolbar:not([open])
+        .taskContextToolbarBody {
+        display: flex;
+    }
+
+}
+
+@media (max-width: 760px) {
+
+    .taskContextToolbar {
+        margin: 0 0 10px;
+    }
+
+    .taskContextToolbarSummary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 42px;
+        padding: 7px 4px;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        list-style: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .taskContextToolbarSummary::-webkit-details-marker {
+        display: none;
+    }
+
+    .taskContextToolbarSummary .icon {
+        width: 18px;
+        height: 18px;
+        transition: transform 140ms ease;
+    }
+
+    .taskContextToolbar[open]
+        .taskContextToolbarSummary .icon {
+        transform: rotate(180deg);
+    }
+
+    .taskContextToolbar:not([open])
+        .taskContextToolbarBody {
+        display: none;
+    }
+
+    .taskContextToolbarBody {
+        gap: 7px;
+        padding: 4px 0 9px;
+    }
+
+    .taskContextToolbarButton {
+        flex: 0 1 auto;
+        min-width: 42px;
+        min-height: 42px;
+        padding: 7px 9px;
+    }
+
+    .taskContextToolbarLabel {
+        display: none;
+    }
+
+    .taskContextToolbarSort {
+        flex: 1 1 150px;
+    }
+
+    .taskContextToolbarSort select {
+        min-width: 0;
+        width: 100%;
+        min-height: 42px;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .taskContextToolbarSummary .icon {
+        transition: none;
+    }
+
+}
+
+/* Toolbar distribution and unified sidebar groups */
+
+.taskContextToolbarBody {
+    flex-wrap: nowrap;
+}
+
+.taskContextToolbarTextButton {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+}
+
+.taskContextToolbarUtilities {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.taskContextToolbarIconButton {
+    flex: 0 0 36px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 !important;
+}
+
+.taskContextToolbarIconButton .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.taskContextToolbarWaiting {
+    flex: 0 0 auto;
+}
+
+.sidebarAreaGroupVisible {
+    display: block !important;
+    visibility: visible !important;
+}
+
+.sidebar .sidebarUnifiedGroup {
+    display: block;
+    visibility: visible;
+    margin-top: 6px;
+    border-top: 1px solid var(--color-border);
+}
+
+.sidebar .sidebarAreaGroup.sidebarUnifiedGroup {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.sidebar .sidebarUnifiedGroup > summary {
+    display: flex !important;
+    visibility: visible !important;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 32px;
+    padding: 7px 8px;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    list-style: none;
+}
+
+.sidebar .sidebarUnifiedGroup > summary::marker {
+    content: "";
+}
+
+.sidebar .sidebarUnifiedGroup > summary::-webkit-details-marker {
+    display: none;
+}
+
+.sidebar .sidebarUnifiedGroup > summary::before,
+.sidebar .sidebarUnifiedGroup > summary::after {
+    display: none !important;
+    content: none !important;
+}
+
+.sidebar .sidebarUnifiedGroup > summary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.sidebar .sidebarUnifiedGroup:not([open])
+    > .sidebarNavigationGroupBody,
+.sidebar .sidebarUnifiedGroup:not([open])
+    > .sidebarAreaViews {
+    display: none !important;
+}
+
+.sidebar .sidebarUnifiedGroup
+    > .sidebarNavigationGroupBody,
+.sidebar .sidebarUnifiedGroup
+    > .sidebarAreaViews {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-left: 6px;
+}
+
+@media (max-width: 980px) {
+
+    .taskContextToolbarBody {
+        flex-wrap: wrap;
+    }
+
+    .taskContextToolbarUtilities {
+        margin-left: 0;
+    }
+
+}
+
+@media (max-width: 760px) {
+
+    .taskContextToolbar {
+        margin-bottom: 6px;
+    }
+
+    .taskContextToolbarSummary {
+        min-height: 34px;
+        padding: 2px 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .taskContextToolbarSummary .icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .taskContextToolbarUtilities {
+        order: 1;
+        margin-left: auto;
+    }
+
+    .taskContextToolbarTextButton,
+    .taskContextToolbarSort,
+    .taskContextToolbarWaiting {
+        order: 2;
+    }
+
+    .taskContextToolbarIconButton {
+        flex-basis: 42px !important;
+        width: 42px !important;
+        min-width: 42px !important;
+        max-width: 42px !important;
+        height: 42px;
+        min-height: 42px;
+    }
+
+    .sidebar .sidebarUnifiedGroup > summary {
+        min-height: 38px;
+        font-size: 13px;
+    }
+
+}
+
+/* Mobile main-view hierarchy and floating create action */
+
+@media (max-width: 760px) {
+
+    .mobileHeader strong {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .taskListHeading h2 {
+        font-size: 17px;
+        font-weight: 650;
+        line-height: 1.2;
+    }
+
+    .taskContextToolbarSummary {
+        background: var(--color-surface-subtle);
+    }
+
+    .mobileFloatingTaskButton {
+        position: fixed;
+        z-index: 40;
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        min-width: 54px;
+        max-width: 54px;
+        height: 54px;
+        min-height: 54px;
+        margin: 0;
+        padding: 0;
+        border: 1px solid var(--color-accent);
+        border-radius: 14px;
+        background: var(--color-accent);
+        color: var(--color-on-accent);
+        box-shadow: 0 8px 22px rgb(15 23 42 / 22%);
+    }
+
+    .mobileFloatingTaskButton:hover,
+    .mobileFloatingTaskButton:active {
+        background: var(--color-accent-strong);
+    }
+
+    .mobileFloatingTaskButton .createActionIcon,
+    .mobileFloatingTaskButton .icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .mobileFloatingTaskButton .createActionLabel {
+        display: none;
+    }
+
+    .layout.mobileMenuOpen
+        .mobileFloatingTaskButton,
+    .mobileFloatingTaskButton[hidden] {
+        display: none;
+    }
+
+    .content {
+        padding-bottom: calc(
+            88px + env(safe-area-inset-bottom)
+        );
+    }
+
+}
