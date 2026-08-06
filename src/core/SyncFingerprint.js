@@ -7,6 +7,28 @@ const COLLECTIONS = [
     "goals"
 ];
 
+function normalizeTaskSortPreferences(preferences) {
+
+    if (
+        preferences === undefined ||
+        preferences === null
+    ) {
+        return {};
+    }
+
+    if (
+        typeof preferences !== "object" ||
+        Array.isArray(preferences)
+    ) {
+        throw new Error(
+            "Las preferencias de orden están incompletas."
+        );
+    }
+
+    return preferences;
+
+}
+
 export function createSyncFingerprint(
     backup
 ) {
@@ -49,6 +71,32 @@ export function createSyncFingerprint(
                 .sort((a, b) =>
                     String(a.id).localeCompare(
                         String(b.id)
+                    )
+                );
+
+    }
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            data,
+            "taskSortPreferences"
+        )
+    ) {
+
+        const taskSortPreferences =
+            normalizeTaskSortPreferences(
+                data.taskSortPreferences
+            );
+
+        fingerprint.taskSortPreferences =
+            Object.entries(taskSortPreferences)
+                .map(([viewKey, sort]) => ({
+                    viewKey,
+                    sort
+                }))
+                .sort((a, b) =>
+                    a.viewKey.localeCompare(
+                        b.viewKey
                     )
                 );
 

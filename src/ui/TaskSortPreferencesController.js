@@ -1,12 +1,8 @@
 import { TaskSort } from "../core/TaskSorting.js";
 import { View } from "../core/View.js";
-
-const STORAGE_KEY =
-    "task-engine-v2-task-sort-by-view-v1";
-
-const VALID_SORTS = new Set(
-    Object.values(TaskSort)
-);
+import {
+    TaskSortPreferencesRepository
+} from "../infrastructure/TaskSortPreferencesRepository.js";
 
 export function getTaskSortViewKey(app) {
 
@@ -41,13 +37,18 @@ export class TaskSortPreferencesController {
     constructor(
         app,
         {
+            repository = null,
             storage = globalThis.localStorage
         } = {}
     ) {
 
         this.app = app;
-        this.storage = storage;
-        this.lastViewKey = null;
+        this.repository =
+            repository ??
+            app?.taskSortPreferencesRepository ??
+            new TaskSortPreferencesRepository(
+                storage
+            );
         this.started = false;
 
     }
@@ -59,6 +60,15 @@ export class TaskSortPreferencesController {
         }
 
         this.started = true;
+
+        this.app.taskSortPreferencesRepository =
+            this.repository;
+
+        this.app.backupService
+            ?.setTaskSortPreferencesRepository?.(
+                this.repository
+            );
+
         this.wrapSortCallback();
         this.wrapRender();
 
@@ -66,76 +76,40 @@ export class TaskSortPreferencesController {
 
     normalizeSort(sort) {
 
-        return VALID_SORTS.has(sort)
-            ? sort
-            : TaskSort.MANUAL;
+        return this.repository
+            ?.normalizeSort?.(sort) ??
+            (
+                Object.values(TaskSort)
+                    .includes(sort)
+                    ? sort
+                    : TaskSort.MANUAL
+            );
 
     }
 
     readPreferences() {
 
-        try {
-
-            const raw = this.storage?.getItem?.(
-                STORAGE_KEY
-            );
-
-            if (!raw) {
-                return {};
-            }
-
-            const parsed = JSON.parse(raw);
-
-            if (
-                !parsed ||
-                typeof parsed !== "object" ||
-                Array.isArray(parsed)
-            ) {
-                return {};
-            }
-
-            return parsed;
-
-        } catch {
-            return {};
-        }
+        return this.repository?.getAll?.() ?? {};
 
     }
 
     readSort(viewKey) {
 
-        const preferences =
-            this.readPreferences();
-
-        return this.normalizeSort(
-            preferences[viewKey]
-        );
+        return this.repository?.get?.(viewKey) ??
+            TaskSort.MANUAL;
 
     }
 
     writeSort(viewKey, sort) {
 
         if (!viewKey) {
-            return;
+            return TaskSort.MANUAL;
         }
 
-        const normalized =
-            this.normalizeSort(sort);
-        const preferences = {
-            ...this.readPreferences(),
-            [viewKey]: normalized
-        };
-
-        try {
-
-            this.storage?.setItem?.(
-                STORAGE_KEY,
-                JSON.stringify(preferences)
-            );
-
-        } catch {
-            // La preferencia no debe impedir ordenar la lista.
-        }
+        return this.repository?.set?.(
+            viewKey,
+            sort
+        ) ?? TaskSort.MANUAL;
 
     }
 
@@ -162,12 +136,10 @@ export class TaskSortPreferencesController {
         callbacks.onChangeTaskSort = sort => {
 
             const normalized =
-                this.normalizeSort(sort);
-
-            this.writeSort(
-                this.getViewKey(),
-                normalized
-            );
+                this.writeSort(
+                    this.getViewKey(),
+                    sort
+                );
 
             return originalChangeSort(normalized);
 
@@ -186,13 +158,10 @@ export class TaskSortPreferencesController {
 
         this.app.render = (...args) => {
 
-            const viewKey = this.getViewKey();
-
-            if (viewKey !== this.lastViewKey) {
-                this.app.taskSort =
-                    this.readSort(viewKey);
-                this.lastViewKey = viewKey;
-            }
+            this.app.taskSort =
+                this.readSort(
+                    this.getViewKey()
+                );
 
             return originalRender(...args);
 

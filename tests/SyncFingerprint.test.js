@@ -9,18 +9,26 @@ function backup({
     tasks = [],
     areas = [],
     contexts = [],
-    tags = []
+    tags = [],
+    taskSortPreferences
 } = {}) {
+
+    const data = {
+        tasks,
+        areas,
+        contexts,
+        tags
+    };
+
+    if (taskSortPreferences !== undefined) {
+        data.taskSortPreferences =
+            taskSortPreferences;
+    }
 
     return {
         format: "task-engine-v2-backup",
         version: 1,
-        data: {
-            tasks,
-            areas,
-            contexts,
-            tags
-        }
+        data
     };
 
 }
@@ -109,6 +117,52 @@ test("incluye todas las colecciones sincronizables", () => {
     );
 
     assert.notEqual(base, withTag);
+
+});
+
+test("detecta cambios en el orden de una vista", () => {
+
+    const priority = createSyncFingerprint(
+        backup({
+            taskSortPreferences: {
+                "view:today": "PRIORITY"
+            }
+        })
+    );
+
+    const newest = createSyncFingerprint(
+        backup({
+            taskSortPreferences: {
+                "view:today": "CREATED_NEWEST"
+            }
+        })
+    );
+
+    assert.notEqual(priority, newest);
+
+});
+
+test("la huella del orden no depende del orden de las claves", () => {
+
+    const first = createSyncFingerprint(
+        backup({
+            taskSortPreferences: {
+                "view:today": "PRIORITY",
+                "area:area-1": "DUE_DATE"
+            }
+        })
+    );
+
+    const second = createSyncFingerprint(
+        backup({
+            taskSortPreferences: {
+                "area:area-1": "DUE_DATE",
+                "view:today": "PRIORITY"
+            }
+        })
+    );
+
+    assert.equal(first, second);
 
 });
 
