@@ -37,6 +37,11 @@ export function getTaskCreationDefaults(
                 ? { areaId }
                 : {};
 
+        case View.WAITING:
+            return {
+                isWaiting: true
+            };
+
         default:
             return {};
 
@@ -52,7 +57,8 @@ export function getTaskCreationView(view) {
         View.TOMORROW,
         View.UPCOMING,
         View.ALL,
-        View.AREA
+        View.AREA,
+        View.WAITING
     ];
 
     return directViews.includes(view)
