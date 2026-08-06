@@ -7,6 +7,7 @@ export class DesktopTaskEditorLayoutController {
 
         this.app = app;
         this.started = false;
+        this.panelEvents = null;
 
     }
 
@@ -80,7 +81,7 @@ export class DesktopTaskEditorLayoutController {
             "desktopTaskEditorLayout"
         );
 
-        const planningSection =
+        const recurrenceSection =
             document.getElementById(
                 "taskRecurrence"
             )?.closest(".editorSection") ?? null;
@@ -93,7 +94,9 @@ export class DesktopTaskEditorLayoutController {
                 ".editorSubtasksSection"
             );
 
-        this.prepareTextAndHints();
+        this.prepareTextAndHints(
+            primarySection
+        );
         this.buildContextBar({
             primarySection,
             organizationSection
@@ -107,7 +110,7 @@ export class DesktopTaskEditorLayoutController {
         this.buildMoreTools({
             primarySection,
             organizationSection,
-            planningSection,
+            recurrenceSection,
             attachmentsSection,
             subtasksSection,
             goalsField: tools.goalsField
@@ -120,10 +123,11 @@ export class DesktopTaskEditorLayoutController {
             attachmentsSection,
             subtasksSection
         });
+        this.bindTransientPanels(drawer);
 
     }
 
-    prepareTextAndHints() {
+    prepareTextAndHints(primarySection) {
 
         const hourLabel = document.querySelector(
             'label[for="taskDueTime"]'
@@ -133,24 +137,23 @@ export class DesktopTaskEditorLayoutController {
             hourLabel.textContent = "Hora";
         }
 
-        const titleLabel = document.querySelector(
-            'label[for="taskTitleEdit"]'
-        );
-
-        titleLabel?.classList.add(
-            "desktopTaskEditorVisuallyHidden"
-        );
-
-        const descriptionLabel = document.querySelector(
-            'label[for="taskDescriptionEdit"]'
-        );
-
-        descriptionLabel?.classList.add(
-            "desktopTaskEditorVisuallyHidden"
-        );
+        [
+            "taskTitleEdit",
+            "taskDescriptionEdit"
+        ].forEach(id => {
+            document.querySelector(
+                `label[for="${id}"]`
+            )?.classList.add(
+                "desktopTaskEditorVisuallyHidden"
+            );
+        });
 
         document.querySelector(
             ".waitingTaskHint"
+        )?.remove();
+
+        primarySection.querySelector(
+            ":scope > summary"
         )?.remove();
 
     }
@@ -312,7 +315,8 @@ export class DesktopTaskEditorLayoutController {
         if (tagsField) {
             this.configurePicker(
                 tagsField,
-                "Etiquetas"
+                "Etiquetas",
+                { colorSelections: true }
             );
             tagsField.classList.add(
                 "desktopTaskEditorTagsProperty"
@@ -364,7 +368,11 @@ export class DesktopTaskEditorLayoutController {
 
     }
 
-    configurePicker(fieldset, label) {
+    configurePicker(
+        fieldset,
+        label,
+        { colorSelections = false } = {}
+    ) {
 
         fieldset.classList.add(
             "desktopTaskEditorPicker"
@@ -410,12 +418,62 @@ export class DesktopTaskEditorLayoutController {
             body.prepend(chips);
         }
 
+        if (details && body) {
+            details.classList.add(
+                "desktopTaskEditorTransient"
+            );
+            this.decoratePopover(
+                details,
+                body,
+                label
+            );
+        }
+
+        if (colorSelections && chips) {
+            this.observeTagSelections(chips);
+        }
+
+    }
+
+    observeTagSelections(container) {
+
+        const apply = () => {
+            container.querySelectorAll(
+                ".searchableMultiSelectChip"
+            ).forEach(chip => {
+                const color = chip.querySelector(
+                    ".searchableMultiSelectColor"
+                )?.style.background;
+
+                chip.classList.add(
+                    "desktopTaskEditorTagText"
+                );
+
+                if (color) {
+                    chip.style.setProperty(
+                        "--desktop-tag-color",
+                        color
+                    );
+                }
+            });
+        };
+
+        apply();
+
+        new MutationObserver(apply).observe(
+            container,
+            {
+                childList: true,
+                subtree: true
+            }
+        );
+
     }
 
     buildMoreTools({
         primarySection,
         organizationSection,
-        planningSection,
+        recurrenceSection,
         attachmentsSection,
         subtasksSection,
         goalsField
@@ -439,11 +497,36 @@ export class DesktopTaskEditorLayoutController {
             panel.append(goalsField);
         }
 
-        if (planningSection) {
-            planningSection.classList.add(
-                "desktopTaskEditorPlanningTool"
+        if (recurrenceSection) {
+            recurrenceSection.classList.add(
+                "desktopTaskEditorRecurrenceTool",
+                "desktopTaskEditorTransient"
             );
-            panel.append(planningSection);
+            recurrenceSection.open = false;
+
+            const recurrenceSummary =
+                recurrenceSection.querySelector(
+                    ":scope > summary"
+                );
+            const recurrenceBody =
+                recurrenceSection.querySelector(
+                    ":scope > .editorSectionBody"
+                );
+
+            if (recurrenceSummary) {
+                recurrenceSummary.textContent =
+                    "Recurrencia";
+            }
+
+            if (recurrenceBody) {
+                this.decoratePopover(
+                    recurrenceSection,
+                    recurrenceBody,
+                    "Recurrencia"
+                );
+            }
+
+            panel.append(recurrenceSection);
         }
 
         if (panel.childElementCount > 0) {
@@ -461,6 +544,56 @@ export class DesktopTaskEditorLayoutController {
         }
 
         organizationSection.remove();
+
+    }
+
+    decoratePopover(
+        details,
+        body,
+        title
+    ) {
+
+        body.classList.add(
+            "desktopTaskEditorPopover"
+        );
+
+        if (body.querySelector(
+            ":scope > .desktopTaskEditorPopoverHeader"
+        )) {
+            return;
+        }
+
+        const header =
+            document.createElement("div");
+        header.className =
+            "desktopTaskEditorPopoverHeader";
+
+        const heading =
+            document.createElement("strong");
+        heading.textContent = title;
+
+        const close =
+            document.createElement("button");
+        close.type = "button";
+        close.className =
+            "desktopTaskEditorPopoverClose";
+        close.setAttribute(
+            "aria-label",
+            `Cerrar ${title.toLowerCase()}`
+        );
+        close.textContent = "×";
+        close.addEventListener(
+            "click",
+            () => {
+                details.open = false;
+                details.querySelector(
+                    ":scope > summary"
+                )?.focus();
+            }
+        );
+
+        header.append(heading, close);
+        body.prepend(header);
 
     }
 
@@ -516,13 +649,31 @@ export class DesktopTaskEditorLayoutController {
             "desktopTaskEditorFooter"
         );
 
-        const utilityActions =
+        const menu =
+            document.createElement("details");
+        menu.className =
+            "desktopTaskEditorActionsMenu desktopTaskEditorTransient";
+
+        const menuSummary =
+            document.createElement("summary");
+        menuSummary.textContent = "Acciones";
+
+        const menuPanel =
             document.createElement("div");
-        utilityActions.className =
-            "desktopTaskEditorUtilityActions";
+        menuPanel.className =
+            "desktopTaskEditorActionsMenuPanel";
 
         if (moveField) {
-            utilityActions.append(moveField);
+            menuPanel.append(moveField);
+        } else {
+            const unavailableMove =
+                document.createElement("button");
+            unavailableMove.type = "button";
+            unavailableMove.disabled = true;
+            unavailableMove.textContent = "Mover";
+            unavailableMove.title =
+                "No hay destinos disponibles";
+            menuPanel.append(unavailableMove);
         }
 
         [
@@ -534,9 +685,16 @@ export class DesktopTaskEditorLayoutController {
                 document.getElementById(id);
 
             if (button && actions.contains(button)) {
-                utilityActions.append(button);
+                menuPanel.append(button);
             }
         });
+
+        this.decoratePopover(
+            menu,
+            menuPanel,
+            "Acciones"
+        );
+        menu.append(menuSummary, menuPanel);
 
         const primaryActions =
             document.createElement("div");
@@ -556,13 +714,77 @@ export class DesktopTaskEditorLayoutController {
             }
         });
 
-        if (utilityActions.childElementCount > 0) {
-            actions.append(utilityActions);
-        }
+        actions.append(menu);
 
         if (primaryActions.childElementCount > 0) {
             actions.append(primaryActions);
         }
+
+    }
+
+    bindTransientPanels(drawer) {
+
+        this.panelEvents?.abort();
+        this.panelEvents = new AbortController();
+
+        const { signal } = this.panelEvents;
+        const panels = () => [
+            ...drawer.querySelectorAll(
+                "details.desktopTaskEditorTransient"
+            )
+        ];
+
+        panels().forEach(panel => {
+            panel.addEventListener(
+                "toggle",
+                () => {
+                    if (!panel.open) return;
+
+                    panels().forEach(other => {
+                        if (other !== panel) {
+                            other.open = false;
+                        }
+                    });
+                },
+                { signal }
+            );
+        });
+
+        document.addEventListener(
+            "click",
+            event => {
+                panels().forEach(panel => {
+                    if (
+                        panel.open &&
+                        !panel.contains(event.target)
+                    ) {
+                        panel.open = false;
+                    }
+                });
+            },
+            { signal }
+        );
+
+        document.addEventListener(
+            "keydown",
+            event => {
+                if (event.key !== "Escape") return;
+
+                let closed = false;
+
+                panels().forEach(panel => {
+                    if (panel.open) {
+                        panel.open = false;
+                        closed = true;
+                    }
+                });
+
+                if (closed) {
+                    event.stopPropagation();
+                }
+            },
+            { signal }
+        );
 
     }
 
