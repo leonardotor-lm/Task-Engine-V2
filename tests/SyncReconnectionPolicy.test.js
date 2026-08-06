@@ -217,6 +217,131 @@ test("descarga automáticamente cuando la copia local está vacía", () => {
 
 });
 
+test("migra una copia remota antigua conservando datos opcionales locales", () => {
+
+    const sharedTasks = [{
+        id: "task-1",
+        title: "Preparar clase",
+        version: 4
+    }];
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup: backup({
+                tasks: sharedTasks,
+                customFilters: [{
+                    id: "filter-1",
+                    name: "Urgentes",
+                    version: 1
+                }],
+                goals: [{
+                    id: "goal-1",
+                    title: "Planificar trimestre",
+                    version: 1
+                }],
+                taskSortPreferences: {
+                    "view:today": "PRIORITY"
+                }
+            }),
+            remoteBackup: backup({
+                tasks: sharedTasks
+            })
+        }),
+        SyncReconnectionAction.PUSH
+    );
+
+});
+
+test("descarga datos opcionales cuando sólo la copia remota los admite", () => {
+
+    const sharedTasks = [{
+        id: "task-1",
+        title: "Preparar clase",
+        version: 4
+    }];
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup: backup({
+                tasks: sharedTasks
+            }),
+            remoteBackup: backup({
+                tasks: sharedTasks,
+                customFilters: [{
+                    id: "filter-1",
+                    name: "Urgentes",
+                    version: 1
+                }],
+                taskSortPreferences: {
+                    "view:today": "PRIORITY"
+                }
+            })
+        }),
+        SyncReconnectionAction.PULL
+    );
+
+});
+
+test("no fusiona automáticamente extensiones opcionales en direcciones opuestas", () => {
+
+    const sharedTasks = [{
+        id: "task-1",
+        title: "Preparar clase",
+        version: 4
+    }];
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup: backup({
+                tasks: sharedTasks,
+                customFilters: [{
+                    id: "filter-local",
+                    name: "Local",
+                    version: 1
+                }]
+            }),
+            remoteBackup: backup({
+                tasks: sharedTasks,
+                goals: [{
+                    id: "goal-remote",
+                    title: "Remoto",
+                    version: 1
+                }]
+            })
+        }),
+        SyncReconnectionAction.CONFLICT
+    );
+
+});
+
+test("mantiene el conflicto si un campo opcional existe en ambos lados con valores distintos", () => {
+
+    const sharedTasks = [{
+        id: "task-1",
+        title: "Preparar clase",
+        version: 4
+    }];
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup: backup({
+                tasks: sharedTasks,
+                taskSortPreferences: {
+                    "view:today": "PRIORITY"
+                }
+            }),
+            remoteBackup: backup({
+                tasks: sharedTasks,
+                taskSortPreferences: {
+                    "view:today": "DUE_DATE"
+                }
+            })
+        }),
+        SyncReconnectionAction.CONFLICT
+    );
+
+});
+
 test("mantiene el conflicto cuando ambas copias contienen diferencias", () => {
 
     assert.equal(
