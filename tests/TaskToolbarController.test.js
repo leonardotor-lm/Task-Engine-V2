@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
-    TaskToolbarController
-} from "../src/ui/TaskToolbarController.js";
+    CompactTaskToolbarController
+} from "../src/ui/CompactTaskToolbarController.js";
 
 function createStorage() {
 
@@ -22,16 +22,17 @@ function createStorage() {
 
 }
 
-test("la barra móvil y Áreas aparecen desplegadas inicialmente", () => {
+test("la barra móvil aparece contraída y Áreas desplegada inicialmente", () => {
 
-    const controller = new TaskToolbarController(
-        null,
-        { storage: createStorage() }
-    );
+    const controller =
+        new CompactTaskToolbarController(
+            null,
+            { storage: createStorage() }
+        );
 
     assert.equal(
         controller.isMobileToolbarExpanded(),
-        true
+        false
     );
     assert.equal(
         controller.isAreasSectionExpanded(),
@@ -43,22 +44,24 @@ test("la barra móvil y Áreas aparecen desplegadas inicialmente", () => {
 test("recuerda el estado de la barra móvil y de Áreas", () => {
 
     const storage = createStorage();
-    const controller = new TaskToolbarController(
-        null,
-        { storage }
-    );
+    const controller =
+        new CompactTaskToolbarController(
+            null,
+            { storage }
+        );
 
-    controller.setMobileToolbarExpanded(false);
+    controller.setMobileToolbarExpanded(true);
     controller.setAreasSectionExpanded(false);
 
-    const restored = new TaskToolbarController(
-        null,
-        { storage }
-    );
+    const restored =
+        new CompactTaskToolbarController(
+            null,
+            { storage }
+        );
 
     assert.equal(
         restored.isMobileToolbarExpanded(),
-        false
+        true
     );
     assert.equal(
         restored.isAreasSectionExpanded(),
@@ -67,7 +70,7 @@ test("recuerda el estado de la barra móvil y de Áreas", () => {
 
 });
 
-test("la aplicación carga el controlador y sus estilos", async () => {
+test("la aplicación carga el controlador compacto y sus estilos", async () => {
 
     const main = await readFile(
         new URL("../src/main.js", import.meta.url),
@@ -77,10 +80,17 @@ test("la aplicación carga el controlador y sus estilos", async () => {
         new URL("../index.html", import.meta.url),
         "utf8"
     );
+    const styles = await readFile(
+        new URL(
+            "../task-toolbar-layout.css",
+            import.meta.url
+        ),
+        "utf8"
+    );
 
     assert.match(
         main,
-        /TaskToolbarController/
+        /CompactTaskToolbarController/
     );
     assert.match(
         main,
@@ -89,6 +99,14 @@ test("la aplicación carga el controlador y sus estilos", async () => {
     assert.match(
         index,
         /task-toolbar\.css/
+    );
+    assert.match(
+        styles,
+        /taskContextToolbarSummary/
+    );
+    assert.match(
+        styles,
+        /min-height:\s*34px/
     );
 
 });
