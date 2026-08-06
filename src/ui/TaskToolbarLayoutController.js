@@ -1,7 +1,10 @@
 import { Icon } from "./Icon.js";
 
-const AREAS_LAYOUT_STORAGE_KEY =
-    "task-engine-v2-sidebar-areas-expanded-v2";
+const SIDEBAR_GROUP_STORAGE_KEYS = Object.freeze({
+    areas: "task-engine-v2-sidebar-areas-expanded-v3",
+    planning: "task-engine-v2-sidebar-planning-expanded-v1",
+    history: "task-engine-v2-sidebar-history-expanded-v1"
+});
 
 export class TaskToolbarLayoutController {
 
@@ -27,29 +30,102 @@ export class TaskToolbarLayoutController {
 
             originalRender(state);
             this.refineToolbar(state);
-            this.restoreAreasSection();
+            this.configureSidebarGroups(state);
 
         };
 
     }
 
-    readAreasExpanded() {
+    readGroupExpanded(
+        groupName,
+        defaultValue
+    ) {
 
-        const value = this.storage?.getItem(
-            AREAS_LAYOUT_STORAGE_KEY
-        );
+        const key =
+            SIDEBAR_GROUP_STORAGE_KEYS[groupName];
+
+        if (!key) {
+            throw new Error(
+                `Grupo lateral desconocido: ${groupName}`
+            );
+        }
+
+        const value = this.storage?.getItem(key);
 
         return value === null || value === undefined
-            ? true
+            ? Boolean(defaultValue)
             : value === "true";
+
+    }
+
+    writeGroupExpanded(groupName, expanded) {
+
+        const key =
+            SIDEBAR_GROUP_STORAGE_KEYS[groupName];
+
+        if (!key) {
+            throw new Error(
+                `Grupo lateral desconocido: ${groupName}`
+            );
+        }
+
+        this.storage?.setItem(
+            key,
+            String(Boolean(expanded))
+        );
+
+    }
+
+    readAreasExpanded() {
+
+        return this.readGroupExpanded(
+            "areas",
+            true
+        );
 
     }
 
     writeAreasExpanded(expanded) {
 
-        this.storage?.setItem(
-            AREAS_LAYOUT_STORAGE_KEY,
-            String(Boolean(expanded))
+        this.writeGroupExpanded(
+            "areas",
+            expanded
+        );
+
+    }
+
+    readPlanningExpanded() {
+
+        return this.readGroupExpanded(
+            "planning",
+            true
+        );
+
+    }
+
+    writePlanningExpanded(expanded) {
+
+        this.writeGroupExpanded(
+            "planning",
+            expanded
+        );
+
+    }
+
+    readHistoryExpanded(defaultValue = false) {
+
+        return this.readGroupExpanded(
+            "history",
+            defaultValue
+        );
+
+    }
+
+    writeHistoryExpanded(expanded) {
+
+        this.writeGroupExpanded(
+            "history",
+            expanded
         );
 
     }
@@ -201,28 +277,193 @@ export class TaskToolbarLayoutController {
 
     }
 
-    restoreAreasSection() {
+    configureSidebarGroups(state) {
 
-        const areasSection = document.querySelector(
+        const navigation = document.querySelector(
+            "#appSidebar nav"
+        );
+
+        if (!navigation) return;
+
+        const areasGroup = navigation.querySelector(
             ".sidebarAreaGroup"
         );
 
-        if (!areasSection) return;
+        if (areasGroup) {
+            areasGroup.hidden = false;
+            areasGroup.classList.add(
+                "sidebarAreaGroupVisible"
+            );
 
-        areasSection.hidden = false;
-        areasSection.classList.add(
-            "sidebarAreaGroupVisible"
+            this.configurePersistentGroup(
+                areasGroup,
+                {
+                    groupName: "areas",
+                    label: "Áreas",
+                    defaultExpanded: true
+                }
+            );
+        }
+
+        const planningGroup =
+            this.ensurePlanningGroup(navigation);
+
+        if (planningGroup) {
+            this.configurePersistentGroup(
+                planningGroup,
+                {
+                    groupName: "planning",
+                    label: "Planificación",
+                    defaultExpanded: true
+                }
+            );
+        }
+
+        const historyGroup =
+            this.findHistoryGroup(navigation);
+
+        if (historyGroup) {
+            const historyViewActive = [
+                "COMPLETED",
+                "ARCHIVED",
+                "TRASH"
+            ].includes(state.view);
+
+            this.configurePersistentGroup(
+                historyGroup,
+                {
+                    groupName: "history",
+                    label: "Historial",
+                    defaultExpanded: historyViewActive
+                }
+            );
+        }
+
+    }
+
+    ensurePlanningGroup(navigation) {
+
+        const existing = navigation.querySelector(
+            ".sidebarPlanningGroup"
         );
-        areasSection.open =
-            this.readAreasExpanded();
 
-        const summary =
-            areasSection.querySelector("summary");
+        if (existing) return existing;
+
+        const planningLabel = Array.from(
+            navigation.querySelectorAll(
+                ":scope > .sidebarSectionLabel"
+            )
+        ).find(element =>
+            element.textContent
+                .trim()
+                .toLocaleLowerCase("es") ===
+            "planificación"
+        );
+
+        if (!planningLabel) return null;
+
+        const buttons = [
+            "showAll",
+            "showCalendar",
+            "showGoals"
+        ].map(id =>
+            document.getElementById(id)
+        ).filter(Boolean);
+
+        if (buttons.length === 0) return null;
+
+        const group = document.createElement(
+            "details"
+        );
+        group.className =
+            "sidebarNavigationGroup sidebarUnifiedGroup sidebarPlanningGroup";
+
+        const summary = document.createElement(
+            "summary"
+        );
+        summary.textContent = "Planificación";
+
+        const body = document.createElement("div");
+        body.className =
+            "sidebarNavigationGroupBody";
+
+        for (const button of buttons) {
+            body.append(button);
+        }
+
+        group.append(summary, body);
+        planningLabel.replaceWith(group);
+
+        return group;
+
+    }
+
+    findHistoryGroup(navigation) {
+
+        const existing = navigation.querySelector(
+            ".sidebarHistoryGroup"
+        );
+
+        if (existing) return existing;
+
+        const group = Array.from(
+            navigation.querySelectorAll(
+                ":scope > details.sidebarNavigationGroup"
+            )
+        ).find(element =>
+            element.querySelector(
+                ":scope > summary"
+            )?.textContent
+                .trim()
+                .toLocaleLowerCase("es") ===
+            "historial"
+        );
+
+        if (!group) return null;
+
+        group.classList.add(
+            "sidebarHistoryGroup"
+        );
+
+        return group;
+
+    }
+
+    configurePersistentGroup(
+        group,
+        {
+            groupName,
+            label,
+            defaultExpanded
+        }
+    ) {
+
+        group.classList.add(
+            "sidebarUnifiedGroup"
+        );
+        group.dataset.sidebarGroup = groupName;
+
+        const summary = group.querySelector(
+            ":scope > summary"
+        );
+
+        if (!summary) return;
+
+        summary.textContent = label;
+        summary.setAttribute(
+            "aria-label",
+            `${label}: mostrar u ocultar sección`
+        );
+
+        group.open = this.readGroupExpanded(
+            groupName,
+            defaultExpanded
+        );
 
         const updateExpandedState = () => {
-            summary?.setAttribute(
+            summary.setAttribute(
                 "aria-expanded",
-                String(areasSection.open)
+                String(group.open)
             );
         };
 
@@ -233,15 +474,16 @@ export class TaskToolbarLayoutController {
             ready = true;
         });
 
-        areasSection.addEventListener(
+        group.addEventListener(
             "toggle",
             () => {
 
                 updateExpandedState();
 
                 if (ready) {
-                    this.writeAreasExpanded(
-                        areasSection.open
+                    this.writeGroupExpanded(
+                        groupName,
+                        group.open
                     );
                 }
 
