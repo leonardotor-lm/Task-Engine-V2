@@ -22,16 +22,33 @@ function createStorage() {
 
 }
 
+function createWindow(matches) {
+
+    return {
+        matchMedia() {
+            return { matches };
+        }
+    };
+
+}
+
 test("la barra móvil aparece contraída y Áreas desplegada inicialmente", () => {
 
     const controller =
         new CompactTaskToolbarController(
             null,
-            { storage: createStorage() }
+            {
+                storage: createStorage(),
+                windowRef: createWindow(true)
+            }
         );
 
     assert.equal(
         controller.isMobileToolbarExpanded(),
+        false
+    );
+    assert.equal(
+        controller.shouldExpandToolbar(),
         false
     );
     assert.equal(
@@ -44,10 +61,11 @@ test("la barra móvil aparece contraída y Áreas desplegada inicialmente", () =
 test("recuerda el estado de la barra móvil y de Áreas", () => {
 
     const storage = createStorage();
+    const windowRef = createWindow(true);
     const controller =
         new CompactTaskToolbarController(
             null,
-            { storage }
+            { storage, windowRef }
         );
 
     controller.setMobileToolbarExpanded(true);
@@ -56,7 +74,7 @@ test("recuerda el estado de la barra móvil y de Áreas", () => {
     const restored =
         new CompactTaskToolbarController(
             null,
-            { storage }
+            { storage, windowRef }
         );
 
     assert.equal(
@@ -64,7 +82,37 @@ test("recuerda el estado de la barra móvil y de Áreas", () => {
         true
     );
     assert.equal(
+        restored.shouldExpandToolbar(),
+        true
+    );
+    assert.equal(
         restored.isAreasSectionExpanded(),
+        false
+    );
+
+});
+
+test("la barra permanece abierta en escritorio sin alterar la preferencia móvil", () => {
+
+    const storage = createStorage();
+    const controller =
+        new CompactTaskToolbarController(
+            null,
+            {
+                storage,
+                windowRef: createWindow(false)
+            }
+        );
+
+    assert.equal(
+        controller.shouldExpandToolbar(),
+        true
+    );
+
+    controller.setMobileToolbarExpanded(true);
+
+    assert.equal(
+        controller.isMobileToolbarExpanded(),
         false
     );
 
