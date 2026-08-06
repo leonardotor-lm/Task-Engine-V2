@@ -20,6 +20,9 @@ import {
 import {
     MobileMainLayoutController
 } from "./ui/MobileMainLayoutController.js";
+import {
+    DirectTaskCreationController
+} from "./ui/DirectTaskCreationController.js";
 
 const app = new App();
 const attachmentController =
@@ -34,6 +37,8 @@ const taskFiltersDialogController =
     new TaskFiltersDialogController(app);
 const mobileMainLayoutController =
     new MobileMainLayoutController(app);
+const directTaskCreationController =
+    new DirectTaskCreationController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -42,4 +47,5 @@ taskToolbarController.start();
 sidebarLayoutController.start();
 taskFiltersDialogController.start();
 mobileMainLayoutController.start();
+directTaskCreationController.start();
 app.start();
