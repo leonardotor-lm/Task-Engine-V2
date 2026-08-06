@@ -1,3 +1,7 @@
+import {
+    canonicalizeSyncBackup
+} from "./SyncBackupCanonicalizer.js";
+
 export const SyncReconnectionAction =
     Object.freeze({
         IDENTICAL: "IDENTICAL",
@@ -62,7 +66,9 @@ function normalizeForComparison(backup) {
         return null;
     }
 
-    const data = backup?.data;
+    const canonicalBackup =
+        canonicalizeSyncBackup(backup);
+    const data = canonicalBackup?.data;
 
     if (!data) {
         throw new Error(
@@ -85,8 +91,8 @@ function normalizeForComparison(backup) {
         );
 
     return {
-        format: backup.format,
-        version: backup.version,
+        format: canonicalBackup.format,
+        version: canonicalBackup.version,
         data: normalizedData
     };
 
@@ -148,16 +154,22 @@ function getLegacyExtensionDirection({
     remoteBackup
 }) {
 
-    const localData = localBackup?.data;
-    const remoteData = remoteBackup?.data;
+    const canonicalLocal =
+        canonicalizeSyncBackup(localBackup);
+    const canonicalRemote =
+        canonicalizeSyncBackup(remoteBackup);
+    const localData = canonicalLocal?.data;
+    const remoteData = canonicalRemote?.data;
 
     if (!localData || !remoteData) {
         return null;
     }
 
     if (
-        localBackup.format !== remoteBackup.format ||
-        localBackup.version !== remoteBackup.version
+        canonicalLocal.format !==
+            canonicalRemote.format ||
+        canonicalLocal.version !==
+            canonicalRemote.version
     ) {
         return null;
     }
