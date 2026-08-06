@@ -12,8 +12,8 @@ import {
     TaskToolbarController
 } from "./ui/TaskToolbarController.js";
 import {
-    TaskToolbarLayoutController
-} from "./ui/TaskToolbarLayoutController.js";
+    SidebarLayoutController
+} from "./ui/SidebarLayoutController.js";
 
 const app = new App();
 const attachmentController =
@@ -22,12 +22,12 @@ const waitingController =
     new WaitingController(app);
 const taskToolbarController =
     new TaskToolbarController(app);
-const taskToolbarLayoutController =
-    new TaskToolbarLayoutController(app);
+const sidebarLayoutController =
+    new SidebarLayoutController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
 waitingController.start();
 taskToolbarController.start();
-taskToolbarLayoutController.start();
+sidebarLayoutController.start();
 app.start();
