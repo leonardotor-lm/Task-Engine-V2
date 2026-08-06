@@ -191,6 +191,32 @@ test("distingue el orden de cada área", () => {
 
 });
 
+test("restaura el orden de la vista en cada render", () => {
+
+    const storage = createStorage();
+    const app = createApp();
+    const controller =
+        new TaskSortPreferencesController(
+            app,
+            { storage }
+        );
+
+    controller.start();
+
+    app.mainView.callbacks.onChangeTaskSort(
+        TaskSort.PRIORITY
+    );
+
+    app.taskSort = TaskSort.CREATED_OLDEST;
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.PRIORITY
+    );
+
+});
+
 test("usa el orden manual ante datos dañados o valores inválidos", () => {
 
     const storage = createStorage();
@@ -225,7 +251,7 @@ test("usa el orden manual ante datos dañados o valores inválidos", () => {
 
 });
 
-test("la aplicación inicia el controlador de orden persistente", async () => {
+test("la aplicación inicia persistencia y sincronización del orden", async () => {
 
     const main = await readFile(
         new URL("../src/main.js", import.meta.url),
@@ -239,6 +265,14 @@ test("la aplicación inicia el controlador de orden persistente", async () => {
     assert.match(
         main,
         /taskSortPreferencesController\.start\(\)/
+    );
+    assert.match(
+        main,
+        /SyncOptionalDataBridge/
+    );
+    assert.match(
+        main,
+        /syncOptionalDataBridge\.start\(\)/
     );
 
 });
