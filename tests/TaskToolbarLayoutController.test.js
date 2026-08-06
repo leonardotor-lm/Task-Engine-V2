@@ -22,7 +22,7 @@ function createStorage() {
 
 }
 
-test("Áreas vuelve a mostrarse desplegada con la preferencia nueva", () => {
+test("los grupos laterales conservan sus estados iniciales", () => {
 
     const controller =
         new TaskToolbarLayoutController(
@@ -34,10 +34,22 @@ test("Áreas vuelve a mostrarse desplegada con la preferencia nueva", () => {
         controller.readAreasExpanded(),
         true
     );
+    assert.equal(
+        controller.readPlanningExpanded(),
+        true
+    );
+    assert.equal(
+        controller.readHistoryExpanded(false),
+        false
+    );
+    assert.equal(
+        controller.readHistoryExpanded(true),
+        true
+    );
 
 });
 
-test("la preferencia nueva recuerda si Áreas fue contraída", () => {
+test("recuerda de forma independiente el estado de cada grupo", () => {
 
     const storage = createStorage();
     const controller =
@@ -47,15 +59,31 @@ test("la preferencia nueva recuerda si Áreas fue contraída", () => {
         );
 
     controller.writeAreasExpanded(false);
+    controller.writePlanningExpanded(false);
+    controller.writeHistoryExpanded(true);
+
+    const restored =
+        new TaskToolbarLayoutController(
+            null,
+            { storage }
+        );
 
     assert.equal(
-        controller.readAreasExpanded(),
+        restored.readAreasExpanded(),
         false
+    );
+    assert.equal(
+        restored.readPlanningExpanded(),
+        false
+    );
+    assert.equal(
+        restored.readHistoryExpanded(false),
+        true
     );
 
 });
 
-test("la aplicación carga el refinamiento compacto de la barra", async () => {
+test("la aplicación carga el refinamiento de barra y grupos laterales", async () => {
 
     const main = await readFile(
         new URL("../src/main.js", import.meta.url),
@@ -63,6 +91,13 @@ test("la aplicación carga el refinamiento compacto de la barra", async () => {
     );
     const index = await readFile(
         new URL("../index.html", import.meta.url),
+        "utf8"
+    );
+    const controller = await readFile(
+        new URL(
+            "../src/ui/TaskToolbarLayoutController.js",
+            import.meta.url
+        ),
         "utf8"
     );
     const styles = await readFile(
@@ -91,7 +126,19 @@ test("la aplicación carga el refinamiento compacto de la barra", async () => {
     );
     assert.match(
         styles,
-        /sidebarAreaGroupVisible/
+        /sidebarUnifiedGroup/
+    );
+    assert.match(
+        styles,
+        /::-webkit-details-marker/
+    );
+    assert.match(
+        controller,
+        /ensurePlanningGroup/
+    );
+    assert.match(
+        controller,
+        /sidebarHistoryGroup/
     );
 
 });
