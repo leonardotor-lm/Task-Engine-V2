@@ -2,6 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+    createSafeMergedSyncBackup
+} from "../src/core/SyncBackupMerger.js";
+import {
     createComparableSyncFingerprint,
     getSyncReconnectionAction,
     isSyncBackupEmpty,
@@ -232,6 +235,7 @@ test("migra una copia remota antigua conservando datos opcionales locales", () =
                 customFilters: [{
                     id: "filter-1",
                     name: "Urgentes",
+                    query: "priority:high",
                     version: 1
                 }],
                 goals: [{
@@ -270,6 +274,7 @@ test("descarga datos opcionales cuando sólo la copia remota los admite", () => 
                 customFilters: [{
                     id: "filter-1",
                     name: "Urgentes",
+                    query: "priority:high",
                     version: 1
                 }],
                 taskSortPreferences: {
@@ -282,7 +287,71 @@ test("descarga datos opcionales cuando sólo la copia remota los admite", () => 
 
 });
 
-test("no fusiona automáticamente extensiones opcionales en direcciones opuestas", () => {
+test("fusiona extensiones opcionales presentes en lados distintos", () => {
+
+    const sharedTasks = [{
+        id: "task-1",
+        title: "Preparar clase",
+        version: 4
+    }];
+    const localBackup = backup({
+        tasks: sharedTasks,
+        customFilters: [{
+            id: "filter-local",
+            name: "Local",
+            query: "priority:high",
+            version: 1
+        }],
+        taskSortPreferences: {
+            "view:today": "PRIORITY"
+        }
+    });
+    const remoteBackup = backup({
+        tasks: sharedTasks,
+        goals: [{
+            id: "goal-remote",
+            title: "Remoto",
+            version: 1
+        }],
+        taskSortPreferences: {
+            "area:area-1": "DUE_DATE"
+        }
+    });
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup,
+            remoteBackup
+        }),
+        SyncReconnectionAction.MERGE
+    );
+
+    const merged = createSafeMergedSyncBackup({
+        localBackup,
+        remoteBackup
+    });
+
+    assert.deepEqual(
+        merged.data.customFilters.map(
+            filter => filter.id
+        ),
+        ["filter-local"]
+    );
+    assert.deepEqual(
+        merged.data.goals.map(goal => goal.id),
+        ["goal-remote"]
+    );
+    assert.deepEqual(
+        merged.data.taskSortPreferences,
+        {
+            "area:area-1": "DUE_DATE",
+            "view:today": "PRIORITY"
+        }
+    );
+
+});
+
+test("fusiona filtros distintos presentes en ambas copias", () => {
 
     const sharedTasks = [{
         id: "task-1",
@@ -297,24 +366,26 @@ test("no fusiona automáticamente extensiones opcionales en direcciones opuestas
                 customFilters: [{
                     id: "filter-local",
                     name: "Local",
+                    query: "priority:high",
                     version: 1
                 }]
             }),
             remoteBackup: backup({
                 tasks: sharedTasks,
-                goals: [{
-                    id: "goal-remote",
-                    title: "Remoto",
+                customFilters: [{
+                    id: "filter-remote",
+                    name: "Remoto",
+                    query: "due:today",
                     version: 1
                 }]
             })
         }),
-        SyncReconnectionAction.CONFLICT
+        SyncReconnectionAction.MERGE
     );
 
 });
 
-test("mantiene el conflicto si un campo opcional existe en ambos lados con valores distintos", () => {
+test("mantiene el conflicto si la misma preferencia tiene valores distintos", () => {
 
     const sharedTasks = [{
         id: "task-1",
@@ -342,7 +413,41 @@ test("mantiene el conflicto si un campo opcional existe en ambos lados con valor
 
 });
 
-test("mantiene el conflicto cuando ambas copias contienen diferencias", () => {
+test("mantiene el conflicto si el mismo filtro difiere entre copias", () => {
+
+    const sharedTasks = [{
+        id: "task-1",
+        title: "Preparar clase",
+        version: 4
+    }];
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup: backup({
+                tasks: sharedTasks,
+                customFilters: [{
+                    id: "filter-1",
+                    name: "Urgentes",
+                    query: "priority:high",
+                    version: 2
+                }]
+            }),
+            remoteBackup: backup({
+                tasks: sharedTasks,
+                customFilters: [{
+                    id: "filter-1",
+                    name: "Hoy",
+                    query: "due:today",
+                    version: 2
+                }]
+            })
+        }),
+        SyncReconnectionAction.CONFLICT
+    );
+
+});
+
+test("mantiene el conflicto cuando ambas copias contienen diferencias centrales", () => {
 
     assert.equal(
         getSyncReconnectionAction({
