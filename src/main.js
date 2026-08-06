@@ -29,6 +29,9 @@ import {
 import {
     SyncOptionalDataBridge
 } from "./core/SyncOptionalDataBridge.js";
+import {
+    SmartSyncReconnectionController
+} from "./ui/SmartSyncReconnectionController.js";
 
 const app = new App();
 const attachmentController =
@@ -49,6 +52,8 @@ const taskSortPreferencesController =
     new TaskSortPreferencesController(app);
 const syncOptionalDataBridge =
     new SyncOptionalDataBridge(app);
+const smartSyncReconnectionController =
+    new SmartSyncReconnectionController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -60,4 +65,5 @@ mobileMainLayoutController.start();
 directTaskCreationController.start();
 taskSortPreferencesController.start();
 syncOptionalDataBridge.start();
+smartSyncReconnectionController.start();
 app.start();
