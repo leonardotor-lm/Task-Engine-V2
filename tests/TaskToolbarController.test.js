@@ -130,7 +130,7 @@ test("la aplicación carga el controlador compacto y sus estilos", async () => {
     );
     const styles = await readFile(
         new URL(
-            "../task-toolbar-layout.css",
+            "../styles/task-interface.css",
             import.meta.url
         ),
         "utf8"
@@ -146,7 +146,7 @@ test("la aplicación carga el controlador compacto y sus estilos", async () => {
     );
     assert.match(
         index,
-        /task-toolbar\.css/
+        /styles\/task-interface\.css/
     );
     assert.match(
         styles,
