@@ -100,6 +100,13 @@ test("la aplicación carga el refinamiento de barra y grupos laterales", async (
         ),
         "utf8"
     );
+    const sidebarController = await readFile(
+        new URL(
+            "../src/ui/SidebarLayoutController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
     const styles = await readFile(
         new URL(
             "../task-toolbar-layout.css",
@@ -110,11 +117,11 @@ test("la aplicación carga el refinamiento de barra y grupos laterales", async (
 
     assert.match(
         main,
-        /TaskToolbarLayoutController/
+        /SidebarLayoutController/
     );
     assert.match(
         main,
-        /taskToolbarLayoutController\.start\(\)/
+        /sidebarLayoutController\.start\(\)/
     );
     assert.match(
         index,
@@ -133,12 +140,20 @@ test("la aplicación carga el refinamiento de barra y grupos laterales", async (
         /::-webkit-details-marker/
     );
     assert.match(
+        styles,
+        /sidebarAreaGroup\.sidebarUnifiedGroup/
+    );
+    assert.match(
         controller,
         /ensurePlanningGroup/
     );
     assert.match(
         controller,
         /sidebarHistoryGroup/
+    );
+    assert.match(
+        sidebarController,
+        /"showAll",\s*"showWaiting",\s*"showCalendar",\s*"showGoals"/
     );
 
 });
