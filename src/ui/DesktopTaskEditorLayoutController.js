@@ -80,68 +80,78 @@ export class DesktopTaskEditorLayoutController {
             "desktopTaskEditorLayout"
         );
 
-        this.markSections(drawer, {
-            primarySection,
-            organizationSection
-        });
+        const planningSection =
+            document.getElementById(
+                "taskRecurrence"
+            )?.closest(".editorSection") ?? null;
+        const attachmentsSection =
+            drawer.querySelector(
+                ".editorAttachmentsSection"
+            );
+        const subtasksSection =
+            drawer.querySelector(
+                ".editorSubtasksSection"
+            );
+
+        this.prepareTextAndHints();
         this.buildContextBar({
+            primarySection,
+            organizationSection
+        });
+
+        const tools = this.buildPrimaryContent({
+            primarySection,
+            organizationSection
+        });
+
+        this.buildMoreTools({
+            primarySection,
+            organizationSection,
+            planningSection,
+            attachmentsSection,
+            subtasksSection,
+            goalsField: tools.goalsField
+        });
+        this.groupActions(
             drawer,
-            primarySection,
-            organizationSection
+            tools.moveField
+        );
+        this.markRemainingSections({
+            attachmentsSection,
+            subtasksSection
         });
-        this.buildPrimaryContent({
-            primarySection,
-            organizationSection
-        });
-        this.groupActions(drawer);
 
     }
 
-    markSections(
-        drawer,
-        {
-            primarySection,
-            organizationSection
-        }
-    ) {
+    prepareTextAndHints() {
 
-        primarySection.classList.add(
-            "desktopTaskEditorPrimary"
-        );
-        primarySection.open = true;
-
-        organizationSection.classList.add(
-            "desktopTaskEditorOrganization"
+        const hourLabel = document.querySelector(
+            'label[for="taskDueTime"]'
         );
 
-        const organizationSummary =
-            organizationSection.querySelector(
-                ":scope > summary"
-            );
-
-        if (organizationSummary) {
-            organizationSummary.textContent =
-                "Objetivos y organización";
+        if (hourLabel) {
+            hourLabel.textContent = "Hora";
         }
 
-        document.getElementById(
-            "taskRecurrence"
-        )?.closest(".editorSection")
-            ?.classList.add(
-                "desktopTaskEditorPlanning"
-            );
-
-        drawer.querySelector(
-            ".editorAttachmentsSection"
-        )?.classList.add(
-            "desktopTaskEditorAttachments"
+        const titleLabel = document.querySelector(
+            'label[for="taskTitleEdit"]'
         );
 
-        drawer.querySelector(
-            ".editorSubtasksSection"
-        )?.classList.add(
-            "desktopTaskEditorSubtasks"
+        titleLabel?.classList.add(
+            "desktopTaskEditorVisuallyHidden"
         );
+
+        const descriptionLabel = document.querySelector(
+            'label[for="taskDescriptionEdit"]'
+        );
+
+        descriptionLabel?.classList.add(
+            "desktopTaskEditorVisuallyHidden"
+        );
+
+        document.querySelector(
+            ".waitingTaskHint"
+        )?.remove();
 
     }
 
@@ -204,8 +214,22 @@ export class DesktopTaskEditorLayoutController {
             primarySection.querySelector(
                 ".editorSectionBody"
             );
+        const organizationBody =
+            organizationSection.querySelector(
+                ".editorSectionBody"
+            );
 
-        if (!primaryBody) return;
+        if (!primaryBody || !organizationBody) {
+            return {
+                goalsField: null,
+                moveField: null
+            };
+        }
+
+        primarySection.classList.add(
+            "desktopTaskEditorPrimary"
+        );
+        primarySection.open = true;
 
         const mainFields =
             document.createElement("div");
@@ -273,20 +297,183 @@ export class DesktopTaskEditorLayoutController {
         }
 
         const tagsField =
-            organizationSection.querySelector(
+            organizationBody.querySelector(
                 '[data-picker-id="taskTags"]'
+            );
+        const goalsField =
+            organizationBody.querySelector(
+                '[data-picker-id="taskGoals"]'
+            );
+        const moveField =
+            organizationBody.querySelector(
+                ".taskMoveField"
             );
 
         if (tagsField) {
+            this.configurePicker(
+                tagsField,
+                "Etiquetas"
+            );
             tagsField.classList.add(
                 "desktopTaskEditorTagsProperty"
             );
             properties.append(tagsField);
         }
 
+        if (goalsField) {
+            this.configurePicker(
+                goalsField,
+                "Objetivos"
+            );
+            goalsField.classList.add(
+                "desktopTaskEditorGoalsTool"
+            );
+        }
+
+        organizationBody
+            .querySelectorAll(
+                ".taskGoalPreserved"
+            )
+            .forEach(input => {
+                if (goalsField) {
+                    goalsField.append(input);
+                }
+            });
+
+        if (moveField) {
+            moveField.classList.add(
+                "desktopTaskEditorMoveTool"
+            );
+            const summary = moveField.querySelector(
+                ".taskMoveManager > summary"
+            );
+            if (summary) {
+                summary.textContent = "Mover";
+            }
+        }
+
         primaryBody.append(
             mainFields,
             properties
+        );
+
+        return {
+            goalsField,
+            moveField
+        };
+
+    }
+
+    configurePicker(fieldset, label) {
+
+        fieldset.classList.add(
+            "desktopTaskEditorPicker"
+        );
+
+        const details = fieldset.querySelector(
+            ".searchableMultiSelectManager"
+        );
+        const summary = details?.querySelector(
+            ":scope > summary"
+        );
+        const body = details?.querySelector(
+            ".searchableMultiSelectManagerBody"
+        );
+        const chips = fieldset.querySelector(
+            ".searchableMultiSelectChips"
+        );
+        const count = fieldset.querySelector(
+            ".searchableMultiSelectHeader strong"
+        );
+
+        fieldset.querySelector(
+            ".searchableMultiSelectHeader"
+        )?.remove();
+
+        if (summary) {
+            summary.replaceChildren(
+                document.createTextNode(label)
+            );
+
+            if (count) {
+                count.classList.add(
+                    "desktopTaskEditorPickerCount"
+                );
+                summary.append(count);
+            }
+        }
+
+        if (body && chips) {
+            chips.classList.add(
+                "desktopTaskEditorPickerSelection"
+            );
+            body.prepend(chips);
+        }
+
+    }
+
+    buildMoreTools({
+        primarySection,
+        organizationSection,
+        planningSection,
+        attachmentsSection,
+        subtasksSection,
+        goalsField
+    }) {
+
+        const moreTools =
+            document.createElement("details");
+        moreTools.className =
+            "desktopTaskEditorMoreTools";
+
+        const summary =
+            document.createElement("summary");
+        summary.textContent = "Más herramientas";
+
+        const panel =
+            document.createElement("div");
+        panel.className =
+            "desktopTaskEditorMoreToolsPanel";
+
+        if (goalsField) {
+            panel.append(goalsField);
+        }
+
+        if (planningSection) {
+            planningSection.classList.add(
+                "desktopTaskEditorPlanningTool"
+            );
+            panel.append(planningSection);
+        }
+
+        if (panel.childElementCount > 0) {
+            moreTools.append(summary, panel);
+
+            const reference =
+                attachmentsSection ??
+                subtasksSection;
+
+            if (reference) {
+                reference.before(moreTools);
+            } else {
+                primarySection.after(moreTools);
+            }
+        }
+
+        organizationSection.remove();
+
+    }
+
+    markRemainingSections({
+        attachmentsSection,
+        subtasksSection
+    }) {
+
+        attachmentsSection?.classList.add(
+            "desktopTaskEditorAttachments"
+        );
+        subtasksSection?.classList.add(
+            "desktopTaskEditorSubtasks"
         );
 
     }
@@ -317,7 +504,7 @@ export class DesktopTaskEditorLayoutController {
 
     }
 
-    groupActions(drawer) {
+    groupActions(drawer, moveField) {
 
         const actions = drawer.querySelector(
             ".taskEditorActions"
@@ -325,28 +512,18 @@ export class DesktopTaskEditorLayoutController {
 
         if (!actions) return;
 
-        const primaryActions =
+        actions.classList.add(
+            "desktopTaskEditorFooter"
+        );
+
+        const utilityActions =
             document.createElement("div");
-        primaryActions.className =
-            "desktopTaskEditorPrimaryActions";
+        utilityActions.className =
+            "desktopTaskEditorUtilityActions";
 
-        [
-            "toggleTask",
-            "reopenTask",
-            "saveTask"
-        ].forEach(id => {
-            const button =
-                document.getElementById(id);
-
-            if (button && actions.contains(button)) {
-                primaryActions.append(button);
-            }
-        });
-
-        const administrativeActions =
-            document.createElement("div");
-        administrativeActions.className =
-            "desktopTaskEditorAdministrativeActions";
+        if (moveField) {
+            utilityActions.append(moveField);
+        }
 
         [
             "skipRecurringTask",
@@ -357,19 +534,34 @@ export class DesktopTaskEditorLayoutController {
                 document.getElementById(id);
 
             if (button && actions.contains(button)) {
-                administrativeActions.append(button);
+                utilityActions.append(button);
             }
         });
 
-        if (primaryActions.childElementCount > 0) {
-            actions.append(primaryActions);
+        const primaryActions =
+            document.createElement("div");
+        primaryActions.className =
+            "desktopTaskEditorPrimaryActions";
+
+        [
+            "reopenTask",
+            "toggleTask",
+            "saveTask"
+        ].forEach(id => {
+            const button =
+                document.getElementById(id);
+
+            if (button && actions.contains(button)) {
+                primaryActions.append(button);
+            }
+        });
+
+        if (utilityActions.childElementCount > 0) {
+            actions.append(utilityActions);
         }
 
-        if (
-            administrativeActions
-                .childElementCount > 0
-        ) {
-            actions.append(administrativeActions);
+        if (primaryActions.childElementCount > 0) {
+            actions.append(primaryActions);
         }
 
     }
