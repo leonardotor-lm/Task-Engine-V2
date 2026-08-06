@@ -1,6 +1,10 @@
 import {
     SyncReconnectionAction
 } from "../core/SyncReconnectionPolicy.js";
+import {
+    createSyncConflictDiagnostics
+} from "../core/SyncConflictDiagnostics.js";
+import { escapeHtml } from "./escapeHtml.js";
 
 export class SmartSyncReconnectionController {
 
@@ -23,6 +27,9 @@ export class SmartSyncReconnectionController {
         }
 
         this.started = true;
+        this.app.syncConflictDetails = [];
+
+        this.wrapSidebarDiagnostics();
 
         const originalCheckRemoteStatus =
             this.app.checkRemoteStatus
@@ -42,6 +49,54 @@ export class SmartSyncReconnectionController {
 
     }
 
+    wrapSidebarDiagnostics() {
+
+        const sidebar =
+            this.app?.mainView?.sidebar;
+
+        if (
+            !sidebar ||
+            typeof sidebar.render !== "function"
+        ) {
+            return;
+        }
+
+        const originalRender =
+            sidebar.render.bind(sidebar);
+
+        sidebar.render = (...args) => {
+
+            const html = originalRender(...args);
+            const details =
+                this.app.syncConflictDetails ?? [];
+
+            if (!details.length) {
+                return html;
+            }
+
+            const detailsHtml = `
+                <details
+                    class="syncConflictDetails"
+                    open>
+                    <summary>Diferencias detectadas</summary>
+                    <ul>
+                        ${details.map(detail => `
+                            <li>${escapeHtml(detail)}</li>
+                        `).join("")}
+                    </ul>
+                </details>
+            `;
+
+            return html.replace(
+                '<p class="syncConflictHint">',
+                `${detailsHtml}
+                <p class="syncConflictHint">`
+            );
+
+        };
+
+    }
+
     shouldReconcile() {
 
         const config = this.app?.syncConfig;
@@ -50,6 +105,40 @@ export class SmartSyncReconnectionController {
             config?.isConfigured?.() &&
             !config?.hasKnownSyncState?.()
         );
+
+    }
+
+    async createConflictDiagnostics() {
+
+        try {
+
+            const localBackup =
+                this.app.backupService
+                    .createBackup();
+            const connection =
+                this.app.syncConfig.get();
+            const remoteResponse =
+                await this.app.syncEngine
+                    .gateway.load(connection);
+
+            return createSyncConflictDiagnostics({
+                localBackup,
+                remoteBackup:
+                    remoteResponse.data
+            });
+
+        } catch (error) {
+
+            console.warn(
+                "No se pudo generar el diagnóstico del conflicto.",
+                error
+            );
+
+            return [
+                "No se pudo obtener el detalle del conflicto."
+            ];
+
+        }
 
     }
 
@@ -84,6 +173,22 @@ export class SmartSyncReconnectionController {
             this.app.syncLastError = null;
 
             if (
+                result.action ===
+                    SyncReconnectionAction.CONFLICT
+            ) {
+                this.app.syncConflictDetails =
+                    await this
+                        .createConflictDiagnostics();
+
+                console.warn(
+                    "Diferencias de sincronización detectadas:",
+                    this.app.syncConflictDetails
+                );
+            } else {
+                this.app.syncConflictDetails = [];
+            }
+
+            if (
                 [
                     SyncReconnectionAction.PULL,
                     SyncReconnectionAction.MERGE
@@ -96,6 +201,7 @@ export class SmartSyncReconnectionController {
 
         } catch (error) {
 
+            this.app.syncConflictDetails = [];
             this.app.syncLastError =
                 error?.message ||
                 "No se pudo reconciliar la conexión de sincronización.";
