@@ -204,16 +204,25 @@ export class TaskToolbarController {
                 Object.values(
                     state.taskFilters ?? {}
                 ).some(Boolean);
+            const filterLabel = filtersActive
+                ? "Abrir filtros; hay filtros activos"
+                : "Abrir filtros";
 
             this.prepareToolbarButton(
                 filtersButton,
                 {
-                    label: "Abrir filtros",
+                    label: filterLabel,
                     shortLabel: "Filtros",
-                    pressed: filtersActive,
                     textOnly: true
                 }
             );
+
+            filtersButton.classList.toggle(
+                "active",
+                filtersActive
+            );
+            filtersButton.dataset.active =
+                String(filtersActive);
 
             body.append(filtersButton);
 
@@ -300,9 +309,17 @@ export class TaskToolbarController {
             }
         );
 
-        document.querySelector(
-            ".sidebarListControls:empty"
-        )?.remove();
+        const sidebarControls =
+            document.querySelector(
+                ".sidebarListControls"
+            );
+
+        if (
+            sidebarControls &&
+            !sidebarControls.querySelector("*")
+        ) {
+            sidebarControls.remove();
+        }
 
     }
 
@@ -339,6 +356,8 @@ export class TaskToolbarController {
                 "active",
                 Boolean(pressed)
             );
+        } else {
+            button.removeAttribute("aria-pressed");
         }
 
         button.innerHTML = textOnly
