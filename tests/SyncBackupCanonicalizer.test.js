@@ -71,6 +71,44 @@ test("iguala una tarea antigua con su representación actual", () => {
 
 });
 
+test("normaliza de forma estable fechas ausentes", () => {
+
+    const first = backup({
+        tasks: [
+            {
+                id: "task-2",
+                title: "Segunda",
+                version: 1
+            },
+            {
+                id: "task-1",
+                title: "Primera",
+                version: 1
+            }
+        ]
+    });
+    const second = backup({
+        tasks: [
+            {
+                title: "Primera",
+                version: 1,
+                id: "task-1"
+            },
+            {
+                version: 1,
+                id: "task-2",
+                title: "Segunda"
+            }
+        ]
+    });
+
+    assert.equal(
+        createComparableSyncFingerprint(first),
+        createComparableSyncFingerprint(second)
+    );
+
+});
+
 test("sube extensiones locales cuando el núcleo antiguo es equivalente", () => {
 
     const oldBackup = backup({
