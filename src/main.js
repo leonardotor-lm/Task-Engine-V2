@@ -26,6 +26,9 @@ import {
 import {
     TaskSortPreferencesController
 } from "./ui/TaskSortPreferencesController.js";
+import {
+    SyncOptionalDataBridge
+} from "./core/SyncOptionalDataBridge.js";
 
 const app = new App();
 const attachmentController =
@@ -44,6 +47,8 @@ const directTaskCreationController =
     new DirectTaskCreationController(app);
 const taskSortPreferencesController =
     new TaskSortPreferencesController(app);
+const syncOptionalDataBridge =
+    new SyncOptionalDataBridge(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -54,4 +59,5 @@ taskFiltersDialogController.start();
 mobileMainLayoutController.start();
 directTaskCreationController.start();
 taskSortPreferencesController.start();
+syncOptionalDataBridge.start();
 app.start();
