@@ -5,17 +5,79 @@ import { Tag } from "../domain/Tag.js";
 import { CustomFilter } from "../domain/CustomFilter.js";
 import { Goal } from "../domain/Goal.js";
 
+const LEGACY_TIMESTAMP =
+    "1970-01-01T00:00:00.000Z";
+
+function prepareEntity(
+    item,
+    {
+        recurrenceId = false
+    } = {}
+) {
+
+    if (
+        !item ||
+        typeof item !== "object" ||
+        Array.isArray(item) ||
+        !item.id
+    ) {
+        return item;
+    }
+
+    const createdAt =
+        item.createdAt ?? LEGACY_TIMESTAMP;
+
+    const prepared = {
+        ...item,
+        createdAt,
+        updatedAt:
+            item.updatedAt ?? createdAt
+    };
+
+    if (
+        recurrenceId &&
+        item.recurrence !== null &&
+        item.recurrence !== undefined &&
+        item.recurrenceId == null
+    ) {
+        prepared.recurrenceId =
+            `legacy-recurrence:${item.id}`;
+    }
+
+    return prepared;
+
+}
+
 const CORE_SERIALIZERS = {
-    tasks: item => new Task(item).toJSON(),
-    areas: item => new Area(item).toJSON(),
-    contexts: item => new Context(item).toJSON(),
-    tags: item => new Tag(item).toJSON()
+    tasks: item =>
+        new Task(
+            prepareEntity(item, {
+                recurrenceId: true
+            })
+        ).toJSON(),
+    areas: item =>
+        new Area(
+            prepareEntity(item)
+        ).toJSON(),
+    contexts: item =>
+        new Context(
+            prepareEntity(item)
+        ).toJSON(),
+    tags: item =>
+        new Tag(
+            prepareEntity(item)
+        ).toJSON()
 };
 
 const OPTIONAL_SERIALIZERS = {
-    customFilters:
-        item => new CustomFilter(item).toJSON(),
-    goals: item => new Goal(item).toJSON()
+    customFilters: item =>
+        new CustomFilter(
+            prepareEntity(item)
+        ).toJSON(),
+    goals: item =>
+        new Goal(
+            prepareEntity(item)
+        ).toJSON()
 };
 
 function hasOwn(object, property) {
