@@ -14,6 +14,9 @@ import {
 import {
     SidebarLayoutController
 } from "./ui/SidebarLayoutController.js";
+import {
+    TaskFiltersDialogController
+} from "./ui/TaskFiltersDialogController.js";
 
 const app = new App();
 const attachmentController =
@@ -24,10 +27,13 @@ const taskToolbarController =
     new TaskToolbarController(app);
 const sidebarLayoutController =
     new SidebarLayoutController(app);
+const taskFiltersDialogController =
+    new TaskFiltersDialogController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
 waitingController.start();
 taskToolbarController.start();
 sidebarLayoutController.start();
+taskFiltersDialogController.start();
 app.start();
