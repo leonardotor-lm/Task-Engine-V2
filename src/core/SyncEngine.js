@@ -1,5 +1,12 @@
 import { SyncConflictError } from "../infrastructure/CloudGateway.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
+import {
+    createSafeMergedSyncBackup
+} from "./SyncBackupMerger.js";
+import {
+    getSyncReconnectionAction,
+    SyncReconnectionAction
+} from "./SyncReconnectionPolicy.js";
 
 export class SyncEngine {
 
@@ -154,6 +161,191 @@ export class SyncEngine {
             remoteRevision,
             updateAvailable:
                 remoteRevision > localRevision
+        };
+
+    }
+
+    async reconcileUnknownConnection() {
+
+        const connection =
+            this.ensureConfigured();
+        const localBackup =
+            this.backupService.createBackup();
+        const localData =
+            this.backupService.parseAndValidate(
+                JSON.stringify(localBackup)
+            );
+
+        const remoteResponse =
+            await this.gateway.load(connection);
+        const remoteRevision =
+            this.validateRevision(
+                remoteResponse.revision
+            );
+        const remoteBackup =
+            remoteResponse.data;
+        const remoteData = remoteBackup === null
+            ? null
+            : this.backupService
+                .parseAndValidate(
+                    JSON.stringify(remoteBackup)
+                );
+
+        const action =
+            getSyncReconnectionAction({
+                localBackup,
+                remoteBackup
+            });
+
+        if (
+            action ===
+                SyncReconnectionAction.CONFLICT
+        ) {
+            return {
+                action,
+                revision: remoteRevision,
+                localSummary:
+                    this.summarize(localData),
+                remoteSummary:
+                    this.summarize(remoteData)
+            };
+        }
+
+        if (
+            action ===
+                SyncReconnectionAction.IDENTICAL
+        ) {
+
+            this.config.setRevision(
+                remoteRevision
+            );
+            this.config.markSynchronized(
+                createSyncFingerprint(localBackup)
+            );
+
+            return {
+                action,
+                revision: remoteRevision,
+                summary: this.summarize(localData)
+            };
+
+        }
+
+        if (
+            action ===
+                SyncReconnectionAction.PULL
+        ) {
+
+            this.ensureRemoteGoalsAreSafe(
+                remoteBackup
+            );
+
+            this.backupService.importBackup(
+                JSON.stringify(remoteBackup)
+            );
+
+            const importedBackup =
+                this.backupService.createBackup();
+
+            this.config.setRevision(
+                remoteRevision
+            );
+            this.config.markSynchronized(
+                createSyncFingerprint(
+                    importedBackup
+                )
+            );
+
+            return {
+                action,
+                revision: remoteRevision,
+                summary: this.summarize(
+                    remoteData
+                )
+            };
+
+        }
+
+        if (
+            action ===
+                SyncReconnectionAction.MERGE
+        ) {
+
+            const mergedBackup =
+                createSafeMergedSyncBackup({
+                    localBackup,
+                    remoteBackup
+                });
+
+            if (!mergedBackup) {
+                return {
+                    action:
+                        SyncReconnectionAction.CONFLICT,
+                    revision: remoteRevision,
+                    localSummary:
+                        this.summarize(localData),
+                    remoteSummary:
+                        this.summarize(remoteData)
+                };
+            }
+
+            const mergedData =
+                this.backupService
+                    .parseAndValidate(
+                        JSON.stringify(mergedBackup)
+                    );
+
+            const saved = await this.gateway.save({
+                ...connection,
+                baseRevision: remoteRevision,
+                data: mergedBackup
+            });
+            const revision = this.validateRevision(
+                saved.revision
+            );
+
+            this.backupService.importBackup(
+                JSON.stringify(mergedBackup)
+            );
+
+            const normalizedMergedBackup =
+                this.backupService.createBackup();
+
+            this.config.setRevision(revision);
+            this.config.markSynchronized(
+                createSyncFingerprint(
+                    normalizedMergedBackup
+                )
+            );
+
+            return {
+                action,
+                revision,
+                summary: this.summarize(
+                    mergedData
+                )
+            };
+
+        }
+
+        const saved = await this.gateway.save({
+            ...connection,
+            baseRevision: remoteRevision,
+            data: localBackup
+        });
+        const revision = this.validateRevision(
+            saved.revision
+        );
+
+        this.config.setRevision(revision);
+        this.config.markSynchronized(
+            createSyncFingerprint(localBackup)
+        );
+
+        return {
+            action,
+            revision,
+            summary: this.summarize(localData)
         };
 
     }
