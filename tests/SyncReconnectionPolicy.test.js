@@ -82,10 +82,61 @@ test("normaliza campos opcionales al comparar copias antiguas", () => {
 
 });
 
+test("la comparación no depende del orden de las entidades ni de las claves", () => {
+
+    const first = backup({
+        tasks: [
+            {
+                id: "task-2",
+                title: "Segunda",
+                version: 1
+            },
+            {
+                id: "task-1",
+                title: "Primera",
+                version: 1
+            }
+        ],
+        taskSortPreferences: {
+            "view:today": "PRIORITY",
+            "area:area-1": "DUE_DATE"
+        }
+    });
+
+    const second = backup({
+        tasks: [
+            {
+                version: 1,
+                title: "Primera",
+                id: "task-1"
+            },
+            {
+                version: 1,
+                title: "Segunda",
+                id: "task-2"
+            }
+        ],
+        taskSortPreferences: {
+            "area:area-1": "DUE_DATE",
+            "view:today": "PRIORITY"
+        }
+    });
+
+    assert.equal(
+        createComparableSyncFingerprint(first),
+        createComparableSyncFingerprint(second)
+    );
+
+});
+
 test("reconoce copias idénticas sin pedir elección", () => {
 
     const localBackup = backup({
-        tasks: [{ id: "task-1", version: 2 }],
+        tasks: [{
+            id: "task-1",
+            title: "Preparar clase",
+            version: 2
+        }],
         customFilters: [],
         goals: [],
         taskSortPreferences: {
@@ -101,6 +152,33 @@ test("reconoce copias idénticas sin pedir elección", () => {
             )
         }),
         SyncReconnectionAction.IDENTICAL
+    );
+
+});
+
+test("no confunde contenidos distintos con la misma identificación y versión", () => {
+
+    const localBackup = backup({
+        tasks: [{
+            id: "task-1",
+            title: "Título local",
+            version: 2
+        }]
+    });
+    const remoteBackup = backup({
+        tasks: [{
+            id: "task-1",
+            title: "Título remoto",
+            version: 2
+        }]
+    });
+
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup,
+            remoteBackup
+        }),
+        SyncReconnectionAction.CONFLICT
     );
 
 });
