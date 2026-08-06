@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 
-test("la aplicación carga la estructura específica del editor de escritorio", async () => {
+test("la aplicación carga la estructura minimalista del editor de escritorio", async () => {
 
     const main = await readFile(
         new URL("../src/main.js", import.meta.url),
@@ -62,15 +62,39 @@ test("la aplicación carga la estructura específica del editor de escritorio", 
     );
     assert.match(
         controller,
-        /taskTags/
+        /configurePicker/
     );
     assert.match(
         controller,
-        /field\.append\(label, control\)/
+        /"Etiquetas"/
     );
     assert.match(
         controller,
-        /desktopTaskEditorPrimaryActions/
+        /"Objetivos"/
+    );
+    assert.match(
+        controller,
+        /"Más herramientas"/
+    );
+    assert.match(
+        controller,
+        /hourLabel\.textContent = "Hora"/
+    );
+    assert.match(
+        controller,
+        /waitingTaskHint/
+    );
+    assert.match(
+        controller,
+        /desktopTaskEditorMoveTool/
+    );
+    assert.match(
+        controller,
+        /"archiveTask"/
+    );
+    assert.match(
+        controller,
+        /"deleteTask"/
     );
     assert.match(
         styles,
@@ -82,7 +106,19 @@ test("la aplicación carga la estructura específica del editor de escritorio", 
     );
     assert.match(
         styles,
-        /\.desktopTaskEditorAdministrativeActions/
+        /height: 38px;/
+    );
+    assert.match(
+        styles,
+        /resize: vertical;/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorMoreTools/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorFooter/
     );
 
 });
