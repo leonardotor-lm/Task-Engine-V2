@@ -9,8 +9,8 @@ import {
     WaitingController
 } from "./ui/WaitingController.js";
 import {
-    TaskToolbarController
-} from "./ui/TaskToolbarController.js";
+    CompactTaskToolbarController
+} from "./ui/CompactTaskToolbarController.js";
 import {
     SidebarLayoutController
 } from "./ui/SidebarLayoutController.js";
@@ -24,7 +24,7 @@ const attachmentController =
 const waitingController =
     new WaitingController(app);
 const taskToolbarController =
-    new TaskToolbarController(app);
+    new CompactTaskToolbarController(app);
 const sidebarLayoutController =
     new SidebarLayoutController(app);
 const taskFiltersDialogController =
