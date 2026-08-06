@@ -1,12 +1,16 @@
 import {
     canonicalizeSyncBackup
 } from "./SyncBackupCanonicalizer.js";
+import {
+    createSafeMergedSyncBackup
+} from "./SyncBackupMerger.js";
 
 export const SyncReconnectionAction =
     Object.freeze({
         IDENTICAL: "IDENTICAL",
         PUSH: "PUSH",
         PULL: "PULL",
+        MERGE: "MERGE",
         CONFLICT: "CONFLICT"
     });
 
@@ -352,6 +356,15 @@ export function getSyncReconnectionAction({
 
     if (legacyDirection) {
         return legacyDirection;
+    }
+
+    if (
+        createSafeMergedSyncBackup({
+            localBackup,
+            remoteBackup
+        })
+    ) {
+        return SyncReconnectionAction.MERGE;
     }
 
     return SyncReconnectionAction.CONFLICT;
