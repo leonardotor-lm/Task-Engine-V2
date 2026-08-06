@@ -4,6 +4,9 @@ import {
 import {
     createSafeMergedSyncBackup
 } from "./SyncBackupMerger.js";
+import {
+    isUntouchedDefaultSeedBackup
+} from "./SyncSeedData.js";
 
 export const SyncReconnectionAction =
     Object.freeze({
@@ -321,7 +324,10 @@ export function getSyncReconnectionAction({
 }) {
 
     const localEmpty =
-        isSyncBackupEmpty(localBackup);
+        isSyncBackupEmpty(localBackup) ||
+        isUntouchedDefaultSeedBackup(
+            localBackup
+        );
     const remoteEmpty =
         isSyncBackupEmpty(remoteBackup);
 
