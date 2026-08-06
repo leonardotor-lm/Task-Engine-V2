@@ -181,6 +181,21 @@ Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
 - Añadir el criterio de búsqueda por adjuntos.
 - Actualizar la guía de búsqueda avanzada cuando la función exista.
 
+### Fecha de inicio y períodos
+
+- **Estado:** Postergado.
+- Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
+- Permitir una fecha de inicio sin fecha límite; en ese caso, la tarea pasa a estar disponible desde esa fecha pero no vence.
+- Si existen fecha de inicio y fecha límite, exigir que el inicio sea anterior o igual al vencimiento.
+- Habilitar la fecha de inicio solamente en tareas no recurrentes.
+- Impedir activar una recurrencia mientras exista una fecha de inicio y pedir que se quite primero, sin borrarla silenciosamente.
+- Ocultar o deshabilitar el campo de inicio al editar una tarea recurrente.
+- Antes de la fecha de inicio, mantener la tarea fuera de las listas de ejecución; desde el inicio, mostrarla como disponible hasta completarla o vencer.
+- En el calendario, representar la tarea en todos los días comprendidos entre el inicio y el vencimiento, incluidos ambos extremos.
+- Mantener ocultas las tareas en espera aunque haya comenzado su período.
+- Integrar el dato con persistencia, sincronización, copias de seguridad, edición, orden, filtros y pruebas.
+- Incorporar criterios de búsqueda como `inicio`, `inicioAntes`, `inicioDespues` y `tieneInicio`; evaluar también un criterio `activaEn` para buscar tareas cuyo período incluya una fecha.
+
 ### Historial y estadísticas
 
 - **Estado:** Postergado.
