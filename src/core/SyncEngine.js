@@ -1,6 +1,9 @@
 import { SyncConflictError } from "../infrastructure/CloudGateway.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
 import {
+    createSafeMergedSyncBackup
+} from "./SyncBackupMerger.js";
+import {
     getSyncReconnectionAction,
     SyncReconnectionAction
 } from "./SyncReconnectionPolicy.js";
@@ -258,6 +261,70 @@ export class SyncEngine {
                 revision: remoteRevision,
                 summary: this.summarize(
                     remoteData
+                )
+            };
+
+        }
+
+        if (
+            action ===
+                SyncReconnectionAction.MERGE
+        ) {
+
+            const mergedBackup =
+                createSafeMergedSyncBackup({
+                    localBackup,
+                    remoteBackup
+                });
+
+            if (!mergedBackup) {
+                return {
+                    action:
+                        SyncReconnectionAction.CONFLICT,
+                    revision: remoteRevision,
+                    localSummary:
+                        this.summarize(localData),
+                    remoteSummary:
+                        this.summarize(remoteData)
+                };
+            }
+
+            this.backupService.importBackup(
+                JSON.stringify(mergedBackup)
+            );
+
+            const normalizedMergedBackup =
+                this.backupService.createBackup();
+
+            const saved = await this.gateway.save({
+                ...connection,
+                baseRevision: remoteRevision,
+                data: normalizedMergedBackup
+            });
+            const revision = this.validateRevision(
+                saved.revision
+            );
+
+            this.config.setRevision(revision);
+            this.config.markSynchronized(
+                createSyncFingerprint(
+                    normalizedMergedBackup
+                )
+            );
+
+            const mergedData =
+                this.backupService
+                    .parseAndValidate(
+                        JSON.stringify(
+                            normalizedMergedBackup
+                        )
+                    );
+
+            return {
+                action,
+                revision,
+                summary: this.summarize(
+                    mergedData
                 )
             };
 
