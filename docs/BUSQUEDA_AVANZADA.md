@@ -1,6 +1,6 @@
 # Guía de búsqueda avanzada
 
-La búsqueda avanzada permite encontrar tareas combinando texto, propiedades, fechas y relaciones. Se abre desde la barra lateral con **Búsqueda avanzada**. Los criterios se editan en un panel emergente y, al aplicar una consulta válida, los resultados aparecen en la vista central.
+La búsqueda avanzada permite encontrar tareas combinando texto, propiedades, fechas, relaciones y adjuntos. Se abre desde la barra lateral con **Búsqueda avanzada**. Los criterios se editan en un panel emergente y, al aplicar una consulta válida, los resultados aparecen en la vista central.
 
 ## Uso básico
 
@@ -75,6 +75,33 @@ bibliografia
 | `objetivoNivel` | Objetivo principal o subobjetivo | `objetivoNivel:subobjetivo` |
 
 Los criterios booleanos aceptan `si` y `no`.
+
+## Adjuntos
+
+| Criterio | Qué busca | Ejemplo |
+|---|---|---|
+| `tieneAdjuntos` | Tareas que tienen o no tienen archivos adjuntos | `tieneAdjuntos:si` |
+| `adjunto` | Coincidencia parcial en el nombre o el tipo del archivo | `adjunto:pdf` |
+| `adjuntoContiene` | Variante explícita de la búsqueda parcial por nombre o tipo | `adjuntoContiene:"programa anual"` |
+
+También se admiten los alias en inglés `hasAttachments`, `attachment` y `attachmentContains`.
+
+Ejemplos:
+
+```text
+tieneAdjuntos:no
+adjunto:"programa anual"
+adjunto:image
+```
+
+Los criterios de adjuntos se pueden combinar con todos los operadores y con los demás campos:
+
+```text
+titulo:clase AND adjunto:pdf
+tieneAdjuntos:si AND NOT adjunto:png
+```
+
+`adjunto` y `adjuntoContiene` buscan tanto en el nombre como en el tipo MIME. Por ejemplo, `adjunto:image` encuentra archivos cuyo tipo corresponde a una imagen aunque la palabra no aparezca en el nombre.
 
 ## Prioridad y estado
 
@@ -279,6 +306,12 @@ posposiciones:>=3 AND estado:incompleta
 esSubtarea:si AND fechaDentro:"7 dias"
 ```
 
+### Tareas con documentos PDF adjuntos
+
+```text
+tieneAdjuntos:si AND adjunto:pdf
+```
+
 ### Tareas recurrentes semanales sin contexto
 
 No existe todavía un criterio específico `tieneContexto`. Puede buscarse la recurrencia:
@@ -298,10 +331,6 @@ La consulta se aplica sobre la vista abierta:
 - En **Archivadas** o **Papelera**, busca dentro de esas vistas.
 - Un Filtro personalizado guardado se abre sobre **Todas**, es decir, sobre las tareas activas.
 - Para incluir completadas en una vista activa, debe estar activada la opción **Mostrar completadas**.
-
-## Funciones todavía no disponibles
-
-La aplicación aún no permite agregar adjuntos. Por ese motivo, la búsqueda avanzada no incluye criterios de adjuntos. Se incorporarán cuando esa funcionalidad exista realmente.
 
 ## Guardar un filtro personalizado
 
