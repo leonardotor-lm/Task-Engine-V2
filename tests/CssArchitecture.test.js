@@ -34,7 +34,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles.css",
             "attachments.css",
             "waiting.css",
-            "styles/task-interface.css"
+            "styles/task-interface.css",
+            "styles/task-editor-desktop.css"
         ]
     );
 
@@ -56,6 +57,35 @@ test("la hoja consolidada conserva los tres bloques funcionales", async () => {
     assert.match(styles, /\.taskContextToolbar\s*\{/);
     assert.match(styles, /\.sidebar \.sidebarUnifiedGroup/);
     assert.match(styles, /\.mobileFloatingTaskButton\s*\{/);
+
+    const withoutComments = styles.replace(
+        /\/\*[\s\S]*?\*\//g,
+        ""
+    );
+    const openingBraces =
+        withoutComments.match(/\{/g)?.length ?? 0;
+    const closingBraces =
+        withoutComments.match(/\}/g)?.length ?? 0;
+
+    assert.equal(openingBraces, closingBraces);
+
+});
+
+test("la hoja del editor conserva el alcance exclusivo de escritorio", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/task-editor-desktop.css"),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /@media\s*\(min-width:\s*761px\)/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorLayout/
+    );
 
     const withoutComments = styles.replace(
         /\/\*[\s\S]*?\*\//g,
