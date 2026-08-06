@@ -1,0 +1,300 @@
+@media (min-width: 761px) {
+
+    .desktopTaskEditorLayout {
+        width: min(
+            560px,
+            calc(100vw - 220px)
+        );
+        padding:
+            0
+            20px
+            20px;
+    }
+
+    .desktopTaskEditorLayout
+        .taskEditorHeader {
+        top: 0;
+        margin:
+            0
+            -20px
+            18px;
+        padding:
+            14px
+            20px;
+    }
+
+    .desktopTaskEditorLayout
+        .taskEditorHeader h3 {
+        font-size: 15px;
+        letter-spacing: 0.01em;
+    }
+
+    .desktopTaskEditorLayout
+        .taskParentContext {
+        margin:
+            0
+            0
+            12px;
+    }
+
+    .desktopTaskEditorContextBar {
+        display: grid;
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+        gap: 10px;
+        margin-bottom: 16px;
+        padding: 12px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface-subtle);
+    }
+
+    .desktopTaskEditorContextField {
+        min-width: 0;
+    }
+
+    .desktopTaskEditorContextField label,
+    .desktopTaskEditorProperty > label,
+    .desktopTaskEditorMainField > label {
+        display: block;
+        margin:
+            0
+            0
+            5px;
+        color: var(--color-text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .desktopTaskEditorContextField select,
+    .desktopTaskEditorProperty > input,
+    .desktopTaskEditorProperty > select,
+    .desktopTaskEditorMainField > input,
+    .desktopTaskEditorMainField > textarea {
+        box-sizing: border-box;
+        width: 100%;
+        border: 1px solid var(--color-border-strong);
+        border-radius: 7px;
+        background: var(--color-surface);
+        color: var(--color-text);
+        font: inherit;
+    }
+
+    .desktopTaskEditorContextField select,
+    .desktopTaskEditorProperty > input,
+    .desktopTaskEditorProperty > select {
+        min-height: 38px;
+        padding:
+            7px
+            9px;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorPrimary {
+        margin-bottom: 10px;
+        border-bottom: 0;
+    }
+
+    .desktopTaskEditorPrimary
+        > summary {
+        display: none;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorPrimary
+        > .editorSectionBody {
+        display: block;
+        padding:
+            0
+            0
+            12px;
+    }
+
+    .desktopTaskEditorMainFields {
+        display: grid;
+        gap: 14px;
+    }
+
+    .desktopTaskEditorTitleField
+        #taskTitleEdit {
+        min-height: 48px;
+        padding:
+            10px
+            12px;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .desktopTaskEditorDescriptionField
+        #taskDescriptionEdit {
+        min-height: 126px;
+        padding:
+            11px
+            12px;
+        resize: vertical;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .desktopTaskEditorProperties {
+        display: grid;
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .desktopTaskEditorProperty {
+        min-width: 0;
+    }
+
+    .desktopTaskEditorWaitingProperty,
+    .desktopTaskEditorTagsProperty {
+        grid-column: 1 / -1;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorTagsProperty {
+        margin: 0;
+        padding: 10px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface-subtle);
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorTagsProperty
+        > legend {
+        padding:
+            0
+            4px;
+        color: var(--color-text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorTagsProperty
+        .searchableMultiSelectHeader {
+        margin-bottom: 2px;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorWaitingProperty {
+        margin: 0;
+        padding: 10px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface-subtle);
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorWaitingProperty
+        .waitingTaskHint {
+        margin-bottom: 0;
+    }
+
+    .desktopTaskEditorOrganization,
+    .desktopTaskEditorPlanning,
+    .desktopTaskEditorAttachments,
+    .desktopTaskEditorSubtasks {
+        margin-bottom: 9px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface);
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorOrganization
+        > summary,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorPlanning
+        > summary,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorAttachments
+        > summary,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorSubtasks
+        > summary {
+        min-height: 40px;
+        box-sizing: border-box;
+        padding:
+            8px
+            10px;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorOrganization
+        > .editorSectionBody,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorPlanning
+        > .editorSectionBody,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorAttachments
+        > .editorSectionBody,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorSubtasks
+        > .editorSectionBody {
+        padding:
+            2px
+            10px
+            12px;
+    }
+
+    .desktopTaskEditorLayout > hr {
+        margin:
+            12px
+            0
+            10px;
+    }
+
+    .desktopTaskEditorLayout
+        .taskEditorActions {
+        display: grid;
+        gap: 8px;
+    }
+
+    .desktopTaskEditorPrimaryActions,
+    .desktopTaskEditorAdministrativeActions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .desktopTaskEditorPrimaryActions
+        #saveTask {
+        min-width: 150px;
+        margin-left: auto;
+    }
+
+    .desktopTaskEditorAdministrativeActions {
+        padding-top: 9px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .desktopTaskEditorAdministrativeActions
+        #deleteTask {
+        margin-left: auto;
+    }
+
+    .desktopTaskEditorLayout
+        input:focus,
+    .desktopTaskEditorLayout
+        select:focus,
+    .desktopTaskEditorLayout
+        textarea:focus {
+        border-color: var(--color-accent);
+        outline: 2px solid var(--color-accent-muted);
+        outline-offset: 0;
+    }
+
+}
