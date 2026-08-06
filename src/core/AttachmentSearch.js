@@ -6,11 +6,17 @@ import {
 import { normalizeSearchText } from "./TaskSearch.js";
 
 const FIELD_PATTERN =
-    /(^|[\s(])((?:hasattachments|tieneadjuntos|attachmentcontains|adjuntocontiene|attachment|adjunto))\s*:\s*("[^"]*"|'[^']*'|[^\s()]+)/gi;
+    /(^|[\s(])((?:hasattachments|tieneadjuntos|attachmentcontains|adjuntocontiene|attachment|adjunto|iswaiting|enespera|waiting))\s*:\s*("[^"]*"|'[^']*'|[^\s()]+)/gi;
 
-const BOOLEAN_FIELDS = new Set([
+const ATTACHMENT_BOOLEAN_FIELDS = new Set([
     "hasattachments",
     "tieneadjuntos"
+]);
+
+const WAITING_FIELDS = new Set([
+    "iswaiting",
+    "enespera",
+    "waiting"
 ]);
 
 function unquote(value) {
@@ -96,12 +102,19 @@ export function compileAttachmentSearch(query = "") {
                 normalizeSearchText(field);
             const value = unquote(rawValue);
             const sentinel =
-                `__task_attachment_${index}__`;
+                `__task_extension_${index}__`;
 
             index += 1;
 
             if (
-                BOOLEAN_FIELDS.has(normalizedField) &&
+                (
+                    ATTACHMENT_BOOLEAN_FIELDS.has(
+                        normalizedField
+                    ) ||
+                    WAITING_FIELDS.has(
+                        normalizedField
+                    )
+                ) &&
                 parseBoolean(value) === null
             ) {
                 throw new AdvancedSearchSyntaxError(
@@ -109,13 +122,24 @@ export function compileAttachmentSearch(query = "") {
                 );
             }
 
-            criteria.set(sentinel, {
-                type: "ATTACHMENT",
-                field: BOOLEAN_FIELDS.has(normalizedField)
-                    ? "hasAttachments"
-                    : "attachmentContains",
-                value
-            });
+            if (WAITING_FIELDS.has(normalizedField)) {
+                criteria.set(sentinel, {
+                    type: "WAITING",
+                    field: "isWaiting",
+                    value
+                });
+            } else {
+                criteria.set(sentinel, {
+                    type: "ATTACHMENT",
+                    field:
+                        ATTACHMENT_BOOLEAN_FIELDS.has(
+                            normalizedField
+                        )
+                            ? "hasAttachments"
+                            : "attachmentContains",
+                    value
+                });
+            }
 
             return `${prefix}title:"${sentinel}"`;
 
@@ -176,6 +200,14 @@ export function matchesAttachmentSearch(
                 expression.expression,
                 context
             );
+
+        case "WAITING": {
+            const expected = parseBoolean(
+                expression.value
+            );
+            return expected !== null &&
+                Boolean(task.isWaiting) === expected;
+        }
 
         case "ATTACHMENT": {
 
