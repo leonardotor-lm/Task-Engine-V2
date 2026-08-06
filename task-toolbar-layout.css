@@ -47,6 +47,12 @@
     border-top: 1px solid var(--color-border);
 }
 
+.sidebar .sidebarAreaGroup.sidebarUnifiedGroup {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
 .sidebar .sidebarUnifiedGroup > summary {
     display: flex !important;
     visibility: visible !important;
