@@ -1,7 +1,3 @@
-import {
-    createSyncFingerprint
-} from "./SyncFingerprint.js";
-
 export const SyncReconnectionAction =
     Object.freeze({
         IDENTICAL: "IDENTICAL",
@@ -19,6 +15,20 @@ const COLLECTIONS = [
     "goals"
 ];
 
+function normalizeEntityCollection(value) {
+
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return [...value].sort((first, second) =>
+        String(first?.id ?? "").localeCompare(
+            String(second?.id ?? "")
+        )
+    );
+
+}
+
 function normalizeForComparison(backup) {
 
     if (backup === null) {
@@ -33,29 +43,56 @@ function normalizeForComparison(backup) {
         );
     }
 
+    const normalizedData = {};
+
+    for (const collection of COLLECTIONS) {
+        normalizedData[collection] =
+            normalizeEntityCollection(
+                data[collection]
+            );
+    }
+
+    normalizedData.taskSortPreferences =
+        data.taskSortPreferences &&
+        typeof data.taskSortPreferences ===
+            "object" &&
+        !Array.isArray(
+            data.taskSortPreferences
+        )
+            ? data.taskSortPreferences
+            : {};
+
     return {
-        ...backup,
-        data: {
-            ...data,
-            customFilters:
-                Array.isArray(data.customFilters)
-                    ? data.customFilters
-                    : [],
-            goals:
-                Array.isArray(data.goals)
-                    ? data.goals
-                    : [],
-            taskSortPreferences:
-                data.taskSortPreferences &&
-                typeof data.taskSortPreferences ===
-                    "object" &&
-                !Array.isArray(
-                    data.taskSortPreferences
-                )
-                    ? data.taskSortPreferences
-                    : {}
-        }
+        format: backup.format,
+        version: backup.version,
+        data: normalizedData
     };
+
+}
+
+function sortObjectKeys(value) {
+
+    if (Array.isArray(value)) {
+        return value.map(sortObjectKeys);
+    }
+
+    if (
+        value === null ||
+        typeof value !== "object"
+    ) {
+        return value;
+    }
+
+    return Object.fromEntries(
+        Object.keys(value)
+            .sort((first, second) =>
+                first.localeCompare(second)
+            )
+            .map(key => [
+                key,
+                sortObjectKeys(value[key])
+            ])
+    );
 
 }
 
@@ -72,7 +109,6 @@ export function isSyncBackupEmpty(backup) {
     const collectionsEmpty =
         COLLECTIONS.every(
             collection =>
-                Array.isArray(data[collection]) &&
                 data[collection].length === 0
         );
 
@@ -89,22 +125,16 @@ export function createComparableSyncFingerprint(
     backup
 ) {
 
-    if (backup === null) {
-        return createSyncFingerprint({
-            data: {
-                tasks: [],
-                areas: [],
-                contexts: [],
-                tags: [],
-                customFilters: [],
-                goals: [],
-                taskSortPreferences: {}
-            }
-        });
-    }
+    const normalized = backup === null
+        ? normalizeForComparison({
+            format: "task-engine-v2-backup",
+            version: 1,
+            data: {}
+        })
+        : normalizeForComparison(backup);
 
-    return createSyncFingerprint(
-        normalizeForComparison(backup)
+    return JSON.stringify(
+        sortObjectKeys(normalized)
     );
 
 }
