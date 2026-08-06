@@ -50,6 +50,13 @@ export class Task {
             data.attachments ?? []
         );
 
+        this.isWaiting =
+            Boolean(data.isWaiting) &&
+            [
+                TaskStatus.INBOX,
+                TaskStatus.PENDING
+            ].includes(this.status);
+
         this.parentTaskId = data.parentTaskId ?? null;
 
         this.recurrenceId = data.recurrenceId ?? null;
@@ -309,6 +316,28 @@ export class Task {
                 );
         }
 
+        if (data.isWaiting !== undefined) {
+
+            const nextIsWaiting =
+                Boolean(data.isWaiting);
+
+            if (
+                nextIsWaiting &&
+                (
+                    this.isCompleted() ||
+                    this.isArchived() ||
+                    this.isDeleted()
+                )
+            ) {
+                throw new Error(
+                    "Sólo una tarea incompleta puede quedar en espera."
+                );
+            }
+
+            this.isWaiting = nextIsWaiting;
+
+        }
+
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
 
@@ -430,6 +459,7 @@ export class Task {
         }
 
         this.status = TaskStatus.COMPLETED;
+        this.isWaiting = false;
 
         this.completedAt = new Date().toISOString();
 
@@ -464,6 +494,7 @@ export class Task {
         }
 
         this.status = TaskStatus.ARCHIVED;
+        this.isWaiting = false;
 
         this.touch();
 
@@ -488,6 +519,7 @@ export class Task {
         }
 
         this.status = TaskStatus.DELETED;
+        this.isWaiting = false;
 
         this.touch();
 
@@ -567,6 +599,8 @@ export class Task {
                     ...attachment
                 })
             ),
+
+            isWaiting: this.isWaiting,
 
             parentTaskId: this.parentTaskId,
 

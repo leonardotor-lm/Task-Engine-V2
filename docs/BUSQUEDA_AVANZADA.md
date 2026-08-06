@@ -1,6 +1,6 @@
 # Guía de búsqueda avanzada
 
-La búsqueda avanzada permite encontrar tareas combinando texto, propiedades, fechas, relaciones y adjuntos. Se abre desde la barra lateral con **Búsqueda avanzada**. Los criterios se editan en un panel emergente y, al aplicar una consulta válida, los resultados aparecen en la vista central.
+La búsqueda avanzada permite encontrar tareas combinando texto, propiedades, fechas, relaciones, adjuntos y condiciones de espera. Se abre desde la barra lateral con **Búsqueda avanzada**. Los criterios se editan en un panel emergente y, al aplicar una consulta válida, los resultados aparecen en la vista central.
 
 ## Uso básico
 
@@ -102,6 +102,31 @@ tieneAdjuntos:si AND NOT adjunto:png
 ```
 
 `adjunto` y `adjuntoContiene` buscan tanto en el nombre como en el tipo MIME. Por ejemplo, `adjunto:image` encuentra archivos cuyo tipo corresponde a una imagen aunque la palabra no aparezca en el nombre.
+
+## Tareas en espera
+
+| Criterio | Qué busca | Ejemplo |
+|---|---|---|
+| `enEspera` | Tareas marcadas o no marcadas como En espera | `enEspera:si` |
+
+También se admiten los alias en inglés `isWaiting` y `waiting`.
+
+Ejemplos:
+
+```text
+enEspera:si
+enEspera:no
+isWaiting:true
+```
+
+El criterio puede combinarse con los demás campos:
+
+```text
+enEspera:si AND area:"Trabajo docente"
+enEspera:si AND NOT adjunto:pdf
+```
+
+Las tareas en espera están ocultas en las listas habituales. Al usar explícitamente `enEspera`, la búsqueda avanzada las incluye en el universo de búsqueda para que puedan encontrarse desde **Todas** y desde los filtros personalizados.
 
 ## Prioridad y estado
 
@@ -312,6 +337,12 @@ esSubtarea:si AND fechaDentro:"7 dias"
 tieneAdjuntos:si AND adjunto:pdf
 ```
 
+### Tareas en espera de un área
+
+```text
+enEspera:si AND area:"Trabajo docente"
+```
+
 ### Tareas recurrentes semanales sin contexto
 
 No existe todavía un criterio específico `tieneContexto`. Puede buscarse la recurrencia:
@@ -329,7 +360,8 @@ La consulta se aplica sobre la vista abierta:
 - En **Hoy**, busca dentro de Hoy.
 - En un **Área**, busca dentro de esa área.
 - En **Archivadas** o **Papelera**, busca dentro de esas vistas.
-- Un Filtro personalizado guardado se abre sobre **Todas**, es decir, sobre las tareas activas.
+- Las tareas en espera permanecen ocultas salvo que la consulta incluya explícitamente `enEspera`.
+- Un Filtro personalizado guardado se abre sobre **Todas**, es decir, sobre las tareas activas; si contiene `enEspera`, también puede recuperar las tareas ocultas por esa marca.
 - Para incluir completadas en una vista activa, debe estar activada la opción **Mostrar completadas**.
 
 ## Guardar un filtro personalizado
