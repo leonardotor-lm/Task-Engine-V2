@@ -6,14 +6,31 @@ export const SyncReconnectionAction =
         CONFLICT: "CONFLICT"
     });
 
-const COLLECTIONS = [
+const CORE_COLLECTIONS = [
     "tasks",
     "areas",
     "contexts",
-    "tags",
+    "tags"
+];
+
+const OPTIONAL_COLLECTIONS = [
     "customFilters",
     "goals"
 ];
+
+const COLLECTIONS = [
+    ...CORE_COLLECTIONS,
+    ...OPTIONAL_COLLECTIONS
+];
+
+function hasOwn(object, property) {
+
+    return Object.prototype.hasOwnProperty.call(
+        object ?? {},
+        property
+    );
+
+}
 
 function normalizeEntityCollection(value) {
 
@@ -26,6 +43,16 @@ function normalizeEntityCollection(value) {
             String(second?.id ?? "")
         )
     );
+
+}
+
+function normalizePreferences(value) {
+
+    return value &&
+        typeof value === "object" &&
+        !Array.isArray(value)
+        ? value
+        : {};
 
 }
 
@@ -53,14 +80,9 @@ function normalizeForComparison(backup) {
     }
 
     normalizedData.taskSortPreferences =
-        data.taskSortPreferences &&
-        typeof data.taskSortPreferences ===
-            "object" &&
-        !Array.isArray(
+        normalizePreferences(
             data.taskSortPreferences
-        )
-            ? data.taskSortPreferences
-            : {};
+        );
 
     return {
         format: backup.format,
@@ -93,6 +115,146 @@ function sortObjectKeys(value) {
                 sortObjectKeys(value[key])
             ])
     );
+
+}
+
+function stableStringify(value) {
+
+    return JSON.stringify(
+        sortObjectKeys(value)
+    );
+
+}
+
+function valuesMatch(first, second) {
+
+    return stableStringify(first) ===
+        stableStringify(second);
+
+}
+
+function optionalValueIsEmpty(value) {
+
+    if (Array.isArray(value)) {
+        return value.length === 0;
+    }
+
+    return Object.keys(value ?? {}).length === 0;
+
+}
+
+function getLegacyExtensionDirection({
+    localBackup,
+    remoteBackup
+}) {
+
+    const localData = localBackup?.data;
+    const remoteData = remoteBackup?.data;
+
+    if (!localData || !remoteData) {
+        return null;
+    }
+
+    if (
+        localBackup.format !== remoteBackup.format ||
+        localBackup.version !== remoteBackup.version
+    ) {
+        return null;
+    }
+
+    for (const collection of CORE_COLLECTIONS) {
+
+        if (
+            !valuesMatch(
+                normalizeEntityCollection(
+                    localData[collection]
+                ),
+                normalizeEntityCollection(
+                    remoteData[collection]
+                )
+            )
+        ) {
+            return null;
+        }
+
+    }
+
+    let direction = null;
+
+    const compareOptionalValue = (
+        property,
+        normalize
+    ) => {
+
+        const localHas =
+            hasOwn(localData, property);
+        const remoteHas =
+            hasOwn(remoteData, property);
+        const localValue = normalize(
+            localData[property]
+        );
+        const remoteValue = normalize(
+            remoteData[property]
+        );
+
+        if (localHas && remoteHas) {
+            return valuesMatch(
+                localValue,
+                remoteValue
+            );
+        }
+
+        if (!localHas && !remoteHas) {
+            return true;
+        }
+
+        const presentValue = localHas
+            ? localValue
+            : remoteValue;
+
+        if (optionalValueIsEmpty(presentValue)) {
+            return true;
+        }
+
+        const nextDirection = localHas
+            ? SyncReconnectionAction.PUSH
+            : SyncReconnectionAction.PULL;
+
+        if (
+            direction &&
+            direction !== nextDirection
+        ) {
+            return false;
+        }
+
+        direction = nextDirection;
+        return true;
+
+    };
+
+    for (const collection of OPTIONAL_COLLECTIONS) {
+
+        if (
+            !compareOptionalValue(
+                collection,
+                normalizeEntityCollection
+            )
+        ) {
+            return null;
+        }
+
+    }
+
+    if (
+        !compareOptionalValue(
+            "taskSortPreferences",
+            normalizePreferences
+        )
+    ) {
+        return null;
+    }
+
+    return direction;
 
 }
 
@@ -133,9 +295,7 @@ export function createComparableSyncFingerprint(
         })
         : normalizeForComparison(backup);
 
-    return JSON.stringify(
-        sortObjectKeys(normalized)
-    );
+    return stableStringify(normalized);
 
 }
 
@@ -170,6 +330,16 @@ export function getSyncReconnectionAction({
         )
     ) {
         return SyncReconnectionAction.IDENTICAL;
+    }
+
+    const legacyDirection =
+        getLegacyExtensionDirection({
+            localBackup,
+            remoteBackup
+        });
+
+    if (legacyDirection) {
+        return legacyDirection;
     }
 
     return SyncReconnectionAction.CONFLICT;
