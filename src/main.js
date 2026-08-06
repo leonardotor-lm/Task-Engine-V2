@@ -23,6 +23,9 @@ import {
 import {
     DirectTaskCreationController
 } from "./ui/DirectTaskCreationController.js";
+import {
+    TaskSortPreferencesController
+} from "./ui/TaskSortPreferencesController.js";
 
 const app = new App();
 const attachmentController =
@@ -39,6 +42,8 @@ const mobileMainLayoutController =
     new MobileMainLayoutController(app);
 const directTaskCreationController =
     new DirectTaskCreationController(app);
+const taskSortPreferencesController =
+    new TaskSortPreferencesController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -48,4 +53,5 @@ sidebarLayoutController.start();
 taskFiltersDialogController.start();
 mobileMainLayoutController.start();
 directTaskCreationController.start();
+taskSortPreferencesController.start();
 app.start();
