@@ -32,15 +32,11 @@ test("desconectar conserva el estado y ofrece una eliminación explícita del v�
 
     assert.match(
         configSource,
-        /clear\(\)[\s\S]*?removeItem\(SYNC_URL_KEY\)[\s\S]*?removeItem\(SYNC_TOKEN_KEY\)/
-    );
-    assert.doesNotMatch(
-        configSource,
-        /clear\(\)[\s\S]*?clearSyncState\(\)[\s\S]*?getRevision\(\)/
+        /clear\(\)\s*\{\s*this\.storage\.removeItem\(SYNC_URL_KEY\);\s*this\.storage\.removeItem\(SYNC_TOKEN_KEY\);\s*\}/
     );
     assert.match(
         configSource,
-        /forgetEndpoint\(\)[\s\S]*?clearSyncState\(\)/
+        /forgetEndpoint\(\)[\s\S]*?removeItem\([\s\S]*?SYNC_ENDPOINT_KEY[\s\S]*?\);[\s\S]*?clearSyncState\(\);/
     );
 
 });
