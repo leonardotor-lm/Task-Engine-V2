@@ -103,7 +103,7 @@ export class SmartSyncReconnectionController {
                 error
             );
 
-            throw error;
+            return null;
 
         } finally {
 
