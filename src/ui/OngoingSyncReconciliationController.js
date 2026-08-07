@@ -8,6 +8,9 @@ import {
     createThreeWayMergedSyncBackup
 } from "../core/SyncThreeWayMerger.js";
 import {
+    createConservativeMigrationSyncBackup
+} from "../core/SyncMigrationMerger.js";
+import {
     createSyncConflictDiagnostics
 } from "../core/SyncConflictDiagnostics.js";
 import {
@@ -255,7 +258,10 @@ export class OngoingSyncReconciliationController {
             synchronizedFingerprint ===
                 localFingerprint
         ) {
-            return this.app.syncEngine.pull();
+            return {
+                result: await this.app.syncEngine.pull(),
+                conflicts: []
+            };
         }
 
         if (
@@ -263,26 +269,50 @@ export class OngoingSyncReconciliationController {
             synchronizedFingerprint ===
                 remoteFingerprint
         ) {
-            return this.saveMergedBackup(
-                localBackup,
-                remoteRevision
-            );
+            return {
+                result: await this.saveMergedBackup(
+                    localBackup,
+                    remoteRevision
+                ),
+                conflicts: []
+            };
         }
 
-        const mergedBackup =
+        const safeMergedBackup =
             createSafeMergedSyncBackup({
                 localBackup,
                 remoteBackup
             });
 
-        if (!mergedBackup) {
-            return null;
+        if (safeMergedBackup) {
+            return {
+                result: await this.saveMergedBackup(
+                    safeMergedBackup,
+                    remoteRevision
+                ),
+                conflicts: []
+            };
         }
 
-        return this.saveMergedBackup(
-            mergedBackup,
-            remoteRevision
-        );
+        const migrationMerge =
+            createConservativeMigrationSyncBackup({
+                localBackup,
+                remoteBackup
+            });
+
+        return migrationMerge.backup
+            ? {
+                result: await this.saveMergedBackup(
+                    migrationMerge.backup,
+                    remoteRevision
+                ),
+                conflicts: []
+            }
+            : {
+                result: null,
+                conflicts:
+                    migrationMerge.conflicts
+            };
 
     }
 
@@ -392,12 +422,15 @@ export class OngoingSyncReconciliationController {
 
             } else {
 
-                result =
+                const fallback =
                     await this.resolveWithoutStoredBase({
                         localBackup,
                         remoteBackup,
                         remoteRevision
                     });
+
+                result = fallback.result;
+                conflicts = fallback.conflicts;
 
             }
 
