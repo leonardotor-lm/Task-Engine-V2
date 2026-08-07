@@ -36,7 +36,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "waiting.css",
             "styles/task-interface.css",
             "styles/task-editor-desktop.css",
-            "styles/task-editor-popovers.css"
+            "styles/task-editor-popovers.css",
+            "styles/task-editor-mobile.css"
         ]
     );
 
@@ -167,6 +168,55 @@ test("los popovers del editor quedan contenidos y muestran selecciones legibles"
     assert.match(
         styles,
         /#postponeDate[\s\S]*min-width:\s*142px\s*!important/
+    );
+
+    const withoutComments = styles.replace(
+        /\/\*[\s\S]*?\*\//g,
+        ""
+    );
+    const openingBraces =
+        withoutComments.match(/\{/g)?.length ?? 0;
+    const closingBraces =
+        withoutComments.match(/\}/g)?.length ?? 0;
+
+    assert.equal(openingBraces, closingBraces);
+
+});
+
+test("la hoja móvil conserva alcance, jerarquía y paneles contenidos", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/task-editor-mobile.css"),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /@media\s*\(max-width:\s*760px\)/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorLayout/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorProperties[\s\S]*repeat\(2, minmax\(0, 1fr\)\)/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorToolGrid[\s\S]*repeat\(2, minmax\(0, 1fr\)\)/
+    );
+    assert.match(
+        styles,
+        /details\[open\] > \.mobileTaskEditorPanel[\s\S]*position:\s*fixed/
+    );
+    assert.match(
+        styles,
+        /max-height:\s*min\(72dvh, 560px\)/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorHiddenSave/
     );
 
     const withoutComments = styles.replace(
