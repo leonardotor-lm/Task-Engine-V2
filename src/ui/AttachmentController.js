@@ -181,6 +181,10 @@ export class AttachmentController {
 
     }
 
+    isTaskCreationDraft(task) {
+        return Boolean(task?.isTaskCreationDraft);
+    }
+
     renderSection(state) {
 
         const task = state.selectedTask;
@@ -191,6 +195,7 @@ export class AttachmentController {
         const attachments = Array.isArray(task.attachments)
             ? task.attachments
             : [];
+        const draft = this.isTaskCreationDraft(task);
         const editable =
             !task.isCompleted() &&
             !task.isArchived() &&
@@ -200,7 +205,19 @@ export class AttachmentController {
 
         section.className =
             "editorSection editorAttachmentsSection";
+
+        if (
+            drawer.classList.contains(
+                "desktopTaskEditorLayout"
+            )
+        ) {
+            section.classList.add(
+                "desktopTaskEditorAttachments"
+            );
+        }
+
         section.dataset.mobileCollapsed = "true";
+        section.open = draft;
         section.innerHTML = `
             <summary>Adjuntos (${attachments.length})</summary>
             <div class="editorSectionBody attachmentSectionBody">
@@ -225,7 +242,9 @@ export class AttachmentController {
                             </li>`).join("")}
                     </ul>`
                     : `<p class="attachmentEmptyMessage">
-                        Esta tarea no tiene archivos adjuntos.
+                        ${draft
+                            ? "Podés agregar archivos antes de crear la tarea."
+                            : "Esta tarea no tiene archivos adjuntos."}
                     </p>`}
 
                 ${!configured ? `
@@ -281,7 +300,12 @@ export class AttachmentController {
 
         if (!files.length) return;
 
-        if (this.app.mainView.hasUnsavedTaskEdit(task)) {
+        const draft = this.isTaskCreationDraft(task);
+
+        if (
+            !draft &&
+            this.app.mainView.hasUnsavedTaskEdit(task)
+        ) {
             await Dialog.alert(
                 "Guardá los cambios de la tarea antes de adjuntar archivos.",
                 { title: "Cambios sin guardar" }
@@ -298,6 +322,15 @@ export class AttachmentController {
                 { title: "Límite de adjuntos" }
             );
             return;
+        }
+
+        let draftChanged = false;
+
+        if (draft) {
+            this.setDraftAttachmentBusy(
+                task,
+                true
+            );
         }
 
         try {
@@ -322,29 +355,61 @@ export class AttachmentController {
                             "application/octet-stream",
                         base64Data: await this.fileToBase64(file)
                     });
-
-                this.app.taskService.addTaskAttachment(
-                    task.id,
-                    normalizeAttachment(response.attachment)
+                const attachment = normalizeAttachment(
+                    response.attachment
                 );
+
+                if (draft) {
+                    task.addAttachment(attachment);
+                    draftChanged = true;
+                } else {
+                    this.app.taskService.addTaskAttachment(
+                        task.id,
+                        attachment
+                    );
+                }
 
             }
 
-            this.app.selectedTask = this.app.taskService
-                .getTaskById(task.id);
-            this.app.render();
+            if (draft) {
+                this.refreshSection(task);
+            } else {
+                this.app.selectedTask = this.app.taskService
+                    .getTaskById(task.id);
+                this.app.render();
+            }
 
         } catch (error) {
+
+            if (draft && draftChanged) {
+                this.refreshSection(task);
+            }
+
             await Dialog.alert(error.message, {
                 title: "No se pudo adjuntar"
             });
+
+        } finally {
+
+            if (draft) {
+                this.setDraftAttachmentBusy(
+                    task,
+                    false
+                );
+            }
+
         }
 
     }
 
     async remove(task, attachmentId, section) {
 
-        if (this.app.mainView.hasUnsavedTaskEdit(task)) {
+        const draft = this.isTaskCreationDraft(task);
+
+        if (
+            !draft &&
+            this.app.mainView.hasUnsavedTaskEdit(task)
+        ) {
             await Dialog.alert(
                 "Guardá los cambios de la tarea antes de quitar un adjunto.",
                 { title: "Cambios sin guardar" }
@@ -376,18 +441,62 @@ export class AttachmentController {
                 driveFileId: attachment.driveFileId
             });
 
-            this.app.taskService.removeTaskAttachment(
-                task.id,
-                attachment.id
-            );
-            this.app.selectedTask = this.app.taskService
-                .getTaskById(task.id);
-            this.app.render();
+            if (draft) {
+                task.removeAttachment(
+                    attachment.id
+                );
+                this.refreshSection(task);
+            } else {
+                this.app.taskService.removeTaskAttachment(
+                    task.id,
+                    attachment.id
+                );
+                this.app.selectedTask = this.app.taskService
+                    .getTaskById(task.id);
+                this.app.render();
+            }
         } catch (error) {
             await Dialog.alert(error.message, {
                 title: "No se pudo quitar"
             });
         }
+
+    }
+
+    refreshSection(task) {
+
+        document.querySelector(
+            ".editorAttachmentsSection"
+        )?.remove();
+
+        this.renderSection({
+            selectedTask: task
+        });
+
+    }
+
+    setDraftAttachmentBusy(
+        task,
+        inProgress
+    ) {
+
+        task.attachmentUploadInProgress =
+            Boolean(inProgress);
+
+        [
+            "saveTask",
+            "saveTaskMobile",
+            "closeTaskEditor",
+            "taskAttachmentFiles"
+        ].forEach(id => {
+            const control =
+                document.getElementById(id);
+
+            if (control) {
+                control.disabled =
+                    Boolean(inProgress);
+            }
+        });
 
     }
 
