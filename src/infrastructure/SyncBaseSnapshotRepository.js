@@ -9,7 +9,7 @@ export class SyncBaseSnapshotRepository {
 
     }
 
-    get() {
+    get(endpoint = "") {
 
         const json =
             this.storage?.getItem(STORAGE_KEY);
@@ -17,15 +17,25 @@ export class SyncBaseSnapshotRepository {
         if (!json) return null;
 
         try {
-            const backup = JSON.parse(json);
-            return backup?.data ? backup : null;
+
+            const state = JSON.parse(json);
+
+            if (
+                !state?.backup?.data ||
+                (endpoint && state.endpoint !== endpoint)
+            ) {
+                return null;
+            }
+
+            return state.backup;
+
         } catch {
             return null;
         }
 
     }
 
-    set(backup) {
+    set(backup, endpoint = "") {
 
         if (!backup?.data) {
             throw new Error(
@@ -35,7 +45,10 @@ export class SyncBaseSnapshotRepository {
 
         this.storage?.setItem(
             STORAGE_KEY,
-            JSON.stringify(backup)
+            JSON.stringify({
+                endpoint,
+                backup
+            })
         );
 
         return backup;
