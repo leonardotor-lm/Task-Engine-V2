@@ -118,6 +118,10 @@ test("los popovers del editor quedan contenidos y muestran selecciones legibles"
     );
     assert.match(
         styles,
+        /\.taskMoveManager\[open\][\s\S]*> \.desktopTaskEditorPopover/
+    );
+    assert.match(
+        styles,
         /right:\s*0\s*!important/
     );
     assert.match(
@@ -127,6 +131,14 @@ test("los popovers del editor quedan contenidos y muestran selecciones legibles"
     assert.match(
         styles,
         /max-width:\s*calc\(100vw\s*-\s*40px\)/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorMoveTool[\s\S]*\.taskMoveManagerBody[\s\S]*width:\s*100%/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorMoveTool[\s\S]*button:not\(\.desktopTaskEditorPopoverClose\)[\s\S]*max-width:\s*100%\s*!important/
     );
     assert.match(
         styles,
@@ -150,19 +162,11 @@ test("los popovers del editor quedan contenidos y muestran selecciones legibles"
     );
     assert.match(
         styles,
-        /\.postponeControls[\s\S]*> div[\s\S]*display:\s*grid/
-    );
-    assert.match(
-        styles,
-        /minmax\(142px,\s*0\.95fr\)/
+        /\.postponeControls[\s\S]*minmax\(142px, 0\.95fr\)/
     );
     assert.match(
         styles,
         /#postponeDate[\s\S]*min-width:\s*142px\s*!important/
-    );
-    assert.match(
-        styles,
-        /#postponeTask[\s\S]*min-width:\s*84px\s*!important/
     );
 
     const withoutComments = styles.replace(
