@@ -1,0 +1,66 @@
+@media (min-width: 761px) {
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool {
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool[open]
+        > .desktopTaskEditorPopover {
+        right: 0 !important;
+        left: auto !important;
+        width: min(
+            286px,
+            calc(100vw - 40px)
+        ) !important;
+        min-width: 0;
+        max-width: calc(100vw - 40px) !important;
+        overflow-x: hidden;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .desktopTaskEditorPopover,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .desktopTaskEditorPopover * {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .recurrenceAdvancedFields,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .recurrenceIntervalControl {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .recurrenceIntervalControl {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto !important;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .recurrenceIntervalControl
+        input {
+        width: 100% !important;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .recurrenceIntervalControl
+        span {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+}
