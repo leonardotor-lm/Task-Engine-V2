@@ -600,6 +600,13 @@
         gap: 5px;
     }
 
+    .mobileTaskEditorLayout
+        .taskEditorActions #saveTask {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .mobileTaskEditorFooter button {
         box-sizing: border-box;
         min-height: 40px;
