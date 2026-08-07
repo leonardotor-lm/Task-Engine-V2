@@ -122,4 +122,53 @@
         opacity: 0.65;
     }
 
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .postponeControls {
+        display: grid;
+        gap: 5px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .postponeControls
+        > div {
+        display: grid;
+        grid-template-columns:
+            minmax(142px, 0.95fr)
+            minmax(84px, 1.05fr);
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .postponeControls
+        #postponeDate {
+        width: 100% !important;
+        min-width: 142px !important;
+        max-width: none !important;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .postponeControls
+        #postponeDate::-webkit-calendar-picker-indicator {
+        margin: 0;
+        opacity: 1;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorRecurrenceTool
+        .postponeControls
+        #postponeTask {
+        width: 100% !important;
+        min-width: 84px !important;
+        max-width: none !important;
+    }
+
 }
