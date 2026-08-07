@@ -679,12 +679,14 @@ export class MobileTaskEditorLayoutController {
             "mobileTaskEditorFooter"
         );
 
-        const saveButton =
-            document.getElementById("saveTask");
+        const mobileSaveButton =
+            document.getElementById("saveTaskMobile");
 
-        if (saveButton) {
-            saveButton.classList.add(
-                "mobileTaskEditorHiddenSave"
+        if (mobileSaveButton) {
+            mobileSaveButton.hidden = true;
+            mobileSaveButton.setAttribute(
+                "aria-hidden",
+                "true"
             );
         }
 
@@ -712,7 +714,8 @@ export class MobileTaskEditorLayoutController {
 
         [
             "reopenTask",
-            "toggleTask"
+            "toggleTask",
+            "saveTask"
         ].forEach(id => {
             const button = document.getElementById(id);
 
@@ -759,19 +762,20 @@ export class MobileTaskEditorLayoutController {
             )
         );
 
-        panels().forEach(panel => {
-            panel.addEventListener(
-                "toggle",
-                () => {
-                    if (!panel.open) return;
-
-                    panels().forEach(other => {
-                        if (other !== panel) {
-                            other.open = false;
-                        }
-                    });
+        const closeAll = except => {
+            panels().forEach(panel => {
+                if (panel !== except) {
+                    panel.open = false;
                 }
-            );
+            });
+        };
+
+        panels().forEach(panel => {
+            panel.addEventListener("toggle", () => {
+                if (panel.open) {
+                    closeAll(panel);
+                }
+            });
         });
 
         const keydown = event => {
@@ -784,7 +788,7 @@ export class MobileTaskEditorLayoutController {
             if (!openPanel) return;
 
             event.preventDefault();
-            event.stopImmediatePropagation();
+            event.stopPropagation();
             openPanel.open = false;
             openPanel.querySelector(
                 ":scope > summary"
