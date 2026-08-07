@@ -80,6 +80,11 @@ const OPTIONAL_SERIALIZERS = {
         ).toJSON()
 };
 
+const OPTIONAL_PREFERENCES = [
+    "taskSortPreferences",
+    "taskFilterPreferences"
+];
+
 function hasOwn(object, property) {
 
     return Object.prototype.hasOwnProperty.call(
@@ -150,14 +155,12 @@ export function canonicalizeSyncBackup(backup) {
 
     }
 
-    if (
-        hasOwn(
-            sourceData,
-            "taskSortPreferences"
-        )
-    ) {
-        data.taskSortPreferences =
-            sourceData.taskSortPreferences;
+    for (const property of OPTIONAL_PREFERENCES) {
+
+        if (hasOwn(sourceData, property)) {
+            data[property] = sourceData[property];
+        }
+
     }
 
     return {
