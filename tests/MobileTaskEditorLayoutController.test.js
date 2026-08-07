@@ -78,7 +78,11 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
     );
     assert.match(
         controller,
-        /mobileTaskEditorHiddenSave/
+        /mobileSaveButton\.hidden = true/
+    );
+    assert.match(
+        controller,
+        /"saveTask"/
     );
     assert.match(
         styles,
@@ -95,6 +99,10 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
     assert.match(
         styles,
         /\.mobileTaskEditorPanel/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorFooter/
     );
     assert.match(
         styles,
