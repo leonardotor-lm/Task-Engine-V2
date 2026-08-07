@@ -11,6 +11,7 @@ Antes de crear un archivo CSS nuevo, debe comprobarse si el cambio pertenece a u
 - `../styles.css`: hoja global heredada. Se dividirá de forma gradual, sin reescrituras masivas.
 - `task-interface.css`: barra contextual de tareas, distribución de los grupos laterales relacionados y adaptación de la vista principal en celular.
 - `task-editor-desktop.css`: estructura y jerarquía visual específicas del editor de tareas en escritorio. No contiene reglas para celular.
+- `task-editor-popovers.css`: contención y posicionamiento de los paneles flotantes del editor de escritorio para evitar desbordes del viewport.
 - `../attachments.css`: componente funcional de adjuntos.
 - `../waiting.css`: presentación específica del estado En espera.
 
