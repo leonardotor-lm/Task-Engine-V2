@@ -2103,7 +2103,7 @@ export class App {
 
             this.syncLastError =
                 error?.message ||
-                "No se pudo comprobar o descargar la revisión remota.";
+                "No se pudo comprobar la sincronización.";
 
             console.warn(
                 "No se pudo comprobar o descargar la revisión remota.",
