@@ -137,7 +137,7 @@ function mergePreferences(
     const merged = { ...local };
 
     for (
-        const [viewKey, sort] of
+        const [viewKey, value] of
         Object.entries(remote)
     ) {
 
@@ -146,12 +146,15 @@ function mergePreferences(
                 merged,
                 viewKey
             ) &&
-            merged[viewKey] !== sort
+            !valuesMatch(
+                merged[viewKey],
+                value
+            )
         ) {
             return null;
         }
 
-        merged[viewKey] = sort;
+        merged[viewKey] = value;
 
     }
 
@@ -228,17 +231,27 @@ export function createSafeMergedSyncBackup({
 
     }
 
-    const mergedPreferences = mergePreferences(
-        local.data.taskSortPreferences,
-        remote.data.taskSortPreferences
-    );
+    for (
+        const property of [
+            "taskSortPreferences",
+            "taskFilterPreferences"
+        ]
+    ) {
 
-    if (mergedPreferences === null) {
-        return null;
+        const mergedPreferences =
+            mergePreferences(
+                local.data[property],
+                remote.data[property]
+            );
+
+        if (mergedPreferences === null) {
+            return null;
+        }
+
+        mergedData[property] =
+            mergedPreferences;
+
     }
-
-    mergedData.taskSortPreferences =
-        mergedPreferences;
 
     return {
         format: local.format,

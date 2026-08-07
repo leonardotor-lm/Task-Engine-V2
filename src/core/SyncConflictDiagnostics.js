@@ -153,7 +153,11 @@ function normalizePreferences(value) {
 
 }
 
-function comparePreferences(localValue, remoteValue) {
+function comparePreferences(
+    localValue,
+    remoteValue,
+    label
+) {
 
     const local = normalizePreferences(localValue);
     const remote = normalizePreferences(remoteValue);
@@ -161,14 +165,17 @@ function comparePreferences(localValue, remoteValue) {
     const remoteOnly = [];
     const different = [];
 
-    for (const [viewKey, sort] of Object.entries(local)) {
+    for (
+        const [viewKey, value] of
+        Object.entries(local)
+    ) {
 
         if (!(viewKey in remote)) {
             localOnly.push(viewKey);
-        } else if (remote[viewKey] !== sort) {
-            different.push(
-                `${viewKey}: ${sort} / ${remote[viewKey]}`
-            );
+        } else if (
+            !valuesMatch(remote[viewKey], value)
+        ) {
+            different.push(viewKey);
         }
 
     }
@@ -185,19 +192,19 @@ function comparePreferences(localValue, remoteValue) {
 
     if (different.length) {
         details.push(
-            `Órdenes distintos: ${different.slice(0, 5).join(", ")}.`
+            `${label} distintos: ${different.slice(0, 5).join(", ")}.`
         );
     }
 
     if (localOnly.length) {
         details.push(
-            `Órdenes sólo en este dispositivo: ${localOnly.slice(0, 5).join(", ")}.`
+            `${label} sólo en este dispositivo: ${localOnly.slice(0, 5).join(", ")}.`
         );
     }
 
     if (remoteOnly.length) {
         details.push(
-            `Órdenes sólo en la nube: ${remoteOnly.slice(0, 5).join(", ")}.`
+            `${label} sólo en la nube: ${remoteOnly.slice(0, 5).join(", ")}.`
         );
     }
 
@@ -255,7 +262,13 @@ export function createSyncConflictDiagnostics({
     details.push(
         ...comparePreferences(
             local.data.taskSortPreferences,
-            remote.data.taskSortPreferences
+            remote.data.taskSortPreferences,
+            "Órdenes"
+        ),
+        ...comparePreferences(
+            local.data.taskFilterPreferences,
+            remote.data.taskFilterPreferences,
+            "Filtros rápidos"
         )
     );
 
