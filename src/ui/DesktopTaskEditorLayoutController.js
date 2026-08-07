@@ -102,23 +102,22 @@ export class DesktopTaskEditorLayoutController {
             organizationSection
         });
 
-        const tools = this.buildPrimaryContent({
+        const layout = this.buildPrimaryContent({
             primarySection,
             organizationSection
         });
 
-        this.buildMoreTools({
-            primarySection,
+        this.buildToolRow({
+            anchor: layout.primarySurface,
             organizationSection,
             recurrenceSection,
             attachmentsSection,
             subtasksSection,
-            goalsField: tools.goalsField
+            tagsField: layout.tagsField,
+            goalsField: layout.goalsField,
+            moveField: layout.moveField
         });
-        this.groupActions(
-            drawer,
-            tools.moveField
-        );
+        this.groupActions(drawer);
         this.markRemainingSections({
             attachmentsSection,
             subtasksSection
@@ -152,9 +151,9 @@ export class DesktopTaskEditorLayoutController {
             ".waitingTaskHint"
         )?.remove();
 
-        primarySection.querySelector(
+        primarySection.querySelectorAll(
             ":scope > summary"
-        )?.remove();
+        ).forEach(summary => summary.remove());
 
     }
 
@@ -198,9 +197,7 @@ export class DesktopTaskEditorLayoutController {
         });
 
         if (areaField) contextBar.append(areaField);
-        if (contextField) {
-            contextBar.append(contextField);
-        }
+        if (contextField) contextBar.append(contextField);
 
         if (contextBar.childElementCount > 0) {
             primarySection.before(contextBar);
@@ -224,15 +221,21 @@ export class DesktopTaskEditorLayoutController {
 
         if (!primaryBody || !organizationBody) {
             return {
+                primarySurface: primarySection,
+                tagsField: null,
                 goalsField: null,
                 moveField: null
             };
         }
 
-        primarySection.classList.add(
-            "desktopTaskEditorPrimary"
+        const primarySurface =
+            document.createElement("section");
+        primarySurface.className =
+            "desktopTaskEditorPrimary";
+        primarySurface.setAttribute(
+            "aria-label",
+            "Datos de la tarea"
         );
-        primarySection.open = true;
 
         const mainFields =
             document.createElement("div");
@@ -254,9 +257,7 @@ export class DesktopTaskEditorLayoutController {
             });
 
         if (titleField) mainFields.append(titleField);
-        if (descriptionField) {
-            mainFields.append(descriptionField);
-        }
+        if (descriptionField) mainFields.append(descriptionField);
 
         const properties =
             document.createElement("div");
@@ -269,7 +270,7 @@ export class DesktopTaskEditorLayoutController {
 
         [
             ["taskPriority", "Prioridad"],
-            ["taskDueDate", "Fecha"],
+            ["taskDueDate", "Fecha de vencimiento"],
             ["taskDueTime", "Hora"]
         ].forEach(([controlId, label]) => {
 
@@ -319,9 +320,8 @@ export class DesktopTaskEditorLayoutController {
                 { colorSelections: true }
             );
             tagsField.classList.add(
-                "desktopTaskEditorTagsProperty"
+                "desktopTaskEditorTagsTool"
             );
-            properties.append(tagsField);
         }
 
         if (goalsField) {
@@ -339,29 +339,22 @@ export class DesktopTaskEditorLayoutController {
                 ".taskGoalPreserved"
             )
             .forEach(input => {
-                if (goalsField) {
-                    goalsField.append(input);
-                }
+                goalsField?.append(input);
             });
 
         if (moveField) {
-            moveField.classList.add(
-                "desktopTaskEditorMoveTool"
-            );
-            const summary = moveField.querySelector(
-                ".taskMoveManager > summary"
-            );
-            if (summary) {
-                summary.textContent = "Mover";
-            }
+            this.configureMove(moveField);
         }
 
-        primaryBody.append(
+        primarySurface.append(
             mainFields,
             properties
         );
+        primarySection.replaceWith(primarySurface);
 
         return {
+            primarySurface,
+            tagsField,
             goalsField,
             moveField
         };
@@ -375,7 +368,8 @@ export class DesktopTaskEditorLayoutController {
     ) {
 
         fieldset.classList.add(
-            "desktopTaskEditorPicker"
+            "desktopTaskEditorPicker",
+            "desktopTaskEditorTool"
         );
 
         const details = fieldset.querySelector(
@@ -435,6 +429,40 @@ export class DesktopTaskEditorLayoutController {
 
     }
 
+    configureMove(moveField) {
+
+        moveField.classList.add(
+            "desktopTaskEditorMoveTool",
+            "desktopTaskEditorTool"
+        );
+
+        const details = moveField.querySelector(
+            ".taskMoveManager"
+        );
+        const summary = details?.querySelector(
+            ":scope > summary"
+        );
+        const body = details?.querySelector(
+            ".taskMoveManagerBody"
+        );
+
+        if (summary) {
+            summary.textContent = "Mover";
+        }
+
+        if (details && body) {
+            details.classList.add(
+                "desktopTaskEditorTransient"
+            );
+            this.decoratePopover(
+                details,
+                body,
+                "Mover"
+            );
+        }
+
+    }
+
     observeTagSelections(container) {
 
         const apply = () => {
@@ -470,80 +498,90 @@ export class DesktopTaskEditorLayoutController {
 
     }
 
-    buildMoreTools({
-        primarySection,
+    buildToolRow({
+        anchor,
         organizationSection,
         recurrenceSection,
         attachmentsSection,
         subtasksSection,
-        goalsField
+        tagsField,
+        goalsField,
+        moveField
     }) {
 
-        const moreTools =
-            document.createElement("details");
-        moreTools.className =
-            "desktopTaskEditorMoreTools";
+        const row = document.createElement("div");
+        row.className = "desktopTaskEditorToolRow";
+        row.setAttribute(
+            "aria-label",
+            "Herramientas de la tarea"
+        );
 
-        const summary =
-            document.createElement("summary");
-        summary.textContent = "Más herramientas";
-
-        const panel =
-            document.createElement("div");
-        panel.className =
-            "desktopTaskEditorMoreToolsPanel";
-
-        if (goalsField) {
-            panel.append(goalsField);
-        }
+        if (tagsField) row.append(tagsField);
+        if (goalsField) row.append(goalsField);
 
         if (recurrenceSection) {
-            recurrenceSection.classList.add(
-                "desktopTaskEditorRecurrenceTool",
-                "desktopTaskEditorTransient"
+            this.configureRecurrence(
+                recurrenceSection
             );
-            recurrenceSection.open = false;
-
-            const recurrenceSummary =
-                recurrenceSection.querySelector(
-                    ":scope > summary"
-                );
-            const recurrenceBody =
-                recurrenceSection.querySelector(
-                    ":scope > .editorSectionBody"
-                );
-
-            if (recurrenceSummary) {
-                recurrenceSummary.textContent =
-                    "Recurrencia";
-            }
-
-            if (recurrenceBody) {
-                this.decoratePopover(
-                    recurrenceSection,
-                    recurrenceBody,
-                    "Recurrencia"
-                );
-            }
-
-            panel.append(recurrenceSection);
+            row.append(recurrenceSection);
         }
 
-        if (panel.childElementCount > 0) {
-            moreTools.append(summary, panel);
+        if (moveField) {
+            row.append(moveField);
+        } else {
+            const unavailableMove =
+                document.createElement("button");
+            unavailableMove.type = "button";
+            unavailableMove.disabled = true;
+            unavailableMove.className =
+                "desktopTaskEditorToolButton";
+            unavailableMove.textContent = "Mover";
+            unavailableMove.title =
+                "No hay destinos disponibles";
+            row.append(unavailableMove);
+        }
 
-            const reference =
-                attachmentsSection ??
-                subtasksSection;
+        const reference =
+            attachmentsSection ??
+            subtasksSection;
 
-            if (reference) {
-                reference.before(moreTools);
-            } else {
-                primarySection.after(moreTools);
-            }
+        if (reference) {
+            reference.before(row);
+        } else {
+            anchor.after(row);
         }
 
         organizationSection.remove();
+
+    }
+
+    configureRecurrence(section) {
+
+        section.classList.add(
+            "desktopTaskEditorRecurrenceTool",
+            "desktopTaskEditorTool",
+            "desktopTaskEditorTransient"
+        );
+        section.open = false;
+
+        const summary = section.querySelector(
+            ":scope > summary"
+        );
+        const body = section.querySelector(
+            ":scope > .editorSectionBody"
+        );
+
+        if (summary) {
+            summary.textContent = "Recurrencia";
+        }
+
+        if (body) {
+            this.decoratePopover(
+                section,
+                body,
+                "Recurrencia"
+            );
+        }
 
     }
 
@@ -637,7 +675,7 @@ export class DesktopTaskEditorLayoutController {
 
     }
 
-    groupActions(drawer, moveField) {
+    groupActions(drawer) {
 
         const actions = drawer.querySelector(
             ".taskEditorActions"
@@ -649,32 +687,10 @@ export class DesktopTaskEditorLayoutController {
             "desktopTaskEditorFooter"
         );
 
-        const menu =
-            document.createElement("details");
-        menu.className =
-            "desktopTaskEditorActionsMenu desktopTaskEditorTransient";
-
-        const menuSummary =
-            document.createElement("summary");
-        menuSummary.textContent = "Acciones";
-
-        const menuPanel =
+        const administrativeActions =
             document.createElement("div");
-        menuPanel.className =
-            "desktopTaskEditorActionsMenuPanel";
-
-        if (moveField) {
-            menuPanel.append(moveField);
-        } else {
-            const unavailableMove =
-                document.createElement("button");
-            unavailableMove.type = "button";
-            unavailableMove.disabled = true;
-            unavailableMove.textContent = "Mover";
-            unavailableMove.title =
-                "No hay destinos disponibles";
-            menuPanel.append(unavailableMove);
-        }
+        administrativeActions.className =
+            "desktopTaskEditorAdministrativeActions";
 
         [
             "skipRecurringTask",
@@ -685,16 +701,9 @@ export class DesktopTaskEditorLayoutController {
                 document.getElementById(id);
 
             if (button && actions.contains(button)) {
-                menuPanel.append(button);
+                administrativeActions.append(button);
             }
         });
-
-        this.decoratePopover(
-            menu,
-            menuPanel,
-            "Acciones"
-        );
-        menu.append(menuSummary, menuPanel);
 
         const primaryActions =
             document.createElement("div");
@@ -714,10 +723,24 @@ export class DesktopTaskEditorLayoutController {
             }
         });
 
-        actions.append(menu);
+        if (
+            administrativeActions
+                .childElementCount > 0
+        ) {
+            actions.append(administrativeActions);
+        }
 
         if (primaryActions.childElementCount > 0) {
             actions.append(primaryActions);
+        }
+
+        if (
+            administrativeActions
+                .childElementCount === 0
+        ) {
+            actions.classList.add(
+                "desktopTaskEditorFooterPrimaryOnly"
+            );
         }
 
     }
@@ -770,20 +793,23 @@ export class DesktopTaskEditorLayoutController {
             event => {
                 if (event.key !== "Escape") return;
 
-                let closed = false;
+                const openPanels = panels().filter(
+                    panel => panel.open
+                );
 
-                panels().forEach(panel => {
-                    if (panel.open) {
-                        panel.open = false;
-                        closed = true;
-                    }
+                if (openPanels.length === 0) return;
+
+                openPanels.forEach(panel => {
+                    panel.open = false;
                 });
 
-                if (closed) {
-                    event.stopPropagation();
-                }
+                event.preventDefault();
+                event.stopImmediatePropagation();
             },
-            { signal }
+            {
+                signal,
+                capture: true
+            }
         );
 
     }
