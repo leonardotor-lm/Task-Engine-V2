@@ -35,7 +35,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "attachments.css",
             "waiting.css",
             "styles/task-interface.css",
-            "styles/task-editor-desktop.css"
+            "styles/task-editor-desktop.css",
+            "styles/task-editor-popovers.css"
         ]
     );
 
@@ -85,6 +86,51 @@ test("la hoja del editor conserva el alcance exclusivo de escritorio", async () 
     assert.match(
         styles,
         /\.desktopTaskEditorLayout/
+    );
+
+    const withoutComments = styles.replace(
+        /\/\*[\s\S]*?\*\//g,
+        ""
+    );
+    const openingBraces =
+        withoutComments.match(/\{/g)?.length ?? 0;
+    const closingBraces =
+        withoutComments.match(/\}/g)?.length ?? 0;
+
+    assert.equal(openingBraces, closingBraces);
+
+});
+
+test("los popovers del editor quedan contenidos dentro de la ventana", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/task-editor-popovers.css"),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /@media\s*\(min-width:\s*761px\)/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorRecurrenceTool\[open\]/
+    );
+    assert.match(
+        styles,
+        /right:\s*0\s*!important/
+    );
+    assert.match(
+        styles,
+        /left:\s*auto\s*!important/
+    );
+    assert.match(
+        styles,
+        /max-width:\s*calc\(100vw\s*-\s*40px\)/
+    );
+    assert.match(
+        styles,
+        /grid-template-columns:[\s\S]*minmax\(0, 1fr\)[\s\S]*auto/
     );
 
     const withoutComments = styles.replace(
