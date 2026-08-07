@@ -263,8 +263,10 @@ export class OngoingSyncReconciliationController {
             synchronizedFingerprint ===
                 remoteFingerprint
         ) {
-            return this.app.syncEngine
-                .overwriteRemote();
+            return this.saveMergedBackup(
+                localBackup,
+                remoteRevision
+            );
         }
 
         const mergedBackup =
@@ -316,8 +318,10 @@ export class OngoingSyncReconciliationController {
             if (!remoteBackup?.data) {
 
                 const result =
-                    await this.app.syncEngine
-                        .overwriteRemote();
+                    await this.saveMergedBackup(
+                        localBackup,
+                        remoteRevision
+                    );
 
                 this.app.syncRemoteRevision =
                     result.revision;
@@ -441,6 +445,26 @@ export class OngoingSyncReconciliationController {
             };
 
         } catch (error) {
+
+            if (
+                this.app.syncEngine
+                    ?.isConflict?.(error)
+            ) {
+
+                this.app.syncLastError = null;
+                this.app.syncRemoteUpdateAvailable =
+                    true;
+                this.app.autoSyncBlockedFingerprint =
+                    null;
+                this.app.syncConflictDetails = [
+                    "La nube cambió mientras se conciliaban los datos. La próxima comprobación volverá a intentarlo sin sobrescribir cambios."
+                ];
+
+                return {
+                    action: "RETRY"
+                };
+
+            }
 
             this.app.syncLastError =
                 error?.message ||
