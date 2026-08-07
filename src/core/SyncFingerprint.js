@@ -7,7 +7,10 @@ const COLLECTIONS = [
     "goals"
 ];
 
-function normalizeTaskSortPreferences(preferences) {
+function normalizePreferences(
+    preferences,
+    errorMessage
+) {
 
     if (
         preferences === undefined ||
@@ -20,12 +23,36 @@ function normalizeTaskSortPreferences(preferences) {
         typeof preferences !== "object" ||
         Array.isArray(preferences)
     ) {
-        throw new Error(
-            "Las preferencias de orden están incompletas."
-        );
+        throw new Error(errorMessage);
     }
 
     return preferences;
+
+}
+
+function stableValue(value) {
+
+    if (Array.isArray(value)) {
+        return value.map(stableValue);
+    }
+
+    if (
+        value === null ||
+        typeof value !== "object"
+    ) {
+        return value;
+    }
+
+    return Object.fromEntries(
+        Object.keys(value)
+            .sort((first, second) =>
+                first.localeCompare(second)
+            )
+            .map(key => [
+                key,
+                stableValue(value[key])
+            ])
+    );
 
 }
 
@@ -83,16 +110,44 @@ export function createSyncFingerprint(
         )
     ) {
 
-        const taskSortPreferences =
-            normalizeTaskSortPreferences(
-                data.taskSortPreferences
+        const preferences =
+            normalizePreferences(
+                data.taskSortPreferences,
+                "Las preferencias de orden están incompletas."
             );
 
         fingerprint.taskSortPreferences =
-            Object.entries(taskSortPreferences)
+            Object.entries(preferences)
                 .map(([viewKey, sort]) => ({
                     viewKey,
                     sort
+                }))
+                .sort((a, b) =>
+                    a.viewKey.localeCompare(
+                        b.viewKey
+                    )
+                );
+
+    }
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            data,
+            "taskFilterPreferences"
+        )
+    ) {
+
+        const preferences =
+            normalizePreferences(
+                data.taskFilterPreferences,
+                "Las preferencias de filtros rápidos están incompletas."
+            );
+
+        fingerprint.taskFilterPreferences =
+            Object.entries(preferences)
+                .map(([viewKey, filters]) => ({
+                    viewKey,
+                    filters: stableValue(filters)
                 }))
                 .sort((a, b) =>
                     a.viewKey.localeCompare(
