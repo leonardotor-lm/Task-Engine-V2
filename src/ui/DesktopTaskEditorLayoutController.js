@@ -595,6 +595,16 @@ export class DesktopTaskEditorLayoutController {
             "desktopTaskEditorPopover"
         );
 
+        const synchronizeVisibility = () => {
+            body.hidden = !details.open;
+        };
+
+        details.addEventListener(
+            "toggle",
+            synchronizeVisibility
+        );
+        synchronizeVisibility();
+
         if (body.querySelector(
             ":scope > .desktopTaskEditorPopoverHeader"
         )) {
