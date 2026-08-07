@@ -1,4 +1,5 @@
 import { Task } from "../domain/Task.js";
+import { Dialog } from "../components/Dialog.js";
 import {
     getPostCreationView,
     getTaskCreationDefaults,
@@ -81,7 +82,7 @@ export class DirectTaskCreationController {
                 return originalCloseTaskEditor();
             }
 
-            this.discardDraft();
+            return this.discardDraft();
 
         };
 
@@ -131,6 +132,7 @@ export class DirectTaskCreationController {
 
         draft.title = "";
         draft.isTaskCreationDraft = true;
+        draft.attachmentUploadInProgress = false;
 
         this.draftTaskId = draft.id;
         this.app.currentView = creationView;
@@ -147,6 +149,13 @@ export class DirectTaskCreationController {
     createTask(data) {
 
         const draft = this.app.selectedTask;
+
+        if (draft?.attachmentUploadInProgress) {
+            throw new Error(
+                "Esperá a que termine la carga de los adjuntos."
+            );
+        }
+
         const waitingControl =
             this.document?.getElementById(
                 "taskIsWaiting"
@@ -154,6 +163,9 @@ export class DirectTaskCreationController {
         const task = this.app.taskService
             .createTask({
                 ...data,
+                attachments: [
+                    ...(draft?.attachments ?? [])
+                ],
                 isWaiting: waitingControl
                     ? waitingControl.checked
                     : Boolean(draft?.isWaiting)
@@ -173,12 +185,65 @@ export class DirectTaskCreationController {
 
     }
 
-    discardDraft() {
+    async discardDraft() {
+
+        const draft = this.app.selectedTask;
+
+        if (!this.isActiveDraft()) return;
+
+        if (draft?.attachmentUploadInProgress) {
+            await Dialog.alert(
+                "Esperá a que termine la carga de los adjuntos antes de cerrar.",
+                { title: "Carga en curso" }
+            );
+            return;
+        }
+
+        try {
+            await this.trashDraftAttachments(draft);
+        } catch (error) {
+            await Dialog.alert(
+                error.message,
+                {
+                    title:
+                        "No se pudo cancelar la creación"
+                }
+            );
+            return;
+        }
 
         this.draftTaskId = null;
         this.app.taskCreationOpen = false;
         this.app.selectedTask = null;
         this.app.render();
+
+    }
+
+    async trashDraftAttachments(draft) {
+
+        const attachments = [
+            ...(draft?.attachments ?? [])
+        ];
+
+        if (attachments.length === 0) return;
+
+        if (!this.app.syncConfig?.isConfigured?.()) {
+            throw new Error(
+                "No se pudo limpiar los adjuntos del borrador porque la sincronización no está configurada."
+            );
+        }
+
+        const connection =
+            this.app.syncConfig.get();
+
+        for (const attachment of attachments) {
+            await this.app.syncEngine.gateway
+                .trashAttachment({
+                    ...connection,
+                    driveFileId:
+                        attachment.driveFileId
+                });
+        }
 
     }
 
@@ -296,7 +361,6 @@ export class DirectTaskCreationController {
             "#deleteTask",
             "#skipRecurringTask",
             ".editorSubtasksSection",
-            ".editorAttachmentsSection",
             ".taskMoveField",
             ".postponeControls",
             ".postponementSummary"
