@@ -148,6 +148,22 @@ test("los popovers del editor quedan contenidos y muestran selecciones legibles"
         styles,
         /button\.searchableMultiSelectRemove[\s\S]*width:\s*18px\s*!important/
     );
+    assert.match(
+        styles,
+        /\.postponeControls[\s\S]*> div[\s\S]*display:\s*grid/
+    );
+    assert.match(
+        styles,
+        /minmax\(142px,\s*0\.95fr\)/
+    );
+    assert.match(
+        styles,
+        /#postponeDate[\s\S]*min-width:\s*142px\s*!important/
+    );
+    assert.match(
+        styles,
+        /#postponeTask[\s\S]*min-width:\s*84px\s*!important/
+    );
 
     const withoutComments = styles.replace(
         /\/\*[\s\S]*?\*\//g,
