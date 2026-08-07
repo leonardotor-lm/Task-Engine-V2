@@ -78,6 +78,14 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
+        /"Recurrencia"/
+    );
+    assert.doesNotMatch(
+        controller,
+        /"Planificación"/
+    );
+    assert.match(
+        controller,
         /hourLabel\.textContent = "Hora"/
     );
     assert.match(
@@ -86,7 +94,35 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
-        /desktopTaskEditorMoveTool/
+        /primarySection\.querySelector\([\s\S]*:scope > summary[\s\S]*\)\?\.remove\(\)/
+    );
+    assert.match(
+        controller,
+        /decoratePopover/
+    );
+    assert.match(
+        controller,
+        /desktopTaskEditorPopoverClose/
+    );
+    assert.match(
+        controller,
+        /bindTransientPanels/
+    );
+    assert.match(
+        controller,
+        /event\.key !== "Escape"/
+    );
+    assert.match(
+        controller,
+        /!panel\.contains\(event\.target\)/
+    );
+    assert.match(
+        controller,
+        /desktopTaskEditorTagText/
+    );
+    assert.match(
+        controller,
+        /desktopTaskEditorActionsMenu/
     );
     assert.match(
         controller,
@@ -95,6 +131,10 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     assert.match(
         controller,
         /"deleteTask"/
+    );
+    assert.match(
+        controller,
+        /unavailableMove\.textContent = "Mover"/
     );
     assert.match(
         styles,
@@ -106,7 +146,7 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         styles,
-        /height: 38px;/
+        /font-size: 15px;/
     );
     assert.match(
         styles,
@@ -114,7 +154,15 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         styles,
-        /\.desktopTaskEditorMoreTools/
+        /\.desktopTaskEditorPopover\s*\{/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorTagText/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorActionsMenuPanel/
     );
     assert.match(
         styles,
