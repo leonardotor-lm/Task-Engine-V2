@@ -64,6 +64,68 @@
     }
 
     .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .taskMoveManager {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .taskMoveManager[open]
+        > .desktopTaskEditorPopover {
+        right: 0 !important;
+        left: auto !important;
+        width: min(
+            286px,
+            calc(100vw - 40px)
+        ) !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 40px) !important;
+        overflow-x: hidden;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .desktopTaskEditorPopover,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .desktopTaskEditorPopover * {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .taskMoveManagerBody,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .searchableSelect {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .desktopTaskEditorPopover
+        input,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .desktopTaskEditorPopover
+        select,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorMoveTool
+        .desktopTaskEditorPopover
+        button:not(.desktopTaskEditorPopoverClose) {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .desktopTaskEditorLayout
         .desktopTaskEditorPopover
         .desktopTaskEditorPickerSelection {
         display: grid;
