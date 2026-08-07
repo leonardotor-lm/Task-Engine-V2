@@ -2484,6 +2484,7 @@ export class App {
             [View.UPCOMING]: "ACTIVE",
             [View.ALL]: "ACTIVE",
             [View.AREA]: "ACTIVE",
+            [View.PROJECT]: "ACTIVE",
             [View.COMPLETED]: "COMPLETED",
             [View.ARCHIVED]: "ARCHIVED",
             [View.TRASH]: "TRASH"
