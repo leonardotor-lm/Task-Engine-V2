@@ -114,6 +114,10 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
+        /body\.hidden = !details\.open/
+    );
+    assert.match(
+        controller,
         /desktopTaskEditorPopoverClose/
     );
     assert.match(
