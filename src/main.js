@@ -42,6 +42,9 @@ import {
     TaskFilterSyncBridge
 } from "./core/TaskFilterSyncBridge.js";
 import {
+    SyncNavigationPreservationController
+} from "./ui/SyncNavigationPreservationController.js";
+import {
     SmartSyncReconnectionController
 } from "./ui/SmartSyncReconnectionController.js";
 import {
@@ -75,6 +78,8 @@ const syncOptionalDataBridge =
     new SyncOptionalDataBridge(app);
 const taskFilterSyncBridge =
     new TaskFilterSyncBridge(app);
+const syncNavigationPreservationController =
+    new SyncNavigationPreservationController(app);
 const smartSyncReconnectionController =
     new SmartSyncReconnectionController(app);
 const ongoingSyncReconciliationController =
@@ -92,6 +97,7 @@ taskSortPreferencesController.start();
 taskFilterPreferencesController.start();
 syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
+syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
 ongoingSyncReconciliationController
     .start();
