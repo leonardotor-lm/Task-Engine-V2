@@ -62,7 +62,7 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
-        /configurePicker/
+        /desktopTaskEditorToolRow/
     );
     assert.match(
         controller,
@@ -74,11 +74,19 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
-        /"Más herramientas"/
+        /"Recurrencia"/
     );
     assert.match(
         controller,
-        /"Recurrencia"/
+        /summary\.textContent = "Mover"/
+    );
+    assert.doesNotMatch(
+        controller,
+        /"Más herramientas"/
+    );
+    assert.doesNotMatch(
+        controller,
+        /"Acciones"/
     );
     assert.doesNotMatch(
         controller,
@@ -94,7 +102,11 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
-        /primarySection\.querySelector\([\s\S]*:scope > summary[\s\S]*\)\?\.remove\(\)/
+        /primarySection\.querySelectorAll\([\s\S]*:scope > summary/
+    );
+    assert.match(
+        controller,
+        /primarySection\.replaceWith\(primarySurface\)/
     );
     assert.match(
         controller,
@@ -122,7 +134,7 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
-        /desktopTaskEditorActionsMenu/
+        /desktopTaskEditorAdministrativeActions/
     );
     assert.match(
         controller,
@@ -136,17 +148,22 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
         controller,
         /unavailableMove\.textContent = "Mover"/
     );
+
     assert.match(
         styles,
         /^@media \(min-width: 761px\)/
     );
     assert.match(
         styles,
-        /\.desktopTaskEditorTitleField/
+        /\.desktopTaskEditorToolRow\s*\{/
     );
     assert.match(
         styles,
-        /font-size: 15px;/
+        /repeat\(4, minmax\(0, 1fr\)\)/
+    );
+    assert.match(
+        styles,
+        /font-size: 14px;/
     );
     assert.match(
         styles,
@@ -162,7 +179,7 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         styles,
-        /\.desktopTaskEditorActionsMenuPanel/
+        /\.desktopTaskEditorAdministrativeActions/
     );
     assert.match(
         styles,
