@@ -101,7 +101,7 @@ test("la hoja del editor conserva el alcance exclusivo de escritorio", async () 
 
 });
 
-test("los popovers del editor quedan contenidos dentro de la ventana", async () => {
+test("los popovers del editor quedan contenidos y muestran selecciones legibles", async () => {
 
     const styles = await readFile(
         resolve(ROOT, "styles/task-editor-popovers.css"),
@@ -131,6 +131,22 @@ test("los popovers del editor quedan contenidos dentro de la ventana", async () 
     assert.match(
         styles,
         /grid-template-columns:[\s\S]*minmax\(0, 1fr\)[\s\S]*auto/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorPickerSelection[\s\S]*display:\s*grid/
+    );
+    assert.match(
+        styles,
+        /\.searchableMultiSelectChip[\s\S]*width:\s*100%/
+    );
+    assert.match(
+        styles,
+        /> span:not\(\.searchableMultiSelectColor\)[\s\S]*white-space:\s*normal/
+    );
+    assert.match(
+        styles,
+        /button\.searchableMultiSelectRemove[\s\S]*width:\s*18px\s*!important/
     );
 
     const withoutComments = styles.replace(
