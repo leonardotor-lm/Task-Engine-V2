@@ -2,6 +2,9 @@ import {
     createSyncFingerprint
 } from "../core/SyncFingerprint.js";
 import {
+    createComparableSyncFingerprint
+} from "../core/SyncReconnectionPolicy.js";
+import {
     createSafeMergedSyncBackup
 } from "../core/SyncBackupMerger.js";
 import {
@@ -365,10 +368,19 @@ export class OngoingSyncReconciliationController {
 
             const localFingerprint =
                 createSyncFingerprint(localBackup);
-            const remoteFingerprint =
-                createSyncFingerprint(remoteBackup);
+            const localComparableFingerprint =
+                createComparableSyncFingerprint(
+                    localBackup
+                );
+            const remoteComparableFingerprint =
+                createComparableSyncFingerprint(
+                    remoteBackup
+                );
 
-            if (localFingerprint === remoteFingerprint) {
+            if (
+                localComparableFingerprint ===
+                remoteComparableFingerprint
+            ) {
 
                 this.app.syncConfig.setRevision(
                     remoteRevision
