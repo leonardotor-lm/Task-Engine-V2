@@ -2103,7 +2103,7 @@ export class App {
 
             this.syncLastError =
                 error?.message ||
-                "No se pudo comprobar la sincronización.";
+                "No se pudo comprobar o descargar la revisión remota.";
 
             console.warn(
                 "No se pudo comprobar o descargar la revisión remota.",
@@ -2484,6 +2484,7 @@ export class App {
             [View.UPCOMING]: "ACTIVE",
             [View.ALL]: "ACTIVE",
             [View.AREA]: "ACTIVE",
+            [View.PROJECT]: "ACTIVE",
             [View.COMPLETED]: "COMPLETED",
             [View.ARCHIVED]: "ARCHIVED",
             [View.TRASH]: "TRASH"
