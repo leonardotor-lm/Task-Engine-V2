@@ -1,37 +1,23 @@
 @media (min-width: 761px) {
 
     .desktopTaskEditorLayout {
-        width: min(
-            500px,
-            calc(100vw - 220px)
-        );
-        padding:
-            0
-            18px
-            18px;
+        width: min(500px, calc(100vw - 220px));
+        padding: 0 18px 18px;
     }
 
-    .desktopTaskEditorLayout
-        .taskEditorHeader {
+    .desktopTaskEditorLayout .taskEditorHeader {
         top: 0;
-        margin:
-            0
-            -18px
-            8px;
-        padding:
-            9px
-            18px;
+        margin: 0 -18px 8px;
+        padding: 9px 18px;
     }
 
-    .desktopTaskEditorLayout
-        .taskEditorHeader h3 {
+    .desktopTaskEditorLayout .taskEditorHeader h3 {
         color: var(--color-text-secondary);
         font-size: 13px;
         font-weight: 600;
     }
 
-    .desktopTaskEditorLayout
-        .taskParentContext {
+    .desktopTaskEditorLayout .taskParentContext {
         margin-bottom: 7px;
     }
 
@@ -58,8 +44,7 @@
 
     .desktopTaskEditorContextBar {
         display: grid;
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 7px;
         margin-bottom: 7px;
     }
@@ -72,10 +57,7 @@
     .desktopTaskEditorContextField label,
     .desktopTaskEditorProperty > label {
         display: block;
-        margin:
-            0
-            0
-            3px;
+        margin: 0 0 3px;
         color: var(--color-text-muted);
         font-size: 11px;
         font-weight: 500;
@@ -89,9 +71,7 @@
         width: 100%;
         height: 32px;
         min-height: 32px;
-        padding:
-            4px
-            8px;
+        padding: 4px 8px;
         border: 1px solid var(--color-border);
         border-radius: 4px;
         background: var(--color-surface);
@@ -123,25 +103,19 @@
         font: inherit;
     }
 
-    .desktopTaskEditorTitleField
-        #taskTitleEdit {
+    .desktopTaskEditorTitleField #taskTitleEdit {
         height: 33px;
         min-height: 33px;
-        padding:
-            3px
-            2px;
+        padding: 3px 2px;
         font-size: 14px;
         font-weight: 500;
         line-height: 1.3;
     }
 
-    .desktopTaskEditorDescriptionField
-        #taskDescriptionEdit {
+    .desktopTaskEditorDescriptionField #taskDescriptionEdit {
         height: 36px;
         min-height: 36px;
-        padding:
-            7px
-            2px;
+        padding: 7px 2px;
         resize: vertical;
         color: var(--color-text-subtle);
         font-size: 13px;
@@ -174,8 +148,7 @@
         padding: 0;
     }
 
-    .desktopTaskEditorWaitingProperty
-        .waitingTaskControl {
+    .desktopTaskEditorWaitingProperty .waitingTaskControl {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -185,9 +158,7 @@
         height: 32px;
         min-height: 32px;
         margin: 0;
-        padding:
-            0
-            8px;
+        padding: 0 8px;
         border: 1px solid var(--color-border);
         border-radius: 4px;
         background: var(--color-surface);
@@ -206,8 +177,7 @@
 
     .desktopTaskEditorToolRow {
         display: grid;
-        grid-template-columns:
-            repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 6px;
         margin-top: 8px;
         padding-top: 8px;
@@ -215,7 +185,9 @@
     }
 
     .desktopTaskEditorTool,
-    .desktopTaskEditorToolButton {
+    .desktopTaskEditorToolButton,
+    .desktopTaskEditorPicker,
+    .desktopTaskEditorMoveTool {
         position: relative;
         min-width: 0;
         margin: 0;
@@ -224,15 +196,8 @@
         background: transparent;
     }
 
-    .desktopTaskEditorPicker,
-    .desktopTaskEditorMoveTool {
-        min-width: 0;
-    }
-
-    .desktopTaskEditorPicker
-        .searchableMultiSelectManager,
-    .desktopTaskEditorMoveTool
-        .taskMoveManager {
+    .desktopTaskEditorPicker .searchableMultiSelectManager,
+    .desktopTaskEditorMoveTool .taskMoveManager {
         position: relative;
         width: 100%;
     }
@@ -240,8 +205,7 @@
     .desktopTaskEditorPicker
         .searchableMultiSelectManager
         > summary,
-    .desktopTaskEditorRecurrenceTool
-        > summary,
+    .desktopTaskEditorRecurrenceTool > summary,
     .desktopTaskEditorMoveTool
         .taskMoveManager
         > summary,
@@ -254,16 +218,14 @@
         width: 100%;
         height: 32px;
         min-height: 32px;
-        padding:
-            4px
-            7px;
+        padding: 4px 7px;
         border: 1px solid var(--color-border);
         border-radius: 4px;
         background: transparent;
         color: var(--color-text-subtle);
         font: inherit;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 500 !important;
         cursor: pointer;
         list-style: none;
         white-space: nowrap;
@@ -272,8 +234,7 @@
     .desktopTaskEditorPicker
         .searchableMultiSelectManager
         > summary:hover,
-    .desktopTaskEditorRecurrenceTool
-        > summary:hover,
+    .desktopTaskEditorRecurrenceTool > summary:hover,
     .desktopTaskEditorMoveTool
         .taskMoveManager
         > summary:hover {
@@ -310,20 +271,23 @@
         font-size: 10px;
     }
 
-    .desktopTaskEditorPopover {
+    .desktopTaskEditorPopover,
+    .desktopTaskEditorPopover[hidden],
+    details:not([open]) > .desktopTaskEditorPopover {
+        display: none !important;
+    }
+
+    details[open] > .desktopTaskEditorPopover {
         position: absolute;
         z-index: 50;
         top: calc(100% + 5px);
         left: 0;
-        display: grid;
+        display: grid !important;
         gap: 7px;
         box-sizing: border-box;
         width: 286px;
         max-width: calc(100vw - 260px);
-        padding:
-            0
-            10px
-            10px;
+        padding: 0 10px 10px;
         border: 1px solid var(--color-border);
         border-radius: 4px;
         background: var(--color-surface);
@@ -350,12 +314,8 @@
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        margin:
-            0
-            -10px;
-        padding:
-            6px
-            9px;
+        margin: 0 -10px;
+        padding: 6px 9px;
         border-bottom: 1px solid var(--color-border);
     }
 
@@ -391,7 +351,8 @@
     .desktopTaskEditorPopover > label,
     .desktopTaskEditorPopover legend,
     .desktopTaskEditorPopover
-        .searchableMultiSelectManagerBody > label,
+        .searchableMultiSelectManagerBody
+        > label,
     .desktopTaskEditorPopover
         .taskMoveManagerBody label {
         margin: 0;
@@ -408,9 +369,7 @@
         box-sizing: border-box;
         width: 100%;
         min-height: 31px;
-        padding:
-            4px
-            7px;
+        padding: 4px 7px;
         border: 1px solid var(--color-border);
         border-radius: 4px;
         background: var(--color-surface);
@@ -434,10 +393,7 @@
         gap: 3px 8px;
         min-height: 0;
         margin: 0;
-        padding:
-            0
-            0
-            7px;
+        padding: 0 0 7px;
         border-bottom: 1px solid var(--color-border);
     }
 
@@ -515,9 +471,7 @@
     .desktopTaskEditorRecurrenceTool
         .recurrenceIntervalControl {
         display: grid;
-        grid-template-columns:
-            minmax(0, 1fr)
-            auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
         gap: 7px;
     }
@@ -531,11 +485,17 @@
 
     .desktopTaskEditorAttachments,
     .desktopTaskEditorSubtasks {
-        margin: 0;
+        margin: 10px 0 0;
+        padding: 0;
         border: 0;
-        border-bottom: 1px solid var(--color-border);
+        border-top: 1px solid var(--color-border);
         border-radius: 0;
         background: transparent;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorAttachments {
+        border-left: 0;
     }
 
     .desktopTaskEditorLayout
@@ -544,13 +504,28 @@
     .desktopTaskEditorLayout
         .desktopTaskEditorSubtasks
         > summary {
-        min-height: 33px;
-        padding:
-            5px
-            1px;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        min-height: 34px;
+        margin: 0;
+        padding: 0 2px;
+        border: 0;
         color: var(--color-text-subtle);
-        font-size: 12px;
-        font-weight: 500;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        line-height: 1.2;
+        cursor: pointer;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorAttachments[open]
+        > summary,
+    .desktopTaskEditorLayout
+        .desktopTaskEditorSubtasks[open]
+        > summary {
+        border: 0;
+        color: var(--color-text);
     }
 
     .desktopTaskEditorLayout
@@ -559,10 +534,123 @@
     .desktopTaskEditorLayout
         .desktopTaskEditorSubtasks
         > .editorSectionBody {
-        padding:
-            1px
-            1px
-            8px;
+        display: block;
+        padding: 2px 2px 9px;
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentSectionBody {
+        display: grid;
+        gap: 6px;
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentEmptyMessage,
+    .desktopTaskEditorLayout
+        .attachmentLimits,
+    .desktopTaskEditorLayout
+        .attachmentConnectionNotice,
+    .desktopTaskEditorLayout
+        .attachmentOperationStatus,
+    .desktopTaskEditorLayout
+        .emptyTagMessage {
+        margin: 3px 0 7px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-text-muted);
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentList,
+    .desktopTaskEditorLayout
+        .editorSubtaskList {
+        display: grid;
+        gap: 3px;
+        margin: 2px 0 7px;
+        padding: 0;
+        list-style: none;
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentItem {
+        gap: 8px;
+        padding: 5px 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentIdentity a,
+    .desktopTaskEditorLayout
+        .subtaskLink {
+        padding: 2px 0;
+        color: var(--color-text-subtle);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.3;
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentIdentity span {
+        color: var(--color-text-muted);
+        font-size: 10px;
+    }
+
+    .desktopTaskEditorLayout
+        .attachmentUploadControl {
+        box-sizing: border-box;
+        min-height: 32px;
+        padding: 5px 9px;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        background: transparent;
+        color: var(--color-text-subtle);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .desktopTaskEditorLayout
+        .removeTaskAttachment {
+        min-height: 28px;
+        padding: 3px 7px;
+        border-color: transparent;
+        background: transparent;
+        color: var(--color-danger);
+        font-size: 11px;
+    }
+
+    .desktopTaskEditorLayout
+        .subtaskForm {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 6px;
+        margin: 6px 0 1px;
+    }
+
+    .desktopTaskEditorLayout
+        .subtaskForm input,
+    .desktopTaskEditorLayout
+        .subtaskForm button {
+        box-sizing: border-box;
+        height: 32px;
+        min-height: 32px;
+        margin: 0;
+        padding: 4px 8px;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
+        font: inherit;
+        font-size: 12px;
+    }
+
+    .desktopTaskEditorLayout
+        .subtaskForm button {
+        min-width: 72px;
+        cursor: pointer;
     }
 
     .desktopTaskEditorLayout > hr {
@@ -574,17 +662,11 @@
         z-index: 20;
         bottom: 0;
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 7px;
-        margin:
-            11px
-            -18px
-            -18px;
-        padding:
-            9px
-            18px;
+        gap: 8px;
+        margin: 11px -18px -18px;
+        padding: 9px 18px;
         border-top: 1px solid var(--color-border);
         background: var(--color-surface);
         box-shadow: 0 -4px 10px rgb(15 23 42 / 4%);
@@ -597,51 +679,65 @@
     .desktopTaskEditorAdministrativeActions,
     .desktopTaskEditorPrimaryActions {
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         gap: 5px;
     }
 
     .desktopTaskEditorFooter button {
-        min-height: 31px;
-        padding:
-            4px
-            8px;
+        box-sizing: border-box;
+        height: 32px;
+        min-height: 32px;
+        margin: 0;
+        padding: 4px 9px;
         border-radius: 4px;
         font-size: 12px;
+        font-weight: 500;
+        line-height: 1;
+    }
+
+    .desktopTaskEditorAdministrativeActions
+        #archiveTask,
+    .desktopTaskEditorAdministrativeActions
+        #skipRecurringTask,
+    .desktopTaskEditorAdministrativeActions
+        #deleteTask {
+        border-color: transparent;
+        background: transparent;
     }
 
     .desktopTaskEditorAdministrativeActions
         #archiveTask,
     .desktopTaskEditorAdministrativeActions
         #skipRecurringTask {
-        border-color: transparent;
-        background: transparent;
         color: var(--color-text-secondary);
     }
 
     .desktopTaskEditorAdministrativeActions
         #deleteTask {
-        border-color: transparent;
-        background: transparent;
         color: var(--color-danger);
     }
 
-    .desktopTaskEditorFooter
-        #saveTask {
-        min-width: 108px;
+    .desktopTaskEditorPrimaryActions
+        #toggleTask,
+    .desktopTaskEditorPrimaryActions
+        #reopenTask {
+        border-color: var(--color-border-strong);
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
     }
 
-    .desktopTaskEditorLayout
-        input:focus,
-    .desktopTaskEditorLayout
-        select:focus,
-    .desktopTaskEditorLayout
-        textarea:focus,
-    .desktopTaskEditorLayout
-        summary:focus-visible,
-    .desktopTaskEditorLayout
-        button:focus-visible {
+    .desktopTaskEditorFooter #saveTask {
+        min-width: 108px;
+        border-color: var(--color-accent);
+        background: var(--color-accent);
+        color: var(--color-on-accent);
+    }
+
+    .desktopTaskEditorLayout input:focus,
+    .desktopTaskEditorLayout select:focus,
+    .desktopTaskEditorLayout textarea:focus,
+    .desktopTaskEditorLayout summary:focus-visible,
+    .desktopTaskEditorLayout button:focus-visible {
         border-color: var(--color-accent);
         outline: 2px solid var(--color-accent-muted);
         outline-offset: 1px;
