@@ -81,6 +81,17 @@ export class ProjectView {
                         </span>
                     </button>
                 `}
+
+            <button
+                id="toggleBulkMode"
+                type="button"
+                class="taskToolsButton ${state.bulkSelectionMode
+                    ? "active"
+                    : ""}">
+                ${state.bulkSelectionMode
+                    ? "Salir de selección"
+                    : "Selección múltiple"}
+            </button>
         `;
 
         const projectSummary = `
@@ -101,9 +112,9 @@ export class ProjectView {
             "",
             state.expandedTaskIds,
             false,
-            new Set(),
-            false,
-            null,
+            state.selectedTaskIds,
+            state.bulkSelectionEnabled,
+            state.bulkActionMode,
             state.showTaskMetadata,
             state.today,
             state.allTasks,
@@ -111,7 +122,7 @@ export class ProjectView {
             "Nueva subtarea",
             state.inlineSubtaskParentId,
             projectSummary,
-            [],
+            state.goals,
             "projectWorkspace"
         );
 
