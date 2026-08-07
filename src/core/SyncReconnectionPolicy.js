@@ -29,6 +29,11 @@ const OPTIONAL_COLLECTIONS = [
     "goals"
 ];
 
+const OPTIONAL_PREFERENCES = [
+    "taskSortPreferences",
+    "taskFilterPreferences"
+];
+
 const COLLECTIONS = [
     ...CORE_COLLECTIONS,
     ...OPTIONAL_COLLECTIONS
@@ -92,10 +97,10 @@ function normalizeForComparison(backup) {
             );
     }
 
-    normalizedData.taskSortPreferences =
-        normalizePreferences(
-            data.taskSortPreferences
-        );
+    for (const property of OPTIONAL_PREFERENCES) {
+        normalizedData[property] =
+            normalizePreferences(data[property]);
+    }
 
     return {
         format: canonicalBackup.format,
@@ -264,13 +269,17 @@ function getLegacyExtensionDirection({
 
     }
 
-    if (
-        !compareOptionalValue(
-            "taskSortPreferences",
-            normalizePreferences
-        )
-    ) {
-        return null;
+    for (const property of OPTIONAL_PREFERENCES) {
+
+        if (
+            !compareOptionalValue(
+                property,
+                normalizePreferences
+            )
+        ) {
+            return null;
+        }
+
     }
 
     return direction;
@@ -294,9 +303,12 @@ export function isSyncBackupEmpty(backup) {
         );
 
     const preferencesEmpty =
-        Object.keys(
-            data.taskSortPreferences
-        ).length === 0;
+        OPTIONAL_PREFERENCES.every(
+            property =>
+                Object.keys(
+                    data[property]
+                ).length === 0
+        );
 
     return collectionsEmpty && preferencesEmpty;
 
