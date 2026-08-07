@@ -185,19 +185,31 @@ export class DirectTaskCreationController {
 
     }
 
-    async discardDraft() {
+    discardDraft() {
 
         const draft = this.app.selectedTask;
 
         if (!this.isActiveDraft()) return;
 
         if (draft?.attachmentUploadInProgress) {
-            await Dialog.alert(
+            return Dialog.alert(
                 "Esperá a que termine la carga de los adjuntos antes de cerrar.",
                 { title: "Carga en curso" }
             );
+        }
+
+        if ((draft?.attachments ?? []).length === 0) {
+            this.finishDiscardDraft();
             return;
         }
+
+        return this.discardDraftWithAttachments(
+            draft
+        );
+
+    }
+
+    async discardDraftWithAttachments(draft) {
 
         try {
             await this.trashDraftAttachments(draft);
@@ -211,6 +223,12 @@ export class DirectTaskCreationController {
             );
             return;
         }
+
+        this.finishDiscardDraft();
+
+    }
+
+    finishDiscardDraft() {
 
         this.draftTaskId = null;
         this.app.taskCreationOpen = false;
