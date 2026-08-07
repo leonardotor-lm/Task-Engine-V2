@@ -142,18 +142,22 @@ export function createSyncFingerprint(
                 data.taskFilterPreferences,
                 "Las preferencias de filtros rápidos están incompletas."
             );
+        const entries =
+            Object.entries(preferences);
 
-        fingerprint.taskFilterPreferences =
-            Object.entries(preferences)
-                .map(([viewKey, filters]) => ({
-                    viewKey,
-                    filters: stableValue(filters)
-                }))
-                .sort((a, b) =>
-                    a.viewKey.localeCompare(
-                        b.viewKey
-                    )
-                );
+        if (entries.length > 0) {
+            fingerprint.taskFilterPreferences =
+                entries
+                    .map(([viewKey, filters]) => ({
+                        viewKey,
+                        filters: stableValue(filters)
+                    }))
+                    .sort((a, b) =>
+                        a.viewKey.localeCompare(
+                            b.viewKey
+                        )
+                    );
+        }
 
     }
 
