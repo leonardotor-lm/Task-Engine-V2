@@ -75,6 +75,37 @@ export class OngoingSyncReconciliationController {
 
     }
 
+    seedBaseIfSynchronized() {
+
+        const config = this.app.syncConfig;
+        const endpoint = this.getEndpoint();
+
+        if (
+            !endpoint ||
+            !config?.isConfigured?.() ||
+            !config?.hasKnownSyncState?.() ||
+            this.app.syncRemoteUpdateAvailable ||
+            this.repository.get(endpoint)
+        ) {
+            return;
+        }
+
+        try {
+
+            if (
+                !config.hasPendingChanges(
+                    this.app.getCurrentSyncFingerprint()
+                )
+            ) {
+                this.rememberCurrentBase();
+            }
+
+        } catch {
+            // Una huella inválida se resolverá por el flujo normal.
+        }
+
+    }
+
     wrapSuccessfulSyncOperations() {
 
         const engine = this.app.syncEngine;
@@ -125,6 +156,8 @@ export class OngoingSyncReconciliationController {
             if (this.shouldReconcileKnownChanges()) {
                 return this.reconcileKnownChanges();
             }
+
+            this.seedBaseIfSynchronized();
 
             return result;
 
