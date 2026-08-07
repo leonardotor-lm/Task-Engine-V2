@@ -93,7 +93,7 @@ taskFilterPreferencesController.start();
 syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 smartSyncReconnectionController.start();
-goingSyncReconciliationController
+ongoingSyncReconciliationController
     .start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
