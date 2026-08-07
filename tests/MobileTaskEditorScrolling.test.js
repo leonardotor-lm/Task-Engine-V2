@@ -43,5 +43,9 @@ test("el editor móvil conserva scroll vertical, guardado sticky y En espera pla
         controller,
         /saveButton\.classList\.add\(\s*"mobileTaskEditorHiddenSave"/
     );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorLayout\s*\n\s*\.taskEditorActions #saveTask\s*\{[\s\S]*?display:\s*inline-flex;/
+    );
 
 });
