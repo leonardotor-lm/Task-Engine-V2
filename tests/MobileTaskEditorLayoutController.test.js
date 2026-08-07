@@ -1,0 +1,104 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+
+test("la aplicación carga la distribución específica del editor móvil", async () => {
+
+    const main = await readFile(
+        new URL("../src/main.js", import.meta.url),
+        "utf8"
+    );
+    const controller = await readFile(
+        new URL(
+            "../src/ui/MobileTaskEditorLayoutController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+    const styles = await readFile(
+        new URL(
+            "../styles/task-editor-mobile.css",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(
+        main,
+        /MobileTaskEditorLayoutController/
+    );
+    assert.match(
+        main,
+        /mobileTaskEditorLayoutController\.start\(\)/
+    );
+    assert.match(
+        controller,
+        /\(max-width: 760px\)/
+    );
+    assert.match(
+        controller,
+        /mobileTaskEditorContextBar/
+    );
+    assert.match(
+        controller,
+        /mobileTaskEditorMainFields/
+    );
+    assert.match(
+        controller,
+        /mobileTaskEditorProperties/
+    );
+    assert.match(
+        controller,
+        /mobileTaskEditorToolGrid/
+    );
+    assert.match(
+        controller,
+        /"Etiquetas"/
+    );
+    assert.match(
+        controller,
+        /"Objetivos"/
+    );
+    assert.match(
+        controller,
+        /"Recurrencia"/
+    );
+    assert.match(
+        controller,
+        /"Mover"/
+    );
+    assert.match(
+        controller,
+        /mobileTaskEditorPanelClose/
+    );
+    assert.match(
+        controller,
+        /event\.key !== "Escape"/
+    );
+    assert.match(
+        controller,
+        /mobileTaskEditorHiddenSave/
+    );
+    assert.match(
+        styles,
+        /^@media \(max-width: 760px\)/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorTitleField/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorToolGrid/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorPanel/
+    );
+    assert.match(
+        styles,
+        /env\(safe-area-inset-bottom\)/
+    );
+
+});
