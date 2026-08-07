@@ -263,12 +263,12 @@ export function createSyncConflictDiagnostics({
         ...comparePreferences(
             local.data.taskSortPreferences,
             remote.data.taskSortPreferences,
-            "Órdenes por vista"
+            "Órdenes"
         ),
         ...comparePreferences(
             local.data.taskFilterPreferences,
             remote.data.taskFilterPreferences,
-            "Filtros rápidos por vista"
+            "Filtros rápidos"
         )
     );
 
