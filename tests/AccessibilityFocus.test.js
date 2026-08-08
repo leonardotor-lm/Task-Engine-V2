@@ -22,6 +22,13 @@ const pickerSource = await readFile(
     ),
     "utf8"
 );
+const desktopEditorSource = await readFile(
+    new URL(
+        "../src/ui/DesktopTaskEditorLayoutController.js",
+        import.meta.url
+    ),
+    "utf8"
+);
 
 test("los diálogos propios restauran el foco al control de origen", () => {
     assert.match(
@@ -106,4 +113,37 @@ test("los selectores múltiples se pueden cerrar con Escape y restauran el foco"
         pickerSource,
         /manager\.querySelector\("summary"\)[\s\S]*?\.focus\(\)/
     );
+});
+
+test("Escape devuelve el foco al disparador de popovers del editor de escritorio", () => {
+    assert.match(
+        desktopEditorSource,
+        /const focusPanel =[\s\S]*?document\.activeElement/
+    );
+    assert.match(
+        desktopEditorSource,
+        /focusPanel\.querySelector\([\s\S]*?:scope > summary[\s\S]*?\.focus\(\)/
+    );
+    assert.ok(
+        desktopEditorSource.indexOf("panel.open = false;") <
+        desktopEditorSource.lastIndexOf(".focus();")
+    );
+});
+
+test("los grupos nombrados del editor de escritorio tienen semántica de grupo", () => {
+    for (const label of [
+        "Propiedades frecuentes",
+        "Herramientas de la tarea"
+    ]) {
+        const labelIndex = desktopEditorSource.indexOf(
+            `"${label}"`
+        );
+        const block = desktopEditorSource.slice(
+            Math.max(0, labelIndex - 220),
+            labelIndex + 120
+        );
+
+        assert.notEqual(labelIndex, -1);
+        assert.match(block, /"role",\s*"group"/);
+    }
 });
