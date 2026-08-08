@@ -27,9 +27,6 @@ export class GoalView {
         const goalById = new Map(
             goals.map(item => [item.id, item])
         );
-        const parentGoal = goal.parentGoalId
-            ? goalById.get(goal.parentGoalId) ?? null
-            : null;
         const ancestors = this.getAncestors(
             goal,
             goalById
@@ -69,39 +66,6 @@ export class GoalView {
             : "Sin elementos";
 
         const headingActions = `
-            ${parentGoal
-                ? `
-                    <button
-                        id="backToParentGoal"
-                        type="button"
-                        class="secondaryAction goalHeadingAction responsiveIconButton"
-                        data-id="${escapeHtml(parentGoal.id)}"
-                        aria-label="Volver al objetivo ${escapeHtml(parentGoal.title)}"
-                        title="Volver al objetivo ${escapeHtml(parentGoal.title)}">
-                        <span class="responsiveButtonIcon">
-                            ${Icon.render("back")}
-                        </span>
-                        <span class="responsiveButtonLabel">
-                            Atrás
-                        </span>
-                    </button>
-                `
-                : ""}
-
-            <button
-                id="closeGoalView"
-                type="button"
-                class="secondaryAction goalHeadingAction responsiveIconButton"
-                aria-label="Volver a la lista de objetivos"
-                title="Volver a la lista de objetivos">
-                <span class="responsiveButtonIcon">
-                    ${Icon.render("menu")}
-                </span>
-                <span class="responsiveButtonLabel">
-                    Objetivos
-                </span>
-            </button>
-
             <button
                 id="editGoal"
                 type="button"
