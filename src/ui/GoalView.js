@@ -1,6 +1,7 @@
 import { TaskList } from "./TaskList.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { Icon } from "./Icon.js";
+import { GoalStatus } from "../domain/GoalStatus.js";
 
 export class GoalView {
 
@@ -22,9 +23,39 @@ export class GoalView {
             `;
         }
 
-        const completed = state.tasks.filter(
+        const completedTasks = state.tasks.filter(
             task => task.isCompleted()
         ).length;
+        const directSubgoals = (state.goals ?? [])
+            .filter(subgoal =>
+                subgoal.parentGoalId === goal.id &&
+                (
+                    subgoal.status === GoalStatus.ACTIVE ||
+                    subgoal.status === GoalStatus.COMPLETED
+                )
+            );
+        const completedSubgoals = directSubgoals
+            .filter(subgoal =>
+                subgoal.status === GoalStatus.COMPLETED
+            )
+            .length;
+        const progressParts = [];
+
+        if (state.tasks.length > 0) {
+            progressParts.push(
+                `Tareas ${completedTasks}/${state.tasks.length}`
+            );
+        }
+
+        if (directSubgoals.length > 0) {
+            progressParts.push(
+                `Subobjetivos ${completedSubgoals}/${directSubgoals.length}`
+            );
+        }
+
+        const progress = progressParts.length > 0
+            ? progressParts.join(" · ")
+            : "Sin elementos";
 
         const headingActions = `
             <button
@@ -56,6 +87,35 @@ export class GoalView {
             </button>
         `;
 
+        const subgoals = directSubgoals.length > 0
+            ? `
+                <section class="goalWorkspaceSubgoals">
+                    <h3 class="goalWorkHeading">
+                        Subobjetivos
+                    </h3>
+                    <ul class="goalList goalWorkspaceSubgoalList">
+                        ${directSubgoals.map(subgoal => `
+                            <li class="goalItem">
+                                <button
+                                    type="button"
+                                    class="openGoal goalWorkspaceSubgoal"
+                                    data-id="${escapeHtml(subgoal.id)}"
+                                    aria-label="Abrir subobjetivo ${escapeHtml(subgoal.title)}">
+                                    ${subgoal.status === GoalStatus.COMPLETED
+                                        ? Icon.render(
+                                            "check",
+                                            "inlineStatusIcon"
+                                        )
+                                        : ""}
+                                    ${escapeHtml(subgoal.title)}
+                                </button>
+                            </li>
+                        `).join("")}
+                    </ul>
+                </section>
+            `
+            : "";
+
         const intro = `
             <section class="goalWorkspaceSummary">
                 ${goal.description
@@ -67,7 +127,7 @@ export class GoalView {
                     : ""}
                 <p>
                     <strong>Progreso:</strong>
-                    ${completed}/${state.tasks.length}
+                    ${progress}
                     ${goal.dueDate
                         ? `
                             · <strong>Fecha límite:</strong>
@@ -76,6 +136,8 @@ export class GoalView {
                         : ""}
                 </p>
             </section>
+
+            ${subgoals}
 
             <h3 class="goalWorkHeading">
                 Tareas y proyectos
