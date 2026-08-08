@@ -55,8 +55,8 @@ test("muestra el objetivo como espacio de trabajo", () => {
     assert.match(html, /Preparar el manuscrito/);
     assert.match(html, /2027-03-01/);
     assert.match(html, /id="editGoal"/);
-    assert.match(html, /id="closeGoalView"/);
     assert.match(html, /id="goalBreadcrumbRoot"/);
+    assert.doesNotMatch(html, /id="closeGoalView"/);
     assert.doesNotMatch(html, /id="backToParentGoal"/);
     assert.match(html, /Preparar manuscrito/);
     assert.doesNotMatch(
@@ -174,7 +174,7 @@ test("muestra subobjetivos directos y los incluye en el progreso", () => {
 
 });
 
-test("muestra la ruta jerárquica y permite volver al padre", () => {
+test("muestra la ruta jerárquica completa sin botones redundantes", () => {
 
     const root = new Goal({
         id: "goal-root",
@@ -205,12 +205,9 @@ test("muestra la ruta jerárquica y permite volver al padre", () => {
         inlineSubtaskParentId: null
     });
 
-    assert.match(html, /id="backToParentGoal"/);
-    assert.match(
-        html,
-        /id="backToParentGoal"[\s\S]*data-id="goal-parent"/
-    );
     assert.match(html, /id="goalBreadcrumbRoot"/);
+    assert.doesNotMatch(html, /id="backToParentGoal"/);
+    assert.doesNotMatch(html, /id="closeGoalView"/);
     assert.match(
         html,
         /data-id="goal-root"[\s\S]*Aprender idiomas[\s\S]*data-id="goal-parent"[\s\S]*Español[\s\S]*aria-current="page"[\s\S]*Conversación/
