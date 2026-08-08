@@ -41,22 +41,6 @@ export class GoalWorkspaceController {
 
         this.document
             ?.getElementById?.(
-                "backToParentGoal"
-            )
-            ?.addEventListener(
-                "click",
-                event => {
-                    const goalId =
-                        event.currentTarget?.dataset?.id;
-
-                    if (!goalId) return;
-
-                    this.selectGoal(goalId);
-                }
-            );
-
-        this.document
-            ?.getElementById?.(
                 "goalBreadcrumbRoot"
             )
             ?.addEventListener(
