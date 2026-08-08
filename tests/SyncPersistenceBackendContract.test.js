@@ -124,6 +124,83 @@ test("Apps Script conserva filtros guardados y preferencias en un round trip", (
 
 });
 
+test("loadSnapshot reconstruye el mismo contrato persistido en la revisión activa", () => {
+
+    const backend = loadBackend();
+    const rows = backend.snapshotToRows_(
+        snapshot({
+            customFilters: [
+                {
+                    id: "filter-load",
+                    name: "Prioridad alta",
+                    query: "prioridad:alta",
+                    version: 1,
+                    createdAt:
+                        "2026-08-08T18:00:00.000Z",
+                    updatedAt:
+                        "2026-08-08T18:00:00.000Z"
+                }
+            ],
+            taskSortPreferences: {
+                "view:TODAY": "DUE_DATE"
+            },
+            taskFilterPreferences: {}
+        }),
+        12
+    );
+
+    backend.getStorage_ = () => ({
+        dataSheet: {
+            getLastRow() {
+                return rows.length + 1;
+            },
+            getRange() {
+                return {
+                    getValues() {
+                        return rows;
+                    }
+                };
+            }
+        },
+        metaSheet: {
+            getRange(row, column) {
+                return {
+                    getValue() {
+                        return column === 1
+                            ? 12
+                            : "";
+                    },
+                    getDisplayValue() {
+                        return column === 2
+                            ? "2026-08-08T20:00:00.000Z"
+                            : "";
+                    }
+                };
+            }
+        }
+    });
+
+    const result = plain(
+        backend.loadSnapshot_()
+    );
+
+    assert.equal(result.revision, 12);
+    assert.equal(
+        result.data.data.customFilters[0].id,
+        "filter-load"
+    );
+    assert.equal(
+        result.data.data
+            .taskSortPreferences["view:TODAY"],
+        "DUE_DATE"
+    );
+    assert.deepEqual(
+        result.data.data.taskFilterPreferences,
+        {}
+    );
+
+});
+
 test("una revisión nueva conserva vacíos explícitos como borrados deliberados", () => {
 
     const backend = loadBackend();
