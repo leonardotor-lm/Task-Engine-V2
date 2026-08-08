@@ -8,7 +8,7 @@ import { GoalView } from "../src/ui/GoalView.js";
 import { TaskEditor } from "../src/ui/TaskEditor.js";
 import { TaskList } from "../src/ui/TaskList.js";
 
-test("el objetivo principal ofrece volver a la lista y editar con íconos accesibles", () => {
+test("el objetivo usa el breadcrumb para navegar y conserva edición accesible", () => {
 
     const goal = new Goal({
         id: "goal-1",
@@ -29,18 +29,16 @@ test("el objetivo principal ofrece volver a la lista y editar con íconos accesi
         inlineSubtaskParentId: null
     });
 
-    assert.match(
-        html,
-        /aria-label="Volver a la lista de objetivos"/
-    );
+    assert.match(html, /id="goalBreadcrumbRoot"/);
     assert.match(html, /aria-label="Editar objetivo"/);
     assert.doesNotMatch(html, /id="backToParentGoal"/);
+    assert.doesNotMatch(html, /id="closeGoalView"/);
     assert.match(html, /responsiveButtonIcon/);
     assert.match(html, /responsiveButtonLabel/);
 
 });
 
-test("un subobjetivo ofrece volver al padre y también a la lista", () => {
+test("un subobjetivo expone al padre en la ruta sin botones redundantes", () => {
 
     const parent = new Goal({
         id: "goal-parent",
@@ -66,15 +64,13 @@ test("un subobjetivo ofrece volver al padre y también a la lista", () => {
         inlineSubtaskParentId: null
     });
 
-    assert.match(html, /id="backToParentGoal"/);
     assert.match(
         html,
-        /aria-label="Volver al objetivo Objetivo padre"/
+        /class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"[\s\S]*data-id="goal-parent"[\s\S]*Objetivo padre/
     );
-    assert.match(
-        html,
-        /aria-label="Volver a la lista de objetivos"/
-    );
+    assert.match(html, /id="goalBreadcrumbRoot"/);
+    assert.doesNotMatch(html, /id="backToParentGoal"/);
+    assert.doesNotMatch(html, /id="closeGoalView"/);
 
 });
 
