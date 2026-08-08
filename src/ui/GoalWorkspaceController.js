@@ -23,35 +23,77 @@ export class GoalWorkspaceController {
         mainView.render = state => {
 
             originalRender(state);
-            this.bindSubgoalNavigation(state);
+            this.bindGoalNavigation(state);
 
         };
 
     }
 
-    bindSubgoalNavigation(state) {
+    bindGoalNavigation(state) {
 
         if (state.view !== View.GOAL) {
             return;
         }
 
+        this.bindGoalButtons(
+            ".goalWorkspaceSubgoal, .goalBreadcrumbGoal"
+        );
+
         this.document
-            ?.querySelectorAll?.(
-                ".goalWorkspaceSubgoal"
+            ?.getElementById?.(
+                "backToParentGoal"
             )
+            ?.addEventListener(
+                "click",
+                event => {
+                    const goalId =
+                        event.currentTarget?.dataset?.id;
+
+                    if (!goalId) return;
+
+                    this.selectGoal(goalId);
+                }
+            );
+
+        this.document
+            ?.getElementById?.(
+                "goalBreadcrumbRoot"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+                    this.app.mainView.callbacks
+                        .onCloseGoalView();
+                }
+            );
+
+    }
+
+    bindGoalButtons(selector) {
+
+        this.document
+            ?.querySelectorAll?.(selector)
             .forEach(button => {
 
                 button.addEventListener(
                     "click",
                     () => {
-                        this.app.mainView.callbacks
-                            .onSelectGoal(
-                                button.dataset.id
-                            );
+                        this.selectGoal(
+                            button.dataset.id
+                        );
                     }
                 );
 
             });
+
+    }
+
+    selectGoal(goalId) {
+
+        if (!goalId) return;
+
+        this.app.mainView.callbacks
+            .onSelectGoal(goalId);
 
     }
 
