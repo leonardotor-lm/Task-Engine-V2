@@ -38,7 +38,9 @@ export class SearchableMultiSelect {
                     <span>
                         Seleccionadas:
                         <strong
-                            id="${escapeHtml(id)}Count">
+                            id="${escapeHtml(id)}Count"
+                            aria-live="polite"
+                            aria-atomic="true">
                             ${selectedOptions.length}
                         </strong>
                     </span>
@@ -102,6 +104,8 @@ export class SearchableMultiSelect {
                                 <p
                                     id="${escapeHtml(id)}NoMatches"
                                     class="searchableSelectEmpty"
+                                    role="status"
+                                    aria-live="polite"
                                     hidden>
                                     No hay coincidencias.
                                 </p>
@@ -270,6 +274,22 @@ export class SearchableMultiSelect {
             }
 
         };
+
+        manager?.addEventListener(
+            "keydown",
+            event => {
+                if (
+                    event.key !== "Escape" ||
+                    !manager.open
+                ) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                closeManager();
+            }
+        );
 
         add.addEventListener("click", () => {
 
