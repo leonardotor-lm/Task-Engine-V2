@@ -51,10 +51,24 @@ export class ProjectWorkspaceController {
 
         const originalOpenProject =
             callbacks.onOpenProject;
+        const originalSelectTask =
+            callbacks.onSelectTask;
 
         if (originalOpenProject) {
 
             callbacks.onOpenProject = id => {
+
+                const task = this.app.taskService
+                    .getTaskById(id);
+
+                if (
+                    task &&
+                    this.app.taskService
+                        .getProjectDescendants(id)
+                        .length === 0
+                ) {
+                    return originalSelectTask?.(id);
+                }
 
                 if (
                     this.app.currentView !==
