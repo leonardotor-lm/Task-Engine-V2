@@ -74,6 +74,16 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - Definir cuidadosamente el encadenamiento cuando la finalización de un proyecto hijo deje también sin pendientes a un proyecto superior, evitando diálogos inesperados o cascadas ambiguas.
 - Implementar este comportamiento en una PR separada de las correcciones de detección/navegación de proyectos.
 
+### Creación de subtareas directamente en el editor
+
+- **Estado:** Pendiente.
+- En la vista Proyecto, al pulsar **Agregar subtarea**, abrir directamente el editor de tareas en modo creación y eliminar el formulario intermedio que sólo solicita el título.
+- La nueva subtarea no debe persistirse ni sincronizarse hasta que el usuario pulse Guardar.
+- Cancelar o cerrar el editor debe descartar el borrador sin dejar tareas fantasma.
+- El editor debe iniciar el borrador asociado al proyecto padre y heredar los valores que correspondan según las reglas actuales de creación de subtareas.
+- Reutilizar el editor existente mediante un modo de creación explícito, evitando crear previamente una tarea real con un título temporal.
+- Implementar este cambio en una PR específica porque requiere distinguir de forma segura edición y creación dentro del editor.
+
 ### Temas visuales
 
 - **Estado:** Postergado.
