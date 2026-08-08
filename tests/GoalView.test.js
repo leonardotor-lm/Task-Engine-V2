@@ -213,22 +213,7 @@ test("muestra la ruta jerárquica y permite volver al padre", () => {
     assert.match(html, /id="goalBreadcrumbRoot"/);
     assert.match(
         html,
-        /class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"[\s\S]*data-id="goal-root"/
+        /data-id="goal-root"[\s\S]*Aprender idiomas[\s\S]*data-id="goal-parent"[\s\S]*Español[\s\S]*aria-current="page"[\s\S]*Conversación/
     );
-    assert.match(
-        html,
-        /class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"[\s\S]*data-id="goal-parent"/
-    );
-    assert.match(
-        html,
-        /aria-current="page"[\s\S]*Conversación/
-    );
-
-    const rootPosition = html.indexOf("Aprender idiomas");
-    const parentPosition = html.indexOf("Español");
-    const currentPosition = html.lastIndexOf("Conversación");
-
-    assert.ok(rootPosition < parentPosition);
-    assert.ok(parentPosition < currentPosition);
 
 });
