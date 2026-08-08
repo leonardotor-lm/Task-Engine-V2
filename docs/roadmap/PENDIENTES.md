@@ -1,206 +1,103 @@
 # Pendientes de Task Engine V2
 
-Este documento es el registro permanente de trabajo todavía no implementado o no cerrado.
-Debe actualizarse en la misma PR que complete, descarte o reprograme un punto.
+Este documento registra únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
+Los puntos terminados se documentan en las PR correspondientes, en `docs/decisions/DECISIONS.md` cuando fijan una decisión estable y en el historial de Git.
+
+Última actualización: 8 de agosto de 2026.
 
 ## Estados
 
 - **Pendiente:** acordado, todavía no iniciado.
 - **En desarrollo:** existe una rama o PR activa.
 - **Postergado:** válido, pero fuera de la etapa actual.
-- **Terminado:** implementado y verificado; debe trasladarse al historial de decisiones.
 
 ## Principio de diseño de las vistas
 
-- **Planificación:** Áreas, Proyectos y Objetivos deben mostrar estructura, contexto, progreso y elementos que requieren revisión.
-- **Ejecución:** Hoy y atrasadas, Próximas e Inbox deben priorizar acciones concretas y reducir el ruido visual.
-- Las funciones administrativas deben vivir en editores o gestores específicos, no duplicarse en las pantallas de seguimiento.
+- **Planificación:** Áreas, Proyectos y Objetivos muestran estructura, contexto, progreso y elementos que requieren revisión.
+- **Ejecución:** Hoy y atrasadas, Próximas e Inbox priorizan acciones concretas y reducen ruido visual.
+- Las funciones administrativas viven en editores o gestores específicos y no se duplican innecesariamente en las pantallas de seguimiento.
+- La navegación jerárquica de Objetivos y Proyectos usa breadcrumbs como mecanismo principal.
 
-## Prioridad alta
+## Prioridad actual
 
-### Desactivar filtros guardados al cambiar de vista
+### Accesibilidad y limpieza final de interfaz
 
-- **Estado:** Terminado y verificado en la PR #133.
-- Tratar cada filtro guardado de la búsqueda avanzada como una vista exclusiva.
-- Al navegar a Hoy, Mañana, Próximas, Inbox, Todas, un área o cualquier otra vista, desactivar automáticamente el filtro guardado activo y su expresión de búsqueda.
-- Evitar que el filtro continúe ocultando tareas fuera de la vista desde la que fue abierto.
-- Conservar el filtro guardado para volver a utilizarlo, sin obligar a limpiar manualmente la búsqueda avanzada.
-- Agregar pruebas de navegación entre filtros guardados y vistas normales.
+- **Estado:** Pendiente.
+- Revisar navegación completa mediante teclado en escritorio y comportamiento equivalente en celular.
+- Verificar orden de foco al abrir y cerrar editores, diálogos, popovers y gestores.
+- Asegurar que `Escape` cierre únicamente la capa activa y devuelva el foco al control que la abrió cuando corresponda.
+- Revisar `aria-label`, `aria-expanded`, `aria-current`, nombres accesibles y títulos de botones con sólo ícono.
+- Comprobar que los controles interactivos tengan foco visible y áreas táctiles suficientes.
+- Auditar contraste de texto, estados deshabilitados, indicadores de selección y estado de sincronización.
+- Revisar estados vacíos y mensajes de error para que sean comprensibles sin depender sólo de color o posición.
+- Probar anchos extremos de escritorio y celular para detectar desbordes, superposiciones y controles fuera del viewport.
+- Auditar confirmaciones y diálogos restantes para eliminar cualquier dependencia innecesaria de ventanas nativas del navegador.
+- Eliminar CSS, selectores, listeners o ramas de compatibilidad que hayan quedado obsoletos después de los rediseños recientes.
+- Revisar inconsistencias visuales entre la lista principal, Objetivos, Proyectos, editores y gestores de Organización.
+- Mantener la estética Flat 2.0 y el criterio de reducir ruido sin retirar capacidades.
 
-### Verificación del despliegue de seguridad
+### Referencia al elemento padre en subtareas
 
-- **Estado:** Terminado y verificado el 2 de agosto de 2026.
-- Confirmar que el despliegue activo de Apps Script utiliza la versión actual de `google-apps-script/Code.gs`.
-- Probar una descarga y una subida con el despliegue actualizado.
-- Verificar que todas las colecciones, incluidos los objetivos, se conservan.
+- **Estado:** Pendiente.
+- Mostrar en el editor la leyenda **Subtarea de:** seguida por el título de la tarea o proyecto padre.
+- Permitir abrir desde esa referencia el elemento padre aunque no esté visible por los filtros actuales.
+- Mantener las acciones de mover o convertir en tarea principal dentro de Organización, sin duplicarlas junto a la referencia.
 
-## Prioridad media
+### Validación previa al eliminar elementos de Organización
 
-### Paneles compactos de la barra lateral
+- **Estado:** Pendiente de auditoría.
+- Comprobar si un área, contexto o etiqueta está en uso antes de pedir confirmación de eliminación.
+- Cuando la eliminación no sea válida, bloquearla y explicar el motivo antes de mostrar un diálogo destructivo.
+- Confirmar durante la auditoría si alguna parte de este comportamiento ya quedó cubierta por cambios posteriores.
 
-- **Estado:** Terminado y verificado en la PR #135.
-- **Búsqueda simple y avanzada:** implementadas y verificadas.
-- **Filtros rápidos:** implementados y verificados, con filtros y orden en un panel compacto.
-- **Preferencias de presentación:** mostrar completadas permanece bajo Filtros rápidos y el control de detalles vuelve al encabezado de las tareas.
-- **Configuración:** implementada y verificada. Retira de la barra los paneles permanentes de Organización, Sincronización y Copia de seguridad, y los reúne como tres accesos independientes detrás de un botón con engranaje.
-- **Estado de sincronización visible:** terminado y verificado en la PR #140; muestra debajo del título de la barra el estado actual sin abrir Configuración.
-- Mantener diferenciadas la navegación por Áreas y la administración de áreas, contextos y etiquetas.
+## Siguiente bloque funcional
 
-### Seleccionar todas en acciones múltiples
+### Fecha de inicio y períodos
 
-- **Estado:** Terminado y verificado en la PR #136.
-- Incorporar una casilla **Seleccionar todas** al modo de selección múltiple.
-- Limitar su alcance a las tareas seleccionables visibles en la vista y filtros actuales.
-- Permitir desmarcar el conjunto completo sin afectar tareas ocultas.
-- Comunicar con claridad cuántas tareas quedaron seleccionadas.
+- **Estado:** Postergado hasta terminar accesibilidad y limpieza.
+- Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
+- Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
+- Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
+- Habilitar fecha de inicio solamente en tareas no recurrentes.
+- Impedir activar recurrencia mientras exista fecha de inicio y pedir que se quite primero, sin borrarla silenciosamente.
+- Ocultar o deshabilitar el campo de inicio al editar una tarea recurrente.
+- Antes de la fecha de inicio, mantener la tarea fuera de las listas de ejecución; desde el inicio, mostrarla como disponible hasta completarla o vencer.
+- En calendario, representar la tarea en todos los días comprendidos entre inicio y vencimiento, incluidos ambos extremos.
+- Mantener ocultas las tareas en espera aunque haya comenzado su período.
+- Integrar el dato con dominio, persistencia local, Apps Script, sincronización, copias, editor, orden, filtros, búsqueda avanzada y pruebas.
+- Incorporar criterios de búsqueda como `inicio`, `inicioAntes`, `inicioDespues` y `tieneInicio`; evaluar además `activaEn`.
 
-### Conservar el desplazamiento en selección múltiple
-
-- **Estado:** Terminado y verificado en la PR #134.
-- Al marcar o desmarcar una tarea en modo de selección múltiple, conservar la posición actual de la lista.
-- Evitar que cada renderizado desplace la pantalla hacia el comienzo de la vista.
-- Mantener visible, siempre que sea posible, la tarea sobre la que se acaba de actuar.
-- Verificar el comportamiento al seleccionar tareas consecutivas en listas largas, tanto en escritorio como en celular.
-
-### Objetivos en la búsqueda avanzada
-
-- **Estado:** Terminado y verificado en la PR #142.
-- Extender el motor de búsqueda avanzada para contemplar la entidad Objetivo y sus asociaciones, incorporada después del diseño inicial del buscador.
-- Permitir buscar tareas y proyectos por objetivo o subobjetivo asociado, con coincidencias parciales y normalización de mayúsculas y tildes.
-- Incorporar criterios para distinguir elementos con o sin objetivos asociados.
-- Definir el alcance de la jerarquía: asociación directa, objetivo principal y descendientes.
-- Incorporar en la búsqueda de objetivos sus propiedades pertinentes, como título, descripción, estado, fecha límite y posición jerárquica.
-- Mantener compatibilidad con AND, OR, NOT, paréntesis y filtros guardados.
-- Definir nombres de campos y sinónimos coherentes en español e inglés.
-- Actualizar la referencia de búsqueda avanzada y agregar pruebas de análisis, filtrado y conservación de jerarquías.
-
-### Densidad y jerarquía visual
-
-- **Estado:** En desarrollo por ajustes progresivos.
-- **Densidad móvil de tareas:** terminada y verificada en la PR #137; aumenta la tipografía y retira el espacio vertical provocado por las acciones rápidas.
-- **Barra lateral móvil:** terminada y verificada en la PR #138; aumenta la legibilidad de navegación, títulos de sección y contadores sin modificar escritorio.
-- **Jerarquía de subtareas:** terminada y verificada en la PR #152; indicar en la lista que una tarea tiene una tarea padre mediante una marca visual compacta que complemente la sangría.
-- **Geometría de controles:** consolidación de campos de texto, selectores y botones pendiente de verificación manual; excluye deliberadamente casillas, chips y muestras circulares.
-- Mostrar en el editor la leyenda **Subtarea de:** seguida por el título de la tarea padre.
-- Permitir abrir desde esa referencia la tarea o el proyecto padre, incluso cuando no esté visible por los filtros actuales.
-- Mantener las acciones de mover o convertir en tarea principal dentro de la sección Organización, sin duplicarlas junto a la referencia jerárquica.
-- Revisar editores, barras y paneles para reducir ruido sin perder capacidades.
-- Mantener información esencial visible y administración bajo demanda.
-- Conservar una interfaz sobria, compacta y fácil de recorrer.
-- En celular, aumentar la legibilidad de la tipografía de tareas sin perder densidad.
-- Reducir el espacio vertical entre el título de la tarea y sus metadatos.
-- Revisar conjuntamente tamaño de fuente, altura de línea y separación para evitar una lista pequeña o dispersa.
-
-### Botones e iconografía
-
-- **Estado:** En desarrollo por ajustes progresivos.
-- **Encabezado móvil de proyectos:** terminado y verificado en la PR #147; unifica Volver, Editar y Agregar subtarea con el patrón responsive de Objetivos.
-- **Ventanas emergentes:** terminadas y verificadas en la PR #153; avisos, confirmaciones y solicitudes de texto usan diálogos propios coherentes con la estética Flat 2.0. Las eliminaciones irreversibles de áreas, contextos, etiquetas, tareas y papelera requieren doble confirmación.
-- **Validación previa de Organización:** comprobar si un área, contexto o etiqueta está en uso antes de pedir confirmación; bloquear la eliminación y explicar el motivo de inmediato.
-- **Acciones rápidas de tareas:** migrar Duplicar, Saltear recurrencia, Finalizar recurrencia, Archivar y Enviar a papelera al diálogo visual propio.
-- **Acciones del editor de tareas:** migrar Saltear recurrencia, Archivar, Enviar a papelera y Mover al diálogo propio; exigir doble confirmación para la eliminación definitiva.
-- **Objetivos:** migrar completar, archivar y enviar a papelera; exigir doble confirmación para la eliminación definitiva del objetivo y sus subobjetivos.
-- **Integridad al eliminar objetivos:** conservar las tareas y quitar únicamente sus asociaciones con el objetivo y los subobjetivos eliminados.
-- **Reparación de asociaciones históricas:** al iniciar, quitar de las tareas solamente referencias a objetivos que ya no existen, para recuperar copias locales anteriores sin perder información válida.
-- **Editor de tareas:** preservar asociaciones con objetivos temporalmente archivados o en papelera sin mostrarlas como opciones activas y sin producir falsos avisos de cambios.
-- Aplicar los criterios establecidos en `docs/design/VISUAL-GUIDE.md`.
-- Utilizar la base reutilizable `src/ui/Icon.js` y los estilos `.icon` y `.iconButton`.
-- Revisar de forma sistemática los botones de escritorio y celular.
-- Reemplazar textos evidentes por íconos reconocibles cuando reduzcan ruido visual.
-- Evaluar, entre otros, flecha hacia la izquierda para **Volver**, disquete para **Guardar** y ojo abierto o cerrado para **Mostrar u ocultar detalles**.
-- Mantener etiquetas accesibles, títulos descriptivos y estados visuales claros en todos los botones con sólo ícono.
-- Conservar texto cuando un ícono aislado pueda resultar ambiguo.
-- Agregar un contorno fino y uniforme a **Selección múltiple**, **Filtros rápidos** y **Mostrar completadas** para que se reconozcan inmediatamente como botones.
-- **Terminado y verificado en la PR #155:** conservar en los tres controles la misma geometría, grosor de borde y tratamiento de estados activo, foco y desplazamiento del puntero.
-
-### Selector de colores
-
-- **Estado:** Terminado y verificado en la PR #154.
-- Ofrecer una paleta inicial de colores pastel y algunos colores intensos.
-- Permitir ingresar colores personalizados en formato hexadecimal.
-- Mostrar vista previa y validar el código.
-- Permitir reutilizar hasta doce colores personalizados recientes.
-- Usar el mismo componente en áreas, contextos y etiquetas.
-
-### Orden manual de áreas
-
-- **Estado:** Terminado y verificado en la PR #144.
-- Permitir reorganizar las áreas visibles en la barra lateral.
-- Persistir y sincronizar el orden.
-- Priorizar un mecanismo adecuado para escritorio y celular.
-
-### Navegación y desplazamiento
-
-- **Estado:** Terminado y verificado en la PR #149.
-- Al cambiar de vista desde la barra lateral, desplazar el contenido al inicio.
-- Conservar la posición de la barra lateral al abrir herramientas o actualizar el estado de sincronización.
-- Conservar la posición del editor y de los diálogos abiertos durante renderizados ajenos a su contenido.
-- No reconstruir una edición transitoria durante una actualización de sincronización.
-- Verificar este comportamiento en escritorio y celular.
-
-### Cierre rápido del editor de tareas
-
-- **Estado:** Terminado y verificado en la PR #143.
-- En escritorio, permitir cerrar el editor de tareas mediante la tecla `Escape`.
-- Permitir cerrarlo haciendo clic fuera del panel para agilizar la carga sucesiva de tareas.
-- No cerrar el editor cuando el clic ocurra dentro de él.
-- Si existen cambios sin guardar, solicitar confirmación antes de descartarlos.
-- Mantener el comportamiento móvil y la navegación hacia atrás sin regresiones.
-
-### Fecha y hora
-
-- **Estado:** Terminado y verificado en la PR #145.
-- Permitir elegir una hora optativa junto con la fecha de vencimiento.
-- Definir la compatibilidad con recurrencias, posposición, búsquedas, orden y sincronización.
-- Mantener una selección simple cuando la tarea sólo necesite fecha.
+## Prioridad futura
 
 ### Temas visuales
 
 - **Estado:** Postergado.
 - Preparar temas visuales intercambiables sin alterar el dominio.
 - Mantener diferencias visuales claras entre área, contexto, etiqueta, prioridad y recurrencia.
-- Preservar un diseño compacto y sobrio.
+- Preservar una interfaz compacta y sobria.
 
-## Prioridad futura
-
-### Vista de calendario
-
-- **Estado:** Terminado y verificado en la PR #146.
-- Incorporar únicamente una vista mensual de consulta.
-- Marcar los días que contienen tareas pendientes.
-- Al elegir un día, abrir un modal con las tareas pendientes fechadas para esa jornada.
-- No incorporar edición dentro del calendario ni vistas semanal o diaria.
-
-### Adjuntos
-
-- **Estado:** En desarrollo por etapas.
-- **Base técnica:** modelo de metadatos, límites, compatibilidad con copias y operaciones autenticadas de Drive implementados; pendiente de verificación en la primera PR.
-- **Criterios acordados:** hasta diez archivos de 3 MB por tarea; conservarlos al enviar la tarea a la papelera y trasladarlos a la papelera de Drive sólo al quitar el adjunto o eliminar definitivamente la tarea.
-- Incorporar adjuntos mediante Google Drive.
-- Definir alta, apertura, eliminación y sincronización.
-- Añadir el criterio de búsqueda por adjuntos.
-- Actualizar la guía de búsqueda avanzada cuando la función exista.
-
-### Fecha de inicio y períodos
+### Historial
 
 - **Estado:** Postergado.
-- Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
-- Permitir una fecha de inicio sin fecha límite; en ese caso, la tarea pasa a estar disponible desde esa fecha pero no vence.
-- Si existen fecha de inicio y fecha límite, exigir que el inicio sea anterior o igual al vencimiento.
-- Habilitar la fecha de inicio solamente en tareas no recurrentes.
-- Impedir activar una recurrencia mientras exista una fecha de inicio y pedir que se quite primero, sin borrarla silenciosamente.
-- Ocultar o deshabilitar el campo de inicio al editar una tarea recurrente.
-- Antes de la fecha de inicio, mantener la tarea fuera de las listas de ejecución; desde el inicio, mostrarla como disponible hasta completarla o vencer.
-- En el calendario, representar la tarea en todos los días comprendidos entre el inicio y el vencimiento, incluidos ambos extremos.
-- Mantener ocultas las tareas en espera aunque haya comenzado su período.
-- Integrar el dato con persistencia, sincronización, copias de seguridad, edición, orden, filtros y pruebas.
-- Incorporar criterios de búsqueda como `inicio`, `inicioAntes`, `inicioDespues` y `tieneInicio`; evaluar también un criterio `activaEn` para buscar tareas cuyo período incluya una fecha.
+- Diseñar un historial útil de cambios y acciones una vez estabilizado el modelo funcional.
+- Definir qué eventos merecen persistirse antes de agregar una interfaz de consulta.
 
-### Historial y estadísticas
+### Estadísticas
 
 - **Estado:** Postergado.
-- Diseñar historial útil de cambios y acciones.
-- Incorporar estadísticas sólo cuando exista información suficiente y estable.
+- Incorporar estadísticas sólo después de definir el historial y disponer de información suficiente y estable.
+
+## Bloques cerrados recientemente
+
+Estos puntos ya no son pendientes y se conservan aquí sólo como referencia breve de cierre:
+
+- **Adjuntos:** base de Drive en PR #156; interfaz, eliminación y búsqueda en PR #157; integración con los editores actuales verificada posteriormente.
+- **Objetivos y subobjetivos:** dominio, sincronización, asociaciones, vistas y búsqueda completados en varias etapas; planificación jerárquica y breadcrumbs consolidados en PR #171.
+- **Editor de tareas:** rediseño de escritorio en PR #166 y adaptación móvil en PR #167.
+- **Orden y filtros por vista:** persistencia y sincronización completadas en PR #163, #164 y #170.
+- **Sincronización automática:** reconciliación y conservación del contexto estabilizadas en PR #165 y #170.
+- **Navegación de proyectos:** breadcrumbs en PR #172 y restauración de filtros guardados de origen en PR #173.
+- **Calendario, En espera, fecha/hora, selección múltiple, diálogos propios, selector de color y reorganización visual principal:** implementados y fusionados.
 
 ## Mantenimiento del registro
 
@@ -210,5 +107,5 @@ Antes de iniciar un nuevo bloque de trabajo:
 2. elegir un único objetivo principal;
 3. crear una rama específica;
 4. implementar y probar;
-5. actualizar el estado del pendiente en la misma PR;
-6. fusionar mediante **Squash and merge**.
+5. actualizar este registro en la misma PR;
+6. fusionar mediante **Squash and merge** sólo después de la validación correspondiente.

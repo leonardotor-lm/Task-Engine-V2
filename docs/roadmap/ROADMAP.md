@@ -1,182 +1,109 @@
-# Roadmap de Implementación
-# Objetivo
+# Roadmap de implementación
 
-Construir una aplicación funcional desde el primer momento, incorporando complejidad de manera gradual y evitando la acumulación de deuda técnica.
+## Objetivo
 
-Cada fase debe dejar un sistema estable y utilizable, aunque todavía incompleto.
+Construir una aplicación útil y estable, incorporando complejidad de manera gradual y evitando que cada nueva función degrade la experiencia existente.
 
-# Fase 0 — Fundación
+La secuencia inicial por fases cumplió su propósito. A agosto de 2026, Task Engine V2 ya superó las etapas fundacionales y este documento pasa a describir el estado real y el orden de trabajo vigente.
 
-Todavía no existe la aplicación.
+## Estado actual — agosto de 2026
 
-Solo existe la estructura.
+La aplicación ya cuenta con:
 
-Entregables
-Repositorio Git
+- dominio y persistencia local de tareas, áreas, contextos, etiquetas, objetivos y recurrencias;
+- sincronización con Google Apps Script y Google Sheets, con reconciliación automática y resolución conservadora de cambios simultáneos;
+- adjuntos en Google Drive;
+- interfaz responsive para escritorio y celular;
+- Inbox, Hoy y atrasadas, Mañana, Próximas, Todas, En espera, Calendario e historial operativo básico de completadas/archivadas/papelera;
+- áreas, contextos, etiquetas, prioridades y fecha/hora;
+- subtareas y proyectos jerárquicos;
+- objetivos y subobjetivos jerárquicos;
+- breadcrumbs para Objetivos y Proyectos;
+- búsqueda simple, búsqueda avanzada y filtros guardados;
+- orden y filtros rápidos persistentes por vista;
+- recurrencias;
+- selección múltiple;
+- editores de tareas específicos para escritorio y celular;
+- diálogos propios, selector de color y una interfaz Flat 2.0 consolidada.
 
-README
+Las PR #166 y #167 cerraron el rediseño de los editores. Las PR #171 a #173 consolidaron la navegación jerárquica de Objetivos y Proyectos, incluida la restauración de filtros guardados desde breadcrumbs.
 
-Documentación
+## Etapa actual — Accesibilidad y limpieza final
 
-Arquitectura
+Antes de incorporar otra función transversal se realizará una auditoría de calidad de interfaz.
 
-Estructura de carpetas
+Objetivos principales:
 
-Sistema de build (si hiciera falta)
+- navegación completa por teclado;
+- manejo correcto del foco en editores, diálogos y popovers;
+- nombres accesibles y estados ARIA coherentes;
+- foco visible y objetivos táctiles suficientes;
+- contraste y mensajes comprensibles sin depender exclusivamente del color;
+- revisión de desbordes y comportamiento responsive extremo;
+- eliminación de CSS y lógica obsoleta;
+- unificación de comportamientos entre vistas, editores y gestores;
+- auditoría de confirmaciones destructivas y ventanas nativas restantes.
 
-Convenciones de código
+Esta etapa no debe agregar funciones grandes. Su objetivo es estabilizar la superficie existente antes del siguiente cambio de dominio.
 
-No hay interfaz.
+## Siguiente etapa funcional — Fecha de inicio y períodos
 
-No hay tareas.
+Después de la limpieza se incorporará `startDate` para tareas no recurrentes.
 
-No hay Google Sheets.
+Reglas ya acordadas:
 
-Pero ya existe un proyecto profesional.
+- fecha de inicio opcional e independiente del vencimiento;
+- inicio sin vencimiento permitido;
+- si existen ambas fechas, `startDate <= dueDate`;
+- incompatibilidad con recurrencia;
+- tareas futuras ocultas de las listas de ejecución hasta su inicio;
+- calendario capaz de representar el período completo;
+- tareas en espera continúan ocultas aunque su período haya comenzado;
+- integración completa con persistencia, sincronización, backups, filtros, búsqueda, orden y pruebas.
 
-# Fase 1 — Core
+La especificación detallada permanece en `docs/roadmap/PENDIENTES.md`.
 
-Esta es, para mí, la fase más importante.
+## Etapas posteriores
 
-No vamos a crear tareas.
+### Historial
 
-No vamos a hacer pantallas.
+Definir qué cambios y acciones merecen persistirse y construir una vista útil de consulta. No se implementará un registro exhaustivo sin una necesidad clara de uso.
 
-Vamos a construir la infraestructura sobre la que todo lo demás descansará.
+### Estadísticas
 
-Objetivos
-Bus de eventos.
-Estado global.
-Sistema de módulos.
-Inicialización de la aplicación.
-Registro de servicios.
+Depende del historial. Se incorporará únicamente cuando exista una base de datos temporal suficiente y estable para producir métricas útiles.
 
-Al terminar esta fase todavía no habrá una aplicación visible.
+### Temas visuales
 
-Pero sí un motor.
+La arquitectura visual debe seguir usando variables y componentes reutilizables para permitir temas futuros, pero su implementación permanece postergada mientras no sea prioritaria.
 
-# Fase 2 — Persistencia
+## Fases históricas
 
-Ahora incorporamos Google Sheets.
+La secuencia original del proyecto fue:
 
-Pero solo lectura y escritura.
+1. Fundación.
+2. Persistencia.
+3. Dominio.
+4. UI mínima.
+5. Organización.
+6. Jerarquía.
+7. Búsquedas.
+8. Recurrencias.
+9. Adjuntos.
+10. Historial.
+11. Estadísticas.
+12. Optimización.
 
-Nada más.
+Las fases 1 a 9 ya forman parte de la aplicación. La optimización visual y estructural se adelantó respecto del plan original porque la aplicación alcanzó antes un nivel de uso real que justificó consolidar la interfaz, la sincronización y la navegación antes de Historial y Estadísticas.
 
-Objetivos
-Conexión con Apps Script.
-Repositorio de tareas.
-Repositorio de áreas.
-Repositorio de contextos.
-Repositorio de etiquetas.
-Sincronización.
+## Regla de avance
 
-Todavía no hay interfaz.
-
-# Fase 3 — Dominio
-
-Ahora sí aparecen las primeras reglas.
-
-Casos de uso
-Crear tarea.
-Editar tarea.
-Completar tarea.
-Eliminar.
-Restaurar.
-
-Todo funcionando mediante pruebas.
-
-Todavía sin interfaz.
-
-# Fase 4 — UI mínima
-
-Recién ahora aparece el navegador.
-
-Una interfaz extremadamente simple.
-
-Solo:
-
-listado;
-captura;
-edición;
-navegación básica.
-
-Nada de colores.
-
-Nada de animaciones.
-
-Nada de paneles sofisticados.
-
-Fase 5 — Organización
-
-Incorporamos:
-
-áreas;
-contextos;
-etiquetas;
-prioridades;
-Inbox.
-
-# Fase 6 — Jerarquía
-
-Ahora aparecen:
-
-subtareas;
-árbol;
-expansión;
-colapso.
-
-Fijate que recién acá.
-
-No antes.
-
-# Fase 7 — Búsquedas
-
-Este módulo merece construirse por separado.
-
-Primero:
-
-búsqueda simple.
-
-Después:
-
-búsqueda avanzada.
-
-Después:
-
-búsquedas guardadas.
-# Fase 8 — Recurrencias
-
-Muchos proyectos empiezan por acá.
-
-Yo haría exactamente lo contrario.
-
-Las recurrencias son complejas.
-
-Conviene llegar con un sistema sólido.
-
-# Fase 9 — Adjuntos
-
-Google Drive.
-
-# Fase 10 — Historial
-
-Ya existe información suficiente.
-
-Ahora tiene sentido mostrarla.
-
-# Fase 11 — Estadísticas
-
-La última gran funcionalidad.
-
-Porque depende del historial.
-
-# Fase 12 — Optimización
-
-Recién acá nos preocupamos por:
-
-rendimiento;
-caché;
-renderizados;
-animaciones;
-mejoras visuales.
+Cada bloque nuevo debe:
+
+1. partir de `main` actualizado;
+2. tener una rama y una PR específicas;
+3. conservar compatibilidad con los datos existentes;
+4. incluir pruebas automáticas cuando corresponda;
+5. pasar una verificación manual del flujo afectado;
+6. actualizar `docs/roadmap/PENDIENTES.md` si cambia el estado de trabajo;
+7. fusionarse mediante **Squash and merge** sólo después de la aprobación explícita.
