@@ -26,24 +26,23 @@ const projectView = await readFile(
     "utf8"
 );
 
-test("identifica las acciones jerárquicas del encabezado de objetivos", () => {
+test("el encabezado del objetivo conserva sólo la acción de edición", () => {
 
-    assert.match(goalView, /id="backToParentGoal"/);
-    assert.match(goalView, /id="closeGoalView"/);
+    assert.doesNotMatch(goalView, /id="backToParentGoal"/);
+    assert.doesNotMatch(goalView, /id="closeGoalView"/);
     assert.match(goalView, /id="editGoal"/);
     assert.equal(
         goalView.match(/goalHeadingAction/g)?.length,
-        3
+        1
     );
 
 });
 
-test("el botón atrás depende de que exista un objetivo padre", () => {
+test("la navegación jerárquica queda concentrada en el breadcrumb", () => {
 
-    assert.match(
-        goalView,
-        /\$\{parentGoal[\s\S]*?id="backToParentGoal"/
-    );
+    assert.match(goalView, /id="goalBreadcrumbRoot"/);
+    assert.match(goalView, /goalBreadcrumbGoal/);
+    assert.match(goalView, /aria-current="page"/);
 
 });
 
