@@ -41,6 +41,11 @@ export class ProjectView {
         );
         const originLabel =
             this.getOriginLabel(state);
+        const projectPresentationTasks =
+            this.getProjectPresentationTasks(
+                project,
+                state.allTasks ?? []
+            );
 
         const headingActions = `
             <button
@@ -144,13 +149,35 @@ export class ProjectView {
             state.bulkActionMode,
             state.showTaskMetadata,
             state.today,
-            state.allTasks,
+            projectPresentationTasks,
             headingActions,
             "Nueva subtarea",
             state.inlineSubtaskParentId,
             projectSummary,
             state.goals,
             "projectWorkspace"
+        );
+
+    }
+
+    getProjectPresentationTasks(project, allTasks) {
+
+        if (project.isDeleted()) {
+            return allTasks.filter(
+                task => task.isDeleted()
+            );
+        }
+
+        if (project.isArchived()) {
+            return allTasks.filter(
+                task => task.isArchived()
+            );
+        }
+
+        return allTasks.filter(
+            task =>
+                !task.isDeleted() &&
+                !task.isArchived()
         );
 
     }
