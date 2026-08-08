@@ -22,7 +22,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ### Accesibilidad y limpieza final de interfaz
 
-- **Estado:** En desarrollo. El primer bloque de foco y cierre de overlays fue fusionado en PR #175; el segundo bloque trabaja estados accesibles de navegación y controles.
+- **Estado:** En desarrollo. El primer bloque de foco y cierre de overlays fue fusionado en PR #175; el segundo bloque de estados accesibles fue fusionado en PR #176; el tercer bloque de navegación real por teclado se desarrolla en `audit/keyboard-navigation`.
 - Revisar navegación completa mediante teclado en escritorio y comportamiento equivalente en celular.
 - Verificar orden de foco al abrir y cerrar editores, diálogos, popovers y gestores.
 - Asegurar que `Escape` cierre únicamente la capa activa y devuelva el foco al control que la abrió cuando corresponda.
@@ -36,11 +36,21 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - Revisar inconsistencias visuales entre la lista principal, Objetivos, Proyectos, editores y gestores de Organización.
 - Mantener la estética Flat 2.0 y el criterio de reducir ruido sin retirar capacidades.
 
+## Regresiones a retomar después del tercer bloque
+
+### Persistencia de filtros guardados y orden por vista
+
+- **Estado:** Pendiente. Reportado nuevamente durante la validación del segundo bloque de accesibilidad.
+- Auditar por qué los filtros personalizados guardados dejaron de persistir entre recargas/sesiones o sincronizaciones.
+- Auditar por qué el orden seleccionado para cada vista dejó de restaurarse de forma persistente.
+- Revisar primero los repositorios/controladores de preferencias y su integración con sincronización antes de cambiar la interfaz.
+- Agregar pruebas de regresión que cubran recarga, cambio de vista y restauración posterior de ambas preferencias.
+
 ## Siguiente bloque funcional
 
 ### Fecha de inicio y períodos
 
-- **Estado:** Postergado hasta terminar accesibilidad y limpieza.
+- **Estado:** Postergado hasta terminar accesibilidad, limpieza y las regresiones de persistencia registradas arriba.
 - Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
 - Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
 - Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
@@ -80,7 +90,7 @@ Estos puntos ya no son pendientes y se conservan aquí sólo como referencia bre
 - **Adjuntos:** base de Drive en PR #156; interfaz, eliminación y búsqueda en PR #157; integración con los editores actuales verificada posteriormente.
 - **Objetivos y subobjetivos:** dominio, sincronización, asociaciones, vistas y búsqueda completados en varias etapas; planificación jerárquica y breadcrumbs consolidados en PR #171.
 - **Editor de tareas:** rediseño de escritorio en PR #166 y adaptación móvil en PR #167.
-- **Orden y filtros por vista:** persistencia y sincronización completadas en PR #163, #164 y #170.
+- **Orden y filtros por vista:** implementación original de persistencia y sincronización completada en PR #163, #164 y #170; una regresión posterior de persistencia se encuentra registrada arriba.
 - **Sincronización automática:** reconciliación y conservación del contexto estabilizadas en PR #165 y #170.
 - **Navegación de proyectos:** breadcrumbs en PR #172 y restauración de filtros guardados de origen en PR #173.
 - **Referencia al padre de subtareas:** el editor muestra `Subtarea de:` y permite abrir el elemento padre aunque no esté en la lista filtrada actual.

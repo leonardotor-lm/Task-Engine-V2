@@ -24,6 +24,9 @@ import {
     AccessibilityStateController
 } from "./ui/AccessibilityStateController.js";
 import {
+    KeyboardNavigationController
+} from "./ui/KeyboardNavigationController.js";
+import {
     MobileMainLayoutController
 } from "./ui/MobileMainLayoutController.js";
 import {
@@ -78,6 +81,8 @@ const overlayDismissalController =
     new OverlayDismissalController(app);
 const accessibilityStateController =
     new AccessibilityStateController(app);
+const keyboardNavigationController =
+    new KeyboardNavigationController(app);
 const mobileMainLayoutController =
     new MobileMainLayoutController(app);
 const directTaskCreationController =
@@ -127,4 +132,5 @@ ongoingSyncReconciliationController
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
 accessibilityStateController.start();
+keyboardNavigationController.start();
 app.start();
