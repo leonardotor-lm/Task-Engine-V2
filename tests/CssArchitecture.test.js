@@ -74,15 +74,17 @@ test("la hoja consolidada conserva los tres bloques funcionales", async () => {
 
 });
 
-test("la hoja de objetivos contiene la navegación jerárquica", async () => {
+test("la hoja compartida contiene la navegación jerárquica de objetivos y proyectos", async () => {
 
     const styles = await readFile(
         resolve(ROOT, "styles/goal-workspace.css"),
         "utf8"
     );
 
-    assert.match(styles, /\.goalBreadcrumb\s*\{/);
+    assert.match(styles, /\.goalBreadcrumb/);
     assert.match(styles, /\.goalBreadcrumbLink/);
+    assert.match(styles, /\.projectBreadcrumb/);
+    assert.match(styles, /\.projectBreadcrumbLink/);
 
     const withoutComments = styles.replace(
         /\/\*[\s\S]*?\*\//g,
