@@ -7,6 +7,7 @@ var TASK_ENGINE_SETTINGS = Object.freeze({
     META_SHEET: "TaskEngineMeta",
     BACKUP_FORMAT: "task-engine-v2-backup",
     BACKUP_VERSION: 1,
+    SYNC_SCHEMA_VERSION: 2,
     MAX_PAYLOAD_LENGTH: 45000,
     MAX_REQUEST_LENGTH: 5000000,
     MAX_ATTACHMENT_BYTES: 3 * 1024 * 1024,
@@ -594,6 +595,15 @@ function getRevision_(metaSheet) {
 
 }
 
+function hasOwn_(object, property) {
+
+    return Object.prototype.hasOwnProperty.call(
+        object || {},
+        property
+    );
+
+}
+
 function loadSnapshot_() {
 
     var storage = getStorage_();
@@ -608,61 +618,23 @@ function loadSnapshot_() {
         };
     }
 
-    var collections = {
-        tasks: [],
-        areas: [],
-        contexts: [],
-        tags: [],
-        goals: []
-    };
-
-    var typeToCollection = {
-        task: "tasks",
-        area: "areas",
-        context: "contexts",
-        tag: "tags",
-        goal: "goals"
-    };
-
+    var rows = [];
     var lastRow =
         storage.dataSheet.getLastRow();
 
     if (lastRow >= 2) {
 
-        var rows = storage.dataSheet
+        rows = storage.dataSheet
             .getRange(
                 2,
                 1,
                 lastRow - 1,
                 6
             )
-            .getValues();
-
-        rows.forEach(function(row) {
-
-            if (Number(row[0]) !== revision) {
-                return;
-            }
-
-            var collection =
-                typeToCollection[row[1]];
-
-            if (!collection) {
-                return;
-            }
-
-            try {
-                collections[collection].push(
-                    JSON.parse(row[5])
-                );
-            } catch (error) {
-                throw protocolError_(
-                    "CORRUPT_REMOTE_DATA",
-                    "La hoja contiene datos remotos dañados."
-                );
-            }
-
-        });
+            .getValues()
+            .filter(function(row) {
+                return Number(row[0]) === revision;
+            });
 
     }
 
@@ -679,9 +651,199 @@ function loadSnapshot_() {
                     .getRange(2, 2)
                     .getDisplayValue() ||
                 new Date().toISOString(),
-            data: collections
+            data: rowsToSnapshotData_(rows)
         }
     };
+
+}
+
+function rowsToSnapshotData_(rows) {
+
+    var collections = {
+        tasks: [],
+        areas: [],
+        contexts: [],
+        tags: [],
+        goals: [],
+        customFilters: []
+    };
+
+    var typeToCollection = {
+        task: "tasks",
+        area: "areas",
+        context: "contexts",
+        tag: "tags",
+        goal: "goals",
+        customFilter: "customFilters"
+    };
+
+    var snapshotMeta = null;
+    var specialPayloads = {};
+
+    (rows || []).forEach(function(row) {
+
+        var type = String(row[1] || "");
+
+        if (type === "snapshotMeta") {
+
+            try {
+                snapshotMeta = JSON.parse(row[5]);
+            } catch (error) {
+                throw protocolError_(
+                    "CORRUPT_REMOTE_DATA",
+                    "La hoja contiene metadatos remotos dañados."
+                );
+            }
+
+            return;
+
+        }
+
+        if (
+            type === "taskSortPreferences" ||
+            type === "taskFilterPreferences"
+        ) {
+
+            try {
+                specialPayloads[type] =
+                    JSON.parse(row[5]);
+            } catch (error) {
+                throw protocolError_(
+                    "CORRUPT_REMOTE_DATA",
+                    "La hoja contiene preferencias remotas dañadas."
+                );
+            }
+
+            return;
+
+        }
+
+        var collection =
+            typeToCollection[type];
+
+        if (!collection) {
+            return;
+        }
+
+        try {
+            collections[collection].push(
+                JSON.parse(row[5])
+            );
+        } catch (error) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "La hoja contiene datos remotos dañados."
+            );
+        }
+
+    });
+
+    var data = {
+        tasks: collections.tasks,
+        areas: collections.areas,
+        contexts: collections.contexts,
+        tags: collections.tags,
+        goals: collections.goals
+    };
+
+    if (
+        !snapshotMeta ||
+        snapshotMeta.schemaVersion !==
+            TASK_ENGINE_SETTINGS
+                .SYNC_SCHEMA_VERSION
+    ) {
+        return data;
+    }
+
+    var optionalFields =
+        snapshotMeta.optionalFields;
+
+    if (
+        !optionalFields ||
+        typeof optionalFields !== "object" ||
+        Array.isArray(optionalFields)
+    ) {
+        throw protocolError_(
+            "CORRUPT_REMOTE_DATA",
+            "La hoja contiene metadatos de persistencia inválidos."
+        );
+    }
+
+    if (optionalFields.customFilters === true) {
+        data.customFilters =
+            collections.customFilters;
+    }
+
+    if (
+        optionalFields.taskSortPreferences === true
+    ) {
+
+        if (
+            !hasOwn_(
+                specialPayloads,
+                "taskSortPreferences"
+            )
+        ) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "Faltan preferencias de orden en la revisión remota."
+            );
+        }
+
+        try {
+            validateTaskSortPreferences_(
+                specialPayloads
+                    .taskSortPreferences
+            );
+        } catch (error) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "La hoja contiene preferencias de orden inválidas."
+            );
+        }
+
+        data.taskSortPreferences =
+            specialPayloads
+                .taskSortPreferences;
+
+    }
+
+    if (
+        optionalFields.taskFilterPreferences ===
+            true
+    ) {
+
+        if (
+            !hasOwn_(
+                specialPayloads,
+                "taskFilterPreferences"
+            )
+        ) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "Faltan preferencias de filtros en la revisión remota."
+            );
+        }
+
+        try {
+            validateTaskFilterPreferences_(
+                specialPayloads
+                    .taskFilterPreferences
+            );
+        } catch (error) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "La hoja contiene preferencias de filtros inválidas."
+            );
+        }
+
+        data.taskFilterPreferences =
+            specialPayloads
+                .taskFilterPreferences;
+
+    }
+
+    return data;
 
 }
 
@@ -793,6 +955,15 @@ function snapshotToRows_(
         ["goals", "goal"]
     ];
 
+    if (
+        hasOwn_(snapshot.data, "customFilters")
+    ) {
+        definitions.push([
+            "customFilters",
+            "customFilter"
+        ]);
+    }
+
     var rows = [];
 
     definitions.forEach(function(definition) {
@@ -806,16 +977,7 @@ function snapshotToRows_(
                 var payload =
                     JSON.stringify(entity);
 
-                if (
-                    payload.length >
-                    TASK_ENGINE_SETTINGS
-                        .MAX_PAYLOAD_LENGTH
-                ) {
-                    throw protocolError_(
-                        "ENTITY_TOO_LARGE",
-                        "Una entidad supera el tamaño permitido por Google Sheets."
-                    );
-                }
+                assertPayloadSize_(payload);
 
                 rows.push([
                     revision,
@@ -830,7 +992,108 @@ function snapshotToRows_(
 
     });
 
+    var optionalFields = {
+        customFilters:
+            hasOwn_(
+                snapshot.data,
+                "customFilters"
+            ),
+        taskSortPreferences:
+            hasOwn_(
+                snapshot.data,
+                "taskSortPreferences"
+            ),
+        taskFilterPreferences:
+            hasOwn_(
+                snapshot.data,
+                "taskFilterPreferences"
+            )
+    };
+
+    var hasOptionalFields =
+        optionalFields.customFilters ||
+        optionalFields.taskSortPreferences ||
+        optionalFields.taskFilterPreferences;
+
+    if (hasOptionalFields) {
+
+        var metaPayload = JSON.stringify({
+            schemaVersion:
+                TASK_ENGINE_SETTINGS
+                    .SYNC_SCHEMA_VERSION,
+            optionalFields: optionalFields
+        });
+
+        assertPayloadSize_(metaPayload);
+
+        rows.push([
+            revision,
+            "snapshotMeta",
+            "sync-state",
+            TASK_ENGINE_SETTINGS
+                .SYNC_SCHEMA_VERSION,
+            "",
+            metaPayload
+        ]);
+
+    }
+
+    if (optionalFields.taskSortPreferences) {
+
+        var sortPayload = JSON.stringify(
+            snapshot.data.taskSortPreferences
+        );
+
+        assertPayloadSize_(sortPayload);
+
+        rows.push([
+            revision,
+            "taskSortPreferences",
+            "preferences",
+            TASK_ENGINE_SETTINGS
+                .SYNC_SCHEMA_VERSION,
+            "",
+            sortPayload
+        ]);
+
+    }
+
+    if (optionalFields.taskFilterPreferences) {
+
+        var filterPayload = JSON.stringify(
+            snapshot.data.taskFilterPreferences
+        );
+
+        assertPayloadSize_(filterPayload);
+
+        rows.push([
+            revision,
+            "taskFilterPreferences",
+            "preferences",
+            TASK_ENGINE_SETTINGS
+                .SYNC_SCHEMA_VERSION,
+            "",
+            filterPayload
+        ]);
+
+    }
+
     return rows;
+
+}
+
+function assertPayloadSize_(payload) {
+
+    if (
+        payload.length >
+        TASK_ENGINE_SETTINGS
+            .MAX_PAYLOAD_LENGTH
+    ) {
+        throw protocolError_(
+            "ENTITY_TOO_LARGE",
+            "Un dato supera el tamaño permitido por Google Sheets."
+        );
+    }
 
 }
 
@@ -872,26 +1135,57 @@ function validateSnapshot_(snapshot) {
             );
         }
 
-        var ids = {};
-
-        collection.forEach(function(entity) {
-
-            validateEntity_(entity, name);
-
-            if (ids[entity.id]) {
-                throw protocolError_(
-                    "DUPLICATE_ID",
-                    "La copia contiene identificadores duplicados."
-                );
-            }
-
-            ids[entity.id] = true;
-
-        });
-
-        idsByCollection[name] = ids;
+        idsByCollection[name] =
+            validateEntityCollection_(
+                collection,
+                name
+            );
 
     });
+
+    if (
+        hasOwn_(snapshot.data, "customFilters")
+    ) {
+
+        if (
+            !Array.isArray(
+                snapshot.data.customFilters
+            )
+        ) {
+            throw protocolError_(
+                "INVALID_SNAPSHOT",
+                "La copia contiene filtros personalizados inválidos."
+            );
+        }
+
+        validateEntityCollection_(
+            snapshot.data.customFilters,
+            "customFilters"
+        );
+
+    }
+
+    if (
+        hasOwn_(
+            snapshot.data,
+            "taskSortPreferences"
+        )
+    ) {
+        validateTaskSortPreferences_(
+            snapshot.data.taskSortPreferences
+        );
+    }
+
+    if (
+        hasOwn_(
+            snapshot.data,
+            "taskFilterPreferences"
+        )
+    ) {
+        validateTaskFilterPreferences_(
+            snapshot.data.taskFilterPreferences
+        );
+    }
 
     validateTaskReferences_(
         snapshot.data.tasks,
@@ -902,6 +1196,133 @@ function validateSnapshot_(snapshot) {
         snapshot.data.goals,
         idsByCollection
     );
+
+}
+
+function validateEntityCollection_(
+    collection,
+    collectionName
+) {
+
+    var ids = {};
+
+    collection.forEach(function(entity) {
+
+        validateEntity_(
+            entity,
+            collectionName
+        );
+
+        if (ids[entity.id]) {
+            throw protocolError_(
+                "DUPLICATE_ID",
+                "La copia contiene identificadores duplicados."
+            );
+        }
+
+        ids[entity.id] = true;
+
+    });
+
+    return ids;
+
+}
+
+function validateTaskSortPreferences_(
+    preferences
+) {
+
+    if (
+        !preferences ||
+        typeof preferences !== "object" ||
+        Array.isArray(preferences)
+    ) {
+        throw protocolError_(
+            "INVALID_SNAPSHOT",
+            "La copia contiene preferencias de orden inválidas."
+        );
+    }
+
+    var validSorts = {
+        MANUAL: true,
+        DUE_DATE: true,
+        PRIORITY: true,
+        CREATED_NEWEST: true,
+        CREATED_OLDEST: true
+    };
+
+    Object.keys(preferences)
+        .forEach(function(viewKey) {
+
+            if (
+                !viewKey.trim() ||
+                !validSorts[preferences[viewKey]]
+            ) {
+                throw protocolError_(
+                    "INVALID_SNAPSHOT",
+                    "La copia contiene una preferencia de orden inválida."
+                );
+            }
+
+        });
+
+}
+
+function validateTaskFilterPreferences_(
+    preferences
+) {
+
+    if (
+        !preferences ||
+        typeof preferences !== "object" ||
+        Array.isArray(preferences)
+    ) {
+        throw protocolError_(
+            "INVALID_SNAPSHOT",
+            "La copia contiene preferencias de filtros inválidas."
+        );
+    }
+
+    var filterKeys = [
+        "areaId",
+        "contextId",
+        "tagId",
+        "priority",
+        "due"
+    ];
+
+    Object.keys(preferences)
+        .forEach(function(viewKey) {
+
+            var filters = preferences[viewKey];
+
+            if (
+                !viewKey.trim() ||
+                !filters ||
+                typeof filters !== "object" ||
+                Array.isArray(filters)
+            ) {
+                throw protocolError_(
+                    "INVALID_SNAPSHOT",
+                    "La copia contiene una preferencia de filtros inválida."
+                );
+            }
+
+            filterKeys.forEach(function(key) {
+
+                if (
+                    typeof filters[key] !==
+                        "string"
+                ) {
+                    throw protocolError_(
+                        "INVALID_SNAPSHOT",
+                        "La copia contiene una preferencia de filtros incompleta."
+                    );
+                }
+
+            });
+
+        });
 
 }
 
