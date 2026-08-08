@@ -143,6 +143,7 @@ export class Dialog {
 
         const id = `appDialog${++this.nextId}`;
         const host = document.createElement("div");
+        const previousFocus = document.activeElement;
 
         host.innerHTML = this.render({
             ...options,
@@ -161,6 +162,16 @@ export class Dialog {
                 finished = true;
                 dialog.close();
                 dialog.remove();
+
+                if (
+                    previousFocus &&
+                    previousFocus !== document.body &&
+                    previousFocus.isConnected &&
+                    typeof previousFocus.focus === "function"
+                ) {
+                    previousFocus.focus();
+                }
+
                 resolve(value);
             };
 
