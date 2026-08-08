@@ -35,6 +35,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "attachments.css",
             "waiting.css",
             "styles/task-interface.css",
+            "styles/goal-workspace.css",
             "styles/task-editor-desktop.css",
             "styles/task-editor-popovers.css",
             "styles/task-editor-mobile.css"
@@ -59,6 +60,29 @@ test("la hoja consolidada conserva los tres bloques funcionales", async () => {
     assert.match(styles, /\.taskContextToolbar\s*\{/);
     assert.match(styles, /\.sidebar \.sidebarUnifiedGroup/);
     assert.match(styles, /\.mobileFloatingTaskButton\s*\{/);
+
+    const withoutComments = styles.replace(
+        /\/\*[\s\S]*?\*\//g,
+        ""
+    );
+    const openingBraces =
+        withoutComments.match(/\{/g)?.length ?? 0;
+    const closingBraces =
+        withoutComments.match(/\}/g)?.length ?? 0;
+
+    assert.equal(openingBraces, closingBraces);
+
+});
+
+test("la hoja de objetivos contiene la navegación jerárquica", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/goal-workspace.css"),
+        "utf8"
+    );
+
+    assert.match(styles, /\.goalBreadcrumb\s*\{/);
+    assert.match(styles, /\.goalBreadcrumbLink/);
 
     const withoutComments = styles.replace(
         /\/\*[\s\S]*?\*\//g,
