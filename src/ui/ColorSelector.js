@@ -122,6 +122,7 @@ export class ColorSelector {
                     <div class="colorSelectorContent">
                         <div
                             class="colorSelectorPalette"
+                            role="group"
                             aria-label="Paleta de colores">
                             ${colors.map(color => `
                                 <button
@@ -198,6 +199,9 @@ export class ColorSelector {
             const panel = selector.querySelector(
                 ".colorSelectorPanel"
             );
+            const summary = panel?.querySelector(
+                ":scope > summary"
+            );
             const cancelButton = selector.querySelector(
                 ".colorSelectorCancel"
             );
@@ -253,27 +257,35 @@ export class ColorSelector {
                 return true;
             };
 
-            const closePanel = () => {
+            const closePanel = ({
+                restoreFocus = false
+            } = {}) => {
                 skipNextCloseRestore = true;
                 panel.removeAttribute("open");
                 stopDismissListeners();
+
+                if (restoreFocus) {
+                    summary?.focus();
+                }
             };
 
-            const cancel = () => {
+            const cancel = ({
+                restoreFocus = true
+            } = {}) => {
                 select(committedColor);
-                closePanel();
+                closePanel({ restoreFocus });
             };
 
             const apply = () => {
                 if (!select(hexInput.value)) return;
                 committedColor = valueInput.value;
                 this.remember(committedColor);
-                closePanel();
+                closePanel({ restoreFocus: true });
             };
 
             function dismissFromOutside(event) {
                 if (!selector.contains(event.target)) {
-                    cancel();
+                    cancel({ restoreFocus: false });
                 }
             }
 
@@ -281,7 +293,7 @@ export class ColorSelector {
                 if (event.key !== "Escape") return;
                 event.preventDefault();
                 event.stopPropagation();
-                cancel();
+                cancel({ restoreFocus: true });
             }
 
             panel.addEventListener("toggle", () => {
@@ -334,7 +346,10 @@ export class ColorSelector {
                 select(nativeInput.value);
             });
 
-            cancelButton.addEventListener("click", cancel);
+            cancelButton.addEventListener(
+                "click",
+                () => cancel({ restoreFocus: true })
+            );
             applyButton.addEventListener("click", apply);
 
         });
