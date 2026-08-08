@@ -20,20 +20,20 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ## Prioridad actual
 
-### Persistencia de filtros guardados y orden por vista
+### Creación de subtareas directamente en el editor
 
-- **Estado:** En desarrollo en `audit/persistence-regressions`.
-- La auditoría confirmó que los repositorios locales sí escriben los filtros personalizados y las preferencias por vista en `localStorage`.
-- También confirmó que los cambios de orden y filtros llegan al fingerprint de sincronización y pueden disparar sincronización automática.
-- **Causa raíz identificada:** el backend de Apps Script aceptaba un snapshot con `customFilters`, `taskSortPreferences` y `taskFilterPreferences`, pero `snapshotToRows_()` sólo persistía tareas, áreas, contextos, etiquetas y objetivos. `loadSnapshot_()` reconstruía esas mismas cinco colecciones. Los datos opcionales se descartaban silenciosamente en Sheets.
-- Corregir el contrato del backend antes de modificar nuevamente la reconciliación del frontend.
-- Mantener la distinción entre un campo ausente en una revisión histórica y un campo presente pero vacío en una revisión moderna: ausencia significa “esta revisión no conoce este dato”; `[]` o `{}` presentes pueden significar un borrado deliberado.
-- Persistir filtros personalizados como entidades versionadas y las preferencias por vista como registros propios, acompañados por metadatos de esquema por revisión.
-- Conservar compatibilidad con las revisiones históricas sin exigir una migración manual de la hoja.
-- Agregar pruebas de contrato del backend que cubran round trip, vacíos explícitos, revisiones históricas y datos incompletos/corruptos.
-- La validación manual requiere actualizar y volver a desplegar `google-apps-script/Code.gs`; actualizar solamente el frontend no cambia la URL `/exec` ya desplegada.
+- **Estado:** En desarrollo en `agent/direct-subtask-editor`.
+- En la vista Proyecto, al pulsar **Agregar subtarea**, abrir directamente el editor de tareas en modo creación y eliminar del flujo normal el formulario intermedio que sólo solicita el título.
+- Reutilizar `DirectTaskCreationController` y el sistema de borradores ya utilizado por **Nueva tarea**, sin crear una segunda infraestructura paralela.
+- La nueva subtarea no debe persistirse ni sincronizarse hasta que el usuario pulse Guardar.
+- Cancelar o cerrar el editor debe descartar el borrador sin dejar tareas fantasma; si el borrador contiene adjuntos, deben limpiarse con el mecanismo ya existente para borradores.
+- El borrador debe quedar asociado al proyecto padre y heredar inicialmente su área y estado según las reglas actuales de subtareas.
+- Conservar la transición `INBOX → PENDING` si durante la creación se asigna un área a una subtarea cuyo padre está en Inbox.
+- No permitir recurrencia en una subtarea.
+- Mantener el editor completo para descripción, área, contexto, prioridad, etiquetas, objetivos, fecha/hora, En espera y adjuntos.
+- Validar que la creación directa funcione igual en escritorio y móvil y que el cierre por botón, Escape, clic fuera o navegación móvil no deje datos residuales.
 
-## Accesibilidad y limpieza final de interfaz
+### Accesibilidad y limpieza final de interfaz
 
 - **Estado:** Los tres bloques funcionales de accesibilidad fueron fusionados: foco/cierre de overlays en PR #175, estados accesibles en PR #176 y navegación real por teclado en PR #177. Queda una pasada posterior de limpieza visual/táctil.
 - Comprobar que los controles interactivos tengan foco visible y áreas táctiles suficientes.
@@ -49,7 +49,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ### Fecha de inicio y períodos
 
-- **Estado:** Postergado hasta terminar las regresiones de persistencia y la limpieza final registrada arriba.
+- **Estado:** Postergado hasta terminar el bloque actual y la limpieza final registrada arriba.
 - Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
 - Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
 - Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
@@ -74,16 +74,6 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - Definir cuidadosamente el encadenamiento cuando la finalización de un proyecto hijo deje también sin pendientes a un proyecto superior, evitando diálogos inesperados o cascadas ambiguas.
 - Implementar este comportamiento en una PR separada de las correcciones de detección/navegación de proyectos.
 
-### Creación de subtareas directamente en el editor
-
-- **Estado:** Pendiente.
-- En la vista Proyecto, al pulsar **Agregar subtarea**, abrir directamente el editor de tareas en modo creación y eliminar el formulario intermedio que sólo solicita el título.
-- La nueva subtarea no debe persistirse ni sincronizarse hasta que el usuario pulse Guardar.
-- Cancelar o cerrar el editor debe descartar el borrador sin dejar tareas fantasma.
-- El editor debe iniciar el borrador asociado al proyecto padre y heredar los valores que correspondan según las reglas actuales de creación de subtareas.
-- Reutilizar el editor existente mediante un modo de creación explícito, evitando crear previamente una tarea real con un título temporal.
-- Implementar este cambio en una PR específica porque requiere distinguir de forma segura edición y creación dentro del editor.
-
 ### Temas visuales
 
 - **Estado:** Postergado.
@@ -106,10 +96,12 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 Estos puntos ya no son pendientes y se conservan aquí sólo como referencia breve de cierre:
 
+- **Persistencia de filtros y preferencias por vista:** el contrato de persistencia completo a través de Sheets y Apps Script quedó corregido y probado en PR #178, incluyendo compatibilidad con revisiones históricas y datos opcionales.
+- **Detección y navegación de proyectos:** PR #179 unificó el criterio de descendencia visible para evitar proyectos falsos producidos por subtareas archivadas o en Papelera.
 - **Adjuntos:** base de Drive en PR #156; interfaz, eliminación y búsqueda en PR #157; integración con los editores actuales verificada posteriormente.
 - **Objetivos y subobjetivos:** dominio, sincronización, asociaciones, vistas y búsqueda completados en varias etapas; planificación jerárquica y breadcrumbs consolidados en PR #171.
 - **Editor de tareas:** rediseño de escritorio en PR #166 y adaptación móvil en PR #167.
-- **Orden y filtros por vista:** implementación original de persistencia y sincronización completada en PR #163, #164 y #170; la regresión posterior se encuentra en reparación en el bloque actual.
+- **Orden y filtros por vista:** implementación original en PR #163, #164 y #170; persistencia backend completada posteriormente en PR #178.
 - **Sincronización automática:** reconciliación y conservación del contexto estabilizadas en PR #165 y #170.
 - **Navegación de proyectos:** breadcrumbs en PR #172 y restauración de filtros guardados de origen en PR #173.
 - **Accesibilidad funcional:** cierre/foco de overlays en PR #175, estados ARIA en PR #176 y navegación por teclado en PR #177.
