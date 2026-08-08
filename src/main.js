@@ -18,6 +18,9 @@ import {
     TaskFiltersDialogController
 } from "./ui/TaskFiltersDialogController.js";
 import {
+    OverlayDismissalController
+} from "./ui/OverlayDismissalController.js";
+import {
     MobileMainLayoutController
 } from "./ui/MobileMainLayoutController.js";
 import {
@@ -68,6 +71,8 @@ const sidebarLayoutController =
     new SidebarLayoutController(app);
 const taskFiltersDialogController =
     new TaskFiltersDialogController(app);
+const overlayDismissalController =
+    new OverlayDismissalController(app);
 const mobileMainLayoutController =
     new MobileMainLayoutController(app);
 const directTaskCreationController =
@@ -101,6 +106,7 @@ waitingController.start();
 taskToolbarController.start();
 sidebarLayoutController.start();
 taskFiltersDialogController.start();
+overlayDismissalController.start();
 mobileMainLayoutController.start();
 directTaskCreationController.start();
 taskSortPreferencesController.start();

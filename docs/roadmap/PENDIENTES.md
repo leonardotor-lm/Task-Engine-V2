@@ -22,7 +22,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ### Accesibilidad y limpieza final de interfaz
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo en la rama `audit/accessibility-cleanup`.
 - Revisar navegación completa mediante teclado en escritorio y comportamiento equivalente en celular.
 - Verificar orden de foco al abrir y cerrar editores, diálogos, popovers y gestores.
 - Asegurar que `Escape` cierre únicamente la capa activa y devuelva el foco al control que la abrió cuando corresponda.
@@ -35,20 +35,6 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - Eliminar CSS, selectores, listeners o ramas de compatibilidad que hayan quedado obsoletos después de los rediseños recientes.
 - Revisar inconsistencias visuales entre la lista principal, Objetivos, Proyectos, editores y gestores de Organización.
 - Mantener la estética Flat 2.0 y el criterio de reducir ruido sin retirar capacidades.
-
-### Referencia al elemento padre en subtareas
-
-- **Estado:** Pendiente.
-- Mostrar en el editor la leyenda **Subtarea de:** seguida por el título de la tarea o proyecto padre.
-- Permitir abrir desde esa referencia el elemento padre aunque no esté visible por los filtros actuales.
-- Mantener las acciones de mover o convertir en tarea principal dentro de Organización, sin duplicarlas junto a la referencia.
-
-### Validación previa al eliminar elementos de Organización
-
-- **Estado:** Pendiente de auditoría.
-- Comprobar si un área, contexto o etiqueta está en uso antes de pedir confirmación de eliminación.
-- Cuando la eliminación no sea válida, bloquearla y explicar el motivo antes de mostrar un diálogo destructivo.
-- Confirmar durante la auditoría si alguna parte de este comportamiento ya quedó cubierta por cambios posteriores.
 
 ## Siguiente bloque funcional
 
@@ -97,6 +83,8 @@ Estos puntos ya no son pendientes y se conservan aquí sólo como referencia bre
 - **Orden y filtros por vista:** persistencia y sincronización completadas en PR #163, #164 y #170.
 - **Sincronización automática:** reconciliación y conservación del contexto estabilizadas en PR #165 y #170.
 - **Navegación de proyectos:** breadcrumbs en PR #172 y restauración de filtros guardados de origen en PR #173.
+- **Referencia al padre de subtareas:** el editor muestra `Subtarea de:` y permite abrir el elemento padre aunque no esté en la lista filtrada actual.
+- **Validación destructiva de Organización:** áreas, contextos y etiquetas en uso se bloquean antes de pedir confirmación de eliminación.
 - **Calendario, En espera, fecha/hora, selección múltiple, diálogos propios, selector de color y reorganización visual principal:** implementados y fusionados.
 
 ## Mantenimiento del registro
