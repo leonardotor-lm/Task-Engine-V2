@@ -264,6 +264,10 @@ export class DesktopTaskEditorLayoutController {
         properties.className =
             "desktopTaskEditorProperties";
         properties.setAttribute(
+            "role",
+            "group"
+        );
+        properties.setAttribute(
             "aria-label",
             "Propiedades frecuentes"
         );
@@ -511,6 +515,10 @@ export class DesktopTaskEditorLayoutController {
 
         const row = document.createElement("div");
         row.className = "desktopTaskEditorToolRow";
+        row.setAttribute(
+            "role",
+            "group"
+        );
         row.setAttribute(
             "aria-label",
             "Herramientas de la tarea"
@@ -809,9 +817,20 @@ export class DesktopTaskEditorLayoutController {
 
                 if (openPanels.length === 0) return;
 
+                const focusPanel =
+                    openPanels.find(panel =>
+                        panel.contains(
+                            document.activeElement
+                        )
+                    ) ?? openPanels[0];
+
                 openPanels.forEach(panel => {
                     panel.open = false;
                 });
+
+                focusPanel.querySelector(
+                    ":scope > summary"
+                )?.focus();
 
                 event.preventDefault();
                 event.stopImmediatePropagation();
