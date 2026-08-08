@@ -56,6 +56,8 @@ test("muestra el objetivo como espacio de trabajo", () => {
     assert.match(html, /2027-03-01/);
     assert.match(html, /id="editGoal"/);
     assert.match(html, /id="closeGoalView"/);
+    assert.match(html, /id="goalBreadcrumbRoot"/);
+    assert.doesNotMatch(html, /id="backToParentGoal"/);
     assert.match(html, /Preparar manuscrito/);
     assert.doesNotMatch(
         html,
@@ -169,5 +171,64 @@ test("muestra subobjetivos directos y los incluye en el progreso", () => {
     assert.doesNotMatch(html, /Conversación avanzada/);
     assert.doesNotMatch(html, /Plan archivado/);
     assert.doesNotMatch(html, /Tareas 0\/0/);
+
+});
+
+test("muestra la ruta jerárquica y permite volver al padre", () => {
+
+    const root = new Goal({
+        id: "goal-root",
+        title: "Aprender idiomas"
+    });
+    const parent = new Goal({
+        id: "goal-parent",
+        title: "Español",
+        parentGoalId: root.id
+    });
+    const current = new Goal({
+        id: "goal-current",
+        title: "Conversación",
+        parentGoalId: parent.id
+    });
+
+    const html = new GoalView().render({
+        selectedGoal: current,
+        tasks: [],
+        allTasks: [],
+        goals: [current, root, parent],
+        areas: [],
+        contexts: [],
+        tags: [],
+        goalExpandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-08-08",
+        inlineSubtaskParentId: null
+    });
+
+    assert.match(html, /id="backToParentGoal"/);
+    assert.match(
+        html,
+        /id="backToParentGoal"[\s\S]*data-id="goal-parent"/
+    );
+    assert.match(html, /id="goalBreadcrumbRoot"/);
+    assert.match(
+        html,
+        /class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"[\s\S]*data-id="goal-root"/
+    );
+    assert.match(
+        html,
+        /class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"[\s\S]*data-id="goal-parent"/
+    );
+    assert.match(
+        html,
+        /aria-current="page"[\s\S]*Conversación/
+    );
+
+    const rootPosition = html.indexOf("Aprender idiomas");
+    const parentPosition = html.indexOf("Español");
+    const currentPosition = html.lastIndexOf("Conversación");
+
+    assert.ok(rootPosition < parentPosition);
+    assert.ok(parentPosition < currentPosition);
 
 });
