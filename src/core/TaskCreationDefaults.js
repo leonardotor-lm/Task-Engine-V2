@@ -4,7 +4,8 @@ export function getTaskCreationDefaults(
     view,
     today,
     {
-        areaId = null
+        areaId = null,
+        goalId = null
     } = {}
 ) {
 
@@ -37,6 +38,11 @@ export function getTaskCreationDefaults(
                 ? { areaId }
                 : {};
 
+        case View.GOAL:
+            return goalId
+                ? { goalIds: [goalId] }
+                : {};
+
         case View.WAITING:
             return {
                 isWaiting: true
@@ -58,7 +64,8 @@ export function getTaskCreationView(view) {
         View.UPCOMING,
         View.ALL,
         View.AREA,
-        View.WAITING
+        View.WAITING,
+        View.GOAL
     ];
 
     return directViews.includes(view)

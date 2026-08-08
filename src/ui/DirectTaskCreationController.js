@@ -122,7 +122,9 @@ export class DirectTaskCreationController {
                 this.app.getTodayString(),
                 {
                     areaId:
-                        this.app.currentAreaId
+                        this.app.currentAreaId,
+                    goalId:
+                        this.app.selectedGoal?.id ?? null
                 }
             );
         const draft = new Task({

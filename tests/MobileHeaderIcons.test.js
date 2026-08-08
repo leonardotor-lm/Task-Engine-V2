@@ -8,15 +8,18 @@ import { GoalView } from "../src/ui/GoalView.js";
 import { TaskEditor } from "../src/ui/TaskEditor.js";
 import { TaskList } from "../src/ui/TaskList.js";
 
-test("el objetivo ofrece volver y editar con íconos accesibles", () => {
+test("el objetivo usa el breadcrumb para navegar y conserva edición accesible", () => {
+
+    const goal = new Goal({
+        id: "goal-1",
+        title: "Objetivo"
+    });
 
     const html = new GoalView().render({
-        selectedGoal: new Goal({
-            id: "goal-1",
-            title: "Objetivo"
-        }),
+        selectedGoal: goal,
         tasks: [],
         allTasks: [],
+        goals: [goal],
         areas: [],
         contexts: [],
         tags: [],
@@ -26,10 +29,48 @@ test("el objetivo ofrece volver y editar con íconos accesibles", () => {
         inlineSubtaskParentId: null
     });
 
-    assert.match(html, /aria-label="Volver a objetivos"/);
+    assert.match(html, /id="goalBreadcrumbRoot"/);
     assert.match(html, /aria-label="Editar objetivo"/);
+    assert.doesNotMatch(html, /id="backToParentGoal"/);
+    assert.doesNotMatch(html, /id="closeGoalView"/);
     assert.match(html, /responsiveButtonIcon/);
     assert.match(html, /responsiveButtonLabel/);
+
+});
+
+test("un subobjetivo expone al padre en la ruta sin botones redundantes", () => {
+
+    const parent = new Goal({
+        id: "goal-parent",
+        title: "Objetivo padre"
+    });
+    const child = new Goal({
+        id: "goal-child",
+        title: "Subobjetivo",
+        parentGoalId: parent.id
+    });
+
+    const html = new GoalView().render({
+        selectedGoal: child,
+        tasks: [],
+        allTasks: [],
+        goals: [parent, child],
+        areas: [],
+        contexts: [],
+        tags: [],
+        goalExpandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-07-29",
+        inlineSubtaskParentId: null
+    });
+
+    assert.match(
+        html,
+        /class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"[\s\S]*data-id="goal-parent"[\s\S]*Objetivo padre/
+    );
+    assert.match(html, /id="goalBreadcrumbRoot"/);
+    assert.doesNotMatch(html, /id="backToParentGoal"/);
+    assert.doesNotMatch(html, /id="closeGoalView"/);
 
 });
 

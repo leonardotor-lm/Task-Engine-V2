@@ -26,12 +26,23 @@ const projectView = await readFile(
     "utf8"
 );
 
-test("identifica las acciones del encabezado de objetivos", () => {
+test("el encabezado del objetivo conserva sólo la acción de edición", () => {
 
+    assert.doesNotMatch(goalView, /id="backToParentGoal"/);
+    assert.doesNotMatch(goalView, /id="closeGoalView"/);
+    assert.match(goalView, /id="editGoal"/);
     assert.equal(
         goalView.match(/goalHeadingAction/g)?.length,
-        2
+        1
     );
+
+});
+
+test("la navegación jerárquica queda concentrada en el breadcrumb", () => {
+
+    assert.match(goalView, /id="goalBreadcrumbRoot"/);
+    assert.match(goalView, /goalBreadcrumbGoal/);
+    assert.match(goalView, /aria-current="page"/);
 
 });
 

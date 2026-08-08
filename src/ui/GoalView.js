@@ -1,6 +1,7 @@
 import { TaskList } from "./TaskList.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { Icon } from "./Icon.js";
+import { GoalStatus } from "../domain/GoalStatus.js";
 
 export class GoalView {
 
@@ -22,25 +23,49 @@ export class GoalView {
             `;
         }
 
-        const completed = state.tasks.filter(
+        const goals = state.goals ?? [];
+        const goalById = new Map(
+            goals.map(item => [item.id, item])
+        );
+        const ancestors = this.getAncestors(
+            goal,
+            goalById
+        );
+        const completedTasks = state.tasks.filter(
             task => task.isCompleted()
         ).length;
+        const directSubgoals = goals
+            .filter(subgoal =>
+                subgoal.parentGoalId === goal.id &&
+                (
+                    subgoal.status === GoalStatus.ACTIVE ||
+                    subgoal.status === GoalStatus.COMPLETED
+                )
+            );
+        const completedSubgoals = directSubgoals
+            .filter(subgoal =>
+                subgoal.status === GoalStatus.COMPLETED
+            )
+            .length;
+        const progressParts = [];
+
+        if (state.tasks.length > 0) {
+            progressParts.push(
+                `Tareas ${completedTasks}/${state.tasks.length}`
+            );
+        }
+
+        if (directSubgoals.length > 0) {
+            progressParts.push(
+                `Subobjetivos ${completedSubgoals}/${directSubgoals.length}`
+            );
+        }
+
+        const progress = progressParts.length > 0
+            ? progressParts.join(" · ")
+            : "Sin elementos";
 
         const headingActions = `
-            <button
-                id="closeGoalView"
-                type="button"
-                class="secondaryAction goalHeadingAction responsiveIconButton"
-                aria-label="Volver a objetivos"
-                title="Volver a objetivos">
-                <span class="responsiveButtonIcon">
-                    ${Icon.render("back")}
-                </span>
-                <span class="responsiveButtonLabel">
-                    Volver
-                </span>
-            </button>
-
             <button
                 id="editGoal"
                 type="button"
@@ -56,7 +81,70 @@ export class GoalView {
             </button>
         `;
 
+        const breadcrumb = `
+            <nav
+                class="goalBreadcrumb"
+                aria-label="Ruta de objetivos">
+                <button
+                    id="goalBreadcrumbRoot"
+                    type="button"
+                    class="openGoal goalBreadcrumbLink">
+                    Objetivos
+                </button>
+                ${ancestors.map(ancestor => `
+                    <span
+                        class="goalBreadcrumbSeparator"
+                        aria-hidden="true">›</span>
+                    <button
+                        type="button"
+                        class="openGoal goalBreadcrumbGoal goalBreadcrumbLink"
+                        data-id="${escapeHtml(ancestor.id)}">
+                        ${escapeHtml(ancestor.title)}
+                    </button>
+                `).join("")}
+                <span
+                    class="goalBreadcrumbSeparator"
+                    aria-hidden="true">›</span>
+                <span
+                    class="goalBreadcrumbCurrent"
+                    aria-current="page">
+                    ${escapeHtml(goal.title)}
+                </span>
+            </nav>
+        `;
+
+        const subgoals = directSubgoals.length > 0
+            ? `
+                <section class="goalWorkspaceSubgoals">
+                    <h3 class="goalWorkHeading">
+                        Subobjetivos
+                    </h3>
+                    <ul class="goalList goalWorkspaceSubgoalList">
+                        ${directSubgoals.map(subgoal => `
+                            <li class="goalItem">
+                                <button
+                                    type="button"
+                                    class="openGoal goalWorkspaceSubgoal"
+                                    data-id="${escapeHtml(subgoal.id)}"
+                                    aria-label="Abrir subobjetivo ${escapeHtml(subgoal.title)}">
+                                    ${subgoal.status === GoalStatus.COMPLETED
+                                        ? Icon.render(
+                                            "check",
+                                            "inlineStatusIcon"
+                                        )
+                                        : ""}
+                                    ${escapeHtml(subgoal.title)}
+                                </button>
+                            </li>
+                        `).join("")}
+                    </ul>
+                </section>
+            `
+            : "";
+
         const intro = `
+            ${breadcrumb}
+
             <section class="goalWorkspaceSummary">
                 ${goal.description
                     ? `
@@ -67,7 +155,7 @@ export class GoalView {
                     : ""}
                 <p>
                     <strong>Progreso:</strong>
-                    ${completed}/${state.tasks.length}
+                    ${progress}
                     ${goal.dueDate
                         ? `
                             · <strong>Fecha límite:</strong>
@@ -76,6 +164,8 @@ export class GoalView {
                         : ""}
                 </p>
             </section>
+
+            ${subgoals}
 
             <h3 class="goalWorkHeading">
                 Tareas y proyectos
@@ -103,6 +193,28 @@ export class GoalView {
             state.inlineSubtaskParentId,
             intro
         );
+
+    }
+
+    getAncestors(goal, goalById) {
+
+        const ancestors = [];
+        const visited = new Set([goal.id]);
+        let parentId = goal.parentGoalId;
+
+        while (parentId && !visited.has(parentId)) {
+
+            const parent = goalById.get(parentId);
+
+            if (!parent) break;
+
+            ancestors.unshift(parent);
+            visited.add(parent.id);
+            parentId = parent.parentGoalId;
+
+        }
+
+        return ancestors;
 
     }
 
