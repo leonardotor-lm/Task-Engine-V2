@@ -179,6 +179,10 @@ export class ProjectView {
 
     getOriginLabel(state) {
 
+        if (state.projectOriginCustomFilter?.name) {
+            return state.projectOriginCustomFilter.name;
+        }
+
         if (
             state.projectOriginView === View.AREA &&
             state.activeArea?.name
