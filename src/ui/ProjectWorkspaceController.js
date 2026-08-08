@@ -17,6 +17,9 @@ export class ProjectWorkspaceController {
     start() {
 
         const mainView = this.app.mainView;
+
+        this.wrapProjectCallbacks(mainView);
+
         const originalRender =
             mainView.render.bind(mainView);
 
@@ -27,7 +30,9 @@ export class ProjectWorkspaceController {
                     ? {
                         ...state,
                         projectOriginView:
-                            this.app.previousProjectView
+                            this.app.previousProjectView,
+                        projectOriginCustomFilter:
+                            this.getOriginCustomFilter()
                     }
                     : state;
 
@@ -35,6 +40,58 @@ export class ProjectWorkspaceController {
             this.bindProjectNavigation(renderedState);
 
         };
+
+    }
+
+    wrapProjectCallbacks(mainView) {
+
+        const callbacks = mainView.callbacks;
+
+        if (!callbacks) return;
+
+        const originalOpenProject =
+            callbacks.onOpenProject;
+
+        if (originalOpenProject) {
+
+            callbacks.onOpenProject = id => {
+
+                if (
+                    this.app.currentView !==
+                        View.PROJECT
+                ) {
+                    this.app.projectOriginCustomFilterId =
+                        this.app.currentCustomFilterId ??
+                        null;
+                }
+
+                return originalOpenProject(id);
+
+            };
+
+        }
+
+        const originalCloseProject =
+            callbacks.onCloseProject;
+
+        if (originalCloseProject) {
+
+            callbacks.onCloseProject = () => {
+
+                if (
+                    this.app.currentView ===
+                        View.PROJECT &&
+                    this.app.projectHistory.length === 0 &&
+                    this.restoreCustomFilterOrigin()
+                ) {
+                    return;
+                }
+
+                return originalCloseProject();
+
+            };
+
+        }
 
     }
 
@@ -107,15 +164,67 @@ export class ProjectWorkspaceController {
 
     returnToOrigin() {
 
+        if (this.restoreCustomFilterOrigin()) {
+            return;
+        }
+
+        this.app.projectOriginCustomFilterId = null;
         this.app.currentView =
             this.app.previousProjectView ??
             View.TODAY;
+        this.clearProjectState();
+        this.app.render();
+
+    }
+
+    restoreCustomFilterOrigin() {
+
+        const filter = this.getOriginCustomFilter();
+
+        if (!filter) {
+            this.app.projectOriginCustomFilterId = null;
+            return false;
+        }
+
+        const applyCustomFilter =
+            this.app.mainView
+                ?.callbacks
+                ?.onApplyCustomFilter;
+
+        if (!applyCustomFilter) {
+            return false;
+        }
+
+        const filterId = filter.id;
+
+        this.app.projectOriginCustomFilterId = null;
+        this.clearProjectState();
+        applyCustomFilter(filterId);
+
+        return true;
+
+    }
+
+    getOriginCustomFilter() {
+
+        const filterId =
+            this.app.projectOriginCustomFilterId;
+
+        if (!filterId) return null;
+
+        return this.app.customFilterService
+            ?.getFilterById?.(filterId) ??
+            null;
+
+    }
+
+    clearProjectState() {
+
         this.app.projectTaskId = null;
         this.app.projectHistory = [];
         this.app.projectTaskCreationOpen = false;
         this.app.inlineSubtaskParentId = null;
         this.app.selectedTask = null;
-        this.app.render();
 
     }
 
