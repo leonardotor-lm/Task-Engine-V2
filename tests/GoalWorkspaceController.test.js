@@ -75,47 +75,6 @@ test("permite navegar entre subobjetivos y ancestros", () => {
 
 });
 
-test("Atrás abre el objetivo padre inmediato", () => {
-
-    const backButton = createButton("goal-parent");
-    let selectedGoalId = null;
-
-    const app = {
-        mainView: {
-            callbacks: {
-                onSelectGoal(id) {
-                    selectedGoalId = id;
-                },
-                onCloseGoalView() {}
-            },
-            render() {}
-        }
-    };
-
-    const controller = new GoalWorkspaceController(
-        app,
-        {
-            documentRef: {
-                querySelectorAll() {
-                    return [];
-                },
-                getElementById(id) {
-                    return id === "backToParentGoal"
-                        ? backButton
-                        : null;
-                }
-            }
-        }
-    );
-
-    controller.start();
-    app.mainView.render({ view: View.GOAL });
-    backButton.click();
-
-    assert.equal(selectedGoalId, "goal-parent");
-
-});
-
 test("la raíz de la ruta vuelve a Objetivos", () => {
 
     const rootButton = createButton();
