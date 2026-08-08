@@ -1,4 +1,5 @@
 import { Task } from "../domain/Task.js";
+import { TaskStatus } from "../domain/TaskStatus.js";
 import { Dialog } from "../components/Dialog.js";
 import {
     getPostCreationView,
@@ -10,6 +11,15 @@ export function isTaskCreationDraft(task) {
 
     return Boolean(
         task?.isTaskCreationDraft
+    );
+
+}
+
+export function isSubtaskCreationDraft(task) {
+
+    return Boolean(
+        isTaskCreationDraft(task) &&
+        task?.taskCreationKind === "subtask"
     );
 
 }
@@ -49,20 +59,31 @@ export class DirectTaskCreationController {
 
         callbacks.onOpenTaskCreation = async () => {
 
-            const currentTask =
-                this.app.selectedTask;
-
-            if (
-                currentTask &&
-                !await this.app.mainView
-                    .confirmDiscardTaskChanges(
-                        currentTask
-                    )
-            ) {
+            if (!await this.confirmDiscardCurrentTask()) {
                 return;
             }
 
             this.openCreationDraft();
+
+        };
+
+        callbacks.onOpenProjectTaskCreation = async () => {
+
+            if (!this.app.projectTaskId) {
+                return;
+            }
+
+            if (!await this.confirmDiscardCurrentTask()) {
+                return;
+            }
+
+            try {
+                this.openSubtaskCreationDraft(
+                    this.app.projectTaskId
+                );
+            } catch (error) {
+                return Dialog.alert(error.message);
+            }
 
         };
 
@@ -110,6 +131,19 @@ export class DirectTaskCreationController {
 
     }
 
+    async confirmDiscardCurrentTask() {
+
+        const currentTask =
+            this.app.selectedTask;
+
+        return !currentTask ||
+            this.app.mainView
+                .confirmDiscardTaskChanges(
+                    currentTask
+                );
+
+    }
+
     openCreationDraft() {
 
         const creationView =
@@ -132,12 +166,44 @@ export class DirectTaskCreationController {
             ...defaults
         });
 
+        this.prepareDraft(draft, "task");
+
+        this.app.currentView = creationView;
+        this.openDraft(draft);
+
+    }
+
+    openSubtaskCreationDraft(parentId) {
+
+        const parent = this.app.taskService
+            .getTaskById(parentId);
+
+        this.assertValidSubtaskParent(parent);
+
+        const draft = new Task({
+            title: "Nueva subtarea",
+            parentTaskId: parent.id,
+            areaId: parent.areaId,
+            status: parent.status
+        });
+
+        this.prepareDraft(draft, "subtask");
+        this.openDraft(draft);
+
+    }
+
+    prepareDraft(draft, kind) {
+
         draft.title = "";
         draft.isTaskCreationDraft = true;
+        draft.taskCreationKind = kind;
         draft.attachmentUploadInProgress = false;
 
+    }
+
+    openDraft(draft) {
+
         this.draftTaskId = draft.id;
-        this.app.currentView = creationView;
         this.app.taskCreationOpen = false;
         this.app.projectTaskCreationOpen = false;
         this.app.inlineSubtaskParentId = null;
@@ -162,28 +228,97 @@ export class DirectTaskCreationController {
             this.document?.getElementById(
                 "taskIsWaiting"
             );
-        const task = this.app.taskService
-            .createTask({
-                ...data,
-                attachments: [
-                    ...(draft?.attachments ?? [])
-                ],
-                isWaiting: waitingControl
-                    ? waitingControl.checked
-                    : Boolean(draft?.isWaiting)
-            });
+        const creationData = {
+            ...data,
+            attachments: [
+                ...(draft?.attachments ?? [])
+            ],
+            isWaiting: waitingControl
+                ? waitingControl.checked
+                : Boolean(draft?.isWaiting)
+        };
+        const task = isSubtaskCreationDraft(draft)
+            ? this.createSubtask(
+                draft,
+                creationData
+            )
+            : this.app.taskService
+                .createTask(creationData);
 
-        this.app.currentView =
-            getPostCreationView(
-                this.app.currentView,
-                task
+        if (isSubtaskCreationDraft(draft)) {
+            this.app.expandedTaskIds?.add?.(
+                draft.parentTaskId
             );
+            this.app.projectTaskCreationOpen = false;
+        } else {
+            this.app.currentView =
+                getPostCreationView(
+                    this.app.currentView,
+                    task
+                );
+        }
+
         this.app.taskCreationOpen = false;
         this.app.selectedTask = null;
         this.draftTaskId = null;
         this.app.render();
 
         return task;
+
+    }
+
+    createSubtask(draft, data) {
+
+        const parent = this.app.taskService
+            .getTaskById(draft.parentTaskId);
+
+        this.assertValidSubtaskParent(parent);
+
+        if (data.recurrence) {
+            throw new Error(
+                "La recurrencia sólo puede aplicarse a tareas sin subtareas."
+            );
+        }
+
+        const areaId =
+            data.areaId ?? null;
+        const status =
+            parent.status === TaskStatus.INBOX &&
+            areaId !== null
+                ? TaskStatus.PENDING
+                : parent.status;
+
+        return this.app.taskService.createTask({
+            ...data,
+            parentTaskId: parent.id,
+            areaId,
+            status,
+            recurrence: null,
+            recurrenceInterval: 1,
+            recurrenceWeekdays: []
+        });
+
+    }
+
+    assertValidSubtaskParent(parent) {
+
+        if (!parent) {
+            throw new Error(
+                "La tarea principal no existe."
+            );
+        }
+
+        if (!this.app.taskService.isActiveTask(parent)) {
+            throw new Error(
+                "No se pueden agregar subtareas a esta tarea."
+            );
+        }
+
+        if (parent.recurrence) {
+            throw new Error(
+                "No se pueden agregar subtareas a una tarea recurrente."
+            );
+        }
 
     }
 
@@ -234,6 +369,7 @@ export class DirectTaskCreationController {
 
         this.draftTaskId = null;
         this.app.taskCreationOpen = false;
+        this.app.projectTaskCreationOpen = false;
         this.app.selectedTask = null;
         this.app.render();
 
@@ -290,12 +426,22 @@ export class DirectTaskCreationController {
 
         if (!drawer) return;
 
+        const draft = this.app.selectedTask;
+        const subtaskDraft =
+            isSubtaskCreationDraft(draft);
+        const creationLabel = subtaskDraft
+            ? "Nueva subtarea"
+            : "Nueva tarea";
+        const actionLabel = subtaskDraft
+            ? "Crear subtarea"
+            : "Crear tarea";
+
         drawer.classList.add(
             "taskCreationDrawer"
         );
         drawer.setAttribute(
             "aria-label",
-            "Nueva tarea"
+            creationLabel
         );
 
         const heading = drawer.querySelector(
@@ -303,7 +449,7 @@ export class DirectTaskCreationController {
         );
 
         if (heading) {
-            heading.textContent = "Nueva tarea";
+            heading.textContent = creationLabel;
         }
 
         const saveButton = drawer.querySelector(
@@ -317,23 +463,24 @@ export class DirectTaskCreationController {
         );
 
         if (saveButton) {
-            saveButton.textContent = "Crear tarea";
+            saveButton.textContent = actionLabel;
         }
 
         if (mobileSaveButton) {
             mobileSaveButton.setAttribute(
                 "aria-label",
-                "Crear tarea"
+                actionLabel
             );
             mobileSaveButton.setAttribute(
                 "title",
-                "Crear tarea"
+                actionLabel
             );
         }
 
         if (titleInput) {
-            titleInput.placeholder =
-                "Título de la tarea";
+            titleInput.placeholder = subtaskDraft
+                ? "Título de la subtarea"
+                : "Título de la tarea";
             titleInput.required = true;
 
             const validateTitle = event => {
@@ -346,7 +493,9 @@ export class DirectTaskCreationController {
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 titleInput.setCustomValidity(
-                    "Ingresá un título para crear la tarea."
+                    subtaskDraft
+                        ? "Ingresá un título para crear la subtarea."
+                        : "Ingresá un título para crear la tarea."
                 );
                 titleInput.reportValidity();
                 titleInput.focus();
@@ -387,6 +536,14 @@ export class DirectTaskCreationController {
         ].forEach(selector => {
             drawer.querySelector(selector)?.remove();
         });
+
+        if (subtaskDraft) {
+            drawer.querySelector(
+                "#taskRecurrence"
+            )?.closest(
+                ".editorSection"
+            )?.remove();
+        }
 
     }
 
