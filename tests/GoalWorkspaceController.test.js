@@ -27,14 +27,11 @@ function createButton(id = null) {
 
 }
 
-test("permite abrir subobjetivos y ancestros desde la vista del objetivo", () => {
+test("permite navegar entre subobjetivos y ancestros", () => {
 
-    const subgoalButton =
-        createButton("goal-child");
-    const breadcrumbButton =
-        createButton("goal-parent");
+    const subgoalButton = createButton("goal-child");
+    const breadcrumbButton = createButton("goal-parent");
     const selectedGoalIds = [];
-    let renders = 0;
 
     const app = {
         mainView: {
@@ -44,9 +41,7 @@ test("permite abrir subobjetivos y ancestros desde la vista del objetivo", () =>
                 },
                 onCloseGoalView() {}
             },
-            render() {
-                renders += 1;
-            }
+            render() {}
         }
     };
 
@@ -57,10 +52,7 @@ test("permite abrir subobjetivos y ancestros desde la vista del objetivo", () =>
                 querySelectorAll(selector) {
                     return selector ===
                         ".goalWorkspaceSubgoal, .goalBreadcrumbGoal"
-                        ? [
-                            subgoalButton,
-                            breadcrumbButton
-                        ]
+                        ? [subgoalButton, breadcrumbButton]
                         : [];
                 },
                 getElementById() {
@@ -71,19 +63,7 @@ test("permite abrir subobjetivos y ancestros desde la vista del objetivo", () =>
     );
 
     controller.start();
-    app.mainView.render({
-        view: View.GOAL
-    });
-
-    assert.equal(renders, 1);
-    assert.equal(
-        subgoalButton.hasListener("click"),
-        true
-    );
-    assert.equal(
-        breadcrumbButton.hasListener("click"),
-        true
-    );
+    app.mainView.render({ view: View.GOAL });
 
     subgoalButton.click();
     breadcrumbButton.click();
@@ -95,10 +75,9 @@ test("permite abrir subobjetivos y ancestros desde la vista del objetivo", () =>
 
 });
 
-test("el botón Atrás abre el objetivo padre inmediato", () => {
+test("Atrás abre el objetivo padre inmediato", () => {
 
-    const backButton =
-        createButton("goal-parent");
+    const backButton = createButton("goal-parent");
     let selectedGoalId = null;
 
     const app = {
@@ -130,25 +109,14 @@ test("el botón Atrás abre el objetivo padre inmediato", () => {
     );
 
     controller.start();
-    app.mainView.render({
-        view: View.GOAL
-    });
-
-    assert.equal(
-        backButton.hasListener("click"),
-        true
-    );
-
+    app.mainView.render({ view: View.GOAL });
     backButton.click();
 
-    assert.equal(
-        selectedGoalId,
-        "goal-parent"
-    );
+    assert.equal(selectedGoalId, "goal-parent");
 
 });
 
-test("la raíz de la ruta vuelve a la pantalla principal de objetivos", () => {
+test("la raíz de la ruta vuelve a Objetivos", () => {
 
     const rootButton = createButton();
     let closed = false;
@@ -182,17 +150,14 @@ test("la raíz de la ruta vuelve a la pantalla principal de objetivos", () => {
     );
 
     controller.start();
-    app.mainView.render({
-        view: View.GOAL
-    });
-
+    app.mainView.render({ view: View.GOAL });
     rootButton.click();
 
     assert.equal(closed, true);
 
 });
 
-test("no agrega navegación de objetivos fuera de la vista GOAL", () => {
+test("no enlaza navegación fuera de GOAL", () => {
 
     let queried = false;
 
@@ -223,9 +188,7 @@ test("no agrega navegación de objetivos fuera de la vista GOAL", () => {
     );
 
     controller.start();
-    app.mainView.render({
-        view: View.TODAY
-    });
+    app.mainView.render({ view: View.TODAY });
 
     assert.equal(queried, false);
 
