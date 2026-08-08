@@ -184,3 +184,73 @@ test("la presentación de un proyecto activo ignora descendientes archivados o e
     assert.doesNotMatch(html, /En papelera/);
 
 });
+
+test("la presentación conserva el árbol correspondiente en Archivadas y Papelera", () => {
+
+    const archivedProject = new Task({
+        id: "archived-project",
+        title: "Proyecto archivado"
+    });
+    archivedProject.archive();
+
+    const archivedChild = new Task({
+        id: "archived-child",
+        title: "Hija archivada",
+        parentTaskId: archivedProject.id
+    });
+    archivedChild.archive();
+
+    const activeTask = new Task({
+        id: "active-task",
+        title: "Activa"
+    });
+
+    const deletedProject = new Task({
+        id: "deleted-project",
+        title: "Proyecto en papelera"
+    });
+    deletedProject.delete();
+
+    const deletedChild = new Task({
+        id: "deleted-child",
+        title: "Hija en papelera",
+        parentTaskId: deletedProject.id
+    });
+    deletedChild.delete();
+
+    const view = new ProjectView();
+    const allTasks = [
+        archivedProject,
+        archivedChild,
+        activeTask,
+        deletedProject,
+        deletedChild
+    ];
+
+    assert.deepEqual(
+        view
+            .getProjectPresentationTasks(
+                archivedProject,
+                allTasks
+            )
+            .map(task => task.id),
+        [
+            archivedProject.id,
+            archivedChild.id
+        ]
+    );
+
+    assert.deepEqual(
+        view
+            .getProjectPresentationTasks(
+                deletedProject,
+                allTasks
+            )
+            .map(task => task.id),
+        [
+            deletedProject.id,
+            deletedChild.id
+        ]
+    );
+
+});
