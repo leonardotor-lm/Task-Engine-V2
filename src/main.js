@@ -112,7 +112,6 @@ taskToolbarController.start();
 sidebarLayoutController.start();
 taskFiltersDialogController.start();
 overlayDismissalController.start();
-accessibilityStateController.start();
 mobileMainLayoutController.start();
 directTaskCreationController.start();
 taskSortPreferencesController.start();
@@ -127,4 +126,5 @@ ongoingSyncReconciliationController
     .start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
+accessibilityStateController.start();
 app.start();
