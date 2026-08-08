@@ -90,7 +90,7 @@ test("el selector conserva geometría propia y adaptación móvil", () => {
 });
 
 test("cancelar escape y clic exterior descartan la selección provisoria", () => {
-    assert.match(source, /const cancel = \(\) =>/);
+    assert.match(source, /const cancel = \(\{/);
     assert.match(source, /select\(committedColor\)/);
     assert.match(source, /event\.key !== "Escape"/);
     assert.match(source, /"pointerdown"/);
