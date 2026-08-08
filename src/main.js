@@ -39,6 +39,9 @@ import {
     GoalWorkspaceController
 } from "./ui/GoalWorkspaceController.js";
 import {
+    ProjectWorkspaceController
+} from "./ui/ProjectWorkspaceController.js";
+import {
     SyncOptionalDataBridge
 } from "./core/SyncOptionalDataBridge.js";
 import {
@@ -79,6 +82,8 @@ const mobileTaskEditorLayoutController =
     new MobileTaskEditorLayoutController(app);
 const goalWorkspaceController =
     new GoalWorkspaceController(app);
+const projectWorkspaceController =
+    new ProjectWorkspaceController(app);
 const syncOptionalDataBridge =
     new SyncOptionalDataBridge(app);
 const taskFilterSyncBridge =
@@ -101,6 +106,7 @@ directTaskCreationController.start();
 taskSortPreferencesController.start();
 taskFilterPreferencesController.start();
 goalWorkspaceController.start();
+projectWorkspaceController.start();
 syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();

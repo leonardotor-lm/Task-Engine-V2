@@ -7,6 +7,14 @@ const styles = fs.readFileSync(
     "utf8"
 );
 
+const workspaceStyles = fs.readFileSync(
+    new URL(
+        "../styles/goal-workspace.css",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 test("la vista de proyecto usa una jerarquía lineal sin cajas", () => {
     assert.match(
         styles,
@@ -30,5 +38,20 @@ test("los proyectos internos se distinguen sin una superficie adicional", () => 
     assert.doesNotMatch(
         styles,
         /\.projectWorkspace \.projectTask\s*\{[\s\S]*?background:/
+    );
+});
+
+test("objetivos y proyectos comparten el lenguaje visual del breadcrumb", () => {
+    assert.match(
+        workspaceStyles,
+        /\.goalBreadcrumb,\s*\n\.projectBreadcrumb\s*\{/
+    );
+    assert.match(
+        workspaceStyles,
+        /\.projectBreadcrumb \.projectBreadcrumbLink/
+    );
+    assert.match(
+        workspaceStyles,
+        /\.projectBreadcrumbCurrent/
     );
 });

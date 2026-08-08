@@ -46,11 +46,19 @@ test("la navegación jerárquica queda concentrada en el breadcrumb", () => {
 
 });
 
-test("aplica el mismo encabezado responsive a proyectos", () => {
+test("el proyecto elimina Volver al incorporar breadcrumb", () => {
 
+    assert.doesNotMatch(
+        projectView,
+        /id="closeProjectView"/
+    );
+    assert.match(
+        projectView,
+        /id="projectBreadcrumbRoot"/
+    );
     assert.equal(
         projectView.match(/projectHeadingAction/g)?.length,
-        3
+        2
     );
     assert.match(
         styles,
