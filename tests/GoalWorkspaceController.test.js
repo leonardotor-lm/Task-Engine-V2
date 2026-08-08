@@ -6,29 +6,43 @@ import {
     GoalWorkspaceController
 } from "../src/ui/GoalWorkspaceController.js";
 
-test("permite abrir un subobjetivo desde la vista del objetivo", () => {
+function createButton(id = null) {
 
-    let clickHandler = null;
-    let selectedGoalId = null;
-    let renders = 0;
+    const listeners = new Map();
 
-    const button = {
-        dataset: {
-            id: "goal-child"
-        },
+    return {
+        dataset: id ? { id } : {},
         addEventListener(type, handler) {
-            if (type === "click") {
-                clickHandler = handler;
-            }
+            listeners.set(type, handler);
+        },
+        click() {
+            listeners.get("click")?.({
+                currentTarget: this
+            });
+        },
+        hasListener(type) {
+            return listeners.has(type);
         }
     };
+
+}
+
+test("permite abrir subobjetivos y ancestros desde la vista del objetivo", () => {
+
+    const subgoalButton =
+        createButton("goal-child");
+    const breadcrumbButton =
+        createButton("goal-parent");
+    const selectedGoalIds = [];
+    let renders = 0;
 
     const app = {
         mainView: {
             callbacks: {
                 onSelectGoal(id) {
-                    selectedGoalId = id;
-                }
+                    selectedGoalIds.push(id);
+                },
+                onCloseGoalView() {}
             },
             render() {
                 renders += 1;
@@ -42,9 +56,15 @@ test("permite abrir un subobjetivo desde la vista del objetivo", () => {
             documentRef: {
                 querySelectorAll(selector) {
                     return selector ===
-                        ".goalWorkspaceSubgoal"
-                        ? [button]
+                        ".goalWorkspaceSubgoal, .goalBreadcrumbGoal"
+                        ? [
+                            subgoalButton,
+                            breadcrumbButton
+                        ]
                         : [];
+                },
+                getElementById() {
+                    return null;
                 }
             }
         }
@@ -56,25 +76,131 @@ test("permite abrir un subobjetivo desde la vista del objetivo", () => {
     });
 
     assert.equal(renders, 1);
-    assert.equal(typeof clickHandler, "function");
-
-    clickHandler();
-
     assert.equal(
-        selectedGoalId,
-        "goal-child"
+        subgoalButton.hasListener("click"),
+        true
+    );
+    assert.equal(
+        breadcrumbButton.hasListener("click"),
+        true
+    );
+
+    subgoalButton.click();
+    breadcrumbButton.click();
+
+    assert.deepEqual(
+        selectedGoalIds,
+        ["goal-child", "goal-parent"]
     );
 
 });
 
-test("no agrega navegación de subobjetivos fuera de la vista GOAL", () => {
+test("el botón Atrás abre el objetivo padre inmediato", () => {
+
+    const backButton =
+        createButton("goal-parent");
+    let selectedGoalId = null;
+
+    const app = {
+        mainView: {
+            callbacks: {
+                onSelectGoal(id) {
+                    selectedGoalId = id;
+                },
+                onCloseGoalView() {}
+            },
+            render() {}
+        }
+    };
+
+    const controller = new GoalWorkspaceController(
+        app,
+        {
+            documentRef: {
+                querySelectorAll() {
+                    return [];
+                },
+                getElementById(id) {
+                    return id === "backToParentGoal"
+                        ? backButton
+                        : null;
+                }
+            }
+        }
+    );
+
+    controller.start();
+    app.mainView.render({
+        view: View.GOAL
+    });
+
+    assert.equal(
+        backButton.hasListener("click"),
+        true
+    );
+
+    backButton.click();
+
+    assert.equal(
+        selectedGoalId,
+        "goal-parent"
+    );
+
+});
+
+test("la raíz de la ruta vuelve a la pantalla principal de objetivos", () => {
+
+    const rootButton = createButton();
+    let closed = false;
+
+    const app = {
+        mainView: {
+            callbacks: {
+                onSelectGoal() {},
+                onCloseGoalView() {
+                    closed = true;
+                }
+            },
+            render() {}
+        }
+    };
+
+    const controller = new GoalWorkspaceController(
+        app,
+        {
+            documentRef: {
+                querySelectorAll() {
+                    return [];
+                },
+                getElementById(id) {
+                    return id === "goalBreadcrumbRoot"
+                        ? rootButton
+                        : null;
+                }
+            }
+        }
+    );
+
+    controller.start();
+    app.mainView.render({
+        view: View.GOAL
+    });
+
+    rootButton.click();
+
+    assert.equal(closed, true);
+
+});
+
+test("no agrega navegación de objetivos fuera de la vista GOAL", () => {
 
     let queried = false;
 
     const app = {
         mainView: {
             callbacks: {
-                onSelectGoal() {}
+                onSelectGoal() {},
+                onCloseGoalView() {}
             },
             render() {}
         }
@@ -87,6 +213,10 @@ test("no agrega navegación de subobjetivos fuera de la vista GOAL", () => {
                 querySelectorAll() {
                     queried = true;
                     return [];
+                },
+                getElementById() {
+                    queried = true;
+                    return null;
                 }
             }
         }
