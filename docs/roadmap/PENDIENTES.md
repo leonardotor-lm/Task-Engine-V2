@@ -22,7 +22,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ### Accesibilidad y limpieza final de interfaz
 
-- **Estado:** En desarrollo en la rama `audit/accessibility-cleanup`.
+- **Estado:** En desarrollo. El primer bloque de foco y cierre de overlays fue fusionado en PR #175; el segundo bloque trabaja estados accesibles de navegación y controles.
 - Revisar navegación completa mediante teclado en escritorio y comportamiento equivalente en celular.
 - Verificar orden de foco al abrir y cerrar editores, diálogos, popovers y gestores.
 - Asegurar que `Escape` cierre únicamente la capa activa y devuelva el foco al control que la abrió cuando corresponda.
