@@ -99,6 +99,20 @@ La URL `/exec` se mantiene.
 
 Las actualizaciones que incorporen adjuntos pueden solicitar una nueva autorización de Drive. Si Google la muestra al probar la primera subida, aceptala desde la misma cuenta propietaria del despliegue.
 
+### Actualización del contrato de persistencia
+
+Las versiones del backend que incorporan el esquema de persistencia `2` deben volver a desplegarse en Apps Script. Actualizar solamente el frontend no modifica el código que está ejecutando la URL `/exec`.
+
+El esquema nuevo agrega persistencia explícita para:
+
+- filtros personalizados guardados;
+- orden elegido por vista;
+- filtros rápidos elegidos por vista.
+
+No hace falta migrar manualmente las filas existentes. Una revisión creada por un backend anterior no contiene la marca de esquema y se interpreta como una revisión histórica que **no conoce** esos datos. Por eso no debe borrar los valores locales actuales. La primera escritura realizada con el backend actualizado crea la marca de esquema y, desde ese momento, los valores vacíos también son significativos: `[]` o `{}` pueden representar una eliminación deliberada.
+
+Este comportamiento depende de mantener la diferencia entre **campo ausente** y **campo presente pero vacío**. No agregues manualmente filas de metadatos ni de preferencias en `TaskEngineData`.
+
 ## Estructura de almacenamiento
 
 Cada entidad ocupa una fila con:
@@ -112,10 +126,12 @@ Cada entidad ocupa una fila con:
 
 Cada guardado crea una nueva generación y recién después actualiza la revisión activa. Esto evita que una escritura incompleta reemplace la última versión válida.
 
+Los filtros personalizados se almacenan como entidades versionadas, igual que las demás colecciones. Las preferencias por vista se guardan en registros propios de la revisión. Una fila `snapshotMeta` indica qué datos opcionales forman parte de esa revisión y qué versión del contrato de sincronización los describe.
+
 Los archivos adjuntos no se convierten en filas ni se incluyen como texto Base64 en la hoja. Cada tarea conserva sólo el identificador de Drive, nombre, tipo, tamaño, enlace y fecha de creación.
 
 ## Resolución de conflictos
 
 Cada subida incluye la última revisión conocida por la aplicación. Si Sheets contiene una revisión más nueva, el servidor devuelve `CONFLICT` y no escribe nada.
 
-La interfaz para elegir entre descargar los cambios remotos o conservar los locales se incorporará en la siguiente etapa.
+El frontend compara el estado local, el remoto y, cuando existe, la última base común sincronizada. Las revisiones históricas que no contienen datos opcionales no se interpretan como una orden de borrarlos.

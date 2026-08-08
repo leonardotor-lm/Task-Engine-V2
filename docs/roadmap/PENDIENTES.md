@@ -20,13 +20,22 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ## Prioridad actual
 
-### Accesibilidad y limpieza final de interfaz
+### Persistencia de filtros guardados y orden por vista
 
-- **Estado:** En desarrollo. El primer bloque de foco y cierre de overlays fue fusionado en PR #175; el segundo bloque de estados accesibles fue fusionado en PR #176; el tercer bloque de navegación real por teclado se desarrolla en `audit/keyboard-navigation`.
-- Revisar navegación completa mediante teclado en escritorio y comportamiento equivalente en celular.
-- Verificar orden de foco al abrir y cerrar editores, diálogos, popovers y gestores.
-- Asegurar que `Escape` cierre únicamente la capa activa y devuelva el foco al control que la abrió cuando corresponda.
-- Revisar `aria-label`, `aria-expanded`, `aria-current`, nombres accesibles y títulos de botones con sólo ícono.
+- **Estado:** En desarrollo en `audit/persistence-regressions`.
+- La auditoría confirmó que los repositorios locales sí escriben los filtros personalizados y las preferencias por vista en `localStorage`.
+- También confirmó que los cambios de orden y filtros llegan al fingerprint de sincronización y pueden disparar sincronización automática.
+- **Causa raíz identificada:** el backend de Apps Script aceptaba un snapshot con `customFilters`, `taskSortPreferences` y `taskFilterPreferences`, pero `snapshotToRows_()` sólo persistía tareas, áreas, contextos, etiquetas y objetivos. `loadSnapshot_()` reconstruía esas mismas cinco colecciones. Los datos opcionales se descartaban silenciosamente en Sheets.
+- Corregir el contrato del backend antes de modificar nuevamente la reconciliación del frontend.
+- Mantener la distinción entre un campo ausente en una revisión histórica y un campo presente pero vacío en una revisión moderna: ausencia significa “esta revisión no conoce este dato”; `[]` o `{}` presentes pueden significar un borrado deliberado.
+- Persistir filtros personalizados como entidades versionadas y las preferencias por vista como registros propios, acompañados por metadatos de esquema por revisión.
+- Conservar compatibilidad con las revisiones históricas sin exigir una migración manual de la hoja.
+- Agregar pruebas de contrato del backend que cubran round trip, vacíos explícitos, revisiones históricas y datos incompletos/corruptos.
+- La validación manual requiere actualizar y volver a desplegar `google-apps-script/Code.gs`; actualizar solamente el frontend no cambia la URL `/exec` ya desplegada.
+
+## Accesibilidad y limpieza final de interfaz
+
+- **Estado:** Los tres bloques funcionales de accesibilidad fueron fusionados: foco/cierre de overlays en PR #175, estados accesibles en PR #176 y navegación real por teclado en PR #177. Queda una pasada posterior de limpieza visual/táctil.
 - Comprobar que los controles interactivos tengan foco visible y áreas táctiles suficientes.
 - Auditar contraste de texto, estados deshabilitados, indicadores de selección y estado de sincronización.
 - Revisar estados vacíos y mensajes de error para que sean comprensibles sin depender sólo de color o posición.
@@ -36,21 +45,11 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - Revisar inconsistencias visuales entre la lista principal, Objetivos, Proyectos, editores y gestores de Organización.
 - Mantener la estética Flat 2.0 y el criterio de reducir ruido sin retirar capacidades.
 
-## Regresiones a retomar después del tercer bloque
-
-### Persistencia de filtros guardados y orden por vista
-
-- **Estado:** Pendiente. Reportado nuevamente durante la validación del segundo bloque de accesibilidad.
-- Auditar por qué los filtros personalizados guardados dejaron de persistir entre recargas/sesiones o sincronizaciones.
-- Auditar por qué el orden seleccionado para cada vista dejó de restaurarse de forma persistente.
-- Revisar primero los repositorios/controladores de preferencias y su integración con sincronización antes de cambiar la interfaz.
-- Agregar pruebas de regresión que cubran recarga, cambio de vista y restauración posterior de ambas preferencias.
-
 ## Siguiente bloque funcional
 
 ### Fecha de inicio y períodos
 
-- **Estado:** Postergado hasta terminar accesibilidad, limpieza y las regresiones de persistencia registradas arriba.
+- **Estado:** Postergado hasta terminar las regresiones de persistencia y la limpieza final registrada arriba.
 - Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
 - Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
 - Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
@@ -90,9 +89,10 @@ Estos puntos ya no son pendientes y se conservan aquí sólo como referencia bre
 - **Adjuntos:** base de Drive en PR #156; interfaz, eliminación y búsqueda en PR #157; integración con los editores actuales verificada posteriormente.
 - **Objetivos y subobjetivos:** dominio, sincronización, asociaciones, vistas y búsqueda completados en varias etapas; planificación jerárquica y breadcrumbs consolidados en PR #171.
 - **Editor de tareas:** rediseño de escritorio en PR #166 y adaptación móvil en PR #167.
-- **Orden y filtros por vista:** implementación original de persistencia y sincronización completada en PR #163, #164 y #170; una regresión posterior de persistencia se encuentra registrada arriba.
+- **Orden y filtros por vista:** implementación original de persistencia y sincronización completada en PR #163, #164 y #170; la regresión posterior se encuentra en reparación en el bloque actual.
 - **Sincronización automática:** reconciliación y conservación del contexto estabilizadas en PR #165 y #170.
 - **Navegación de proyectos:** breadcrumbs en PR #172 y restauración de filtros guardados de origen en PR #173.
+- **Accesibilidad funcional:** cierre/foco de overlays en PR #175, estados ARIA en PR #176 y navegación por teclado en PR #177.
 - **Referencia al padre de subtareas:** el editor muestra `Subtarea de:` y permite abrir el elemento padre aunque no esté en la lista filtrada actual.
 - **Validación destructiva de Organización:** áreas, contextos y etiquetas en uso se bloquean antes de pedir confirmación de eliminación.
 - **Calendario, En espera, fecha/hora, selección múltiple, diálogos propios, selector de color y reorganización visual principal:** implementados y fusionados.
