@@ -136,11 +136,26 @@ export class DirectTaskCreationController {
         const currentTask =
             this.app.selectedTask;
 
-        return !currentTask ||
-            this.app.mainView
+        if (!currentTask) {
+            return true;
+        }
+
+        if (
+            !await this.app.mainView
                 .confirmDiscardTaskChanges(
                     currentTask
-                );
+                )
+        ) {
+            return false;
+        }
+
+        if (!isTaskCreationDraft(currentTask)) {
+            return true;
+        }
+
+        await this.discardDraft();
+
+        return !this.isActiveDraft();
 
     }
 
