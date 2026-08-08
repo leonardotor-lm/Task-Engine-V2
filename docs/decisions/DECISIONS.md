@@ -129,3 +129,18 @@ La referencia normativa queda registrada en `docs/design/VISUAL-GUIDE.md`.
 
 Estado:
 Aceptada.
+
+---
+
+## D-012
+
+Objetivos y Proyectos utilizan breadcrumbs como mecanismo principal de navegación jerárquica dentro de sus espacios de trabajo.
+
+El breadcrumb se reconstruye desde la relación real de parentesco (`parentGoalId` o `parentTaskId`) y no desde el historial circunstancial de clics. El elemento actual se muestra como texto y los ancestros como destinos navegables.
+
+En Proyectos, la raíz representa el contexto real desde el que se ingresó. Puede ser una vista general, un área, un objetivo o un filtro guardado. Cuando el origen es un filtro guardado, se muestra su nombre y se restaura ese filtro por identidad al volver.
+
+Los botones visuales redundantes de **Atrás** o de retorno a la raíz no se duplican cuando el breadcrumb ya expresa esa navegación. El comportamiento físico de retroceso en celular puede conservarse como mecanismo del sistema sin alterar esta regla visual.
+
+Estado:
+Aceptada.
