@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { Goal } from "../src/domain/Goal.js";
+import { GoalStatus } from "../src/domain/GoalStatus.js";
 import { Task } from "../src/domain/Task.js";
 import { GoalView } from "../src/ui/GoalView.js";
 
@@ -39,6 +40,7 @@ test("muestra el objetivo como espacio de trabajo", () => {
             subtask,
             available
         ],
+        goals: [goal],
         areas: [],
         contexts: [],
         tags: [],
@@ -92,6 +94,7 @@ test("despliega las subtareas de un proyecto a pedido", () => {
         selectedGoal: goal,
         tasks: [project, subtask],
         allTasks: [project, subtask],
+        goals: [goal],
         areas: [],
         contexts: [],
         tags: [],
@@ -104,5 +107,67 @@ test("despliega las subtareas de un proyecto a pedido", () => {
 
     assert.match(html, /Corregir capítulo/);
     assert.match(html, /Contraer subtareas/);
+
+});
+
+test("muestra subobjetivos directos y los incluye en el progreso", () => {
+
+    const goal = new Goal({
+        id: "goal-1",
+        title: "Mejorar español"
+    });
+    const activeSubgoal = new Goal({
+        id: "goal-2",
+        title: "Practicar conversación",
+        parentGoalId: goal.id
+    });
+    const completedSubgoal = new Goal({
+        id: "goal-3",
+        title: "Completar nivel inicial",
+        parentGoalId: goal.id,
+        status: GoalStatus.COMPLETED
+    });
+    const grandchild = new Goal({
+        id: "goal-4",
+        title: "Conversación avanzada",
+        parentGoalId: activeSubgoal.id
+    });
+    const archivedSubgoal = new Goal({
+        id: "goal-5",
+        title: "Plan archivado",
+        parentGoalId: goal.id,
+        status: GoalStatus.ARCHIVED
+    });
+
+    const html = new GoalView().render({
+        selectedGoal: goal,
+        tasks: [],
+        allTasks: [],
+        goals: [
+            goal,
+            activeSubgoal,
+            completedSubgoal,
+            grandchild,
+            archivedSubgoal
+        ],
+        areas: [],
+        contexts: [],
+        tags: [],
+        goalExpandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-08-08",
+        inlineSubtaskParentId: null
+    });
+
+    assert.match(html, /Subobjetivos 1\/2/);
+    assert.match(html, /Practicar conversación/);
+    assert.match(html, /Completar nivel inicial/);
+    assert.match(
+        html,
+        /class="openGoal goalWorkspaceSubgoal"/
+    );
+    assert.doesNotMatch(html, /Conversación avanzada/);
+    assert.doesNotMatch(html, /Plan archivado/);
+    assert.doesNotMatch(html, /Tareas 0\/0/);
 
 });
