@@ -26,11 +26,23 @@ const projectView = await readFile(
     "utf8"
 );
 
-test("identifica las acciones del encabezado de objetivos", () => {
+test("identifica las acciones jerárquicas del encabezado de objetivos", () => {
 
+    assert.match(goalView, /id="backToParentGoal"/);
+    assert.match(goalView, /id="closeGoalView"/);
+    assert.match(goalView, /id="editGoal"/);
     assert.equal(
         goalView.match(/goalHeadingAction/g)?.length,
-        2
+        3
+    );
+
+});
+
+test("el botón atrás depende de que exista un objetivo padre", () => {
+
+    assert.match(
+        goalView,
+        /\$\{parentGoal[\s\S]*?id="backToParentGoal"/
     );
 
 });
