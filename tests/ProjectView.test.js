@@ -177,6 +177,43 @@ test("usa el área de origen como raíz contextual", () => {
 
 });
 
+test("usa el nombre del filtro guardado como raíz contextual", () => {
+
+    const project = new Task({
+        id: "filter-project",
+        title: "Proyecto filtrado"
+    });
+
+    const html = new ProjectView().render({
+        projectTask: project,
+        projectOriginView: View.ALL,
+        projectOriginCustomFilter: {
+            id: "filter-subtasks",
+            name: "Con subtareas",
+            query: "tieneSubtareas:si"
+        },
+        projectTaskCreationOpen: false,
+        tasks: [],
+        allTasks: [project],
+        areas: [],
+        contexts: [],
+        tags: [],
+        expandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-07-25"
+    });
+
+    assert.match(
+        html,
+        /projectBreadcrumbRoot[\s\S]*Con subtareas/
+    );
+    assert.doesNotMatch(
+        html,
+        /tieneSubtareas:si/
+    );
+
+});
+
 test("corta una cadena de padres rota sin bloquear la vista", () => {
 
     const project = new Task({
