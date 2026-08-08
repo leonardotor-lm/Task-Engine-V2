@@ -553,11 +553,16 @@ export class DirectTaskCreationController {
         });
 
         if (subtaskDraft) {
-            drawer.querySelector(
-                "#taskRecurrence"
-            )?.closest(
-                ".editorSection"
-            )?.remove();
+            const recurrenceSection = drawer
+                .querySelector(
+                    "#taskRecurrence"
+                )?.closest(
+                    ".editorSection"
+                );
+
+            if (recurrenceSection) {
+                recurrenceSection.hidden = true;
+            }
         }
 
     }
