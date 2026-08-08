@@ -21,6 +21,9 @@ import {
     OverlayDismissalController
 } from "./ui/OverlayDismissalController.js";
 import {
+    AccessibilityStateController
+} from "./ui/AccessibilityStateController.js";
+import {
     MobileMainLayoutController
 } from "./ui/MobileMainLayoutController.js";
 import {
@@ -73,6 +76,8 @@ const taskFiltersDialogController =
     new TaskFiltersDialogController(app);
 const overlayDismissalController =
     new OverlayDismissalController(app);
+const accessibilityStateController =
+    new AccessibilityStateController(app);
 const mobileMainLayoutController =
     new MobileMainLayoutController(app);
 const directTaskCreationController =
@@ -107,6 +112,7 @@ taskToolbarController.start();
 sidebarLayoutController.start();
 taskFiltersDialogController.start();
 overlayDismissalController.start();
+accessibilityStateController.start();
 mobileMainLayoutController.start();
 directTaskCreationController.start();
 taskSortPreferencesController.start();
