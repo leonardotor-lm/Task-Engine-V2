@@ -137,6 +137,7 @@ test("muestra las herramientas cuando hay una selección", () => {
     assert.match(html, /id="openBulkMoveDialog"/);
     assert.match(html, /id="bulkMoveDialog"/);
     assert.match(html, /id="bulkMoveTarget"/);
+    assert.match(html, /id="cancelBulkMoveDialog"/);
     assert.match(html, /id="bulkMoveTasks"/);
     assert.match(
         html,
@@ -188,6 +189,18 @@ test("conserva visible la acción primaria del diálogo para mover", () => {
     assert.match(
         css,
         /\.bulkToolbar \.appDialog \.primaryAction\s*\{[\s\S]*?background:\s*var\(--color-accent\);[\s\S]*?color:\s*var\(--color-on-accent\);/
+    );
+});
+
+test("cancelar cierra explícitamente el diálogo para mover", () => {
+    const source = readFileSync(
+        new URL("../src/ui/MainView.js", import.meta.url),
+        "utf8"
+    );
+
+    assert.match(
+        source,
+        /"cancelBulkMoveDialog"[\s\S]*?addEventListener\("click",\s*\(\)\s*=>\s*\{[\s\S]*?bulkMoveDialog\?\.close\(\);/
     );
 });
 
