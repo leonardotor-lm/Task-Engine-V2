@@ -1208,19 +1208,24 @@ export class TaskList {
                     id="bulkMoveDialog"
                     class="appDialog bulkMoveDialog">
                     <form method="dialog">
-                        <h2>Mover tareas</h2>
-                        <p>
-                            Elegí el proyecto de destino para la selección.
-                        </p>
+                        <header class="appDialogHeader">
+                            <h2>Mover tareas</h2>
+                        </header>
 
-                        ${this.searchableSelect.render({
-                            id: "bulkMoveTarget",
-                            label: "Destino",
-                            options: moveOptions,
-                            placeholder: "Buscar proyecto…"
-                        })}
+                        <div class="appDialogBody">
+                            <p>
+                                Elegí el proyecto de destino para la selección.
+                            </p>
 
-                        <div class="dialogActions">
+                            ${this.searchableSelect.render({
+                                id: "bulkMoveTarget",
+                                label: "Destino",
+                                options: moveOptions,
+                                placeholder: "Buscar proyecto…"
+                            })}
+                        </div>
+
+                        <footer class="appDialogActions">
                             <button
                                 value="cancel"
                                 type="submit"
@@ -1234,7 +1239,7 @@ export class TaskList {
                                 class="primaryAction">
                                 Mover
                             </button>
-                        </div>
+                        </footer>
                     </form>
                 </dialog>
 
