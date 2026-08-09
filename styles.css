@@ -5286,6 +5286,12 @@ textarea,
     background: var(--color-accent);
 }
 
+.bulkToolbar .appDialog .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
 .bulkToolbar .secondaryAction {
     margin-left: 0;
 }
