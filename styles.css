@@ -7,6 +7,7 @@ body {
     display: grid;
     grid-template-columns: 220px 1fr 300px;
     height: 100vh;
+    height: 100dvh;
 }
 
 .sidebar {
@@ -2605,8 +2606,9 @@ textarea,
 
     .layout {
         display: block;
+        box-sizing: border-box;
         height: 100dvh;
-        padding-top: 48px;
+        padding-top: calc(52px + env(safe-area-inset-top));
     }
 
     .mobileHeader {
@@ -2619,15 +2621,21 @@ textarea,
         align-items: center;
         gap: 10px;
         box-sizing: border-box;
-        height: 48px;
-        padding: 7px 10px;
+        min-height: calc(52px + env(safe-area-inset-top));
+        padding:
+            calc(4px + env(safe-area-inset-top))
+            calc(10px + env(safe-area-inset-right))
+            4px
+            calc(10px + env(safe-area-inset-left));
         border-bottom: 1px solid var(--color-border-strong);
         background: var(--color-surface);
     }
 
     .mobileMenuButton {
-        width: 36px;
-        height: 34px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
         padding: 0;
         border: 1px solid var(--color-border-strong);
         border-radius: 5px;
@@ -2646,6 +2654,9 @@ textarea,
         left: 0;
         box-sizing: border-box;
         width: min(86vw, 320px);
+        padding-top: calc(16px + env(safe-area-inset-top));
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        padding-left: calc(16px + env(safe-area-inset-left));
         overflow-y: auto;
         border-right: 1px solid var(--color-border-strong);
         background: var(--color-surface);
@@ -2675,7 +2686,9 @@ textarea,
 
     .content {
         box-sizing: border-box;
-        height: calc(100dvh - 48px);
+        height: calc(
+            100dvh - 52px - env(safe-area-inset-top)
+        );
         padding: 12px 10px;
         overflow-y: auto;
     }
@@ -2769,7 +2782,7 @@ textarea,
     .quickMoreMenu select,
     .quickMoreMenu input,
     .quickMoreMenu summary {
-        min-height: 42px;
+        min-height: 44px;
         padding: 9px 10px;
     }
 
