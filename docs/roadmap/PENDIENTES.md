@@ -3,7 +3,7 @@
 Este documento registra únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
 Los puntos terminados se documentan en las PR correspondientes, en `docs/decisions/DECISIONS.md` cuando fijan una decisión estable y en el historial de Git.
 
-Última actualización: 8 de agosto de 2026.
+Última actualización: 9 de agosto de 2026.
 
 ## Estados
 
@@ -20,36 +20,9 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ## Prioridad actual
 
-### Creación de subtareas directamente en el editor
-
-- **Estado:** En desarrollo en `agent/direct-subtask-editor`.
-- En la vista Proyecto, al pulsar **Agregar subtarea**, abrir directamente el editor de tareas en modo creación y eliminar del flujo normal el formulario intermedio que sólo solicita el título.
-- Reutilizar `DirectTaskCreationController` y el sistema de borradores ya utilizado por **Nueva tarea**, sin crear una segunda infraestructura paralela.
-- La nueva subtarea no debe persistirse ni sincronizarse hasta que el usuario pulse Guardar.
-- Cancelar o cerrar el editor debe descartar el borrador sin dejar tareas fantasma; si el borrador contiene adjuntos, deben limpiarse con el mecanismo ya existente para borradores.
-- El borrador debe quedar asociado al proyecto padre y heredar inicialmente su área y estado según las reglas actuales de subtareas.
-- Conservar la transición `INBOX → PENDING` si durante la creación se asigna un área a una subtarea cuyo padre está en Inbox.
-- No permitir recurrencia en una subtarea.
-- Mantener el editor completo para descripción, área, contexto, prioridad, etiquetas, objetivos, fecha/hora, En espera y adjuntos.
-- Validar que la creación directa funcione igual en escritorio y móvil y que el cierre por botón, Escape, clic fuera o navegación móvil no deje datos residuales.
-
-### Accesibilidad y limpieza final de interfaz
-
-- **Estado:** Los tres bloques funcionales de accesibilidad fueron fusionados: foco/cierre de overlays en PR #175, estados accesibles en PR #176 y navegación real por teclado en PR #177. Queda una pasada posterior de limpieza visual/táctil.
-- Comprobar que los controles interactivos tengan foco visible y áreas táctiles suficientes.
-- Auditar contraste de texto, estados deshabilitados, indicadores de selección y estado de sincronización.
-- Revisar estados vacíos y mensajes de error para que sean comprensibles sin depender sólo de color o posición.
-- Probar anchos extremos de escritorio y celular para detectar desbordes, superposiciones y controles fuera del viewport.
-- Auditar confirmaciones y diálogos restantes para eliminar cualquier dependencia innecesaria de ventanas nativas del navegador.
-- Eliminar CSS, selectores, listeners o ramas de compatibilidad que hayan quedado obsoletos después de los rediseños recientes.
-- Revisar inconsistencias visuales entre la lista principal, Objetivos, Proyectos, editores y gestores de Organización.
-- Mantener la estética Flat 2.0 y el criterio de reducir ruido sin retirar capacidades.
-
-## Siguiente bloque funcional
-
 ### Fecha de inicio y períodos
 
-- **Estado:** Postergado hasta terminar el bloque actual y la limpieza final registrada arriba.
+- **Estado:** Pendiente; es el siguiente bloque funcional después del cierre de accesibilidad y limpieza de interfaz.
 - Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
 - Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
 - Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
@@ -96,6 +69,8 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 Estos puntos ya no son pendientes y se conservan aquí sólo como referencia breve de cierre:
 
+- **Creación directa de subtareas:** PR #180 abre el editor completo desde Proyectos, conserva la herencia y las reglas de dominio y descarta borradores cancelados sin persistir tareas fantasma.
+- **Accesibilidad y limpieza final:** foco, cierre de overlays, estados accesibles y navegación por teclado quedaron cubiertos en PR #175, #176 y #177; la pasada final verificó contraste, diálogos propios, adaptación a viewports extremos y áreas táctiles móviles de 44 px.
 - **Persistencia de filtros y preferencias por vista:** el contrato de persistencia completo a través de Sheets y Apps Script quedó corregido y probado en PR #178, incluyendo compatibilidad con revisiones históricas y datos opcionales.
 - **Detección y navegación de proyectos:** PR #179 unificó el criterio de descendencia visible para evitar proyectos falsos producidos por subtareas archivadas o en Papelera.
 - **Adjuntos:** base de Drive en PR #156; interfaz, eliminación y búsqueda en PR #157; integración con los editores actuales verificada posteriormente.
