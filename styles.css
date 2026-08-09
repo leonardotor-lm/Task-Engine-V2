@@ -4052,6 +4052,10 @@ textarea,
     gap: 6px;
 }
 
+.bulkMoveDialog .searchableSelect {
+    margin-top: 14px;
+}
+
 .searchableSelectSearch,
 .searchableSelect select {
     box-sizing: border-box;
