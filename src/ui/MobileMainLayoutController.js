@@ -57,14 +57,19 @@ export class MobileMainLayoutController {
 
     applyLayout(state = {}) {
 
-        const button = this.document?.getElementById(
+        const taskButton = this.document?.getElementById(
             "openTaskCreation"
         );
+        const goalButton = this.document?.getElementById(
+            "openGoalCreation"
+        );
 
-        if (!button) return;
+        if (!taskButton && !goalButton) return;
 
         if (!this.isMobile()) {
-            this.restoreDesktopButton(button);
+            if (taskButton) {
+                this.restoreDesktopButton(taskButton);
+            }
             return;
         }
 
@@ -74,24 +79,36 @@ export class MobileMainLayoutController {
 
         if (!layout) return;
 
-        button.classList.add(
-            "mobileFloatingTaskButton"
-        );
-        button.setAttribute(
-            "aria-label",
-            "Nueva tarea"
-        );
-        button.setAttribute(
-            "title",
-            "Nueva tarea"
-        );
-        button.hidden = Boolean(
-            state.selectedTask ||
-            state.goalEditorOpen ||
-            state.bulkSelectionMode
-        );
+        const goalsView = state.view === "goals";
 
-        layout.append(button);
+        if (taskButton) {
+            taskButton.classList.add(
+                "mobileFloatingTaskButton"
+            );
+            taskButton.setAttribute(
+                "aria-label",
+                "Nueva tarea"
+            );
+            taskButton.setAttribute(
+                "title",
+                "Nueva tarea"
+            );
+            taskButton.hidden = Boolean(
+                goalsView ||
+                state.selectedTask ||
+                state.goalEditorOpen ||
+                state.bulkSelectionMode
+            );
+
+            layout.append(taskButton);
+        }
+
+        if (goalsView && goalButton) {
+            goalButton.classList.add(
+                "mobileFloatingTaskButton"
+            );
+            layout.append(goalButton);
+        }
 
     }
 

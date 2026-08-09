@@ -46,7 +46,15 @@ test("la aplicación carga la adaptación principal para celular", async () => {
     );
     assert.match(
         controller,
-        /layout\.append\(button\)/
+        /const goalsView = state\.view === "goals";/
+    );
+    assert.match(
+        controller,
+        /taskButton\.hidden = Boolean\([\s\S]*?goalsView/
+    );
+    assert.match(
+        controller,
+        /if \(goalsView && goalButton\)[\s\S]*?layout\.append\(goalButton\)/
     );
     assert.match(
         styles,
