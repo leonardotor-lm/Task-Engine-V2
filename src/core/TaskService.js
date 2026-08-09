@@ -1133,6 +1133,96 @@ export class TaskService {
 
     }
 
+    moveTasks(
+        ids,
+        parentId = null
+    ) {
+
+        const selectedIds = new Set(ids);
+        const tasks = [...selectedIds].map(
+            id => this.repository.getById(id)
+        );
+
+        if (tasks.some(task => !task)) {
+            throw new Error(
+                "Una de las tareas seleccionadas no existe."
+            );
+        }
+
+        if (tasks.some(task => !this.isActiveTask(task))) {
+            throw new Error(
+                "Sólo se pueden mover tareas activas."
+            );
+        }
+
+        if (tasks.some(task => task.recurrence)) {
+            throw new Error(
+                "Las tareas recurrentes no pueden formar parte de una jerarquía."
+            );
+        }
+
+        let parent = null;
+
+        if (parentId !== null) {
+            parent = this.repository.getById(parentId);
+
+            if (!parent || !this.isActiveTask(parent)) {
+                throw new Error(
+                    "El proyecto de destino no existe o no está activo."
+                );
+            }
+
+            if (parent.recurrence) {
+                throw new Error(
+                    "Las tareas recurrentes no pueden formar parte de una jerarquía."
+                );
+            }
+
+            if (
+                selectedIds.has(parent.id) ||
+                tasks.some(task =>
+                    this.getDescendants(task.id)
+                        .some(descendant => descendant.id === parent.id)
+                )
+            ) {
+                throw new Error(
+                    "No se puede mover la selección dentro de sí misma ni de sus descendientes."
+                );
+            }
+        }
+
+        const rootTasks = tasks.filter(task => {
+            let current = task;
+            const visited = new Set();
+
+            while (current.parentTaskId) {
+                if (selectedIds.has(current.parentTaskId)) {
+                    return false;
+                }
+                if (visited.has(current.parentTaskId)) {
+                    break;
+                }
+                visited.add(current.parentTaskId);
+                current = this.repository.getById(
+                    current.parentTaskId
+                );
+                if (!current) break;
+            }
+
+            return true;
+        });
+
+        rootTasks.forEach(task => {
+            task.update({
+                parentTaskId: parent?.id ?? null
+            });
+            this.repository.update(task);
+        });
+
+        return tasks;
+
+    }
+
     detachSubtask(id) {
 
         const task = this.repository.getById(id);

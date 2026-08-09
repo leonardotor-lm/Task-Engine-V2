@@ -978,6 +978,26 @@ export class App {
 
             },
 
+            onBulkMoveTasks: (parentId) => {
+
+                const updated =
+                    this.taskService.moveTasks(
+                        [...this.selectedTaskIds],
+                        parentId
+                    );
+
+                if (parentId) {
+                    this.expandedTaskIds.add(parentId);
+                }
+
+                this.selectedTaskIds.clear();
+                this.selectedTask = null;
+                this.render();
+
+                return updated.length;
+
+            },
+
             onBulkCompleteTasks: () => {
 
                 const updated =

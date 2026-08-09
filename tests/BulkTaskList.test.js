@@ -133,6 +133,10 @@ test("muestra las herramientas cuando hay una selección", () => {
     );
 
     assert.match(html, /id="bulkDueDate"/);
+    assert.match(html, /id="openBulkMoveDialog"/);
+    assert.match(html, /id="bulkMoveDialog"/);
+    assert.match(html, /id="bulkMoveTarget"/);
+    assert.match(html, /id="bulkMoveTasks"/);
     assert.match(
         html,
         /id="bulkDueTime"[\s\S]*?type="time"[\s\S]*?disabled/
