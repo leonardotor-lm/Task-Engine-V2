@@ -48,6 +48,25 @@ test("los controles táctiles principales alcanzan 44 px", () => {
     );
 });
 
+test("la interfaz móvil conserva una sola acción de alta y alinea sus herramientas", () => {
+    assert.match(
+        interfaceStyles,
+        /#openTaskCreation,\s*\n\s*\.mobileFloatingTaskButton\s*\{[\s\S]*?position:\s*fixed;/
+    );
+    assert.match(
+        interfaceStyles,
+        /\.goalHeadingAction\s*\{\s*display:\s*none;/
+    );
+    assert.match(
+        interfaceStyles,
+        /\.taskContextToolbarSort\s*\{[\s\S]*?order:\s*1;[\s\S]*?flex-basis:\s*100%;/
+    );
+    assert.match(
+        interfaceStyles,
+        /\.taskContextToolbarUtilities\s*\{[\s\S]*?order:\s*2;[\s\S]*?margin-left:\s*0;/
+    );
+});
+
 test("el registro cierra la PR 180 y habilita fecha de inicio", () => {
     assert.doesNotMatch(roadmap, /Creación de subtareas directamente en el editor/);
     assert.match(roadmap, /PR #180 abre el editor completo/);
