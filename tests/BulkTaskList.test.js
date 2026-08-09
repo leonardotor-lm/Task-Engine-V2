@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { Task } from "../src/domain/Task.js";
 import { TaskList } from "../src/ui/TaskList.js";
@@ -133,6 +134,15 @@ test("muestra las herramientas cuando hay una selección", () => {
     );
 
     assert.match(html, /id="bulkDueDate"/);
+    assert.match(html, /id="openBulkMoveDialog"/);
+    assert.match(html, /id="bulkMoveDialog"/);
+    assert.match(html, /id="bulkMoveTarget"/);
+    assert.match(html, /id="cancelBulkMoveDialog"/);
+    assert.match(html, /id="bulkMoveTasks"/);
+    assert.match(
+        html,
+        /id="bulkMoveDialog"[\s\S]*?class="appDialogHeader"[\s\S]*?class="appDialogBody"[\s\S]*?class="appDialogActions"/
+    );
     assert.match(
         html,
         /id="bulkDueTime"[\s\S]*?type="time"[\s\S]*?disabled/
@@ -168,6 +178,30 @@ test("muestra las herramientas cuando hay una selección", () => {
         /class="task [^"]*bulkSelectedTask/
     );
 
+});
+
+test("conserva visible la acción primaria del diálogo para mover", () => {
+    const css = readFileSync(
+        new URL("../styles.css", import.meta.url),
+        "utf8"
+    );
+
+    assert.match(
+        css,
+        /\.bulkToolbar \.appDialog \.primaryAction\s*\{[\s\S]*?background:\s*var\(--color-accent\);[\s\S]*?color:\s*var\(--color-on-accent\);/
+    );
+});
+
+test("cancelar cierra explícitamente el diálogo para mover", () => {
+    const source = readFileSync(
+        new URL("../src/ui/MainView.js", import.meta.url),
+        "utf8"
+    );
+
+    assert.match(
+        source,
+        /"cancelBulkMoveDialog"[\s\S]*?addEventListener\("click",\s*\(\)\s*=>\s*\{[\s\S]*?bulkMoveDialog\?\.close\(\);/
+    );
 });
 
 test("muestra área, contexto y etiquetas en la barra masiva", () => {

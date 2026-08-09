@@ -4,6 +4,7 @@ import { flattenTaskTree } from "../core/TaskTree.js";
 import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
+import { SearchableSelect } from "./SearchableSelect.js";
 import { Icon } from "./Icon.js";
 
 export class TaskList {
@@ -11,6 +12,8 @@ export class TaskList {
     constructor() {
         this.searchableMultiSelect =
             new SearchableMultiSelect();
+        this.searchableSelect =
+            new SearchableSelect();
     }
 
     render(
@@ -199,7 +202,9 @@ export class TaskList {
                         contexts,
                         tags,
                         goals,
-                        bulkActionMode
+                        bulkActionMode,
+                        selectedTaskIds,
+                        allTasks
                     )
                     : ""}
 
@@ -946,7 +951,9 @@ export class TaskList {
         contexts,
         tags,
         goals,
-        bulkActionMode
+        bulkActionMode,
+        selectedTaskIds = new Set(),
+        allTasks = []
     ) {
 
         if (bulkActionMode !== "ACTIVE") {
@@ -1037,6 +1044,46 @@ export class TaskList {
                     value: goal.id,
                     label: goal.title
                 }));
+
+        const tasksById = new Map(
+            allTasks.map(task => [task.id, task])
+        );
+        const isInsideSelection = task => {
+            let current = task;
+            const visited = new Set();
+
+            while (current?.parentTaskId) {
+                if (selectedTaskIds.has(current.parentTaskId)) {
+                    return true;
+                }
+                if (visited.has(current.parentTaskId)) {
+                    break;
+                }
+                visited.add(current.parentTaskId);
+                current = tasksById.get(current.parentTaskId);
+            }
+
+            return false;
+        };
+        const moveOptions = [
+            {
+                value: "__ROOT__",
+                label: "Convertir en tareas principales"
+            },
+            ...allTasks
+                .filter(task =>
+                    !selectedTaskIds.has(task.id) &&
+                    !isInsideSelection(task) &&
+                    !task.isCompleted() &&
+                    !task.isArchived() &&
+                    !task.isDeleted() &&
+                    !task.recurrence
+                )
+                .map(task => ({
+                    value: task.id,
+                    label: task.title
+                }))
+        ];
 
         return `
             <section class="bulkToolbar">
@@ -1150,6 +1197,51 @@ export class TaskList {
                     class="bulkPrimaryAction">
                     Aplicar cambios
                 </button>
+
+                <button
+                    id="openBulkMoveDialog"
+                    type="button">
+                    Mover
+                </button>
+
+                <dialog
+                    id="bulkMoveDialog"
+                    class="appDialog bulkMoveDialog">
+                    <form method="dialog">
+                        <header class="appDialogHeader">
+                            <h2>Mover tareas</h2>
+                        </header>
+
+                        <div class="appDialogBody">
+                            <p>
+                                Elegí el proyecto de destino para la selección.
+                            </p>
+
+                            ${this.searchableSelect.render({
+                                id: "bulkMoveTarget",
+                                label: "Destino",
+                                options: moveOptions,
+                                placeholder: "Buscar proyecto…"
+                            })}
+                        </div>
+
+                        <footer class="appDialogActions">
+                            <button
+                                id="cancelBulkMoveDialog"
+                                type="button"
+                                class="secondaryAction">
+                                Cancelar
+                            </button>
+                            <button
+                                id="bulkMoveTasks"
+                                value="default"
+                                type="button"
+                                class="primaryAction">
+                                Mover
+                            </button>
+                        </footer>
+                    </form>
+                </dialog>
 
                 <details class="bulkMoreActions">
 

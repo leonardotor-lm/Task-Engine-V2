@@ -4052,6 +4052,10 @@ textarea,
     gap: 6px;
 }
 
+.bulkMoveDialog .searchableSelect {
+    margin-top: 14px;
+}
+
 .searchableSelectSearch,
 .searchableSelect select {
     box-sizing: border-box;
@@ -5280,6 +5284,12 @@ textarea,
 .bulkToolbar .bulkPrimaryAction {
     border-color: var(--color-accent);
     background: var(--color-accent);
+}
+
+.bulkToolbar .appDialog .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
 }
 
 .bulkToolbar .secondaryAction {

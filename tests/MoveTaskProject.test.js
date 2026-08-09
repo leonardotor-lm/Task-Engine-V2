@@ -115,6 +115,103 @@ test("impide mover una tarea dentro de un descendiente", () => {
 
 });
 
+test("mueve varias tareas conservando sus árboles", () => {
+
+    const destination = new Task({
+        id: "bulk-destination",
+        title: "Proyecto destino"
+    });
+    const first = new Task({
+        id: "bulk-first",
+        title: "Primera"
+    });
+    const second = new Task({
+        id: "bulk-second",
+        title: "Segunda"
+    });
+    const child = new Task({
+        id: "bulk-child",
+        title: "Paso interno",
+        parentTaskId: first.id
+    });
+    const repository = new MemoryRepository([
+        destination,
+        first,
+        second,
+        child
+    ]);
+    const service = new TaskService(repository);
+
+    const moved = service.moveTasks(
+        [first.id, second.id],
+        destination.id
+    );
+
+    assert.equal(moved.length, 2);
+    assert.equal(first.parentTaskId, destination.id);
+    assert.equal(second.parentTaskId, destination.id);
+    assert.equal(child.parentTaskId, first.id);
+
+});
+
+test("mover una selección con padre e hija no rompe su jerarquía", () => {
+
+    const destination = new Task({
+        id: "tree-destination",
+        title: "Destino"
+    });
+    const parent = new Task({
+        id: "tree-parent",
+        title: "Padre"
+    });
+    const child = new Task({
+        id: "tree-child",
+        title: "Hija",
+        parentTaskId: parent.id
+    });
+    const service = new TaskService(
+        new MemoryRepository([
+            destination,
+            parent,
+            child
+        ])
+    );
+
+    service.moveTasks(
+        [parent.id, child.id],
+        destination.id
+    );
+
+    assert.equal(parent.parentTaskId, destination.id);
+    assert.equal(child.parentTaskId, parent.id);
+
+});
+
+test("impide mover una selección dentro de sus descendientes", () => {
+
+    const parent = new Task({
+        id: "bulk-parent",
+        title: "Proyecto"
+    });
+    const child = new Task({
+        id: "bulk-descendant",
+        title: "Descendiente",
+        parentTaskId: parent.id
+    });
+    const service = new TaskService(
+        new MemoryRepository([parent, child])
+    );
+
+    assert.throws(
+        () => service.moveTasks(
+            [parent.id],
+            child.id
+        ),
+        /descendientes/
+    );
+
+});
+
 test("la lista reserva el selector de movimiento para el editor", () => {
 
     const parent = new Task({

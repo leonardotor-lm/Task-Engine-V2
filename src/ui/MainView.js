@@ -2363,6 +2363,66 @@ export class MainView {
 
             });
 
+            const bulkMoveDialog =
+                document.getElementById(
+                    "bulkMoveDialog"
+                );
+
+            document.getElementById(
+                "openBulkMoveDialog"
+            )?.addEventListener("click", () => {
+                bulkMoveDialog?.showModal();
+            });
+
+            document.getElementById(
+                "cancelBulkMoveDialog"
+            )?.addEventListener("click", () => {
+                bulkMoveDialog?.close();
+            });
+
+            document.getElementById(
+                "bulkMoveTasks"
+            )?.addEventListener("click", async () => {
+
+                const targetId = document
+                    .getElementById("bulkMoveTarget")
+                    ?.value;
+
+                if (!targetId) {
+                    Dialog.alert("Elegí un destino.");
+                    return;
+                }
+
+                const detachTasks = targetId === "__ROOT__";
+
+                if (!await Dialog.confirmAsync(
+                    detachTasks
+                        ? "¿Convertir las tareas seleccionadas en tareas principales?"
+                        : "¿Mover las tareas seleccionadas y sus árboles al proyecto elegido?",
+                    {
+                        title: "Mover tareas",
+                        confirmLabel: "Mover"
+                    }
+                )) {
+                    return;
+                }
+
+                try {
+                    const count = this.callbacks
+                        .onBulkMoveTasks(
+                            detachTasks ? null : targetId
+                        );
+
+                    bulkMoveDialog?.close();
+                    Dialog.alert(
+                        `Se movieron ${count} ${count === 1 ? "tarea" : "tareas"}.`
+                    );
+                } catch (error) {
+                    Dialog.alert(error.message);
+                }
+
+            });
+
             const bulkDueDate =
                 document.getElementById(
                     "bulkDueDate"
