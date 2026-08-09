@@ -328,14 +328,18 @@
     }
 
     .taskContextToolbarUtilities {
-        order: 1;
-        margin-left: auto;
+        order: 2;
+        margin-left: 0;
     }
 
     .taskContextToolbarTextButton,
-    .taskContextToolbarSort,
     .taskContextToolbarWaiting {
         order: 2;
+    }
+
+    .taskContextToolbarSort {
+        order: 1;
+        flex-basis: 100%;
     }
 
     .taskContextToolbarIconButton {
@@ -374,6 +378,7 @@
         background: var(--color-surface-subtle);
     }
 
+    #openTaskCreation,
     .mobileFloatingTaskButton {
         position: fixed;
         z-index: 40;
@@ -396,24 +401,36 @@
         box-shadow: 0 8px 22px rgb(15 23 42 / 22%);
     }
 
+    #openTaskCreation:hover,
+    #openTaskCreation:active,
     .mobileFloatingTaskButton:hover,
     .mobileFloatingTaskButton:active {
         background: var(--color-accent-strong);
     }
 
+    #openTaskCreation .createActionIcon,
+    #openTaskCreation .icon,
     .mobileFloatingTaskButton .createActionIcon,
     .mobileFloatingTaskButton .icon {
         width: 24px;
         height: 24px;
     }
 
+    #openTaskCreation .createActionLabel,
     .mobileFloatingTaskButton .createActionLabel {
         display: none;
     }
 
     .layout.mobileMenuOpen
+        #openTaskCreation,
+    #openTaskCreation[hidden],
+    .layout.mobileMenuOpen
         .mobileFloatingTaskButton,
     .mobileFloatingTaskButton[hidden] {
+        display: none;
+    }
+
+    .goalHeadingAction {
         display: none;
     }
 
