@@ -2375,6 +2375,12 @@ export class MainView {
             });
 
             document.getElementById(
+                "cancelBulkMoveDialog"
+            )?.addEventListener("click", () => {
+                bulkMoveDialog?.close();
+            });
+
+            document.getElementById(
                 "bulkMoveTasks"
             )?.addEventListener("click", async () => {
 
