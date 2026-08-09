@@ -59,11 +59,15 @@ test("la interfaz móvil conserva una sola acción de alta y alinea sus herramie
     );
     assert.match(
         interfaceStyles,
-        /\.taskContextToolbarSort\s*\{[\s\S]*?order:\s*1;[\s\S]*?flex-basis:\s*100%;/
+        /\.taskContextToolbarSort\s*\{[\s\S]*?order:\s*initial;[\s\S]*?max-width:\s*118px;/
     );
     assert.match(
         interfaceStyles,
-        /\.taskContextToolbarUtilities\s*\{[\s\S]*?order:\s*2;[\s\S]*?margin-left:\s*0;/
+        /\.taskContextToolbarUtilities\s*\{[\s\S]*?order:\s*initial;[\s\S]*?margin-left:\s*0;/
+    );
+    assert.match(
+        interfaceStyles,
+        /\.taskContextToolbarSort > span\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?clip:\s*rect\(0, 0, 0, 0\);/
     );
 });
 
