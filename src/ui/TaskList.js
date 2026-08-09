@@ -1227,8 +1227,8 @@ export class TaskList {
 
                         <footer class="appDialogActions">
                             <button
-                                value="cancel"
-                                type="submit"
+                                id="cancelBulkMoveDialog"
+                                type="button"
                                 class="secondaryAction">
                                 Cancelar
                             </button>
