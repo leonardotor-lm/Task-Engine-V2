@@ -35,6 +35,10 @@ const FIELD_ALIASES = Object.freeze({
     etiqueta: "tag",
     due: "due",
     fecha: "due",
+    start: "start",
+    startdate: "start",
+    inicio: "start",
+    inicia: "start",
     hassubtasks: "hasSubtasks",
     tienesubtareas: "hasSubtasks",
     isrecurring: "isRecurring",
@@ -71,6 +75,8 @@ const FIELD_ALIASES = Object.freeze({
     tieneetiquetas: "isTagged",
     hasduedate: "hasDueDate",
     tienefecha: "hasDueDate",
+    hasstartdate: "hasStartDate",
+    tieneinicio: "hasStartDate",
     duetime: "dueTime",
     hora: "dueTime",
     hasduetime: "hasDueTime",
@@ -81,6 +87,12 @@ const FIELD_ALIASES = Object.freeze({
     fechadespues: "dueAfter",
     duewithin: "dueWithin",
     fechadentro: "dueWithin",
+    startbefore: "startBefore",
+    inicioantes: "startBefore",
+    startafter: "startAfter",
+    iniciodespues: "startAfter",
+    startwithin: "startWithin",
+    iniciodentro: "startWithin",
     completed: "completed",
     completada: "completed",
     completedbefore: "completedBefore",
@@ -118,6 +130,8 @@ const FIELD_ALIASES = Object.freeze({
     venceentre: "dueBetween",
     duebetween: "dueBetween",
     fechaentre: "dueBetween",
+    startbetween: "startBetween",
+    inicioentre: "startBetween",
     createdbetween: "createdBetween",
     creadaentre: "createdBetween",
     updatedbetween: "updatedBetween",
@@ -1147,6 +1161,12 @@ function matchesField(task, node, context) {
                 Boolean(task.dueDate) === expected;
         }
 
+        case "hasStartDate": {
+            const expected = parseBoolean(node.value);
+            return expected !== null &&
+                Boolean(task.startDate) === expected;
+        }
+
         case "dueTime":
             return (task.dueTime ?? "") ===
                 node.value.trim();
@@ -1183,6 +1203,44 @@ function matchesField(task, node, context) {
         case "due":
             return matchesDueDate(
                 task,
+                node.value,
+                context.today
+            );
+
+        case "start":
+            return matchesDueDate(
+                { dueDate: task.startDate },
+                node.value,
+                context.today
+            );
+
+        case "startBefore":
+            return matchesDateBoundary(
+                task.startDate,
+                node.value,
+                context.today,
+                "before"
+            );
+
+        case "startAfter":
+            return matchesDateBoundary(
+                task.startDate,
+                node.value,
+                context.today,
+                "after"
+            );
+
+        case "startWithin":
+            return matchesDateWithin(
+                task.startDate,
+                node.value,
+                context.today,
+                true
+            );
+
+        case "startBetween":
+            return matchesDateBetween(
+                task.startDate,
                 node.value,
                 context.today
             );
