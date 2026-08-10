@@ -1215,6 +1215,8 @@ body {
 }
 
 .taskMetadataToggle {
+    box-sizing: border-box;
+    min-height: 34px;
     padding: 5px 8px;
     border: 1px solid var(--color-border-strong);
     border-radius: 5px;
@@ -4418,16 +4420,18 @@ textarea,
     font-variant-numeric: tabular-nums;
 }
 
+.projectBulkModeAction.active,
+.projectBulkModeAction[aria-pressed="true"] {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+}
+
 @media (max-width: 760px) {
 
     .projectWorkspace .taskListHeadingActions {
         width: 100%;
-        flex-wrap: wrap;
-    }
-
-    .projectWorkspace .taskListHeadingActions
-        .primaryAction {
-        flex: 1 1 100%;
+        flex-wrap: nowrap;
     }
 
 }

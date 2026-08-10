@@ -57,15 +57,32 @@
 
     .goalBreadcrumb,
     .projectBreadcrumb {
+        flex-wrap: nowrap;
         gap: 3px;
         margin-bottom: 8px;
+        padding: 2px 0;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
         font-size: 12px;
+        scrollbar-width: none;
+        white-space: nowrap;
+    }
+
+    .goalBreadcrumb::-webkit-scrollbar,
+    .projectBreadcrumb::-webkit-scrollbar {
+        display: none;
     }
 
     .goalBreadcrumb .goalBreadcrumbLink,
     .projectBreadcrumb .projectBreadcrumbLink {
-        min-height: 32px;
+        flex: 0 0 auto;
+        min-height: 44px;
         padding: 5px 3px;
+    }
+
+    .goalBreadcrumbCurrent,
+    .projectBreadcrumbCurrent {
+        flex: 0 0 auto;
     }
 
 }

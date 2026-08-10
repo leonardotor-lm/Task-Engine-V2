@@ -64,6 +64,14 @@ test("el proyecto elimina Volver al incorporar breadcrumb", () => {
         styles,
         /\.taskListHeading:has\(\.projectHeadingAction\)/
     );
+    assert.match(
+        projectView,
+        /id="toggleBulkMode"[\s\S]*?class="secondaryAction projectBulkModeAction responsiveIconButton[\s\S]*?aria-pressed=/
+    );
+    assert.match(
+        projectView,
+        /Icon\.render\("list-checks"\)/
+    );
 
 });
 

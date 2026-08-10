@@ -89,6 +89,14 @@ const icons = Object.freeze({
         <path d="M20 6 9 17l-5-5"></path>
     `,
 
+    "list-checks": `
+        <path d="m3 17 2 2 4-4"></path>
+        <path d="m3 7 2 2 4-4"></path>
+        <path d="M13 6h8"></path>
+        <path d="M13 12h8"></path>
+        <path d="M13 18h8"></path>
+    `,
+
     search: `
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.3-4.3"></path>

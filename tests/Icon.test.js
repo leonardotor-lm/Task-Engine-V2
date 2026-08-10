@@ -22,11 +22,12 @@ test("ofrece la familia inicial de íconos", () => {
             "chevron-left",
             "corner-down-right",
             "clock",
-        "repeat",
-        "menu",
-        "check",
-        "search",
-        "settings"
+            "repeat",
+            "menu",
+            "check",
+            "list-checks",
+            "search",
+            "settings"
         ]
     );
 
@@ -41,6 +42,10 @@ test("usa trazados oficiales de la familia Lucide", () => {
     assert.match(
         Icon.render("repeat"),
         /M13 18H7/
+    );
+    assert.match(
+        Icon.render("list-checks"),
+        /M13 12h8/
     );
 
 });
