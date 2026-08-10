@@ -1366,6 +1366,7 @@ export class MainView {
             ["showUpcoming", "onShowUpcoming"],
             ["showAll", "onShowAll"],
             ["showCalendar", "onShowCalendar"],
+            ["showActivity", "onShowActivity"],
             ["showCompleted", "onShowCompleted"],
             ["showArchived", "onShowArchived"],
             ["showTrash", "onShowTrash"],
@@ -1405,6 +1406,43 @@ export class MainView {
             });
 
         }
+
+        document.getElementById(
+            "activitySearchForm"
+        )?.addEventListener("submit", event => {
+
+            event.preventDefault();
+            this.callbacks.onSearchActivity(
+                document.getElementById(
+                    "activitySearch"
+                )?.value ?? ""
+            );
+
+        });
+
+        document.getElementById(
+            "activityCategory"
+        )?.addEventListener("change", event => {
+
+            this.callbacks.onFilterActivity(
+                event.target.value
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".openActivityTask"
+        ).forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                this.callbacks.onOpenActivityTask(
+                    button.dataset.taskId
+                );
+
+            });
+
+        });
 
         if (view === View.GOALS) {
 

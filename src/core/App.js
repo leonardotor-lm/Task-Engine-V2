@@ -5,6 +5,7 @@ import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
 import { CustomFilterService } from "./CustomFilterService.js";
 import { GoalService } from "./GoalService.js";
+import { ActivityService } from "./ActivityService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
@@ -41,7 +42,11 @@ export class App {
 
     constructor() {
 
-        this.taskService = new TaskService();
+        this.activityService = new ActivityService();
+        this.taskService = new TaskService(
+            undefined,
+            this.activityService
+        );
         this.areaService = new AreaService();
         this.contextService = new ContextService();
         this.tagService = new TagService();
@@ -64,7 +69,9 @@ export class App {
             customFilterRepository:
                 this.customFilterService.repository,
             goalRepository:
-                this.goalService.repository
+                this.goalService.repository,
+            activityRepository:
+                this.activityService.repository
         });
 
         this.syncConfig = new SyncConfig();
@@ -84,6 +91,8 @@ export class App {
         this.goalExpandedTaskIds = new Set();
         this.currentGoalStatus = "ACTIVE";
         this.currentView = View.TODAY;
+        this.activityQuery = "";
+        this.activityCategory = "ALL";
         this.calendarMonth =
             new Date().toISOString().slice(0, 7);
         this.calendarSelectedDate = null;
@@ -1469,6 +1478,48 @@ export class App {
 
             },
 
+            onShowActivity: () => {
+
+                this.navigateTo(View.ACTIVITY);
+
+            },
+
+            onSearchActivity: (query) => {
+
+                this.activityQuery = query;
+                this.render();
+
+            },
+
+            onFilterActivity: (category) => {
+
+                this.activityCategory = category;
+                this.render();
+
+            },
+
+            onOpenActivityTask: (id) => {
+
+                const task =
+                    this.taskService.getTaskById(id);
+
+                if (!task) return;
+
+                if (task.isDeleted()) {
+                    this.currentView = View.TRASH;
+                } else if (task.isArchived()) {
+                    this.currentView = View.ARCHIVED;
+                } else if (task.isCompleted()) {
+                    this.currentView = View.COMPLETED;
+                } else {
+                    this.currentView = View.ALL;
+                }
+
+                this.selectedTask = task;
+                this.render();
+
+            },
+
             onShowArchived: () => {
 
                 this.navigateTo(View.ARCHIVED);
@@ -2262,6 +2313,10 @@ export class App {
 
                 return this.taskService.getDeletedTasks();
 
+            case View.ACTIVITY:
+
+                return [];
+
             case View.INBOX:
             default:
 
@@ -2677,6 +2732,15 @@ export class App {
                     .isMetadataVisible(),
             showCompletedTasks,
             taskViewCounts,
+            activityEvents:
+                this.activityService.search({
+                    query: this.activityQuery,
+                    category:
+                        this.activityCategory
+                }),
+            activityQuery: this.activityQuery,
+            activityCategory:
+                this.activityCategory,
             today,
             calendarMonth: this.calendarMonth,
             calendarSelectedDate:

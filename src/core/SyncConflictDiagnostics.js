@@ -8,7 +8,8 @@ const COLLECTIONS = [
     ["contexts", "Contextos", "name"],
     ["tags", "Etiquetas", "name"],
     ["customFilters", "Filtros", "name"],
-    ["goals", "Objetivos", "title"]
+    ["goals", "Objetivos", "title"],
+    ["activityEvents", "Actividad", "taskTitle"]
 ];
 
 function sortObjectKeys(value) {

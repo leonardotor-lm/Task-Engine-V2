@@ -4,6 +4,9 @@ import { Context } from "../domain/Context.js";
 import { Tag } from "../domain/Tag.js";
 import { CustomFilter } from "../domain/CustomFilter.js";
 import { Goal } from "../domain/Goal.js";
+import {
+    ActivityEvent
+} from "../domain/ActivityEvent.js";
 
 const LEGACY_TIMESTAMP =
     "1970-01-01T00:00:00.000Z";
@@ -77,7 +80,9 @@ const OPTIONAL_SERIALIZERS = {
     goals: item =>
         new Goal(
             prepareEntity(item)
-        ).toJSON()
+        ).toJSON(),
+    activityEvents: item =>
+        new ActivityEvent(item).toJSON()
 };
 
 const OPTIONAL_PREFERENCES = [

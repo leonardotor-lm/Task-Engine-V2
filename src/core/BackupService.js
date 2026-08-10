@@ -4,6 +4,9 @@ import { Context } from "../domain/Context.js";
 import { Tag } from "../domain/Tag.js";
 import { CustomFilter } from "../domain/CustomFilter.js";
 import { Goal } from "../domain/Goal.js";
+import {
+    ActivityEvent
+} from "../domain/ActivityEvent.js";
 import { TaskStatus } from "../domain/TaskStatus.js";
 
 export const BACKUP_FORMAT = "task-engine-v2-backup";
@@ -20,6 +23,7 @@ export class BackupService {
         tagRepository,
         customFilterRepository = null,
         goalRepository = null,
+        activityRepository = null,
         storage = localStorage
     }) {
 
@@ -30,6 +34,8 @@ export class BackupService {
         this.customFilterRepository =
             customFilterRepository;
         this.goalRepository = goalRepository;
+        this.activityRepository =
+            activityRepository;
         this.storage = storage;
 
     }
@@ -64,6 +70,12 @@ export class BackupService {
                         ?.getAll()
                         .map(goal =>
                             goal.toJSON()
+                        ) ?? [],
+                activityEvents:
+                    this.activityRepository
+                        ?.getAll()
+                        .map(event =>
+                            event.toJSON()
                         ) ?? []
             }
         };
@@ -112,6 +124,20 @@ export class BackupService {
         }
 
         const data = backup.data;
+        const hasActivityEvents =
+            Object.prototype.hasOwnProperty.call(
+                data ?? {},
+                "activityEvents"
+            );
+
+        if (
+            hasActivityEvents &&
+            !Array.isArray(data.activityEvents)
+        ) {
+            throw new Error(
+                "La copia contiene una colección inválida de actividades."
+            );
+        }
 
         for (
             const collection of
@@ -132,6 +158,7 @@ export class BackupService {
         let tags;
         let customFilters;
         let goals;
+        let activityEvents;
 
         try {
 
@@ -154,6 +181,12 @@ export class BackupService {
                     item => new Goal(item)
                 )
                 : [];
+            activityEvents = hasActivityEvents
+                ? data.activityEvents.map(
+                    item =>
+                        new ActivityEvent(item)
+                )
+                : null;
 
         } catch (error) {
 
@@ -175,6 +208,12 @@ export class BackupService {
             goals,
             "objetivos"
         );
+        if (activityEvents !== null) {
+            this.validateUniqueIds(
+                activityEvents,
+                "actividades"
+            );
+        }
         this.validateGoalReferences(goals);
 
         this.validateTaskReferences({
@@ -191,7 +230,8 @@ export class BackupService {
             contexts,
             tags,
             customFilters,
-            goals
+            goals,
+            activityEvents
         };
 
     }
@@ -412,6 +452,16 @@ export class BackupService {
             ?.replaceAll(
                 data.goals ?? []
             );
+
+        if (
+            this.activityRepository &&
+            data.activityEvents !== null &&
+            data.activityEvents !== undefined
+        ) {
+            this.activityRepository.replaceAll(
+                data.activityEvents
+            );
+        }
 
     }
 

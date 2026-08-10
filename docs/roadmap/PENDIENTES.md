@@ -44,12 +44,6 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - Mantener diferencias visuales claras entre área, contexto, etiqueta, prioridad y recurrencia.
 - Preservar una interfaz compacta y sobria.
 
-### Historial
-
-- **Estado:** Postergado.
-- Diseñar un historial útil de cambios y acciones una vez estabilizado el modelo funcional.
-- Definir qué eventos merecen persistirse antes de agregar una interfaz de consulta.
-
 ### Estadísticas
 
 - **Estado:** Postergado.
@@ -59,6 +53,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 Estos puntos ya no son pendientes y se conservan aquí sólo como referencia breve de cierre:
 
+- **Historial de actividad:** registra acciones relevantes sobre tareas, resume las operaciones masivas, permite buscar y filtrar por categoría y se conserva en copias y sincronización. Los eventos técnicos de sincronización y la configuración administrativa quedan excluidos para evitar ruido.
 - **Finalización asistida de proyectos:** al completar la última subtarea pendiente se ofrece completar el padre; la decisión siempre es explícita y no produce cascadas de diálogos en jerarquías anidadas.
 - **Creación directa de subtareas:** PR #180 abre el editor completo desde Proyectos, conserva la herencia y las reglas de dominio y descarta borradores cancelados sin persistir tareas fantasma.
 - **Accesibilidad y limpieza final:** foco, cierre de overlays, estados accesibles y navegación por teclado quedaron cubiertos en PR #175, #176 y #177; la pasada final verificó contraste, diálogos propios, adaptación a viewports extremos y áreas táctiles móviles de 44 px.

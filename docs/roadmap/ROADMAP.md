@@ -14,7 +14,7 @@ La aplicación ya cuenta con:
 - sincronización con Google Apps Script y Google Sheets, con reconciliación automática y resolución conservadora de cambios simultáneos;
 - adjuntos en Google Drive;
 - interfaz responsive para escritorio y celular;
-- Inbox, Hoy y atrasadas, Mañana, Próximas, Todas, En espera, Calendario e historial operativo básico de completadas/archivadas/papelera;
+- Inbox, Hoy y atrasadas, Mañana, Próximas, Todas, En espera, Calendario, historial de actividad y vistas de completadas/archivadas/papelera;
 - áreas, contextos, etiquetas, prioridades y fecha/hora;
 - subtareas y proyectos jerárquicos;
 - objetivos y subobjetivos jerárquicos;
@@ -63,11 +63,20 @@ Reglas ya acordadas:
 
 La especificación detallada y su estado permanecen en `docs/roadmap/PENDIENTES.md`.
 
+## Etapa funcional completada — Historial de actividad
+
+El historial registra acciones relevantes sobre tareas sin convertir la aplicación en un registro técnico exhaustivo.
+
+Alcance cerrado:
+
+- creación, edición, finalización, reapertura, posposición, movimiento, archivo, Papelera, restauración, eliminación definitiva, duplicación, recurrencias y adjuntos;
+- una sola entrada resumida para operaciones masivas;
+- consulta agrupada por fecha, con búsqueda y categorías;
+- acceso a la tarea desde la entrada mientras todavía exista;
+- persistencia local, copias de seguridad, sincronización y compatibilidad con revisiones anteriores;
+- exclusión deliberada de eventos técnicos de sincronización y cambios administrativos.
+
 ## Etapas posteriores
-
-### Historial
-
-Definir qué cambios y acciones merecen persistirse y construir una vista útil de consulta. No se implementará un registro exhaustivo sin una necesidad clara de uso.
 
 ### Estadísticas
 

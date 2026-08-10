@@ -56,7 +56,9 @@ export class SyncEngine {
             areas: data.areas.length,
             contexts: data.contexts.length,
             tags: data.tags.length,
-            goals: (data.goals ?? []).length
+            goals: (data.goals ?? []).length,
+            activityEvents:
+                (data.activityEvents ?? []).length
         };
 
     }
@@ -84,7 +86,8 @@ export class SyncEngine {
                     areas: 0,
                     contexts: 0,
                     tags: 0,
-                    goals: 0
+                    goals: 0,
+                    activityEvents: 0
                 }
             };
 

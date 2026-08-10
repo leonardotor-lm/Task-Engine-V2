@@ -2,18 +2,32 @@ import { TaskRepository } from "../infrastructure/TaskRepository.js";
 import { Task } from "../domain/Task.js";
 import { TaskStatus } from "../domain/TaskStatus.js";
 import { getNextRecurrenceDate } from "../domain/Recurrence.js";
+import {
+    ActivityType
+} from "../domain/ActivityEvent.js";
 
 export class TaskService {
 
-    constructor(repository = new TaskRepository()) {
+    constructor(
+        repository = new TaskRepository(),
+        activityService = null
+    ) {
 
         this.repository = repository;
+        this.activityService = activityService;
 
     }
 
     createTask(data) {
 
-        return this.repository.add(data);
+        const task = this.repository.add(data);
+
+        this.activityService?.recordTask(
+            ActivityType.TASK_CREATED,
+            task
+        );
+
+        return task;
 
     }
 
@@ -37,12 +51,20 @@ export class TaskService {
             );
         }
 
-        return this.repository.add({
+        const task = this.repository.add({
             title,
             parentTaskId: parent.id,
             areaId: parent.areaId,
             status: parent.status
         });
+
+        this.activityService?.recordTask(
+            ActivityType.TASK_CREATED,
+            task,
+            `Subtarea de ${parent.title}`
+        );
+
+        return task;
 
     }
 
@@ -74,6 +96,7 @@ export class TaskService {
             return null;
         }
 
+        const before = task.toJSON();
         const nextRecurrence =
             data.recurrence !== undefined
                 ? data.recurrence
@@ -95,6 +118,20 @@ export class TaskService {
 
         this.repository.update(task);
 
+        const details = this.activityService
+            ?.describeChanges(
+                before,
+                task.toJSON()
+            );
+
+        if (details) {
+            this.activityService.recordTask(
+                ActivityType.TASK_UPDATED,
+                task,
+                details
+            );
+        }
+
         return task;
 
     }
@@ -107,6 +144,14 @@ export class TaskService {
 
         task.addAttachment(attachment);
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.ATTACHMENT_ADDED,
+            task,
+            attachment?.name
+                ? `Adjunto: ${attachment.name}`
+                : ""
+        );
 
         return task;
 
@@ -128,6 +173,14 @@ export class TaskService {
         if (!removed) return null;
 
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.ATTACHMENT_REMOVED,
+            task,
+            removed?.name
+                ? `Adjunto: ${removed.name}`
+                : ""
+        );
 
         return removed;
 
@@ -265,6 +318,12 @@ export class TaskService {
 
         this.repository.updateMany(
             updatedTasks
+        );
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_UPDATED,
+            updatedTasks,
+            "Edición múltiple"
         );
 
         return updatedTasks;
@@ -407,6 +466,11 @@ export class TaskService {
             ...nextRecurringTasks
         ]);
 
+        this.activityService?.recordTasks(
+            ActivityType.TASK_COMPLETED,
+            completedTasks
+        );
+
         return completedTasks;
 
     }
@@ -435,6 +499,11 @@ export class TaskService {
             });
 
         this.repository.updateMany(
+            archivedTasks
+        );
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_ARCHIVED,
             archivedTasks
         );
 
@@ -480,6 +549,11 @@ export class TaskService {
         });
 
         this.repository.updateMany(
+            deletedTasks
+        );
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_TRASHED,
             deletedTasks
         );
 
@@ -560,6 +634,11 @@ export class TaskService {
             this.repository.remove(task.id);
         }
 
+        this.activityService?.recordTasks(
+            ActivityType.TASK_DELETED,
+            tasks
+        );
+
         return tasks;
 
     }
@@ -573,6 +652,12 @@ export class TaskService {
         ) {
             this.repository.remove(task.id);
         }
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_DELETED,
+            tasks,
+            "Papelera vaciada"
+        );
 
         return tasks;
 
@@ -609,6 +694,11 @@ export class TaskService {
 
         this.repository.updateMany(restored);
 
+        this.activityService?.recordTasks(
+            ActivityType.TASK_REOPENED,
+            restored
+        );
+
         return restored;
 
     }
@@ -636,6 +726,12 @@ export class TaskService {
 
         this.repository.updateMany(restored);
 
+        this.activityService?.recordTasks(
+            ActivityType.TASK_RESTORED,
+            restored,
+            "Restauradas desde Archivadas"
+        );
+
         return restored;
 
     }
@@ -662,6 +758,12 @@ export class TaskService {
         });
 
         this.repository.updateMany(restored);
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_RESTORED,
+            restored,
+            "Restauradas desde Papelera"
+        );
 
         return restored;
 
@@ -698,6 +800,13 @@ export class TaskService {
         }
 
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            task.isCompleted()
+                ? ActivityType.TASK_COMPLETED
+                : ActivityType.TASK_REOPENED,
+            task
+        );
 
         if (task.isCompleted() && task.recurrence) {
             this.createNextRecurringTask(task);
@@ -767,6 +876,12 @@ export class TaskService {
         task.postpone(newDate);
         this.repository.update(task);
 
+        this.activityService?.recordTask(
+            ActivityType.TASK_POSTPONED,
+            task,
+            `Nueva fecha: ${newDate}`
+        );
+
         return task;
 
     }
@@ -793,6 +908,11 @@ export class TaskService {
         });
 
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.RECURRENCE_ENDED,
+            task
+        );
 
         return task;
 
@@ -832,6 +952,12 @@ export class TaskService {
 
         this.repository.update(task);
 
+        this.activityService?.recordTask(
+            ActivityType.RECURRENCE_SKIPPED,
+            task,
+            `Próxima fecha: ${nextDueDate}`
+        );
+
         return task;
 
     }
@@ -854,6 +980,11 @@ export class TaskService {
 
         this.repository.update(task);
 
+        this.activityService?.recordTask(
+            ActivityType.TASK_ARCHIVED,
+            task
+        );
+
         return task;
 
     }
@@ -875,6 +1006,11 @@ export class TaskService {
             item.delete();
             this.repository.update(item);
         }
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_TRASHED,
+            tree
+        );
 
         return task;
 
@@ -903,6 +1039,11 @@ export class TaskService {
             this.repository.remove(item.id);
         }
 
+        this.activityService?.recordTasks(
+            ActivityType.TASK_DELETED,
+            tree
+        );
+
         return task;
 
     }
@@ -918,6 +1059,12 @@ export class TaskService {
         task.restoreFromArchive();
 
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.TASK_RESTORED,
+            task,
+            "Restaurada desde Archivadas"
+        );
 
         return task;
 
@@ -944,6 +1091,12 @@ export class TaskService {
             }
 
         }
+
+        this.activityService?.recordTasks(
+            ActivityType.TASK_RESTORED,
+            tree,
+            "Restauradas desde Papelera"
+        );
 
         return task;
 
@@ -1062,6 +1215,12 @@ export class TaskService {
             ...copies
         ]);
 
+        this.activityService?.recordTask(
+            ActivityType.TASK_DUPLICATED,
+            copies[0],
+            `A partir de ${root.title}`
+        );
+
         return {
             root: copies[0],
             tasks: copies
@@ -1128,6 +1287,12 @@ export class TaskService {
         });
 
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.TASK_MOVED,
+            task,
+            `Proyecto: ${parent.title}`
+        );
 
         return task;
 
@@ -1219,6 +1384,14 @@ export class TaskService {
             this.repository.update(task);
         });
 
+        this.activityService?.recordTasks(
+            ActivityType.TASK_MOVED,
+            rootTasks,
+            parent
+                ? `Proyecto: ${parent.title}`
+                : "Convertidas en tareas principales"
+        );
+
         return tasks;
 
     }
@@ -1248,6 +1421,12 @@ export class TaskService {
         });
 
         this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.TASK_MOVED,
+            task,
+            "Convertida en tarea principal"
+        );
 
         return task;
 

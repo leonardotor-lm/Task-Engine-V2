@@ -721,7 +721,8 @@ test("descarga, valida e importa antes de guardar la revisión", async () => {
                 contexts: [],
                 tags: [],
                 customFilters: [],
-                goals: []
+                goals: [],
+                activityEvents: []
             })
         ]
     ]);

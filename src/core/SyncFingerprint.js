@@ -4,7 +4,8 @@ const COLLECTIONS = [
     "contexts",
     "tags",
     "customFilters",
-    "goals"
+    "goals",
+    "activityEvents"
 ];
 
 function normalizePreferences(
@@ -77,7 +78,8 @@ export function createSyncFingerprint(
             (
                 [
                     "customFilters",
-                    "goals"
+                    "goals",
+                    "activityEvents"
                 ].includes(collection)
                     ? []
                     : null
