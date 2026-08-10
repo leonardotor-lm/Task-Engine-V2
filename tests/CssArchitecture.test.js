@@ -35,10 +35,10 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "attachments.css",
             "waiting.css",
             "styles/task-interface.css",
-            "styles/goal-workspace.css",
             "styles/task-editor-desktop.css",
             "styles/task-editor-popovers.css",
-            "styles/task-editor-mobile.css"
+            "styles/task-editor-mobile.css",
+            "styles/goal-workspace.css"
         ]
     );
 

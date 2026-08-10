@@ -20,6 +20,15 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ## Prioridad actual
 
+### Navegación y consistencia visual
+
+- **Estado:** En desarrollo.
+- Auditar escritorio y celular sin modificar funcionalidades.
+- Mantener la planificación jerárquica en escritorio y una ejecución compacta en celular.
+- Unificar la geometría de las acciones de encabezado en tareas, proyectos y objetivos.
+- Evitar deformaciones de los breadcrumbs en jerarquías largas y conservar objetivos táctiles de 44 px.
+- Mantener un orden explícito de la cascada entre los estilos generales, los editores y los espacios jerárquicos.
+
 ### Fecha de inicio y períodos
 
 - **Estado:** Completado.

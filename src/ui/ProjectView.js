@@ -84,12 +84,24 @@ export class ProjectView {
             <button
                 id="toggleBulkMode"
                 type="button"
-                class="taskToolsButton ${state.bulkSelectionMode
+                class="secondaryAction projectBulkModeAction responsiveIconButton ${state.bulkSelectionMode
                     ? "active"
-                    : ""}">
-                ${state.bulkSelectionMode
+                    : ""}"
+                aria-label="${state.bulkSelectionMode
                     ? "Salir de selección"
-                    : "Selección múltiple"}
+                    : "Selección múltiple"}"
+                title="${state.bulkSelectionMode
+                    ? "Salir de selección"
+                    : "Selección múltiple"}"
+                aria-pressed="${state.bulkSelectionMode}">
+                <span class="responsiveButtonIcon">
+                    ${Icon.render("list-checks")}
+                </span>
+                <span class="responsiveButtonLabel">
+                    ${state.bulkSelectionMode
+                        ? "Salir de selección"
+                        : "Selección múltiple"}
+                </span>
             </button>
         `;
 

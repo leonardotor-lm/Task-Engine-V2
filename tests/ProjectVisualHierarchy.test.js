@@ -55,3 +55,14 @@ test("objetivos y proyectos comparten el lenguaje visual del breadcrumb", () => 
         /\.projectBreadcrumbCurrent/
     );
 });
+
+test("la ruta móvil conserva objetivos táctiles sin deformar el encabezado", () => {
+    assert.match(
+        workspaceStyles,
+        /@media \(max-width: 760px\)[\s\S]*?\.goalBreadcrumb,[\s\S]*?flex-wrap:\s*nowrap;[\s\S]*?overflow-x:\s*auto;/
+    );
+    assert.match(
+        workspaceStyles,
+        /\.goalBreadcrumb \.goalBreadcrumbLink,[\s\S]*?min-height:\s*44px;/
+    );
+});
