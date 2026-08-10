@@ -1373,8 +1373,8 @@ export class TaskService {
 
                 return (
                     this.isActiveTask(task) &&
-                    task.dueDate !== null &&
-                    task.dueDate <= today
+                    this.getOperationalDate(task) !== null &&
+                    this.getOperationalDate(task) <= today
                 );
 
             });
@@ -1392,7 +1392,7 @@ export class TaskService {
 
                 return (
                     this.isActiveTask(task) &&
-                    task.dueDate === tomorrow
+                    this.getOperationalDate(task) === tomorrow
                 );
 
             });
@@ -1412,12 +1412,18 @@ export class TaskService {
 
                 return (
                     this.isActiveTask(task) &&
-                    task.dueDate !== null &&
-                    task.dueDate >= startDate &&
-                    task.dueDate <= endDate
+                    this.getOperationalDate(task) !== null &&
+                    this.getOperationalDate(task) >= startDate &&
+                    this.getOperationalDate(task) <= endDate
                 );
 
             });
+
+    }
+
+    getOperationalDate(task) {
+
+        return task.startDate ?? task.dueDate ?? null;
 
     }
 
