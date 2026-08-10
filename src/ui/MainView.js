@@ -440,6 +440,10 @@ export class MainView {
             "taskEditorBackdrop"
         )?.addEventListener("click", dismiss);
 
+        document.getElementById(
+            "closeTaskEditor"
+        )?.addEventListener("click", dismiss);
+
         this.taskEditorEscapeHandler = event => {
 
             if (
@@ -3384,23 +3388,6 @@ export class MainView {
                     updateDueTimeControl
                 );
                 updateDueTimeControl();
-
-                document.getElementById(
-                    "closeTaskEditor"
-                )?.addEventListener("click", async () => {
-
-                    if (
-                        !await this.confirmDiscardTaskChanges(
-                            selectedTask
-                        )
-                    ) {
-                        return;
-                    }
-
-                    this.callbacks
-                        .onCloseTaskEditor();
-
-                });
 
                 document.getElementById("subtaskForm")?.addEventListener("submit", event => {
 
