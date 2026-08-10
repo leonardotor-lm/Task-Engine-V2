@@ -22,7 +22,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ### Fecha de inicio y períodos
 
-- **Estado:** Pendiente; es el siguiente bloque funcional después del cierre de accesibilidad y limpieza de interfaz.
+- **Estado:** Completado.
 - Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
 - Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
 - Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
@@ -33,7 +33,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 - En calendario, representar la tarea en todos los días comprendidos entre inicio y vencimiento, incluidos ambos extremos.
 - Mantener ocultas las tareas en espera aunque haya comenzado su período.
 - Integrar el dato con dominio, persistencia local, Apps Script, sincronización, copias, editor, orden, filtros, búsqueda avanzada y pruebas.
-- Incorporar criterios de búsqueda como `inicio`, `inicioAntes`, `inicioDespues` y `tieneInicio`; evaluar además `activaEn`.
+- Criterios de búsqueda incorporados: `inicio`, `inicioAntes`, `inicioDespues` y `tieneInicio`. `activaEn` queda como evaluación futura si surge una necesidad concreta.
 
 ## Prioridad futura
 

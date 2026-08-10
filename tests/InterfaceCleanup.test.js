@@ -76,6 +76,6 @@ test("el registro cierra la PR 180 y habilita fecha de inicio", () => {
     assert.match(roadmap, /PR #180 abre el editor completo/);
     assert.match(
         roadmap,
-        /Fecha de inicio y períodos[\s\S]*?\*\*Estado:\*\* Pendiente;/
+        /Fecha de inicio y períodos[\s\S]*?\*\*Estado:\*\* Completado\./
     );
 });

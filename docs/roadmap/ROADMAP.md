@@ -46,9 +46,9 @@ Objetivos principales:
 
 Esta etapa no debe agregar funciones grandes. Su objetivo es estabilizar la superficie existente antes del siguiente cambio de dominio.
 
-## Siguiente etapa funcional — Fecha de inicio y períodos
+## Etapa funcional completada — Fecha de inicio y períodos
 
-Después de la limpieza se incorporará `startDate` para tareas no recurrentes.
+`startDate` y los períodos para tareas no recurrentes ya están implementados.
 
 Reglas ya acordadas:
 
@@ -61,7 +61,7 @@ Reglas ya acordadas:
 - tareas en espera continúan ocultas aunque su período haya comenzado;
 - integración completa con persistencia, sincronización, backups, filtros, búsqueda, orden y pruebas.
 
-La especificación detallada permanece en `docs/roadmap/PENDIENTES.md`.
+La especificación detallada y su estado permanecen en `docs/roadmap/PENDIENTES.md`.
 
 ## Etapas posteriores
 
