@@ -261,6 +261,7 @@ export class MobileTaskEditorLayoutController {
 
         [
             ["taskPriority", "Prioridad"],
+            ["taskStartDate", "Inicio"],
             ["taskDueDate", "Fecha"],
             ["taskDueTime", "Hora"]
         ].forEach(([controlId, label]) => {
