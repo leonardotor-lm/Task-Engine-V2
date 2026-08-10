@@ -1505,16 +1505,6 @@ export class App {
 
                 if (!task) return;
 
-                if (task.isDeleted()) {
-                    this.currentView = View.TRASH;
-                } else if (task.isArchived()) {
-                    this.currentView = View.ARCHIVED;
-                } else if (task.isCompleted()) {
-                    this.currentView = View.COMPLETED;
-                } else {
-                    this.currentView = View.ALL;
-                }
-
                 this.selectedTask = task;
                 this.render();
 

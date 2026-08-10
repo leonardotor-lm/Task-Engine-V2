@@ -464,11 +464,16 @@
 }
 
 .activityHeader {
-    align-items: flex-end;
+    align-items: flex-start;
     display: flex;
-    gap: 24px;
+    flex-wrap: wrap;
+    gap: 16px 24px;
     justify-content: space-between;
     margin-bottom: 24px;
+}
+
+.activityHeader > div {
+    flex: 0 0 auto;
 }
 
 .activityHeader h1,
@@ -489,9 +494,19 @@
 }
 
 .activityControls {
-    align-items: center;
-    display: flex;
+    align-items: stretch;
+    display: grid;
+    flex: 1 1 430px;
     gap: 8px;
+    grid-template-columns:
+        minmax(0, 1fr) minmax(170px, auto);
+    max-width: 520px;
+    min-width: 0;
+}
+
+.activitySearch,
+.activityCategory {
+    min-width: 0;
 }
 
 .activitySearch {
@@ -509,9 +524,21 @@
     width: 16px;
 }
 
+.activitySearch input,
+.activityCategory select {
+    box-sizing: border-box;
+    height: 40px;
+    margin: 0;
+    width: 100%;
+}
+
 .activitySearch input {
-    min-width: 210px;
+    min-width: 0;
     padding-left: 34px;
+}
+
+.activityCategory select {
+    min-width: 170px;
 }
 
 .activityDay + .activityDay {
@@ -628,14 +655,13 @@
     }
 
     .activityControls {
-        align-items: stretch;
-        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
+        max-width: none;
+        width: 100%;
     }
 
-    .activityControls label,
-    .activityControls input,
-    .activityControls select {
-        width: 100%;
+    .activityCategory select {
+        min-width: 0;
     }
 
     .activityItem {

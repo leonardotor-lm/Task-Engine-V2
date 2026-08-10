@@ -275,6 +275,10 @@ test("la vista agrupa por fecha y enlaza tareas existentes", () => {
     assert.match(html, /openActivityTask/);
     assert.match(html, /Preparar clase/);
     assert.match(html, /activityCategory/);
+    assert.match(
+        html,
+        /class="activityCategory"/
+    );
 });
 
 test("incluye actividades en copias y conserva las locales ante una copia antigua", () => {

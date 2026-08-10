@@ -207,7 +207,7 @@ export class ActivityView {
                                 autocomplete="off">
                         </label>
 
-                        <label>
+                        <label class="activityCategory">
                             <span class="srOnly">
                                 Filtrar actividad
                             </span>
