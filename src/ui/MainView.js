@@ -3519,6 +3519,9 @@ export class MainView {
                     const dueDate =
                         document.getElementById("taskDueDate").value || null;
 
+                    const startDate =
+                        document.getElementById("taskStartDate").value || null;
+
                     const dueTime =
                         document.getElementById("taskDueTime").value || null;
 
@@ -3570,6 +3573,7 @@ export class MainView {
                             areaId,
                             contextId,
                             priority,
+                            startDate,
                             dueDate,
                             dueTime,
                             tagIds,

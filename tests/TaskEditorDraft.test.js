@@ -13,6 +13,7 @@ const task = {
     areaId: "area-1",
     contextId: null,
     priority: 2,
+    startDate: "2026-07-26",
     dueDate: "2026-07-28",
     tagIds: ["tag-2", "tag-1"],
     goalIds: ["goal-2", "goal-1"],
@@ -32,6 +33,8 @@ const createRoot = overrides => {
             "",
         "#taskPriority":
             "2",
+        "#taskStartDate":
+            "2026-07-26",
         "#taskDueDate":
             "2026-07-28",
         "#taskRecurrence":
@@ -88,6 +91,21 @@ test("detecta un título modificado", () => {
             createRoot({
                 "#taskTitleEdit":
                     "Preparar otra clase"
+            })
+        ),
+        true
+    );
+
+});
+
+test("detecta una fecha de inicio modificada", () => {
+
+    assert.equal(
+        hasTaskEditorChanges(
+            task,
+            createRoot({
+                "#taskStartDate":
+                    "2026-07-27"
             })
         ),
         true

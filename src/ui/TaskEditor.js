@@ -562,6 +562,16 @@ export class TaskEditor {
                             ${priorityOptions}
                         </select>
 
+                        <label for="taskStartDate">
+                            Fecha de inicio
+                        </label>
+
+                        <input
+                            id="taskStartDate"
+                            type="date"
+                            value="${escapeHtml(task.startDate)}"
+                            ${disabled}>
+
                         <label for="taskDueDate">
                             Fecha de vencimiento
                         </label>

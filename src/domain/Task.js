@@ -91,8 +91,14 @@ export class Task {
 
         this.completedAt = data.completedAt ?? null;
 
+        this.startDate = data.startDate ?? null;
         this.dueDate = data.dueDate ?? null;
         this.dueTime = data.dueTime ?? null;
+
+        this.validateDateRange(
+            this.startDate,
+            this.dueDate
+        );
 
         this.validateDueTime(
             this.dueTime,
@@ -193,6 +199,20 @@ export class Task {
 
     }
 
+    validateDateRange(startDate, dueDate) {
+
+        if (
+            startDate &&
+            dueDate &&
+            startDate > dueDate
+        ) {
+            throw new Error(
+                "La fecha de inicio no puede ser posterior al vencimiento."
+            );
+        }
+
+    }
+
     touch() {
 
         this.version += 1;
@@ -230,6 +250,16 @@ export class Task {
             data.dueDate !== undefined
                 ? data.dueDate
                 : this.dueDate;
+
+        const nextStartDate =
+            data.startDate !== undefined
+                ? data.startDate
+                : this.startDate;
+
+        this.validateDateRange(
+            nextStartDate,
+            nextDueDate
+        );
 
         const nextDueTime =
             data.dueTime !== undefined
@@ -337,6 +367,9 @@ export class Task {
             this.isWaiting = nextIsWaiting;
 
         }
+
+        if (data.startDate !== undefined)
+            this.startDate = data.startDate;
 
         if (data.dueDate !== undefined)
             this.dueDate = data.dueDate;
@@ -623,6 +656,8 @@ export class Task {
             updatedAt: this.updatedAt,
 
             completedAt: this.completedAt,
+
+            startDate: this.startDate,
 
             dueDate: this.dueDate,
 
