@@ -50,6 +50,10 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
     );
     assert.match(
         controller,
+        /["']taskStartDate["'], ["']Inicio["']/
+    );
+    assert.match(
+        controller,
         /mobileTaskEditorToolGrid/
     );
     assert.match(
