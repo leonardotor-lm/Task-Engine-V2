@@ -274,6 +274,7 @@ export class DesktopTaskEditorLayoutController {
 
         [
             ["taskPriority", "Prioridad"],
+            ["taskStartDate", "Inicio"],
             ["taskDueDate", "Fecha de vencimiento"],
             ["taskDueTime", "Hora"]
         ].forEach(([controlId, label]) => {

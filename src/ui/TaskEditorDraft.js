@@ -43,6 +43,8 @@ export function createTaskDraft(task) {
             task.contextId || null,
         priority:
             Number(task.priority ?? 0),
+        startDate:
+            task.startDate || null,
         dueDate:
             task.dueDate || null,
         dueTime:
@@ -106,6 +108,10 @@ export function readTaskEditorDraft(
                     "#taskPriority"
                 ).value
             ),
+        startDate:
+            root.querySelector(
+                "#taskStartDate"
+            )?.value || null,
         dueDate:
             root.querySelector(
                 "#taskDueDate"

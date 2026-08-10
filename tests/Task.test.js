@@ -98,3 +98,36 @@ test("asigna una tarea a múltiples objetivos", () => {
     );
 
 });
+
+test("conserva la fecha de inicio al serializar y actualizar", () => {
+
+    const task = new Task({
+        title: "Preparar clase",
+        startDate: "2026-08-10",
+        dueDate: "2026-08-12"
+    });
+
+    assert.equal(task.startDate, "2026-08-10");
+    assert.equal(task.toJSON().startDate, "2026-08-10");
+
+    task.update({ startDate: "2026-08-11" });
+
+    assert.equal(task.startDate, "2026-08-11");
+
+});
+
+test("rechaza un inicio posterior al vencimiento", () => {
+
+    assert.throws(
+        () => new Task({
+            title: "Preparar clase",
+            startDate: "2026-08-13",
+            dueDate: "2026-08-12"
+        }),
+        {
+            message:
+                "La fecha de inicio no puede ser posterior al vencimiento."
+        }
+    );
+
+});

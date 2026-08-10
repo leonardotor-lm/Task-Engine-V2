@@ -46,3 +46,21 @@ test("renderiza la tarea dentro de un panel cerrable", () => {
     );
 
 });
+
+test("el editor permite definir una fecha de inicio", () => {
+
+    const task = new Task({
+        title: "Preparar clase",
+        startDate: "2026-08-10",
+        dueDate: "2026-08-12"
+    });
+
+    const html = new TaskEditor().render(task);
+
+    assert.match(html, /for="taskStartDate"/);
+    assert.match(
+        html,
+        /id="taskStartDate"[\s\S]*value="2026-08-10"/
+    );
+
+});
