@@ -144,3 +144,16 @@ Los botones visuales redundantes de **Atrás** o de retorno a la raíz no se dup
 
 Estado:
 Aceptada.
+
+---
+
+## D-013
+
+El historial de actividad registra acciones relevantes sobre tareas y no eventos técnicos internos.
+
+Las operaciones masivas producen una única entrada resumida para reducir el ruido. Cada evento conserva el título de la tarea aunque ésta se elimine definitivamente; el enlace sólo está disponible mientras la tarea exista.
+
+La colección se incluye en copias y sincronización como dato opcional, de modo que un cliente o una revisión anterior que no la contenga no borre el historial local por omisión. Las estadísticas podrán usar esta base en una etapa posterior, sin condicionar la interfaz actual.
+
+Estado:
+Aceptada.

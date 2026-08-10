@@ -324,9 +324,10 @@ export class TaskToolbarLayoutController {
 
         if (historyGroup) {
             const historyViewActive = [
-                "COMPLETED",
-                "ARCHIVED",
-                "TRASH"
+                "completed",
+                "archived",
+                "trash",
+                "activity"
             ].includes(state.view);
 
             this.configurePersistentGroup(

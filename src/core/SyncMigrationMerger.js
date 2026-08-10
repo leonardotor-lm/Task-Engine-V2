@@ -8,7 +8,8 @@ const COLLECTIONS = [
     "contexts",
     "tags",
     "customFilters",
-    "goals"
+    "goals",
+    "activityEvents"
 ];
 
 const PREFERENCE_MAPS = [

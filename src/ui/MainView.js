@@ -440,6 +440,10 @@ export class MainView {
             "taskEditorBackdrop"
         )?.addEventListener("click", dismiss);
 
+        document.getElementById(
+            "closeTaskEditor"
+        )?.addEventListener("click", dismiss);
+
         this.taskEditorEscapeHandler = event => {
 
             if (
@@ -1366,6 +1370,7 @@ export class MainView {
             ["showUpcoming", "onShowUpcoming"],
             ["showAll", "onShowAll"],
             ["showCalendar", "onShowCalendar"],
+            ["showActivity", "onShowActivity"],
             ["showCompleted", "onShowCompleted"],
             ["showArchived", "onShowArchived"],
             ["showTrash", "onShowTrash"],
@@ -1405,6 +1410,43 @@ export class MainView {
             });
 
         }
+
+        document.getElementById(
+            "activitySearchForm"
+        )?.addEventListener("submit", event => {
+
+            event.preventDefault();
+            this.callbacks.onSearchActivity(
+                document.getElementById(
+                    "activitySearch"
+                )?.value ?? ""
+            );
+
+        });
+
+        document.getElementById(
+            "activityCategory"
+        )?.addEventListener("change", event => {
+
+            this.callbacks.onFilterActivity(
+                event.target.value
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".openActivityTask"
+        ).forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                this.callbacks.onOpenActivityTask(
+                    button.dataset.taskId
+                );
+
+            });
+
+        });
 
         if (view === View.GOALS) {
 
@@ -3346,23 +3388,6 @@ export class MainView {
                     updateDueTimeControl
                 );
                 updateDueTimeControl();
-
-                document.getElementById(
-                    "closeTaskEditor"
-                )?.addEventListener("click", async () => {
-
-                    if (
-                        !await this.confirmDiscardTaskChanges(
-                            selectedTask
-                        )
-                    ) {
-                        return;
-                    }
-
-                    this.callbacks
-                        .onCloseTaskEditor();
-
-                });
 
                 document.getElementById("subtaskForm")?.addEventListener("submit", event => {
 

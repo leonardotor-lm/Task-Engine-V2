@@ -1093,13 +1093,20 @@ export class Sidebar {
                         ${[
                             View.COMPLETED,
                             View.ARCHIVED,
-                            View.TRASH
+                            View.TRASH,
+                            View.ACTIVITY
                         ].includes(activeView)
                             ? "open"
                             : ""}>
                         <summary>Historial</summary>
 
                         <div class="sidebarNavigationGroupBody">
+                            <button
+                                id="showActivity"
+                                class="${buttonClass(View.ACTIVITY)}">
+                                Actividad
+                            </button>
+
                             <button
                                 id="showCompleted"
                                 class="${buttonClass(View.COMPLETED)}">

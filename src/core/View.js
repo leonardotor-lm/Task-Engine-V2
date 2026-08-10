@@ -22,6 +22,8 @@ export const View = Object.freeze({
 
     TRASH: "trash",
 
+    ACTIVITY: "activity",
+
     PROJECT: "project",
 
     GOALS: "goals",

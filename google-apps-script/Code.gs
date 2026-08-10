@@ -665,7 +665,8 @@ function rowsToSnapshotData_(rows) {
         contexts: [],
         tags: [],
         goals: [],
-        customFilters: []
+        customFilters: [],
+        activityEvents: []
     };
 
     var typeToCollection = {
@@ -674,7 +675,8 @@ function rowsToSnapshotData_(rows) {
         context: "contexts",
         tag: "tags",
         goal: "goals",
-        customFilter: "customFilters"
+        customFilter: "customFilters",
+        activityEvent: "activityEvents"
     };
 
     var snapshotMeta = null;
@@ -772,6 +774,11 @@ function rowsToSnapshotData_(rows) {
     if (optionalFields.customFilters === true) {
         data.customFilters =
             collections.customFilters;
+    }
+
+    if (optionalFields.activityEvents === true) {
+        data.activityEvents =
+            collections.activityEvents;
     }
 
     if (
@@ -964,6 +971,15 @@ function snapshotToRows_(
         ]);
     }
 
+    if (
+        hasOwn_(snapshot.data, "activityEvents")
+    ) {
+        definitions.push([
+            "activityEvents",
+            "activityEvent"
+        ]);
+    }
+
     var rows = [];
 
     definitions.forEach(function(definition) {
@@ -998,6 +1014,11 @@ function snapshotToRows_(
                 snapshot.data,
                 "customFilters"
             ),
+        activityEvents:
+            hasOwn_(
+                snapshot.data,
+                "activityEvents"
+            ),
         taskSortPreferences:
             hasOwn_(
                 snapshot.data,
@@ -1012,6 +1033,7 @@ function snapshotToRows_(
 
     var hasOptionalFields =
         optionalFields.customFilters ||
+        optionalFields.activityEvents ||
         optionalFields.taskSortPreferences ||
         optionalFields.taskFilterPreferences;
 
@@ -1161,6 +1183,28 @@ function validateSnapshot_(snapshot) {
         validateEntityCollection_(
             snapshot.data.customFilters,
             "customFilters"
+        );
+
+    }
+
+    if (
+        hasOwn_(snapshot.data, "activityEvents")
+    ) {
+
+        if (
+            !Array.isArray(
+                snapshot.data.activityEvents
+            )
+        ) {
+            throw protocolError_(
+                "INVALID_SNAPSHOT",
+                "La copia contiene actividades inválidas."
+            );
+        }
+
+        validateEntityCollection_(
+            snapshot.data.activityEvents,
+            "activityEvents"
         );
 
     }

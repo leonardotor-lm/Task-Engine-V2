@@ -56,7 +56,7 @@ function hasOwn(object, property) {
 
 }
 
-test("Apps Script conserva filtros guardados y preferencias en un round trip", () => {
+test("Apps Script conserva historial filtros y preferencias en un round trip", () => {
 
     const backend = loadBackend();
     const sourceSnapshot = snapshot({
@@ -70,6 +70,21 @@ test("Apps Script conserva filtros guardados y preferencias en un round trip", (
                     "2026-08-08T18:00:00.000Z",
                 updatedAt:
                     "2026-08-08T19:00:00.000Z"
+            }
+        ],
+        activityEvents: [
+            {
+                id: "activity-1",
+                type: "TASK_COMPLETED",
+                taskId: "task-1",
+                taskTitle: "Preparar clase",
+                taskCount: 1,
+                details: "",
+                version: 1,
+                createdAt:
+                    "2026-08-08T19:30:00.000Z",
+                updatedAt:
+                    "2026-08-08T19:30:00.000Z"
             }
         ],
         taskSortPreferences: {
@@ -95,6 +110,7 @@ test("Apps Script conserva filtros guardados y preferencias en un round trip", (
     const types = rows.map(row => row[1]);
 
     assert.ok(types.includes("customFilter"));
+    assert.ok(types.includes("activityEvent"));
     assert.ok(types.includes("snapshotMeta"));
     assert.ok(types.includes(
         "taskSortPreferences"
@@ -110,6 +126,10 @@ test("Apps Script conserva filtros guardados y preferencias en un round trip", (
     assert.deepEqual(
         restored.customFilters,
         sourceSnapshot.data.customFilters
+    );
+    assert.deepEqual(
+        restored.activityEvents,
+        sourceSnapshot.data.activityEvents
     );
     assert.deepEqual(
         restored.taskSortPreferences,
@@ -207,6 +227,7 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
     const rows = backend.snapshotToRows_(
         snapshot({
             customFilters: [],
+            activityEvents: [],
             taskSortPreferences: {},
             taskFilterPreferences: {}
         }),
@@ -219,6 +240,10 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
 
     assert.equal(
         hasOwn(restored, "customFilters"),
+        true
+    );
+    assert.equal(
+        hasOwn(restored, "activityEvents"),
         true
     );
     assert.equal(
@@ -237,6 +262,7 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
     );
 
     assert.deepEqual(restored.customFilters, []);
+    assert.deepEqual(restored.activityEvents, []);
     assert.deepEqual(
         restored.taskSortPreferences,
         {}

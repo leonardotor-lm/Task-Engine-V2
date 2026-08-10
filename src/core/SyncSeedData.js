@@ -67,7 +67,8 @@ function optionalDataIsEmpty(data) {
         "contexts",
         "tags",
         "customFilters",
-        "goals"
+        "goals",
+        "activityEvents"
     ].every(collection =>
         !Array.isArray(data[collection]) ||
         data[collection].length === 0

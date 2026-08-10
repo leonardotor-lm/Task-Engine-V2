@@ -11,7 +11,8 @@ const CORE_COLLECTIONS = [
 
 const OPTIONAL_COLLECTIONS = [
     "customFilters",
-    "goals"
+    "goals",
+    "activityEvents"
 ];
 
 function sortObjectKeys(value) {
