@@ -774,6 +774,26 @@ export class TaskEditor {
                         ${postponementControls}
                         ${postponementSummary}
 
+                        ${!isLocked
+                            ? `
+                                <div class="recurrenceDialogActions">
+                                    <button
+                                        id="saveRecurrence"
+                                        type="button"
+                                        class="primaryAction">
+                                        Guardar
+                                    </button>
+
+                                    <button
+                                        id="cancelRecurrence"
+                                        type="button"
+                                        class="tertiaryAction">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            `
+                            : ""}
+
                     </div>
 
                 </details>

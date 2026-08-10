@@ -3233,6 +3233,73 @@ export class MainView {
 
                 updateRecurrenceControls();
 
+                document.getElementById(
+                    "saveRecurrence"
+                )?.addEventListener(
+                    "click",
+                    () => {
+                        document.getElementById(
+                            "saveTask"
+                        )?.click();
+                    }
+                );
+
+                document.getElementById(
+                    "cancelRecurrence"
+                )?.addEventListener(
+                    "click",
+                    () => {
+                        if (!recurrenceSelect) {
+                            return;
+                        }
+
+                        recurrenceSelect.value =
+                            selectedTask.recurrence ?? "";
+
+                        const interval =
+                            document.getElementById(
+                                "taskRecurrenceInterval"
+                            );
+
+                        if (interval) {
+                            interval.value = String(
+                                selectedTask
+                                    .recurrenceInterval ?? 1
+                            );
+                        }
+
+                        const selectedWeekdays =
+                            new Set(
+                                selectedTask
+                                    .recurrenceWeekdays ?? []
+                            );
+
+                        document.querySelectorAll(
+                            ".taskRecurrenceWeekday"
+                        ).forEach(input => {
+                            input.checked =
+                                selectedWeekdays.has(
+                                    Number(input.value)
+                                );
+                        });
+
+                        updateRecurrenceControls();
+
+                        const section =
+                            recurrenceSelect.closest(
+                                ".editorSection"
+                            );
+
+                        if (section) {
+                            section.open = false;
+                        }
+
+                        section?.querySelector(
+                            ":scope > summary"
+                        )?.focus();
+                    }
+                );
+
                 const taskDueDate =
                     document.getElementById(
                         "taskDueDate"

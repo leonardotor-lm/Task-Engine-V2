@@ -17,6 +17,8 @@
         min-width: 0;
         max-width: calc(100vw - 40px) !important;
         overflow-x: hidden;
+        overflow-y: auto;
+        max-height: min(72dvh, 560px);
     }
 
     .desktopTaskEditorLayout
