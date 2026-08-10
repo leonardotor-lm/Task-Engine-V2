@@ -45,6 +45,44 @@ test("el editor ofrece intervalo y días semanales", () => {
 
 });
 
+test("el diálogo de recurrencia ofrece acciones visibles y cancelación reversible", async () => {
+
+    const desktopStyles = await readFile(
+        new URL(
+            "../styles/task-editor-desktop.css",
+            import.meta.url
+        ),
+        "utf8"
+    );
+    const mobileStyles = await readFile(
+        new URL(
+            "../styles/task-editor-mobile.css",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(editor, /id="saveRecurrence"/);
+    assert.match(editor, /id="cancelRecurrence"/);
+    assert.match(
+        mainView,
+        /"saveRecurrence"[\s\S]*?"saveTask"/
+    );
+    assert.match(
+        mainView,
+        /"cancelRecurrence"[\s\S]*?selectedTask\.recurrence/
+    );
+    assert.match(
+        desktopStyles,
+        /\.recurrenceDialogActions\s*\{[\s\S]*?position:\s*sticky;/
+    );
+    assert.match(
+        mobileStyles,
+        /\.recurrenceDialogActions\s*\{[\s\S]*?position:\s*sticky;/
+    );
+
+});
+
 test("los controles cambian según la frecuencia", () => {
 
     assert.match(
