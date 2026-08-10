@@ -279,6 +279,15 @@ test("la vista agrupa por fecha y enlaza tareas existentes", () => {
         html,
         /class="activityCategory"/
     );
+    assert.match(
+        html,
+        /aria-label="Buscar en actividad"/
+    );
+    assert.match(
+        html,
+        /aria-label="Filtrar actividad"/
+    );
+    assert.doesNotMatch(html, /class="srOnly"/);
 });
 
 test("incluye actividades en copias y conserva las locales ante una copia antigua", () => {

@@ -195,23 +195,20 @@ export class ActivityView {
                         class="activityControls"
                         role="search">
                         <label class="activitySearch">
-                            <span class="srOnly">
-                                Buscar en actividad
-                            </span>
                             ${Icon.render("search")}
                             <input
                                 id="activitySearch"
                                 type="search"
+                                aria-label="Buscar en actividad"
                                 value="${escapeHtml(state.activityQuery ?? "")}"
                                 placeholder="Buscar tarea"
                                 autocomplete="off">
                         </label>
 
                         <label class="activityCategory">
-                            <span class="srOnly">
-                                Filtrar actividad
-                            </span>
-                            <select id="activityCategory">
+                            <select
+                                id="activityCategory"
+                                aria-label="Filtrar actividad">
                                 ${[
                                     ["ALL", "Todas"],
                                     ["CREATION", "Creación"],
