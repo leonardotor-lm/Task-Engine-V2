@@ -59,6 +59,7 @@ function task(overrides = {}) {
         tagIds: overrides.tagIds ?? [],
         goalIds: overrides.goalIds ?? [],
         priority: overrides.priority ?? 0,
+        startDate: overrides.startDate ?? null,
         dueDate: overrides.dueDate ?? null,
         completedAt: overrides.completedAt ?? null,
         createdAt:
@@ -269,6 +270,69 @@ test("compara fechas y períodos futuros", () => {
             item,
             "fecha:>=2026-08-01"
         ),
+        true
+    );
+
+});
+
+test("busca por fecha de inicio sin confundirla con el vencimiento", () => {
+
+    const item = task({
+        startDate: "2026-08-01",
+        dueDate: "2026-08-15"
+    });
+
+    assert.equal(
+        matches(
+            item,
+            "inicio:2026-08-01 AND fecha:2026-08-15"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(item, "inicio:2026-08-15"),
+        false
+    );
+
+});
+
+test("compara límites y períodos de la fecha de inicio", () => {
+
+    const item = task({
+        startDate: "2026-08-01"
+    });
+
+    assert.equal(
+        matches(
+            item,
+            'inicioDespues:hoy AND inicioAntes:2026-08-10 AND inicioDentro:"7 dias"'
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            item,
+            'inicioEntre:"2026-08-01,2026-08-31"'
+        ),
+        true
+    );
+
+});
+
+test("detecta tareas con o sin fecha de inicio", () => {
+
+    assert.equal(
+        matches(
+            task({ startDate: "2026-08-01" }),
+            "tieneInicio:si"
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(task(), "hasStartDate:no"),
         true
     );
 

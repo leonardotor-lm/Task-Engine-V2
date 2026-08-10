@@ -166,6 +166,16 @@ test("ofrece una referencia de criterios avanzados", () => {
 
     assert.match(
         html,
+        /inicioEntre/
+    );
+
+    assert.match(
+        html,
+        /tieneInicio/
+    );
+
+    assert.match(
+        html,
         /posposiciones/
     );
 

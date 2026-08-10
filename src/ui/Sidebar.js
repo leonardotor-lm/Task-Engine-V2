@@ -741,8 +741,8 @@ export class Sidebar {
 
                             <p><strong>Contenido:</strong> titulo, descripcion.</p>
                             <p><strong>Organización:</strong> area, areaContiene, contexto, contextoContiene, etiqueta, etiquetaContiene, objetivo, objetivoJerarquia, objetivoDescripcion, objetivoEstado, objetivoFecha, objetivoNivel.</p>
-                            <p><strong>Fechas:</strong> fecha, fechaAntes, fechaDespues, fechaDentro, fechaEntre, completada, creada, actualizada y sus variantes Entre.</p>
-                            <p><strong>Propiedades:</strong> prioridad, estado, tieneFecha, hora, tieneHora, tieneEtiquetas, tieneObjetivos, tieneSubtareas, esSubtarea, recurrente, repeticion, posposiciones.</p>
+                            <p><strong>Fechas:</strong> inicio, inicioAntes, inicioDespues, inicioDentro, inicioEntre; fecha, fechaAntes, fechaDespues, fechaDentro, fechaEntre; completada, creada, actualizada y sus variantes Entre.</p>
+                            <p><strong>Propiedades:</strong> prioridad, estado, tieneInicio, tieneFecha, hora, tieneHora, tieneEtiquetas, tieneObjetivos, tieneSubtareas, esSubtarea, recurrente, repeticion, posposiciones.</p>
                             <p><strong>Valores útiles:</strong> hoy, ayer, mañana, viernes, “en 3 dias”, 15/08, &gt;3 y rangos entre fechas.</p>
                         </details>
 
