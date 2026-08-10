@@ -51,6 +51,41 @@ function createService() {
         },
 
         {
+            id: "started-overdue",
+            status: TaskStatus.PENDING,
+            startDate: "2026-07-20",
+            dueDate: "2026-07-30"
+        },
+
+        {
+            id: "starts-today",
+            status: TaskStatus.PENDING,
+            startDate: "2026-07-23",
+            dueDate: "2026-07-30"
+        },
+
+        {
+            id: "starts-tomorrow",
+            status: TaskStatus.PENDING,
+            startDate: "2026-07-24",
+            dueDate: "2026-07-30"
+        },
+
+        {
+            id: "starts-upcoming",
+            status: TaskStatus.PENDING,
+            startDate: "2026-07-27",
+            dueDate: "2026-07-30"
+        },
+
+        {
+            id: "starts-later",
+            status: TaskStatus.PENDING,
+            startDate: "2026-08-01",
+            dueDate: "2026-08-05"
+        },
+
+        {
             id: "completed",
             status: TaskStatus.COMPLETED,
             dueDate: "2026-07-23"
@@ -107,7 +142,12 @@ test("Hoy muestra tareas de hoy y atrasadas", () => {
 
     assert.deepEqual(
         getIds(service.getTodayTasks("2026-07-23")),
-        ["overdue", "today"]
+        [
+            "overdue",
+            "today",
+            "started-overdue",
+            "starts-today"
+        ]
     );
 
 });
@@ -118,7 +158,7 @@ test("Mañana muestra únicamente el día siguiente", () => {
 
     assert.deepEqual(
         getIds(service.getTomorrowTasks("2026-07-23")),
-        ["tomorrow"]
+        ["tomorrow", "starts-tomorrow"]
     );
 
 });
@@ -129,7 +169,11 @@ test("Próximas abarca desde pasado mañana hasta siete días", () => {
 
     assert.deepEqual(
         getIds(service.getUpcomingTasks("2026-07-23")),
-        ["upcoming-start", "upcoming-end"]
+        [
+            "upcoming-start",
+            "upcoming-end",
+            "starts-upcoming"
+        ]
     );
 
 });
@@ -147,8 +191,35 @@ test("Todas excluye tareas completadas, archivadas y eliminadas", () => {
             "tomorrow",
             "upcoming-start",
             "upcoming-end",
-            "later"
+            "later",
+            "started-overdue",
+            "starts-today",
+            "starts-tomorrow",
+            "starts-upcoming",
+            "starts-later"
         ]
+    );
+
+});
+
+test("la fecha de inicio reemplaza al vencimiento en las vistas operativas", () => {
+
+    const service = createService();
+
+    assert.equal(
+        getIds(service.getTodayTasks("2026-07-23"))
+            .includes("starts-tomorrow"),
+        false
+    );
+    assert.equal(
+        getIds(service.getTomorrowTasks("2026-07-23"))
+            .includes("starts-upcoming"),
+        false
+    );
+    assert.equal(
+        getIds(service.getUpcomingTasks("2026-07-23"))
+            .includes("starts-later"),
+        false
     );
 
 });
