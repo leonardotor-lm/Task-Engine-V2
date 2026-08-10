@@ -257,7 +257,24 @@ export class TaskSwipeController {
                 const completed =
                     onComplete?.(taskId);
 
-                if (completed !== false) {
+                if (
+                    completed &&
+                    typeof completed.then ===
+                        "function"
+                ) {
+
+                    completed.then(succeeded => {
+
+                        if (succeeded !== false) {
+                            this.showCompletionNotice(
+                                taskId,
+                                onUndoComplete
+                            );
+                        }
+
+                    });
+
+                } else if (completed !== false) {
 
                     this.showCompletionNotice(
                         taskId,

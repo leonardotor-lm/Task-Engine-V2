@@ -679,6 +679,51 @@ export class MainView {
 
     }
 
+    async toggleTaskWithAssistedParentCompletion(
+        id,
+        {
+            offerParentCompletion = true
+        } = {}
+    ) {
+
+        try {
+
+            const parent =
+                this.callbacks.onToggleTask(id);
+
+            if (
+                !offerParentCompletion ||
+                !parent
+            ) {
+                return true;
+            }
+
+            const completeParent =
+                await Dialog.confirmAsync(
+                    `Completaste todas las subtareas de “${parent.title}”. ¿Querés completar también el proyecto?`,
+                    {
+                        title: "Completar proyecto",
+                        confirmLabel: "Completar proyecto"
+                    }
+                );
+
+            if (completeParent) {
+                this.callbacks.onToggleTask(
+                    parent.id
+                );
+            }
+
+            return true;
+
+        } catch (error) {
+
+            Dialog.alert(error.message);
+            return false;
+
+        }
+
+    }
+
     bindEvents(state) {
 
         const {
@@ -703,37 +748,17 @@ export class MainView {
         }
 
         this.taskSwipeController.bind({
-            onComplete: id => {
-
-                try {
-
-                    this.callbacks
-                        .onToggleTask(id);
-
-                    return true;
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-                    return false;
-
-                }
-
-            },
-            onUndoComplete: id => {
-
-                try {
-
-                    this.callbacks
-                        .onToggleTask(id);
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            }
+            onComplete: id =>
+                this.toggleTaskWithAssistedParentCompletion(
+                    id
+                ),
+            onUndoComplete: id =>
+                this.toggleTaskWithAssistedParentCompletion(
+                    id,
+                    {
+                        offerParentCompletion: false
+                    }
+                )
         });
 
         if (selectedTask) {
@@ -2116,19 +2141,16 @@ export class MainView {
 
                 checkbox.addEventListener(
                     "change",
-                    () => {
+                    async () => {
 
-                        try {
+                        const succeeded =
+                            await this
+                                .toggleTaskWithAssistedParentCompletion(
+                                    checkbox.dataset.id
+                                );
 
-                            this.callbacks.onToggleTask(
-                                checkbox.dataset.id
-                            );
-
-                        } catch (error) {
-
+                        if (!succeeded) {
                             checkbox.checked = false;
-                            Dialog.alert(error.message);
-
                         }
 
                     }
@@ -3388,15 +3410,9 @@ export class MainView {
 
                 document.getElementById("toggleTask")?.addEventListener("click", () => {
 
-                    try {
-
-                        this.callbacks.onToggleTask(selectedTask.id);
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
+                    this.toggleTaskWithAssistedParentCompletion(
+                        selectedTask.id
+                    );
 
                 });
 

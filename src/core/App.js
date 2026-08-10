@@ -220,11 +220,22 @@ export class App {
 
             onToggleTask: (id) => {
 
-                this.taskService.toggleTask(id);
+                const task =
+                    this.taskService.toggleTask(id);
+
+                const completableParent =
+                    task?.isCompleted()
+                        ? this.taskService
+                            .getCompletableParentAfterTaskCompletion(
+                                task.id
+                            )
+                        : null;
 
                 this.selectedTask = null;
 
                 this.render();
+
+                return completableParent;
 
             },
 

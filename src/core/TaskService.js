@@ -1289,6 +1289,34 @@ export class TaskService {
 
     }
 
+    getCompletableParentAfterTaskCompletion(taskId) {
+
+        const task = this.repository.getById(taskId);
+
+        if (
+            !task ||
+            !task.isCompleted() ||
+            !task.parentTaskId
+        ) {
+            return null;
+        }
+
+        const parent = this.repository.getById(
+            task.parentTaskId
+        );
+
+        if (
+            !parent ||
+            !this.isActiveTask(parent) ||
+            this.hasActiveDescendants(parent.id)
+        ) {
+            return null;
+        }
+
+        return parent;
+
+    }
+
     hasActiveDescendants(parentId) {
 
         return this

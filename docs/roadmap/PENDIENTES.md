@@ -3,7 +3,7 @@
 Este documento registra únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
 Los puntos terminados se documentan en las PR correspondientes, en `docs/decisions/DECISIONS.md` cuando fijan una decisión estable y en el historial de Git.
 
-Última actualización: 9 de agosto de 2026.
+Última actualización: 10 de agosto de 2026.
 
 ## Estados
 
@@ -37,16 +37,6 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ## Prioridad futura
 
-### Finalización asistida de proyectos
-
-- **Estado:** Pendiente.
-- Cuando se complete la última subtarea pendiente de una tarea que funciona como proyecto, preguntar si el usuario desea completar también la tarea padre.
-- Aplicar el comportamiento en cualquier nivel jerárquico: si al completar una subtarea quedan completadas absolutamente todas las subtareas directas y descendientes relevantes de su padre, ofrecer completar ese padre.
-- El diálogo debe permitir completar la tarea padre o conservarla en estado pendiente si el usuario prevé agregar nuevas subtareas posteriormente.
-- No completar automáticamente el proyecto sin confirmación explícita del usuario.
-- Definir cuidadosamente el encadenamiento cuando la finalización de un proyecto hijo deje también sin pendientes a un proyecto superior, evitando diálogos inesperados o cascadas ambiguas.
-- Implementar este comportamiento en una PR separada de las correcciones de detección/navegación de proyectos.
-
 ### Temas visuales
 
 - **Estado:** Postergado.
@@ -69,6 +59,7 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 Estos puntos ya no son pendientes y se conservan aquí sólo como referencia breve de cierre:
 
+- **Finalización asistida de proyectos:** al completar la última subtarea pendiente se ofrece completar el padre; la decisión siempre es explícita y no produce cascadas de diálogos en jerarquías anidadas.
 - **Creación directa de subtareas:** PR #180 abre el editor completo desde Proyectos, conserva la herencia y las reglas de dominio y descarta borradores cancelados sin persistir tareas fantasma.
 - **Accesibilidad y limpieza final:** foco, cierre de overlays, estados accesibles y navegación por teclado quedaron cubiertos en PR #175, #176 y #177; la pasada final verificó contraste, diálogos propios, adaptación a viewports extremos y áreas táctiles móviles de 44 px.
 - **Persistencia de filtros y preferencias por vista:** el contrato de persistencia completo a través de Sheets y Apps Script quedó corregido y probado en PR #178, incluyendo compatibilidad con revisiones históricas y datos opcionales.
