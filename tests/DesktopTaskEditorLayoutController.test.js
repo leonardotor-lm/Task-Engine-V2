@@ -62,6 +62,10 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
+        /["']taskStartDate["'], ["']Inicio["']/
+    );
+    assert.match(
+        controller,
         /desktopTaskEditorToolRow/
     );
     assert.match(
