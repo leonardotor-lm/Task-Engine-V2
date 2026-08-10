@@ -1,6 +1,19 @@
 import { escapeHtml } from "./escapeHtml.js";
 import { Icon } from "./Icon.js";
 
+function datesInRange(startDate, endDate) {
+    const dates = [];
+    const cursor = new Date(`${startDate}T00:00:00Z`);
+    const lastDate = new Date(`${endDate}T00:00:00Z`);
+
+    while (cursor <= lastDate) {
+        dates.push(cursor.toISOString().slice(0, 10));
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+
+    return dates;
+}
+
 export class CalendarView {
 
     render(state) {
@@ -24,7 +37,8 @@ export class CalendarView {
 
         const pendingTasks = state.allTasks.filter(
             task =>
-                task.dueDate &&
+                (task.startDate || task.dueDate) &&
+                !task.isWaiting &&
                 !task.isCompleted() &&
                 !task.isArchived() &&
                 !task.isDeleted()
@@ -32,10 +46,21 @@ export class CalendarView {
         const tasksByDate = new Map();
 
         for (const task of pendingTasks) {
-            const tasks =
-                tasksByDate.get(task.dueDate) ?? [];
-            tasks.push(task);
-            tasksByDate.set(task.dueDate, tasks);
+            const firstDate = task.startDate ?? task.dueDate;
+            const lastDate = task.dueDate ?? task.startDate;
+
+            for (const date of datesInRange(
+                firstDate,
+                lastDate
+            )) {
+                const tasks = tasksByDate.get(date) ?? [];
+
+                if (!tasks.some(item => item.id === task.id)) {
+                    tasks.push(task);
+                }
+
+                tasksByDate.set(date, tasks);
+            }
         }
 
         const cells = [];
