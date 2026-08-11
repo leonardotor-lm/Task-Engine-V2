@@ -881,6 +881,10 @@ function matchesActiveIn(task, value, today) {
         return false;
     }
 
+    if (!task.startDate && !task.dueDate) {
+        return false;
+    }
+
     const taskStart = task.startDate
         ? dateOnly(task.startDate)
         : null;

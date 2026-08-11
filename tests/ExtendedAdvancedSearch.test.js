@@ -352,6 +352,21 @@ test("busca tareas activas durante un período por solapamiento", () => {
 
 });
 
+test("acepta fechas locales en un período activo", () => {
+
+    assert.equal(
+        matches(
+            task({
+                startDate: "2026-08-10",
+                dueDate: "2026-08-15"
+            }),
+            "activaEn:11/08/2026..13/08/2026"
+        ),
+        true
+    );
+
+});
+
 test("excluye tareas cuyo período operativo no se superpone", () => {
 
     assert.equal(
@@ -382,8 +397,7 @@ test("trata fechas operativas ausentes como límites abiertos", () => {
 
     for (const item of [
         task({ dueDate: "2026-08-03" }),
-        task({ startDate: "2026-08-05" }),
-        task()
+        task({ startDate: "2026-08-05" })
     ]) {
         assert.equal(
             matches(
@@ -405,6 +419,14 @@ test("trata fechas operativas ausentes como límites abiertos", () => {
     assert.equal(
         matches(
             task({ startDate: "2026-08-08" }),
+            "activaEn:2026-08-01..2026-08-07"
+        ),
+        false
+    );
+
+    assert.equal(
+        matches(
+            task(),
             "activaEn:2026-08-01..2026-08-07"
         ),
         false
