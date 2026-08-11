@@ -144,14 +144,11 @@ test("la precarga incluye todos los módulos de la aplicación", async () => {
 test("el controlador registra el service worker y ofrece la instalación", async () => {
 
     const listeners = {};
-    const buttonListeners = {};
     const button = {
         hidden: false,
         disabled: true,
         textContent: "",
-        addEventListener(type, callback) {
-            buttonListeners[type] = callback;
-        }
+        onclick: null
     };
     const description = { textContent: "" };
     const registrations = [];
@@ -189,7 +186,16 @@ test("el controlador registra el service worker y ofrece la instalación", async
     await controller.registerServiceWorker();
     app.mainView.render({});
 
-    assert.equal(button.hidden, true);
+    assert.equal(button.hidden, false);
+    assert.equal(button.disabled, false);
+    assert.equal(button.textContent, "Cómo instalar");
+
+    await button.onclick();
+
+    assert.match(
+        description.textContent,
+        /menú del navegador/
+    );
 
     let promptCalls = 0;
     const installPrompt = {
@@ -208,7 +214,7 @@ test("el controlador registra el service worker y ofrece la instalación", async
     assert.equal(button.disabled, false);
     assert.match(description.textContent, /Instalá Mis tareas/);
 
-    await buttonListeners.click();
+    await button.onclick();
 
     assert.equal(promptCalls, 1);
     assert.equal(button.hidden, true);
@@ -216,6 +222,48 @@ test("el controlador registra el service worker y ofrece la instalación", async
         registrations,
         ["./service-worker.js"]
     );
+
+});
+
+test("la instalación manual indica el menú de Chrome en Android", async () => {
+
+    const button = {
+        hidden: true,
+        disabled: true,
+        textContent: "",
+        onclick: null
+    };
+    const description = { textContent: "" };
+    const controller = new PwaController(
+        { mainView: { render() {} } },
+        {
+            windowRef: {
+                addEventListener() {},
+                matchMedia() {
+                    return { matches: false };
+                }
+            },
+            documentRef: {
+                getElementById(id) {
+                    return id === "installApp"
+                        ? button
+                        : description;
+                }
+            },
+            navigatorRef: {
+                userAgent: "Mozilla/5.0 (Linux; Android 15) Chrome/140"
+            }
+        }
+    );
+
+    controller.start();
+    controller.applyInstallState();
+    await button.onclick();
+
+    assert.equal(button.hidden, false);
+    assert.equal(button.disabled, false);
+    assert.equal(button.textContent, "Cómo instalar");
+    assert.match(description.textContent, /menú ⋮ de Chrome/);
 
 });
 
