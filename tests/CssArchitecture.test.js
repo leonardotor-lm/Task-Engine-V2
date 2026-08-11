@@ -75,6 +75,20 @@ test("la hoja consolidada conserva los tres bloques funcionales", async () => {
 
 });
 
+test("los controles de actividad no expanden su altura en celular", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/task-interface.css"),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /@media\s*\(max-width:\s*760px\)[\s\S]*?\.activityControls\s*\{[\s\S]*?flex:\s*0 0 auto;/
+    );
+
+});
+
 test("la hoja compartida contiene la navegación jerárquica de objetivos y proyectos", async () => {
 
     const styles = await readFile(
