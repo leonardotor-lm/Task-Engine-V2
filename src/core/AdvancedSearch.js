@@ -132,6 +132,8 @@ const FIELD_ALIASES = Object.freeze({
     fechaentre: "dueBetween",
     startbetween: "startBetween",
     inicioentre: "startBetween",
+    activein: "activeIn",
+    activaen: "activeIn",
     createdbetween: "createdBetween",
     creadaentre: "createdBetween",
     updatedbetween: "updatedBetween",
@@ -825,11 +827,29 @@ function matchesDateBetween(
         return false;
     }
 
+    const range = resolveDateRange(
+        value,
+        today
+    );
+
+    if (!range) {
+        return false;
+    }
+
+    const date = dateOnly(dateValue);
+
+    return date >= range.start &&
+        date <= range.end;
+
+}
+
+function resolveDateRange(value, today) {
+
     const parts = String(value)
         .split(/\s*(?:,|\.\.)\s*/);
 
     if (parts.length !== 2) {
-        return false;
+        return null;
     }
 
     const start = resolveDate(
@@ -843,12 +863,34 @@ function matchesDateBetween(
     );
 
     if (!start || !end || start > end) {
+        return null;
+    }
+
+    return { start, end };
+
+}
+
+function matchesActiveIn(task, value, today) {
+
+    const range = resolveDateRange(
+        value,
+        today
+    );
+
+    if (!range) {
         return false;
     }
 
-    const date = dateOnly(dateValue);
+    const taskStart = task.startDate
+        ? dateOnly(task.startDate)
+        : null;
 
-    return date >= start && date <= end;
+    const taskEnd = task.dueDate
+        ? dateOnly(task.dueDate)
+        : null;
+
+    return (!taskStart || taskStart <= range.end) &&
+        (!taskEnd || taskEnd >= range.start);
 
 }
 
@@ -1241,6 +1283,13 @@ function matchesField(task, node, context) {
         case "startBetween":
             return matchesDateBetween(
                 task.startDate,
+                node.value,
+                context.today
+            );
+
+        case "activeIn":
+            return matchesActiveIn(
+                task,
                 node.value,
                 context.today
             );
