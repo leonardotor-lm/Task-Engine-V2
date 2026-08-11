@@ -195,6 +195,26 @@ test("registra creación edición y finalización desde el servicio de tareas", 
     );
 });
 
+test("permite crear ejemplos iniciales sin registrar actividad", () => {
+    const {
+        taskService,
+        activityService
+    } = setup();
+
+    const task = taskService.createTask({
+        id: "seed-task",
+        title: "Preparar clase de Literatura"
+    }, {
+        recordActivity: false
+    });
+
+    assert.equal(task.title, "Preparar clase de Literatura");
+    assert.deepEqual(
+        activityService.getAllEvents(),
+        []
+    );
+});
+
 test("resume una operación masiva en una sola entrada", () => {
     const {
         taskService,

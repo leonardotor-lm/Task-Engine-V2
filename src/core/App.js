@@ -2135,10 +2135,14 @@ export class App {
             this.taskService.createTask({
                 title: "Preparar clase de Literatura",
                 priority: Priority.HIGH
+            }, {
+                recordActivity: false
             });
 
             this.taskService.createTask({
                 title: "Corregir evaluaciones"
+            }, {
+                recordActivity: false
             });
 
         }

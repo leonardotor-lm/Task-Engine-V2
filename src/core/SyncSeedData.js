@@ -60,18 +60,89 @@ function isUntouchedSeedTask(task) {
 
 }
 
-function optionalDataIsEmpty(data) {
+function isAutomaticSeedActivity(
+    event,
+    seedTasksById
+) {
+
+    if (!event || typeof event !== "object") {
+        return false;
+    }
+
+    const task = seedTasksById.get(
+        event.taskId
+    );
+
+    return Boolean(
+        task &&
+        event.type === "TASK_CREATED" &&
+        event.taskTitle === task.title &&
+        event.taskCount === 1 &&
+        event.details === "" &&
+        event.version === 1 &&
+        typeof event.id === "string" &&
+        typeof event.createdAt === "string" &&
+        event.updatedAt === event.createdAt
+    );
+
+}
+
+function activityContainsOnlyAutomaticSeedEvents(
+    activityEvents,
+    tasks
+) {
+
+    if (
+        activityEvents === undefined ||
+        activityEvents === null ||
+        isEmptyArray(activityEvents)
+    ) {
+        return true;
+    }
+
+    if (
+        !Array.isArray(activityEvents) ||
+        activityEvents.length !== tasks.length
+    ) {
+        return false;
+    }
+
+    const seedTasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
+    const eventTaskIds = new Set(
+        activityEvents.map(event =>
+            event?.taskId
+        )
+    );
+
+    return (
+        eventTaskIds.size === tasks.length &&
+        activityEvents.every(event =>
+            isAutomaticSeedActivity(
+                event,
+                seedTasksById
+            )
+        )
+    );
+
+}
+
+function optionalDataIsEmpty(data, tasks) {
 
     return [
         "areas",
         "contexts",
         "tags",
         "customFilters",
-        "goals",
-        "activityEvents"
+        "goals"
     ].every(collection =>
         !Array.isArray(data[collection]) ||
         data[collection].length === 0
+    ) &&
+    activityContainsOnlyAutomaticSeedEvents(
+        data.activityEvents,
+        tasks
     ) &&
     (
         !data.taskSortPreferences ||
@@ -100,7 +171,7 @@ export function isUntouchedDefaultSeedBackup(
         !Array.isArray(tasks) ||
         tasks.length !==
             DEFAULT_SEED_TASKS.size ||
-        !optionalDataIsEmpty(data)
+        !optionalDataIsEmpty(data, tasks)
     ) {
         return false;
     }
