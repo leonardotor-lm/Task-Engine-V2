@@ -153,7 +153,22 @@ El historial de actividad registra acciones relevantes sobre tareas y no eventos
 
 Las operaciones masivas producen una única entrada resumida para reducir el ruido. Cada evento conserva el título de la tarea aunque ésta se elimine definitivamente; el enlace sólo está disponible mientras la tarea exista.
 
-La colección se incluye en copias y sincronización como dato opcional, de modo que un cliente o una revisión anterior que no la contenga no borre el historial local por omisión. Las estadísticas podrán usar esta base en una etapa posterior, sin condicionar la interfaz actual.
+La colección se incluye en copias y sincronización como dato opcional, de modo que un cliente o una revisión anterior que no la contenga no borre el historial local por omisión. Las estadísticas de proyectos y objetivos usan esta base sin convertir el historial en una puntuación de productividad.
+
+Estado:
+Aceptada.
+
+---
+
+## D-014
+
+Task Engine se distribuye como una PWA instalable y conserva un enfoque local-first.
+
+El service worker guarda en caché la aplicación para permitir su apertura sin conexión. Los datos y cambios continúan almacenándose localmente; Google Apps Script y Google Sheets sincronizan ese estado cuando existe conectividad, pero no son un requisito para abrir ni consultar la aplicación.
+
+La instalación usa el diálogo nativo cuando el navegador lo ofrece. Si no lo ofrece, la interfaz explica el recorrido desde el menú del navegador sin presentar un control inhabilitado como si la aplicación no fuera instalable.
+
+Una instalación que sólo contiene los datos de ejemplo iniciales debe priorizar la nube ya configurada y no generar un conflicto falso. En modo instalado, Atrás conserva la navegación interna y pide confirmación antes de abandonar la aplicación desde la vista raíz.
 
 Estado:
 Aceptada.

@@ -4,91 +4,88 @@
 
 Construir una aplicación útil y estable, incorporando complejidad de manera gradual y evitando que cada nueva función degrade la experiencia existente.
 
-La secuencia inicial por fases cumplió su propósito. A agosto de 2026, Task Engine V2 ya superó las etapas fundacionales y este documento pasa a describir el estado real y el orden de trabajo vigente.
+La secuencia inicial por fases cumplió su propósito. Desde agosto de 2026, este documento registra las capacidades consolidadas y los cierres principales; el trabajo vigente se mantiene únicamente en `docs/roadmap/PENDIENTES.md`.
 
 ## Estado actual — agosto de 2026
 
-La aplicación ya cuenta con:
+Task Engine V2 cuenta con:
 
-- dominio y persistencia local de tareas, áreas, contextos, etiquetas, objetivos y recurrencias;
-- sincronización con Google Apps Script y Google Sheets, con reconciliación automática y resolución conservadora de cambios simultáneos;
+- dominio y persistencia local de tareas, áreas, contextos, etiquetas, objetivos, recurrencias y actividad;
+- sincronización con Google Apps Script y Google Sheets, reconciliación automática, copias de seguridad y conservación de cambios locales ante fallos de red;
 - adjuntos en Google Drive;
-- interfaz responsive para escritorio y celular;
-- Inbox, Hoy y atrasadas, Mañana, Próximas, Todas, En espera, Calendario, historial de actividad y vistas de completadas/archivadas/papelera;
-- áreas, contextos, etiquetas, prioridades y fecha/hora;
-- subtareas y proyectos jerárquicos;
-- objetivos y subobjetivos jerárquicos;
+- interfaz responsive y editores diferenciados para escritorio y celular;
+- Inbox, Hoy y atrasadas, Mañana, Próximas, Todas, En espera, Calendario, Actividad, Estadísticas, Completadas, Archivadas y Papelera;
+- fechas de inicio y vencimiento, hora y períodos para tareas no recurrentes;
+- subtareas, proyectos, objetivos y subobjetivos jerárquicos;
 - breadcrumbs para Objetivos y Proyectos;
-- búsqueda simple, búsqueda avanzada y filtros guardados;
-- orden y filtros rápidos persistentes por vista;
-- recurrencias;
-- selección múltiple;
-- editores de tareas específicos para escritorio y celular;
-- diálogos propios, selector de color y una interfaz Flat 2.0 consolidada.
+- búsqueda simple, búsqueda avanzada, filtros guardados, filtros rápidos y orden persistente por vista;
+- recurrencias, selección múltiple y operaciones masivas;
+- historial de actividad y estadísticas de proyectos y objetivos;
+- PWA instalable con caché de la aplicación, datos locales disponibles sin conexión y sincronización al recuperar conectividad;
+- accesibilidad funcional, diálogos propios, selector de color y una interfaz Flat 2.0 consolidada.
 
-Las PR #166 y #167 cerraron el rediseño de los editores. Las PR #171 a #173 consolidaron la navegación jerárquica de Objetivos y Proyectos, incluida la restauración de filtros guardados desde breadcrumbs.
+## Cierres recientes
 
-## Etapa actual — Accesibilidad y limpieza final
+### Accesibilidad, editores y consistencia visual — PR #163 a #181
 
-Antes de incorporar otra función transversal se realizará una auditoría de calidad de interfaz.
+- orden y filtros por vista;
+- rediseño del editor de escritorio y adaptación móvil;
+- navegación jerárquica mediante breadcrumbs;
+- PR #180: creación directa de subtareas con el editor completo, sin persistir borradores cancelados;
+- manejo de foco, teclado, estados ARIA, overlays y confirmaciones propias;
+- persistencia completa de preferencias a través del backend;
+- consolidación de la estructura CSS y de los controles principales.
 
-Objetivos principales:
+El documento `docs/design/REDISENO-INTERFAZ-TAREAS.md` se conserva como registro histórico de este bloque.
 
-- navegación completa por teclado;
-- manejo correcto del foco en editores, diálogos y popovers;
-- nombres accesibles y estados ARIA coherentes;
-- foco visible y objetivos táctiles suficientes;
-- contraste y mensajes comprensibles sin depender exclusivamente del color;
-- revisión de desbordes y comportamiento responsive extremo;
-- eliminación de CSS y lógica obsoleta;
-- unificación de comportamientos entre vistas, editores y gestores;
-- auditoría de confirmaciones destructivas y ventanas nativas restantes.
+### Finalización asistida de proyectos — PR #188
 
-Esta etapa no debe agregar funciones grandes. Su objetivo es estabilizar la superficie existente antes del siguiente cambio de dominio.
+Al completar la última subtarea pendiente, la aplicación puede ofrecer completar el proyecto padre. La decisión es explícita y evita cascadas de diálogos en jerarquías anidadas.
 
-## Etapa funcional completada — Fecha de inicio y períodos
+### Historial de actividad — PR #189
 
-`startDate` y los períodos para tareas no recurrentes ya están implementados.
+Registra acciones relevantes sobre tareas, resume operaciones masivas y permite buscar y filtrar por categoría. Se conserva en copias y sincronización; excluye deliberadamente eventos técnicos para evitar ruido.
 
-Reglas ya acordadas:
+### Navegación y consistencia visual — PR #190
 
-- fecha de inicio opcional e independiente del vencimiento;
-- inicio sin vencimiento permitido;
-- si existen ambas fechas, `startDate <= dueDate`;
-- incompatibilidad con recurrencia;
-- tareas futuras ocultas de las listas de ejecución hasta su inicio;
-- calendario capaz de representar el período completo;
-- tareas en espera continúan ocultas aunque su período haya comenzado;
-- integración completa con persistencia, sincronización, backups, filtros, búsqueda, orden y pruebas.
+Se auditó la navegación en escritorio y celular, la geometría de encabezados, los breadcrumbs extensos, las áreas táctiles y el orden de la cascada CSS.
 
-La especificación detallada y su estado permanecen en `docs/roadmap/PENDIENTES.md`.
+### Estadísticas de proyectos y objetivos — PR #191
 
-## Etapa funcional completada — Historial de actividad
+Las estadísticas miden progreso por tareas completadas sin convertirlo en un puntaje de productividad. Distinguen avance propio y acumulado, evitan doble conteo y ofrecen períodos de 7, 30, 90, 180 y 365 días, además de todo el historial.
 
-El historial registra acciones relevantes sobre tareas sin convertir la aplicación en un registro técnico exhaustivo.
+### Ajustes móviles de Actividad — PR #192
 
-Alcance cerrado:
+Se corrigieron la distribución y el espaciado de los controles de búsqueda y categoría en pantallas pequeñas.
 
-- creación, edición, finalización, reapertura, posposición, movimiento, archivo, Papelera, restauración, eliminación definitiva, duplicación, recurrencias y adjuntos;
-- una sola entrada resumida para operaciones masivas;
-- consulta agrupada por fecha, con búsqueda y categorías;
-- acceso a la tarea desde la entrada mientras todavía exista;
-- persistencia local, copias de seguridad, sincronización y compatibilidad con revisiones anteriores;
-- exclusión deliberada de eventos técnicos de sincronización y cambios administrativos.
+### Fecha de inicio, períodos y búsqueda `activaEn` — PR #193
 
-## Etapas posteriores
+- `startDate` es opcional e independiente del vencimiento;
+- inicio sin vencimiento está permitido;
+- si existen ambas fechas, se exige `startDate <= dueDate`;
+- fecha de inicio y recurrencia son incompatibles;
+- las tareas futuras permanecen fuera de las listas de ejecución hasta comenzar;
+- el calendario representa el período completo;
+- persistencia, sincronización, copias, orden, filtros y búsqueda avanzada incluyen el nuevo dato;
+- `activaEn` localiza tareas cuyo período se superpone con un intervalo consultado.
 
-### Estadísticas
+### PWA instalable y funcionamiento sin conexión — PR #194
 
-Depende del historial. Se incorporará únicamente cuando exista una base de datos temporal suficiente y estable para producir métricas útiles.
+- manifiesto e íconos de instalación;
+- service worker con caché de la aplicación;
+- apertura independiente en modo instalado;
+- datos locales disponibles sin conexión;
+- guía de instalación cuando el navegador no ofrece el diálogo nativo;
+- prevención de conflictos entre datos de ejemplo y una nube ya configurada;
+- intercepción de Atrás en modo instalado para pedir confirmación antes de salir.
 
-### Temas visuales
+La implementación está fusionada. Su matriz operativa final permanece como **Pendiente de verificación** en `PENDIENTES.md`.
 
-La arquitectura visual debe seguir usando variables y componentes reutilizables para permitir temas futuros, pero su implementación permanece postergada mientras no sea prioritaria.
+## Etapa operativa actual
+
+La prioridad es cerrar la verificación posterior a la fusión de la PWA. Si las pruebas no revelan defectos, el siguiente bloque funcional debe elegirse explícitamente entre las propuestas registradas; no hay otra gran función previamente acordada.
 
 ## Fases históricas
-
-La secuencia original del proyecto fue:
 
 1. Fundación.
 2. Persistencia.
@@ -101,9 +98,9 @@ La secuencia original del proyecto fue:
 9. Adjuntos.
 10. Historial.
 11. Estadísticas.
-12. Optimización.
+12. Optimización y distribución.
 
-Las fases 1 a 9 ya forman parte de la aplicación. La optimización visual y estructural se adelantó respecto del plan original porque la aplicación alcanzó antes un nivel de uso real que justificó consolidar la interfaz, la sincronización y la navegación antes de Historial y Estadísticas.
+Las doce fases forman parte de la aplicación. Optimización continúa como una práctica transversal, no como una excusa para reabrir bloques cerrados sin un defecto o necesidad concreta.
 
 ## Regla de avance
 
@@ -114,5 +111,6 @@ Cada bloque nuevo debe:
 3. conservar compatibilidad con los datos existentes;
 4. incluir pruebas automáticas cuando corresponda;
 5. pasar una verificación manual del flujo afectado;
-6. actualizar `docs/roadmap/PENDIENTES.md` si cambia el estado de trabajo;
-7. fusionarse mediante **Squash and merge** sólo después de la aprobación explícita.
+6. actualizar `docs/roadmap/PENDIENTES.md` si cambia el trabajo vigente;
+7. actualizar este roadmap cuando se cierre una etapa relevante;
+8. fusionarse sólo después de la aprobación explícita.

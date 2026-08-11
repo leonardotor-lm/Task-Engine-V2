@@ -192,7 +192,7 @@ test("el gesto de completar espera la decisión asistida antes de mostrar deshac
     );
     const roadmap = await readFile(
         new URL(
-            "../docs/roadmap/PENDIENTES.md",
+            "../docs/roadmap/ROADMAP.md",
             import.meta.url
         ),
         "utf8"
@@ -202,13 +202,9 @@ test("el gesto de completar espera la decisión asistida antes de mostrar deshac
         swipeController,
         /typeof completed\.then[\s\S]*?completed\.then\(succeeded/
     );
-    assert.doesNotMatch(
-        roadmap,
-        /### Finalización asistida de proyectos/
-    );
     assert.match(
         roadmap,
-        /\*\*Finalización asistida de proyectos:\*\*/
+        /### Finalización asistida de proyectos — PR #188/
     );
 
 });

@@ -1,100 +1,239 @@
 # Pendientes de Task Engine V2
 
-Este documento registra únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
-Los puntos terminados se documentan en las PR correspondientes, en `docs/decisions/DECISIONS.md` cuando fijan una decisión estable y en el historial de Git.
+Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 10 de agosto de 2026.
+Última actualización: 11 de agosto de 2026.
 
 ## Estados
 
-- **Pendiente:** acordado, todavía no iniciado.
+- **Pendiente:** trabajo acordado, todavía no iniciado.
 - **En desarrollo:** existe una rama o PR activa.
-- **Postergado:** válido, pero fuera de la etapa actual.
-
-## Principio de diseño de las vistas
-
-- **Planificación:** Áreas, Proyectos y Objetivos muestran estructura, contexto, progreso y elementos que requieren revisión.
-- **Ejecución:** Hoy y atrasadas, Próximas e Inbox priorizan acciones concretas y reducen ruido visual.
-- Las funciones administrativas viven en editores o gestores específicos y no se duplican innecesariamente en las pantallas de seguimiento.
-- La navegación jerárquica de Objetivos y Proyectos usa breadcrumbs como mecanismo principal.
+- **Pendiente de verificación:** implementación fusionada cuyo comportamiento operativo todavía debe validarse.
+- **Postergado:** trabajo válido, pero fuera de la etapa actual.
+- **Propuesta:** mejora identificada que aún requiere una decisión antes de entrar al backlog.
 
 ## Prioridad actual
 
-### Estadísticas de proyectos y objetivos
+### Verificación operativa final de la PWA
 
-- **Estado:** En desarrollo.
-- Medir avance por tareas completadas sin convertirlo en un puntaje de productividad.
-- Separar avance propio y acumulado en objetivos jerárquicos.
-- Excluir elementos archivados o en Papelera y evitar el doble conteo.
-- Mostrar pendientes, vencidas, pospuestas, ritmo reciente y último avance.
-- Ofrecer períodos de 7, 30 y 90 días o todo el historial.
+- **Estado:** Pendiente de verificación.
+- **Implementación:** fusionada en la PR #194.
+- Confirmar en la aplicación instalada que Atrás muestra el aviso antes de salir desde la vista raíz.
+- Abrir y recargar la aplicación instalada sin conexión.
+- Modificar una tarea sin conexión y comprobar que sincroniza al recuperar internet.
+- Confirmar en una instalación nueva que los datos de ejemplo no generan un conflicto con la nube.
+- Verificar que una nueva versión publicada sustituye correctamente la caché anterior.
+- Comprobar el recorrido **Cómo instalar** en escritorio y celular cuando el navegador no entrega el diálogo nativo.
 
-### Navegación y consistencia visual
+Este bloque es una validación posterior a la fusión. No implica reconstruir la PWA ni modificar su arquitectura salvo que alguna prueba revele un defecto reproducible.
 
-- **Estado:** En desarrollo.
-- Auditar escritorio y celular sin modificar funcionalidades.
-- Mantener la planificación jerárquica en escritorio y una ejecución compacta en celular.
-- Unificar la geometría de las acciones de encabezado en tareas, proyectos y objetivos.
-- Evitar deformaciones de los breadcrumbs en jerarquías largas y conservar objetivos táctiles de 44 px.
-- Mantener un orden explícito de la cascada entre los estilos generales, los editores y los espacios jerárquicos.
+### Verificación de la creación de tareas desde Objetivos
 
-### Fecha de inicio y períodos
+- **Estado:** Pendiente de verificación.
+- **Dificultad prevista:** Baja.
+- Confirmar que la acción general **Nueva tarea** resulte visible y comprensible dentro de un objetivo abierto.
+- Verificar que la tarea creada herede automáticamente el objetivo actual.
+- No agregar un segundo botón si la acción existente comunica bien su alcance.
 
-- **Estado:** Completado.
-- Incorporar una propiedad opcional `startDate` independiente de la fecha límite.
-- Permitir fecha de inicio sin fecha límite; en ese caso la tarea pasa a estar disponible desde esa fecha pero no vence.
-- Si existen inicio y vencimiento, exigir `startDate <= dueDate`.
-- Habilitar fecha de inicio solamente en tareas no recurrentes.
-- Impedir activar recurrencia mientras exista fecha de inicio y pedir que se quite primero, sin borrarla silenciosamente.
-- Ocultar o deshabilitar el campo de inicio al editar una tarea recurrente.
-- Antes de la fecha de inicio, mantener la tarea fuera de las listas de ejecución; desde el inicio, mostrarla como disponible hasta completarla o vencer.
-- En calendario, representar la tarea en todos los días comprendidos entre inicio y vencimiento, incluidos ambos extremos.
-- Mantener ocultas las tareas en espera aunque haya comenzado su período.
-- Integrar el dato con dominio, persistencia local, Apps Script, sincronización, copias, editor, orden, filtros, búsqueda avanzada y pruebas.
-- Criterios de búsqueda incorporados: `inicio`, `inicioAntes`, `inicioDespues` y `tieneInicio`. `activaEn` queda como evaluación futura si surge una necesidad concreta.
+La capacidad ya existe. Este punto sólo puede producir un ajuste de visibilidad o rotulado si la prueba demuestra que la acción actual no se comprende.
 
-## Prioridad futura
+## Backlog aprobado
+
+El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Etapa 1 — Integridad y continuidad de uso
+
+#### 1. Preservar la interacción durante la sincronización
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Alta.
+- Evitar que una sincronización quite el foco, mueva el cursor o descarte texto todavía no volcado al estado de la aplicación.
+- Proteger especialmente la búsqueda y los formularios o editores abiertos.
+- Evaluar si corresponde restaurar de forma segura el estado transitorio o aplazar el render de reconciliación mientras exista una interacción activa.
+- No ocultar cambios remotos relevantes ni bloquear indefinidamente la actualización de la interfaz.
+
+#### 2. Excluir de Estadísticas los proyectos borrados
+
+- **Estado:** Pendiente de investigación y corrección.
+- **Dificultad prevista:** Media para reproducir; baja o media para corregir.
+- Reproducir el error con borrado, sincronización, restauración y proyectos anidados.
+- Determinar si intervienen datos históricos, referencias huérfanas o una ruta no cubierta por la prueba actual.
+- Garantizar que los proyectos en Papelera o eliminados definitivamente no aparezcan en ninguna estadística.
+
+#### 3. Conservar la jerarquía al duplicar subtareas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- La copia de una subtarea debe conservar el mismo `parentTaskId` que la tarea original.
+- Si se duplica un subárbol, sus descendientes deben quedar vinculados a la copia correspondiente y no al subárbol original.
+
+#### 4. Restaurar Editar objetivo en celular
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Mostrar en la vista móvil la acción **Editar objetivo** que ya existe en la estructura de la interfaz.
+- Integrarla sin sumar una fila adicional de controles ni romper la geometría del encabezado.
+
+#### 5. Unificar la creación dentro de Proyectos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Dentro de un proyecto, dejar una única acción de alta: **Agregar subtarea**.
+- Ocultar o transformar contextualmente la acción general **Nueva tarea** para evitar la creación accidental de una tarea suelta en Inbox.
+
+#### 6. Corregir el contador de progreso de Proyectos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Calcular el progreso con todas las tareas válidas del proyecto, aunque las completadas estén ocultas en la lista.
+- Mantener el formato `completadas/total`, por ejemplo `3/10`.
+
+### Etapa 2 — Seguridad de acciones y claridad visual
+
+#### 7. Incorporar Deshacer contextual al completar tareas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja o media.
+- Mostrar en escritorio el mismo aviso temporal de tarea completada que se utiliza después del gesto móvil.
+- Ofrecer **Deshacer** al completar mediante la casilla y reutilizar un único componente en escritorio y celular.
+- Diseñar la base para admitir otras acciones acotadas sólo cuando exista una necesidad concreta y una reversión segura.
+- No incorporar un botón permanente ni un historial general de deshacer.
+
+#### 8. Mostrar la ruta jerárquica de subtareas aisladas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Cuando una subtarea aparezca sin su padre visible, mostrar arriba del título una ruta del tipo `Tarea > Subtarea > Sub-subtarea`.
+- Omitir la ruta cuando el origen ya resulte evidente por la estructura visible.
+- Truncar rutas extensas y ocultarlas junto con los demás metadatos.
+
+#### 9. Representar el color del contexto como texto discreto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Mantener el contexto como texto, sin convertirlo en chip.
+- Comunicar su color mediante un punto pequeño u otro acento discreto que preserve el contraste con colores personalizados.
+
+#### 10. Homogeneizar popovers y controles transitorios
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Auditar popovers, menús y selectores existentes antes de crear un componente nuevo.
+- Unificar geometría, espaciado, sombras, botones, foco, cierre con Escape o clic exterior y adaptación móvil.
+- Respetar diferencias funcionales entre controles y evitar que la homogeneidad agregue decoración o pasos innecesarios.
+
+#### 11. Cambiar la etiqueta Descripción por Notas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Conservar el campo, su modelo de datos, su sincronización y su comportamiento actual.
+- Cambiar únicamente el nombre visible de **Descripción** a **Notas** en todos los editores y textos relacionados.
+- No crear notas múltiples, una entidad nueva ni otra sección del editor.
+
+### Etapa 3 — Gestión de Objetivos y Proyectos
+
+#### 12. Heredar objetivos en la jerarquía de un proyecto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Al asignar un objetivo a un proyecto, sumarlo a todas sus tareas descendientes sin eliminar otras asociaciones existentes.
+- Hacer que cada nueva subtarea herede todos los objetivos de su padre.
+- No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
+
+#### 13. Mostrar u ocultar completadas en Objetivos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja o media.
+- Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
+- Mantener el mismo significado, estado accesible y persistencia del control existente.
+
+#### 14. Incorporar filtros rápidos y orden en Objetivos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Reutilizar **Herramientas de la lista** para filtrar y ordenar las tareas de los proyectos asociados al objetivo.
+- Evitar una nueva fila permanente de controles.
+- Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
+
+#### 15. Agregar un filtro rápido por Proyecto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Permitir filtrar por un proyecto y todo su subárbol desde el panel existente de filtros rápidos.
+- Usar un selector buscable y mostrar la ruta del proyecto cuando sea necesaria para distinguir nombres repetidos.
+
+### Etapa 4 — Eficiencia avanzada sin ruido visual
+
+#### 16. Incorporar un conjunto acotado de atajos de teclado
+
+- **Estado:** Pendiente de definición funcional.
+- **Dificultad prevista:** Baja o media.
+- Definir con el usuario un conjunto pequeño antes de implementar.
+- Ignorar atajos de acción mientras se escribe en campos editables.
+- Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
+
+#### 17. Permitir orden manual mediante arrastre
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media o alta.
+- Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
+- Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
+- En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
+- Definir el comportamiento ante filtros activos, subtareas contraídas y listas parciales antes de implementar.
+
+## Propuesta pendiente de decisión
+
+### Diagnóstico visible de errores de sincronización
+
+- **Estado:** Propuesta.
+- Mostrar una causa resumida y segura cuando falla la sincronización.
+- Distinguir, cuando sea posible, problemas de red, HTTP, autorización y respuesta inválida.
+- Informar el último intento y ofrecer una acción explícita para reintentar.
+- No exponer el token ni la URL completa del backend.
+
+El incidente observado durante la validación de la PWA justificó registrar esta posibilidad, pero no está aprobado todavía como próximo bloque de desarrollo.
+
+## Trabajo postergado
 
 ### Temas visuales
 
 - **Estado:** Postergado.
-- Preparar temas visuales intercambiables sin alterar el dominio.
+- Incorporar temas intercambiables sin alterar el dominio ni duplicar componentes.
 - Mantener diferencias visuales claras entre área, contexto, etiqueta, prioridad y recurrencia.
 - Preservar una interfaz compacta y sobria.
+- Continuar usando variables CSS semánticas para no bloquear una implementación futura.
 
-### Estadísticas
+## Ideas que no integran el backlog
 
-- **Estado:** Postergado.
-- Incorporar estadísticas sólo después de definir el historial y disponer de información suficiente y estable.
+Las siguientes cuestiones fueron exploradas, pero no constituyen trabajo comprometido:
 
-## Bloques cerrados recientemente
+- notificaciones o recordatorios del sistema;
+- múltiples usuarios o una segunda instancia de la aplicación;
+- criterio avanzado `tieneContexto`;
+- una nueva reorganización general de la barra lateral.
 
-Estos puntos ya no son pendientes y se conservan aquí sólo como referencia breve de cierre:
+Sólo deben incorporarse como pendientes después de definir su necesidad, alcance y prioridad.
 
-- **Historial de actividad:** registra acciones relevantes sobre tareas, resume las operaciones masivas, permite buscar y filtrar por categoría y se conserva en copias y sincronización. Los eventos técnicos de sincronización y la configuración administrativa quedan excluidos para evitar ruido.
-- **Finalización asistida de proyectos:** al completar la última subtarea pendiente se ofrece completar el padre; la decisión siempre es explícita y no produce cascadas de diálogos en jerarquías anidadas.
-- **Creación directa de subtareas:** PR #180 abre el editor completo desde Proyectos, conserva la herencia y las reglas de dominio y descarta borradores cancelados sin persistir tareas fantasma.
-- **Accesibilidad y limpieza final:** foco, cierre de overlays, estados accesibles y navegación por teclado quedaron cubiertos en PR #175, #176 y #177; la pasada final verificó contraste, diálogos propios, adaptación a viewports extremos y áreas táctiles móviles de 44 px.
-- **Persistencia de filtros y preferencias por vista:** el contrato de persistencia completo a través de Sheets y Apps Script quedó corregido y probado en PR #178, incluyendo compatibilidad con revisiones históricas y datos opcionales.
-- **Detección y navegación de proyectos:** PR #179 unificó el criterio de descendencia visible para evitar proyectos falsos producidos por subtareas archivadas o en Papelera.
-- **Adjuntos:** base de Drive en PR #156; interfaz, eliminación y búsqueda en PR #157; integración con los editores actuales verificada posteriormente.
-- **Objetivos y subobjetivos:** dominio, sincronización, asociaciones, vistas y búsqueda completados en varias etapas; planificación jerárquica y breadcrumbs consolidados en PR #171.
-- **Editor de tareas:** rediseño de escritorio en PR #166 y adaptación móvil en PR #167.
-- **Orden y filtros por vista:** implementación original en PR #163, #164 y #170; persistencia backend completada posteriormente en PR #178.
-- **Sincronización automática:** reconciliación y conservación del contexto estabilizadas en PR #165 y #170.
-- **Navegación de proyectos:** breadcrumbs en PR #172 y restauración de filtros guardados de origen en PR #173.
-- **Accesibilidad funcional:** cierre/foco de overlays en PR #175, estados ARIA en PR #176 y navegación por teclado en PR #177.
-- **Referencia al padre de subtareas:** el editor muestra `Subtarea de:` y permite abrir el elemento padre aunque no esté en la lista filtrada actual.
-- **Validación destructiva de Organización:** áreas, contextos y etiquetas en uso se bloquean antes de pedir confirmación de eliminación.
-- **Calendario, En espera, fecha/hora, selección múltiple, diálogos propios, selector de color y reorganización visual principal:** implementados y fusionados.
+También quedan descartados por decisión de alcance:
+
+- un sistema de notas múltiples: el campo actual se conservará y sólo pasará a llamarse **Notas**;
+- un botón general o permanente de deshacer: sólo se implementará una reversión contextual y temporal para acciones expresamente cubiertas.
+
+## Principios de planificación
+
+- **Planificación:** Áreas, Proyectos y Objetivos muestran estructura, contexto y progreso.
+- **Ejecución:** Hoy y atrasadas, Próximas e Inbox priorizan acciones concretas y reducen ruido visual.
+- Las funciones administrativas viven en editores o gestores específicos y no se duplican innecesariamente.
+- Objetivos y Proyectos usan breadcrumbs como navegación jerárquica principal.
 
 ## Mantenimiento del registro
 
-Antes de iniciar un nuevo bloque de trabajo:
+Antes de iniciar un bloque:
 
 1. revisar este documento;
-2. elegir un único objetivo principal;
-3. crear una rama específica;
+2. acordar un único objetivo principal;
+3. crear una rama específica desde `main` actualizado;
 4. implementar y probar;
-5. actualizar este registro en la misma PR;
-6. fusionar mediante **Squash and merge** sólo después de la validación correspondiente.
+5. actualizar este registro en la misma PR si cambia el estado del trabajo;
+6. trasladar los puntos terminados al roadmap o al documento de referencia correspondiente;
+7. fusionar sólo después de la validación y la aprobación explícita.
