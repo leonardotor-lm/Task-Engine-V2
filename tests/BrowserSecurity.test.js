@@ -31,6 +31,11 @@ test("la página restringe scripts y conexiones externas", () => {
         /object-src 'none'/
     );
 
+    assert.match(
+        indexHtml,
+        /worker-src 'self'/
+    );
+
 });
 
 test("la página no envía información de referencia", () => {

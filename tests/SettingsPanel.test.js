@@ -49,7 +49,7 @@ const renderSettings = section =>
         section
     );
 
-test("configuración ofrece tres accesos independientes", () => {
+test("configuración ofrece cuatro accesos independientes", () => {
 
     const html = renderSettings(null);
 
@@ -57,6 +57,7 @@ test("configuración ofrece tres accesos independientes", () => {
     assert.match(html, /data-section="organization"/);
     assert.match(html, /data-section="sync"/);
     assert.match(html, /data-section="backup"/);
+    assert.match(html, /data-section="application"/);
     assert.doesNotMatch(html, /id="syncConfigForm"/);
 
 });
@@ -95,6 +96,15 @@ test("sincronización y copia se muestran sólo al elegirlas", () => {
         renderSettings("backup"),
         /id="exportBackup"/
     );
+
+});
+
+test("aplicación ofrece la instalación de la PWA", () => {
+
+    const html = renderSettings("application");
+
+    assert.match(html, /id="installApp"/);
+    assert.match(html, /id="pwaInstallDescription"/);
 
 });
 

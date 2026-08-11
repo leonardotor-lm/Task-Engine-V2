@@ -32,6 +32,10 @@ export class MainView {
 
         this.mobileHistoryInitialized =
             false;
+        this.mobileHistoryGuardArmed =
+            false;
+        this.mobileBackActivationBound =
+            false;
 
     }
 
@@ -526,16 +530,38 @@ export class MainView {
 
     setupMobileBackNavigation(state) {
 
-        if (
-            !window.matchMedia(
+        const mobileViewport =
+            window.matchMedia(
                 "(max-width: 760px)"
-            ).matches
-        ) {
+            ).matches;
+        const standaloneApp =
+            window.matchMedia(
+                "(display-mode: standalone)"
+            ).matches ||
+            window.navigator?.standalone === true;
+
+        if (!mobileViewport && !standaloneApp) {
             return;
         }
 
         const guardKey =
             "taskEngineMobileGuard";
+
+        const armGuard = () => {
+
+            if (this.mobileHistoryGuardArmed) {
+                return;
+            }
+
+            window.history.pushState(
+                { [guardKey]: true },
+                ""
+            );
+
+            this.mobileHistoryGuardArmed =
+                true;
+
+        };
 
         if (
             !this.mobileHistoryInitialized
@@ -549,25 +575,56 @@ export class MainView {
                 ""
             );
 
-            window.history.pushState(
-                { [guardKey]: true },
-                ""
-            );
-
             this.mobileHistoryInitialized =
                 true;
 
         }
 
+        if (!this.mobileBackActivationBound) {
+
+            const activationOptions = {
+                capture: true,
+                once: true
+            };
+
+            document.addEventListener(
+                "pointerdown",
+                armGuard,
+                activationOptions
+            );
+            document.addEventListener(
+                "touchstart",
+                armGuard,
+                {
+                    ...activationOptions,
+                    passive: true
+                }
+            );
+            document.addEventListener(
+                "keydown",
+                armGuard,
+                activationOptions
+            );
+
+            this.mobileBackActivationBound =
+                true;
+
+        }
+
+        if (
+            window.navigator?.userActivation
+                ?.hasBeenActive
+        ) {
+            armGuard();
+        }
+
         window.onpopstate = async () => {
 
+            this.mobileHistoryGuardArmed =
+                false;
+
             const restoreGuard = () => {
-
-                window.history.pushState(
-                    { [guardKey]: true },
-                    ""
-                );
-
+                armGuard();
             };
 
             const openActions =

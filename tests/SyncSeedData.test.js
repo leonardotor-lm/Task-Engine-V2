@@ -104,6 +104,24 @@ function remoteBackup() {
 
 }
 
+function automaticSeedActivity(tasks) {
+
+    return tasks.map((seedTask, index) => ({
+        id: `seed-activity-${index}`,
+        type: "TASK_CREATED",
+        taskId: seedTask.id,
+        taskTitle: seedTask.title,
+        taskCount: 1,
+        details: "",
+        createdAt:
+            "2026-08-06T20:00:01.000Z",
+        updatedAt:
+            "2026-08-06T20:00:01.000Z",
+        version: 1
+    }));
+
+}
+
 test("reconoce las dos tareas iniciales intactas", () => {
 
     assert.equal(
@@ -123,6 +141,45 @@ test("una instalación con sólo ejemplos descarga la nube", () => {
             remoteBackup: remoteBackup()
         }),
         SyncReconnectionAction.PULL
+    );
+
+});
+
+test("reconoce ejemplos que ya registraron su actividad automática", () => {
+
+    const backup = seedBackup();
+    backup.data.activityEvents =
+        automaticSeedActivity(
+            backup.data.tasks
+        );
+
+    assert.equal(
+        isUntouchedDefaultSeedBackup(backup),
+        true
+    );
+    assert.equal(
+        getSyncReconnectionAction({
+            localBackup: backup,
+            remoteBackup: remoteBackup()
+        }),
+        SyncReconnectionAction.PULL
+    );
+
+});
+
+test("no descarta ejemplos con actividad real", () => {
+
+    const backup = seedBackup();
+    backup.data.activityEvents =
+        automaticSeedActivity(
+            backup.data.tasks
+        );
+    backup.data.activityEvents[0].type =
+        "TASK_UPDATED";
+
+    assert.equal(
+        isUntouchedDefaultSeedBackup(backup),
+        false
     );
 
 });

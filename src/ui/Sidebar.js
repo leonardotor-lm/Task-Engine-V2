@@ -525,13 +525,35 @@ export class Sidebar {
             </section>
         `;
 
+        const applicationTools = `
+            <section class="applicationTools settingsToolPanel">
+
+                <h3>Aplicación</h3>
+
+                <p id="pwaInstallDescription">
+                    Comprobando si la aplicación se puede instalar…
+                </p>
+
+                <button
+                    id="installApp"
+                    type="button"
+                    class="primaryAction"
+                    hidden
+                    disabled>
+                    Instalar aplicación
+                </button>
+
+            </section>
+        `;
+
         const settingsSectionTitles = {
             organization: "Organización",
             areas: "Áreas",
             contexts: "Contextos",
             tags: "Etiquetas",
             sync: "Sincronización",
-            backup: "Copia de seguridad"
+            backup: "Copia de seguridad",
+            application: "Aplicación"
         };
 
         const entityManager = new EntityManager();
@@ -557,7 +579,8 @@ export class Sidebar {
                 { embedded: true }
             ),
             sync: syncTools,
-            backup: backupTools
+            backup: backupTools,
+            application: applicationTools
         };
 
         const activeSettingsTitle =
@@ -587,6 +610,13 @@ export class Sidebar {
                         class="openSettingsSection"
                         data-section="backup">
                         Copia de seguridad
+                    </button>
+
+                    <button
+                        type="button"
+                        class="openSettingsSection"
+                        data-section="application">
+                        Aplicación
                     </button>
                 </div>
             `;

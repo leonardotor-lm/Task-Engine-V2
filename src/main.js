@@ -65,6 +65,9 @@ import {
 import {
     OngoingSyncReconciliationController
 } from "./ui/OngoingSyncReconciliationController.js";
+import {
+    PwaController
+} from "./ui/PwaController.js";
 
 const app = new App();
 const attachmentController =
@@ -109,6 +112,8 @@ const smartSyncReconnectionController =
     new SmartSyncReconnectionController(app);
 const ongoingSyncReconciliationController =
     new OngoingSyncReconciliationController(app);
+const pwaController =
+    new PwaController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -129,6 +134,7 @@ syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
 ongoingSyncReconciliationController
     .start();
+pwaController.start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
 accessibilityStateController.start();

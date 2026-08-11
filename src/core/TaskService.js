@@ -18,14 +18,21 @@ export class TaskService {
 
     }
 
-    createTask(data) {
+    createTask(
+        data,
+        {
+            recordActivity = true
+        } = {}
+    ) {
 
         const task = this.repository.add(data);
 
-        this.activityService?.recordTask(
-            ActivityType.TASK_CREATED,
-            task
-        );
+        if (recordActivity) {
+            this.activityService?.recordTask(
+                ActivityType.TASK_CREATED,
+                task
+            );
+        }
 
         return task;
 
