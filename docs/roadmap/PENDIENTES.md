@@ -27,6 +27,160 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 Este bloque es una validación posterior a la fusión. No implica reconstruir la PWA ni modificar su arquitectura salvo que alguna prueba revele un defecto reproducible.
 
+### Verificación de la creación de tareas desde Objetivos
+
+- **Estado:** Pendiente de verificación.
+- **Dificultad prevista:** Baja.
+- Confirmar que la acción general **Nueva tarea** resulte visible y comprensible dentro de un objetivo abierto.
+- Verificar que la tarea creada herede automáticamente el objetivo actual.
+- No agregar un segundo botón si la acción existente comunica bien su alcance.
+
+La capacidad ya existe. Este punto sólo puede producir un ajuste de visibilidad o rotulado si la prueba demuestra que la acción actual no se comprende.
+
+## Backlog aprobado
+
+El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Etapa 1 — Integridad y continuidad de uso
+
+#### 1. Preservar la interacción durante la sincronización
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Alta.
+- Evitar que una sincronización quite el foco, mueva el cursor o descarte texto todavía no volcado al estado de la aplicación.
+- Proteger especialmente la búsqueda y los formularios o editores abiertos.
+- Evaluar si corresponde restaurar de forma segura el estado transitorio o aplazar el render de reconciliación mientras exista una interacción activa.
+- No ocultar cambios remotos relevantes ni bloquear indefinidamente la actualización de la interfaz.
+
+#### 2. Excluir de Estadísticas los proyectos borrados
+
+- **Estado:** Pendiente de investigación y corrección.
+- **Dificultad prevista:** Media para reproducir; baja o media para corregir.
+- Reproducir el error con borrado, sincronización, restauración y proyectos anidados.
+- Determinar si intervienen datos históricos, referencias huérfanas o una ruta no cubierta por la prueba actual.
+- Garantizar que los proyectos en Papelera o eliminados definitivamente no aparezcan en ninguna estadística.
+
+#### 3. Conservar la jerarquía al duplicar subtareas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- La copia de una subtarea debe conservar el mismo `parentTaskId` que la tarea original.
+- Si se duplica un subárbol, sus descendientes deben quedar vinculados a la copia correspondiente y no al subárbol original.
+
+#### 4. Restaurar Editar objetivo en celular
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Mostrar en la vista móvil la acción **Editar objetivo** que ya existe en la estructura de la interfaz.
+- Integrarla sin sumar una fila adicional de controles ni romper la geometría del encabezado.
+
+#### 5. Unificar la creación dentro de Proyectos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Dentro de un proyecto, dejar una única acción de alta: **Agregar subtarea**.
+- Ocultar o transformar contextualmente la acción general **Nueva tarea** para evitar la creación accidental de una tarea suelta en Inbox.
+
+#### 6. Corregir el contador de progreso de Proyectos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Calcular el progreso con todas las tareas válidas del proyecto, aunque las completadas estén ocultas en la lista.
+- Mantener el formato `completadas/total`, por ejemplo `3/10`.
+
+### Etapa 2 — Seguridad de acciones y claridad visual
+
+#### 7. Incorporar Deshacer contextual al completar tareas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja o media.
+- Mostrar en escritorio el mismo aviso temporal de tarea completada que se utiliza después del gesto móvil.
+- Ofrecer **Deshacer** al completar mediante la casilla y reutilizar un único componente en escritorio y celular.
+- Diseñar la base para admitir otras acciones acotadas sólo cuando exista una necesidad concreta y una reversión segura.
+- No incorporar un botón permanente ni un historial general de deshacer.
+
+#### 8. Mostrar la ruta jerárquica de subtareas aisladas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Cuando una subtarea aparezca sin su padre visible, mostrar arriba del título una ruta del tipo `Tarea > Subtarea > Sub-subtarea`.
+- Omitir la ruta cuando el origen ya resulte evidente por la estructura visible.
+- Truncar rutas extensas y ocultarlas junto con los demás metadatos.
+
+#### 9. Representar el color del contexto como texto discreto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Mantener el contexto como texto, sin convertirlo en chip.
+- Comunicar su color mediante un punto pequeño u otro acento discreto que preserve el contraste con colores personalizados.
+
+#### 10. Homogeneizar popovers y controles transitorios
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Auditar popovers, menús y selectores existentes antes de crear un componente nuevo.
+- Unificar geometría, espaciado, sombras, botones, foco, cierre con Escape o clic exterior y adaptación móvil.
+- Respetar diferencias funcionales entre controles y evitar que la homogeneidad agregue decoración o pasos innecesarios.
+
+#### 11. Cambiar la etiqueta Descripción por Notas
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja.
+- Conservar el campo, su modelo de datos, su sincronización y su comportamiento actual.
+- Cambiar únicamente el nombre visible de **Descripción** a **Notas** en todos los editores y textos relacionados.
+- No crear notas múltiples, una entidad nueva ni otra sección del editor.
+
+### Etapa 3 — Gestión de Objetivos y Proyectos
+
+#### 12. Heredar objetivos en la jerarquía de un proyecto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Al asignar un objetivo a un proyecto, sumarlo a todas sus tareas descendientes sin eliminar otras asociaciones existentes.
+- Hacer que cada nueva subtarea herede todos los objetivos de su padre.
+- No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
+
+#### 13. Mostrar u ocultar completadas en Objetivos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Baja o media.
+- Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
+- Mantener el mismo significado, estado accesible y persistencia del control existente.
+
+#### 14. Incorporar filtros rápidos y orden en Objetivos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Reutilizar **Herramientas de la lista** para filtrar y ordenar las tareas de los proyectos asociados al objetivo.
+- Evitar una nueva fila permanente de controles.
+- Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
+
+#### 15. Agregar un filtro rápido por Proyecto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Permitir filtrar por un proyecto y todo su subárbol desde el panel existente de filtros rápidos.
+- Usar un selector buscable y mostrar la ruta del proyecto cuando sea necesaria para distinguir nombres repetidos.
+
+### Etapa 4 — Eficiencia avanzada sin ruido visual
+
+#### 16. Incorporar un conjunto acotado de atajos de teclado
+
+- **Estado:** Pendiente de definición funcional.
+- **Dificultad prevista:** Baja o media.
+- Definir con el usuario un conjunto pequeño antes de implementar.
+- Ignorar atajos de acción mientras se escribe en campos editables.
+- Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
+
+#### 17. Permitir orden manual mediante arrastre
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media o alta.
+- Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
+- Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
+- En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
+- Definir el comportamiento ante filtros activos, subtareas contraídas y listas parciales antes de implementar.
+
 ## Propuesta pendiente de decisión
 
 ### Diagnóstico visible de errores de sincronización
@@ -59,6 +213,11 @@ Las siguientes cuestiones fueron exploradas, pero no constituyen trabajo comprom
 - una nueva reorganización general de la barra lateral.
 
 Sólo deben incorporarse como pendientes después de definir su necesidad, alcance y prioridad.
+
+También quedan descartados por decisión de alcance:
+
+- un sistema de notas múltiples: el campo actual se conservará y sólo pasará a llamarse **Notas**;
+- un botón general o permanente de deshacer: sólo se implementará una reversión contextual y temporal para acciones expresamente cubiertas.
 
 ## Principios de planificación
 
