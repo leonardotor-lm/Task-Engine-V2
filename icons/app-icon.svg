@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Mis tareas">
+  <rect width="512" height="512" rx="112" fill="#2563eb"/>
+  <rect x="112" y="92" width="288" height="328" rx="44" fill="#ffffff"/>
+  <path d="M168 190l22 22 42-48" fill="none" stroke="#2563eb" stroke-linecap="round" stroke-linejoin="round" stroke-width="22"/>
+  <path d="M268 190h76M268 270h76M268 350h76" fill="none" stroke="#93c5fd" stroke-linecap="round" stroke-width="20"/>
+  <circle cx="190" cy="270" r="13" fill="#2563eb"/>
+  <circle cx="190" cy="350" r="13" fill="#2563eb"/>
+</svg>

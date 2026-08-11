@@ -1571,6 +1571,13 @@ h3 {
     font-size: 15px;
 }
 
+.applicationTools p {
+    margin: 10px 0 14px;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
 .settingsToolHeader {
     display: flex;
     align-items: flex-start;
