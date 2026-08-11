@@ -230,6 +230,43 @@ fechaDentro:"10 dias"
 fechaDentro:"2 semanas"
 ```
 
+## Fechas de inicio y períodos activos
+
+La fecha de inicio indica desde cuándo una tarea no recurrente está disponible. Puede existir sin fecha de vencimiento. Cuando una tarea posee ambas fechas, su período incluye el día de inicio y el día de vencimiento.
+
+| Criterio | Qué busca | Ejemplo |
+|---|---|---|
+| `inicio` | Una fecha de inicio concreta | `inicio:hoy` |
+| `inicioAntes` | Inicios anteriores al valor | `inicioAntes:15/08/2026` |
+| `inicioDespues` | Inicios posteriores al valor | `inicioDespues:hoy` |
+| `inicioDentro` | Inicios dentro de un período futuro | `inicioDentro:"7 dias"` |
+| `inicioEntre` | Inicios entre dos fechas, inclusive | `inicioEntre:01/08/2026..31/08/2026` |
+| `tieneInicio` | Presencia o ausencia de fecha de inicio | `tieneInicio:si` |
+| `activaEn` | Tareas cuyo período se superpone con el intervalo consultado | `activaEn:01/08/2026..07/08/2026` |
+
+También se admiten los alias en inglés `start`, `startBefore`, `startAfter`, `startWithin`, `startBetween`, `hasStartDate` y `activeIn`.
+
+`activaEn` recibe dos fechas separadas por `..` o por una coma. Incluye:
+
+- tareas con inicio y vencimiento cuyo período se cruza con el intervalo;
+- tareas con sólo inicio, si comienzan antes de que termine el intervalo;
+- tareas con sólo vencimiento, si vencen después de que comienza el intervalo;
+- tareas recurrentes cuya próxima fecha de vencimiento cae dentro del intervalo.
+
+Las tareas sin inicio ni vencimiento no coinciden. Los extremos se consideran incluidos.
+
+Ejemplos:
+
+```text
+inicio:hoy
+tieneInicio:no
+inicioEntre:01/08/2026..31/08/2026
+activaEn:11/08/2026..13/08/2026
+activaEn:"hoy..en 7 dias"
+```
+
+Los formatos y expresiones relativas son los mismos que para las fechas de vencimiento. Una fecha de inicio no cambia las reglas de En espera: mientras la tarea continúe marcada, permanece fuera de las listas operativas.
+
 ## Fechas de creación, modificación y finalización
 
 | Criterio | Ejemplo |
@@ -341,6 +378,12 @@ tieneAdjuntos:si AND adjunto:pdf
 
 ```text
 enEspera:si AND area:"Trabajo docente"
+```
+
+### Tareas activas durante una semana
+
+```text
+activaEn:"hoy..en 7 dias"
 ```
 
 ### Tareas recurrentes semanales sin contexto

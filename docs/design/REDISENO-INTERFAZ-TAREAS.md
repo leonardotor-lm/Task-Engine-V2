@@ -1,248 +1,127 @@
 # Rediseño de la interfaz de tareas
 
-## Estado actual
+## Estado
 
-- **Tipo:** guía funcional y visual viva.
-- **Etapas completadas:** barra contextual, simplificación de la barra lateral, adaptación principal de la lista en celular y consolidación inicial del CSS de esta interfaz.
-- **Siguiente etapa:** persistencia del orden por vista.
-- **Etapas posteriores:** rediseño del editor de escritorio, adaptación específica del editor móvil y revisión integral de accesibilidad.
-- **Criterio general:** adaptar patrones útiles a Task Engine sin copiar funciones ni estructuras que no correspondan a la aplicación.
+- **Tipo:** registro histórico y referencia de diseño.
+- **Estado del bloque:** completado.
+- **Implementación principal:** PR #163 a #181.
+- **Trabajo vigente:** consultar `docs/roadmap/PENDIENTES.md`.
 
-## Objetivo
+Este documento conserva los criterios que guiaron el rediseño. No debe utilizarse como lista de tareas pendientes.
 
-Organizar la interfaz para que cada herramienta aparezca cerca del contenido sobre el que actúa, reducir el ruido visual y simplificar el editor de tareas sin eliminar capacidades.
+## Objetivo cumplido
 
-El rediseño prioriza:
+El rediseño reorganizó la interfaz para que cada herramienta aparezca cerca del contenido sobre el que actúa, redujo el ruido visual y simplificó el editor sin eliminar capacidades.
 
-- acceso rápido a funciones frecuentes;
+Los criterios consolidados son:
+
+- acceso rápido a las funciones frecuentes;
 - separación entre navegación, herramientas de lista y edición;
 - divulgación progresiva de propiedades secundarias;
-- soluciones específicas para escritorio y celular;
-- persistencia local de preferencias de presentación;
+- soluciones adaptadas para escritorio y celular;
+- persistencia de preferencias de presentación;
 - accesibilidad mediante teclado, foco visible y nombres accesibles;
-- uso de variables CSS semánticas para facilitar futuros temas visuales.
+- variables CSS semánticas que permitan incorporar temas visuales en el futuro.
 
-# 1. Implementación completada
+## Resultados implementados
 
-## Barra contextual de la lista
+### Barra contextual de la lista
 
-La lista dispone de una barra superior que reúne:
+La barra superior reúne:
 
 - selección múltiple;
-- filtros;
+- filtros rápidos;
 - orden;
 - mostrar u ocultar detalles;
 - mostrar u ocultar tareas completadas;
-- acceso al estado En espera cuando corresponde a un área.
+- acceso temporal a tareas En espera dentro de un área.
 
-### Escritorio
+En escritorio permanece visible. En celular se contrae para reducir ruido y se expande cuando el contexto de uso lo requiere.
 
-- La barra permanece visible y abierta.
-- Se encuentra vinculada al encabezado y a la lista actual.
-- Los controles equivalentes fueron retirados de la barra lateral.
+### Barra lateral
 
-### Celular
-
-- La barra aparece contraída inicialmente.
-- Recuerda el último estado elegido.
-- Se expande automáticamente durante la selección múltiple.
-- El encabezado Herramientas se mantiene compacto.
-
-## Barra lateral
-
-La barra lateral se concentra principalmente en:
+La barra lateral quedó orientada principalmente a:
 
 - navegación entre vistas;
 - áreas;
 - planificación;
-- historial;
+- historial y estadísticas;
 - filtros guardados;
 - configuración;
 - estado de sincronización.
 
-Áreas, Planificación e Historial funcionan como grupos independientes y recuerdan su estado. Áreas y Planificación aparecen desplegados inicialmente.
+Las herramientas que afectan sólo a una lista se trasladaron a la barra contextual.
 
-## Creación de tareas
+### Orden y preferencias por vista
 
-- El botón Nueva tarea abre directamente el editor.
-- No existe un campo intermedio redundante para escribir el nombre.
-- La nueva tarea se mantiene como borrador no persistido hasta confirmar Crear tarea.
-- Cerrar el editor descarta el borrador sin dejar tareas residuales.
-- En celular, Nueva tarea se presenta como botón flotante en la esquina inferior derecha.
+El criterio de orden y su dirección se conservan por vista mediante una clave estable. Cada vista puede mantener una preferencia diferente sin alterar el orden manual ni los filtros de las demás.
 
-## Organización CSS
+Las preferencias de presentación relevantes se incluyen en la persistencia y sincronización con compatibilidad para datos anteriores.
 
-Los estilos de la barra contextual, la distribución lateral vinculada y la adaptación principal móvil se consolidaron en `styles/task-interface.css`.
+### Creación y edición de tareas
 
-La organización futura debe hacerse por componente o zona funcional estable, no mediante un archivo nuevo por cada PR o corrección puntual. Los componentes deben consumir variables semánticas para que un futuro tema visual pueda cambiar colores, superficies, bordes y tipografía sin reescribir la estructura.
+- Nueva tarea abre directamente el editor.
+- Una tarea nueva permanece como borrador hasta confirmar su creación.
+- Cancelar descarta el borrador sin dejar tareas residuales.
+- Título y descripción conservan la mayor jerarquía visual.
+- Área, contexto, prioridad, fechas, etiquetas, objetivos, recurrencia, espera, adjuntos y movimiento se organizan en controles compactos o paneles bajo demanda.
+- Guardar es la acción principal.
+- Completar, archivar, enviar a Papelera y eliminar definitivamente mantienen una jerarquía y separación acordes con su alcance.
+- Escape, clic exterior y controles de cierre respetan la confirmación de cambios sin guardar.
 
-# 2. Siguiente etapa: persistencia del orden
+### Editor de escritorio
 
-## Decisión tomada
+El editor de escritorio aprovecha el ancho disponible para agrupar propiedades frecuentes en una composición compacta. Las relaciones y acciones secundarias se abren bajo demanda, sin convertir la pantalla en un formulario largo.
 
-El orden se persistirá **por vista**, no como una única preferencia global.
+### Editor móvil
 
-Esto permite, por ejemplo:
+El editor móvil es una adaptación específica, no una compresión automática del escritorio:
 
-- ordenar Hoy por fecha;
-- ordenar Inbox por creación;
-- ordenar un área por prioridad;
-- conservar una preferencia diferente en otra área.
+- usa una superficie amplia con desplazamiento interno;
+- prioriza título y descripción;
+- mantiene acciones frecuentes accesibles;
+- abre las propiedades secundarias en paneles compatibles con pantallas pequeñas;
+- conserva áreas táctiles suficientes y evita desbordes.
 
-## Datos que deben persistirse
+### Navegación jerárquica
 
-- criterio de orden;
-- dirección ascendente o descendente cuando corresponda;
-- clave estable de la vista actual.
+Objetivos y Proyectos usan breadcrumbs basados en la relación real de parentesco. En Proyectos, la raíz conserva el contexto de origen, incluido un filtro guardado, y permite restaurarlo por identidad.
 
-## Alcance
+### Accesibilidad y consistencia
 
-- La preferencia es local y pertenece a la presentación.
-- No se sincroniza como dato de dominio.
-- Debe restaurarse al recargar, cerrar y volver a abrir la aplicación, o navegar y regresar a la vista.
-- Si una preferencia almacenada deja de ser válida, la aplicación debe usar el orden predeterminado sin romper la vista.
-- Las áreas deben distinguirse mediante su identificador estable.
+El cierre del bloque verificó:
 
-## Criterios de aceptación
-
-- Cambiar el orden actualiza la lista inmediatamente.
-- Salir de una vista y regresar restaura su orden.
-- Recargar la aplicación conserva el orden.
-- Cambiar el orden de una vista no modifica el de otra.
-- No se altera la búsqueda, los filtros ni el orden manual existente.
-
-# 3. Editor de tareas: criterio general pendiente
-
-El editor debe dejar de comportarse como un formulario largo cuyos campos parecen igualmente importantes. La jerarquía prevista es:
-
-1. contexto de la tarea;
-2. título;
-3. descripción;
-4. propiedades frecuentes;
-5. contenido y relaciones adicionales;
-6. acciones principales;
-7. operaciones administrativas o destructivas.
-
-Título y descripción deben dominar visualmente. Las propiedades secundarias deben presentarse como controles compactos que abren selectores o paneles internos.
-
-# 4. Editor de escritorio
-
-## Estructura orientativa
-
-```text
-[ Área ▼ ] [ Contexto ▼ ]                              [ × ]
-
-Título de la tarea
-
-Descripción
-
-[ Prioridad ] [ Fecha ] [ Etiquetas ] [ Objetivos ] [ Más ··· ]
-
-[ Adjuntos ] [ Subtareas ] [ Opciones avanzadas ]
-
-──────────────────────────────────────────────────────────
-
-[ Completar ]                              [ Guardar cambios ]
-```
-
-## Reglas
-
-- Área y Contexto deben funcionar como selectores compactos.
-- El título debe ser el campo principal.
-- La descripción debe disponer de una superficie amplia y simple.
-- Prioridad, fecha, etiquetas, objetivos y En espera pueden mostrarse como propiedades frecuentes.
-- Adjuntos, subtareas, recurrencia y organización deben abrirse bajo demanda.
-- Escape y clic exterior deben conservar la confirmación de cambios sin guardar.
-- Guardar debe ser la acción primaria.
-- Completar debe ser una acción secundaria destacada.
-- Archivar y Papelera deben quedar visualmente separados de Guardar.
-
-# 5. Editor móvil
-
-## Forma general
-
-- Superficie casi de pantalla completa o hoja ascendente amplia.
-- Adaptación propia, no simple compresión del editor de escritorio.
-- Desplazamiento interno cuando sea necesario.
-- Título y descripción con prioridad visual.
-
-## Barra inferior
-
-Debe contener pocos accesos frecuentes y una acción principal. La composición inicial a validar es:
-
-- completar;
-- prioridad;
-- fecha;
-- etiquetas;
-- adjuntos;
-- Guardar.
-
-No deben acumularse tantos íconos que la barra vuelva a saturarse.
-
-## Paneles secundarios
-
-Propiedades como etiquetas, fecha, prioridad, objetivos, adjuntos y recurrencia pueden abrir paneles secundarios dentro del mismo flujo. Estos paneles deben conservar los cambios, gestionar el foco y evitar diálogos superpuestos.
-
-# 6. Accesibilidad
-
-Las etapas restantes deben verificar:
-
-- navegación completa mediante teclado;
+- navegación por teclado;
 - orden lógico y devolución del foco;
-- `aria-label` y `title` en controles con sólo ícono;
-- `aria-expanded` y `aria-pressed` en controles alternables;
-- foco visual común y suficiente contraste;
-- objetivos táctiles adecuados en celular;
-- ausencia de información comunicada sólo mediante color;
-- respeto por movimiento reducido;
-- confirmación de cambios sin guardar desde todos los mecanismos de cierre.
+- nombres accesibles y estados ARIA;
+- foco visible y contraste;
+- objetivos táctiles móviles;
+- overlays y diálogos propios;
+- viewports extremos y jerarquías largas;
+- ausencia de información dependiente sólo del color;
+- confirmación coherente ante cambios sin guardar.
 
-# 7. Orden de implementación restante
+### Organización CSS
 
-## Etapa 3 — Persistencia del orden
+Los estilos se organizan por zonas funcionales estables y consumen variables semánticas. La arquitectura evita crear un archivo por corrección puntual y mantiene preparado el sistema para futuros temas sin duplicar la estructura.
 
-- Implementar almacenamiento por vista.
-- Validar navegación, recarga y reapertura.
-- Mantener valores predeterminados seguros.
+## Decisiones que quedaron cerradas
 
-## Etapa 4 — Editor de escritorio
+1. La búsqueda avanzada permanece como herramienta explícita y no invade la cabecera principal.
+2. La barra móvil muestra pocas acciones frecuentes y deriva el resto a paneles.
+3. En espera se mantiene como propiedad accesible desde el editor y como vista propia.
+4. Las acciones administrativas se separan visualmente de Guardar.
+5. El editor móvil utiliza una composición propia de pantalla pequeña.
+6. La frecuencia de uso y el contexto determinan qué propiedades quedan visibles.
+7. Los breadcrumbs son la navegación jerárquica principal para Objetivos y Proyectos.
 
-- Reorganizar encabezado, contenido, propiedades y acciones.
-- Incorporar controles compactos y divulgación progresiva.
-- Mantener toda la funcionalidad actual.
+## Criterios permanentes de regresión
 
-## Etapa 5 — Editor móvil
-
-- Implementar la distribución móvil específica.
-- Incorporar barra inferior y paneles secundarios.
-- Validar teclado, foco y desplazamiento.
-
-## Etapa 6 — Accesibilidad y limpieza
-
-- Verificación integral de teclado y lector de pantalla.
-- Ajustes de contraste, estados y áreas táctiles.
-- Eliminar estilos y componentes antiguos que ya no se utilicen.
-- Actualizar pruebas y documentación.
-
-# 8. Decisiones todavía abiertas
-
-Antes del rediseño del editor deben resolverse:
-
-1. si la búsqueda se traslada a la barra superior;
-2. qué accesos permanecen en la barra inferior móvil;
-3. si En espera aparece entre las propiedades frecuentes o dentro de Más opciones;
-4. si Archivar permanece visible en escritorio;
-5. si el editor móvil será hoja casi completa o pantalla completa;
-6. qué propiedades se consideran realmente frecuentes según el uso cotidiano.
-
-# 9. Criterios de aceptación generales
-
-- La barra lateral permanece limpia y orientada a navegación.
-- Las herramientas de lista se encuentran junto a la lista.
-- Cada vista recuerda su orden.
-- Título y descripción dominan el editor futuro.
-- Las propiedades secundarias siguen disponibles sin saturar la pantalla.
-- Escritorio y celular presentan soluciones adaptadas.
-- Las acciones destructivas permanecen explícitas y separadas.
-- No se pierde ningún flujo de edición, adjuntos, subtareas, recurrencia, espera, objetivos o eliminación.
-- La interfaz es operable mediante teclado y conserva nombres accesibles.
+- La barra lateral debe permanecer orientada a navegación.
+- Las herramientas de lista deben actuar sobre la vista visible y conservar sus preferencias.
+- Título y descripción deben dominar el editor.
+- Las propiedades secundarias deben seguir disponibles sin saturar la superficie.
+- Escritorio y celular deben conservar paridad funcional con distribuciones adaptadas.
+- Las acciones destructivas deben ser explícitas y estar separadas.
+- Ninguna mejora visual puede perder flujos de adjuntos, subtareas, recurrencia, espera, objetivos, movimiento o eliminación.
+- La interfaz debe seguir siendo operable mediante teclado y conservar nombres accesibles.

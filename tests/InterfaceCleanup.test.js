@@ -15,7 +15,7 @@ const mobileEditorStyles = fs.readFileSync(
     "utf8"
 );
 const roadmap = fs.readFileSync(
-    new URL("../docs/roadmap/PENDIENTES.md", import.meta.url),
+    new URL("../docs/roadmap/ROADMAP.md", import.meta.url),
     "utf8"
 );
 
@@ -73,9 +73,9 @@ test("la interfaz móvil conserva una sola acción de alta y alinea sus herramie
 
 test("el registro cierra la PR 180 y habilita fecha de inicio", () => {
     assert.doesNotMatch(roadmap, /Creación de subtareas directamente en el editor/);
-    assert.match(roadmap, /PR #180 abre el editor completo/);
+    assert.match(roadmap, /PR #180: creación directa de subtareas con el editor completo/);
     assert.match(
         roadmap,
-        /Fecha de inicio y períodos[\s\S]*?\*\*Estado:\*\* Completado\./
+        /Fecha de inicio, períodos y búsqueda `activaEn` — PR #193/
     );
 });
