@@ -321,6 +321,168 @@ test("compara límites y períodos de la fecha de inicio", () => {
 
 });
 
+test("busca tareas activas durante un período por solapamiento", () => {
+
+    for (const item of [
+        task({
+            startDate: "2026-07-20",
+            dueDate: "2026-08-03"
+        }),
+        task({
+            startDate: "2026-08-05",
+            dueDate: "2026-08-20"
+        }),
+        task({
+            startDate: "2026-07-01",
+            dueDate: "2026-09-01"
+        }),
+        task({
+            startDate: "2026-08-01",
+            dueDate: "2026-08-07"
+        })
+    ]) {
+        assert.equal(
+            matches(
+                item,
+                "activaEn:2026-08-01..2026-08-07"
+            ),
+            true
+        );
+    }
+
+});
+
+test("acepta fechas locales en un período activo", () => {
+
+    assert.equal(
+        matches(
+            task({
+                startDate: "2026-08-10",
+                dueDate: "2026-08-15"
+            }),
+            "activaEn:11/08/2026..13/08/2026"
+        ),
+        true
+    );
+
+});
+
+test("excluye tareas cuyo período operativo no se superpone", () => {
+
+    assert.equal(
+        matches(
+            task({
+                startDate: "2026-07-01",
+                dueDate: "2026-07-31"
+            }),
+            "activaEn:2026-08-01..2026-08-07"
+        ),
+        false
+    );
+
+    assert.equal(
+        matches(
+            task({
+                startDate: "2026-08-08",
+                dueDate: "2026-08-20"
+            }),
+            "activeIn:2026-08-01..2026-08-07"
+        ),
+        false
+    );
+
+});
+
+test("trata fechas operativas ausentes como límites abiertos", () => {
+
+    for (const item of [
+        task({ dueDate: "2026-08-03" }),
+        task({ startDate: "2026-08-05" })
+    ]) {
+        assert.equal(
+            matches(
+                item,
+                "activaEn:2026-08-01..2026-08-07"
+            ),
+            true
+        );
+    }
+
+    assert.equal(
+        matches(
+            task({ dueDate: "2026-07-31" }),
+            "activaEn:2026-08-01..2026-08-07"
+        ),
+        false
+    );
+
+    assert.equal(
+        matches(
+            task({ startDate: "2026-08-08" }),
+            "activaEn:2026-08-01..2026-08-07"
+        ),
+        false
+    );
+
+    assert.equal(
+        matches(
+            task(),
+            "activaEn:2026-08-01..2026-08-07"
+        ),
+        false
+    );
+
+});
+
+test("trata cada tarea recurrente como una ocurrencia en su vencimiento", () => {
+
+    assert.equal(
+        matches(
+            task({
+                dueDate: "2026-08-18",
+                recurrence: "WEEKLY"
+            }),
+            "activaEn:2026-08-11..2026-08-13"
+        ),
+        false
+    );
+
+    assert.equal(
+        matches(
+            task({
+                dueDate: "2026-08-12",
+                recurrence: "WEEKLY"
+            }),
+            "activaEn:2026-08-11..2026-08-13"
+        ),
+        true
+    );
+
+});
+
+test("acepta fechas relativas y rechaza rangos activos inválidos", () => {
+
+    assert.equal(
+        matches(
+            task({
+                startDate: "2026-07-27",
+                dueDate: "2026-08-03"
+            }),
+            'activaEn:"hoy..en 7 dias"'
+        ),
+        true
+    );
+
+    assert.equal(
+        matches(
+            task(),
+            "activaEn:2026-08-07..2026-08-01"
+        ),
+        false
+    );
+
+});
+
 test("detecta tareas con o sin fecha de inicio", () => {
 
     assert.equal(

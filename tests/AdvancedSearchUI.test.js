@@ -171,6 +171,16 @@ test("ofrece una referencia de criterios avanzados", () => {
 
     assert.match(
         html,
+        /activaEn:01\/08\/2026\.\.07\/08\/2026/
+    );
+
+    assert.match(
+        html,
+        /sin inicio ni vencimiento no se incluyen/
+    );
+
+    assert.match(
+        html,
         /tieneInicio/
     );
 
