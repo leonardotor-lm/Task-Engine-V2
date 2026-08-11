@@ -71,9 +71,13 @@ function renderMetricDetails(metric, periodLabel) {
 export class StatisticsView {
 
     getPeriodLabel(period) {
-        return period === "ALL"
-            ? "en todo el historial"
-            : `en ${period} días`;
+        const labels = {
+            "180": "en 6 meses",
+            "365": "en 12 meses",
+            ALL: "en todo el historial"
+        };
+
+        return labels[period] ?? `en ${period} días`;
     }
 
     renderProject(project, periodLabel) {
@@ -196,6 +200,8 @@ export class StatisticsView {
                             <option value="7" ${statistics.period === "7" ? "selected" : ""}>7 días</option>
                             <option value="30" ${statistics.period === "30" ? "selected" : ""}>30 días</option>
                             <option value="90" ${statistics.period === "90" ? "selected" : ""}>90 días</option>
+                            <option value="180" ${statistics.period === "180" ? "selected" : ""}>6 meses</option>
+                            <option value="365" ${statistics.period === "365" ? "selected" : ""}>12 meses</option>
                             <option value="ALL" ${statistics.period === "ALL" ? "selected" : ""}>Todo el historial</option>
                         </select>
                     </label>

@@ -1495,7 +1495,7 @@ export class App {
 
             onChangeStatisticsPeriod: (period) => {
 
-                if (!["7", "30", "90", "ALL"].includes(period)) {
+                if (!["7", "30", "90", "180", "365", "ALL"].includes(period)) {
                     return;
                 }
 

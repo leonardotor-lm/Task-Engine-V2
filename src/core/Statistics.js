@@ -5,6 +5,8 @@ const PERIODS = Object.freeze({
     "7": 7,
     "30": 30,
     "90": 90,
+    "180": 180,
+    "365": 365,
     ALL: null
 });
 

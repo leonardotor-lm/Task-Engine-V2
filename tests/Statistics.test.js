@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
     buildProgressStatistics
 } from "../src/core/Statistics.js";
+import { StatisticsView } from "../src/ui/StatisticsView.js";
 
 const task = (id, data = {}) => ({
     id,
@@ -181,6 +182,29 @@ test("aplica el período sólo al ritmo reciente", () => {
 
     assert.equal(result.projects[0].percentage, 100);
     assert.equal(result.projects[0].recentCompleted, 1);
+});
+
+test("admite períodos de seis y doce meses", () => {
+    for (const period of ["180", "365"]) {
+        const result = buildProgressStatistics({
+            period,
+            today: "2026-08-11"
+        });
+
+        assert.equal(result.period, period);
+    }
+
+    const view = new StatisticsView();
+    const html = view.render({
+        statistics: buildProgressStatistics({
+            period: "180",
+            today: "2026-08-11"
+        })
+    });
+
+    assert.match(html, /<option value="180" selected>6 meses<\/option>/);
+    assert.match(html, /<option value="365" >12 meses<\/option>/);
+    assert.match(html, /Completadas en 6 meses/);
 });
 
 test("calcula los días disponibles de un objetivo", () => {
