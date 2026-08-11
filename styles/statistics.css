@@ -1,0 +1,218 @@
+.statisticsView {
+    display: grid;
+    align-content: start;
+    gap: 28px;
+}
+
+.statisticsHeading,
+.statisticsCard > header,
+.statisticsSectionHeading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.statisticsHeading h1,
+.statisticsSection h2,
+.statisticsCard h3 {
+    margin: 0;
+}
+
+.statisticsHeading p {
+    margin: 6px 0 0;
+    color: var(--color-text-muted);
+}
+
+.statisticsEyebrow {
+    margin: 0 0 4px !important;
+    color: var(--color-accent-strong) !important;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.statisticsPeriod {
+    display: grid;
+    flex: 0 0 180px;
+    gap: 5px;
+}
+
+.statisticsPeriod span {
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.statisticsPeriod select {
+    box-sizing: border-box;
+    min-height: 40px;
+}
+
+.statisticsPanorama,
+.statisticsCard {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+}
+
+.statisticsPanorama {
+    padding: 20px;
+}
+
+.statisticsPanorama h2 {
+    margin: 0 0 16px;
+    font-size: 17px;
+}
+
+.statisticsIndicators {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.statisticsIndicators article {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    padding: 14px;
+    border-radius: 6px;
+    background: var(--color-surface-soft);
+}
+
+.statisticsIndicators strong {
+    font-size: 24px;
+    font-variant-numeric: tabular-nums;
+}
+
+.statisticsIndicators span {
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+.statisticsSection {
+    display: grid;
+    gap: 14px;
+}
+
+.statisticsSectionHeading {
+    align-items: center;
+}
+
+.statisticsSectionHeading span {
+    min-width: 28px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--color-surface-soft);
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+.statisticsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.statisticsCard {
+    min-width: 0;
+    padding: 18px;
+}
+
+.statisticsCard h3 {
+    overflow-wrap: anywhere;
+    font-size: 17px;
+}
+
+.statisticsProgressLabel {
+    margin: 18px 0 7px;
+    font-weight: 700;
+}
+
+.statisticsProgress {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--color-border);
+}
+
+.statisticsProgress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-accent);
+}
+
+.statisticsDetails {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 18px 0 0;
+}
+
+.statisticsDetails div {
+    display: grid;
+    gap: 3px;
+}
+
+.statisticsDetails dt {
+    color: var(--color-text-muted);
+    font-size: 11px;
+}
+
+.statisticsDetails dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.statisticsLastAdvance,
+.statisticsOwnProgress,
+.statisticsDeadline {
+    margin: 14px 0 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.statisticsDeadline {
+    color: var(--color-accent-strong);
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .statisticsIndicators {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .statisticsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .statisticsView {
+        gap: 22px;
+    }
+
+    .statisticsHeading {
+        display: grid;
+    }
+
+    .statisticsPeriod {
+        width: 100%;
+    }
+
+    .statisticsIndicators {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .statisticsPanorama,
+    .statisticsCard {
+        padding: 14px;
+    }
+
+    .statisticsDetails {
+        grid-template-columns: 1fr 1fr;
+    }
+}

@@ -1088,6 +1088,12 @@ export class Sidebar {
                         Objetivos
                     </button>
 
+                    <button
+                        id="showStatistics"
+                        class="${buttonClass(View.STATISTICS)}">
+                        Estadísticas
+                    </button>
+
                     <details
                         class="sidebarNavigationGroup"
                         ${[

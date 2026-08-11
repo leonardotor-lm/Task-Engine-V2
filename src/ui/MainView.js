@@ -1371,6 +1371,7 @@ export class MainView {
             ["showAll", "onShowAll"],
             ["showCalendar", "onShowCalendar"],
             ["showActivity", "onShowActivity"],
+            ["showStatistics", "onShowStatistics"],
             ["showCompleted", "onShowCompleted"],
             ["showArchived", "onShowArchived"],
             ["showTrash", "onShowTrash"],
@@ -1412,6 +1413,44 @@ export class MainView {
         }
 
         document.getElementById(
+            "statisticsPeriod"
+        )?.addEventListener("change", event => {
+
+            this.callbacks.onChangeStatisticsPeriod(
+                event.target.value
+            );
+
+        });
+
+        document.querySelectorAll(
+            ".openStatisticsProject"
+        ).forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                this.callbacks.onOpenProject(
+                    button.dataset.id
+                );
+
+            });
+
+        });
+
+        document.querySelectorAll(
+            ".openStatisticsGoal"
+        ).forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                this.callbacks.onSelectGoal(
+                    button.dataset.id
+                );
+
+            });
+
+        });
+
+        document.getElementById(
             "activitySearchForm"
         )?.addEventListener("submit", event => {
 
@@ -1447,6 +1486,32 @@ export class MainView {
             });
 
         });
+
+        if (view === View.GOAL) {
+
+            document.getElementById(
+                "goalBreadcrumbRoot"
+            )?.addEventListener("click", () => {
+
+                this.callbacks.onCloseGoalWorkspace();
+
+            });
+
+            document.querySelectorAll(
+                ".goalBreadcrumbGoal"
+            ).forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    this.callbacks.onSelectGoal(
+                        button.dataset.id
+                    );
+
+                });
+
+            });
+
+        }
 
         if (view === View.GOALS) {
 

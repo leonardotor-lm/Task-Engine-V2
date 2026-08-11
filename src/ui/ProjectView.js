@@ -249,6 +249,7 @@ export class ProjectView {
             [View.TRASH]: "Papelera",
             [View.GOALS]: "Objetivos",
             [View.GOAL]: "Objetivo",
+            [View.STATISTICS]: "Estadísticas",
             [View.AREAS]: "Áreas",
             [View.CONTEXTS]: "Contextos",
             [View.TAGS]: "Etiquetas"
