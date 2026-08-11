@@ -2,6 +2,7 @@ import { TaskList } from "./TaskList.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { Icon } from "./Icon.js";
 import { GoalStatus } from "../domain/GoalStatus.js";
+import { View } from "../core/View.js";
 
 export class GoalView {
 
@@ -89,7 +90,9 @@ export class GoalView {
                     id="goalBreadcrumbRoot"
                     type="button"
                     class="openGoal goalBreadcrumbLink">
-                    Objetivos
+                    ${state.goalOriginView === View.STATISTICS
+                        ? "Estadísticas"
+                        : "Objetivos"}
                 </button>
                 ${ancestors.map(ancestor => `
                     <span

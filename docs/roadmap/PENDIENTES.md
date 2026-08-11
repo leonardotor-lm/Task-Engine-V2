@@ -20,6 +20,15 @@ Los puntos terminados se documentan en las PR correspondientes, en `docs/decisio
 
 ## Prioridad actual
 
+### Estadísticas de proyectos y objetivos
+
+- **Estado:** En desarrollo.
+- Medir avance por tareas completadas sin convertirlo en un puntaje de productividad.
+- Separar avance propio y acumulado en objetivos jerárquicos.
+- Excluir elementos archivados o en Papelera y evitar el doble conteo.
+- Mostrar pendientes, vencidas, pospuestas, ritmo reciente y último avance.
+- Ofrecer períodos de 7, 30 y 90 días o todo el historial.
+
 ### Navegación y consistencia visual
 
 - **Estado:** En desarrollo.

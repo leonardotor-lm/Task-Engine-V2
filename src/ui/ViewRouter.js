@@ -5,6 +5,7 @@ import { GoalList } from "./GoalList.js";
 import { GoalView } from "./GoalView.js";
 import { CalendarView } from "./CalendarView.js";
 import { ActivityView } from "./ActivityView.js";
+import { StatisticsView } from "./StatisticsView.js";
 import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
 
@@ -19,6 +20,7 @@ export class ViewRouter {
         this.goalView = new GoalView();
         this.calendarView = new CalendarView();
         this.activityView = new ActivityView();
+        this.statisticsView = new StatisticsView();
 
     }
 
@@ -98,6 +100,10 @@ export class ViewRouter {
             case View.ACTIVITY:
 
                 return this.activityView.render(state);
+
+            case View.STATISTICS:
+
+                return this.statisticsView.render(state);
 
             case View.CALENDAR:
 

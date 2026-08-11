@@ -20,6 +20,7 @@ import { TaskDisplayPreferences } from "../infrastructure/TaskDisplayPreferences
 import { MainView } from "../ui/MainView.js";
 import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
+import { buildProgressStatistics } from "./Statistics.js";
 import {
     filterTaskTreeByCriteria,
     hasActiveTaskFilters
@@ -93,6 +94,8 @@ export class App {
         this.currentView = View.TODAY;
         this.activityQuery = "";
         this.activityCategory = "ALL";
+        this.statisticsPeriod = "30";
+        this.previousGoalView = View.GOALS;
         this.calendarMonth =
             new Date().toISOString().slice(0, 7);
         this.calendarSelectedDate = null;
@@ -1484,6 +1487,23 @@ export class App {
 
             },
 
+            onShowStatistics: () => {
+
+                this.navigateTo(View.STATISTICS);
+
+            },
+
+            onChangeStatisticsPeriod: (period) => {
+
+                if (!["7", "30", "90", "ALL"].includes(period)) {
+                    return;
+                }
+
+                this.statisticsPeriod = period;
+                this.render();
+
+            },
+
             onSearchActivity: (query) => {
 
                 this.activityQuery = query;
@@ -1621,6 +1641,11 @@ export class App {
 
                 if (!goal) return;
 
+                if (this.currentView !== View.GOAL) {
+                    this.previousGoalView =
+                        this.currentView;
+                }
+
                 this.selectedGoal = goal;
                 this.goalEditorOpen = false;
                 this.goalCreationOpen = false;
@@ -1628,6 +1653,18 @@ export class App {
                 this.currentView = View.GOAL;
 
                 this.render();
+
+            },
+
+            onCloseGoalWorkspace: () => {
+
+                const destination =
+                    this.previousGoalView ===
+                        View.STATISTICS
+                        ? View.STATISTICS
+                        : View.GOALS;
+
+                this.navigateTo(destination);
 
             },
 
@@ -2304,6 +2341,7 @@ export class App {
                 return this.taskService.getDeletedTasks();
 
             case View.ACTIVITY:
+            case View.STATISTICS:
 
                 return [];
 
@@ -2679,6 +2717,8 @@ export class App {
                 this.projectTaskCreationOpen,
             projectNavigationDepth:
                 this.projectHistory.length,
+            projectOriginView:
+                this.previousProjectView,
             inlineSubtaskParentId:
                 this.inlineSubtaskParentId,
             taskCreationOpen:
@@ -2731,6 +2771,18 @@ export class App {
             activityQuery: this.activityQuery,
             activityCategory:
                 this.activityCategory,
+            statisticsPeriod:
+                this.statisticsPeriod,
+            statistics:
+                buildProgressStatistics({
+                    tasks:
+                        this.taskService.getAllTasks(),
+                    goals:
+                        this.goalService.getAllGoals(),
+                    period:
+                        this.statisticsPeriod,
+                    today
+                }),
             today,
             calendarMonth: this.calendarMonth,
             calendarSelectedDate:
@@ -2766,6 +2818,8 @@ export class App {
                 this.goalCreationOpen,
             currentGoalStatus:
                 this.currentGoalStatus,
+            goalOriginView:
+                this.previousGoalView,
             goals: this.goalService.getAllGoals(),
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),
