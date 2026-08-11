@@ -434,6 +434,32 @@ test("trata fechas operativas ausentes como límites abiertos", () => {
 
 });
 
+test("trata cada tarea recurrente como una ocurrencia en su vencimiento", () => {
+
+    assert.equal(
+        matches(
+            task({
+                dueDate: "2026-08-18",
+                recurrence: "WEEKLY"
+            }),
+            "activaEn:2026-08-11..2026-08-13"
+        ),
+        false
+    );
+
+    assert.equal(
+        matches(
+            task({
+                dueDate: "2026-08-12",
+                recurrence: "WEEKLY"
+            }),
+            "activaEn:2026-08-11..2026-08-13"
+        ),
+        true
+    );
+
+});
+
 test("acepta fechas relativas y rechaza rangos activos inválidos", () => {
 
     assert.equal(

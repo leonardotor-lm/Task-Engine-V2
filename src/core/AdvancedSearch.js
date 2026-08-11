@@ -893,6 +893,12 @@ function matchesActiveIn(task, value, today) {
         ? dateOnly(task.dueDate)
         : null;
 
+    if (task.recurrence) {
+        return taskEnd !== null &&
+            taskEnd >= range.start &&
+            taskEnd <= range.end;
+    }
+
     return (!taskStart || taskStart <= range.end) &&
         (!taskEnd || taskEnd >= range.start);
 
