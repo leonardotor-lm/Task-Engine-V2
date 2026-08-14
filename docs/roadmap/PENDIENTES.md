@@ -2,7 +2,7 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 11 de agosto de 2026.
+Última actualización: 14 de agosto de 2026.
 
 ## Estados
 
@@ -45,7 +45,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 #### 1. Preservar la interacción durante la sincronización
 
-- **Estado:** Pendiente.
+- **Estado:** En desarrollo.
 - **Dificultad prevista:** Alta.
 - Evitar que una sincronización quite el foco, mueva el cursor o descarte texto todavía no volcado al estado de la aplicación.
 - Proteger especialmente la búsqueda y los formularios o editores abiertos.
