@@ -30,6 +30,10 @@ export class SyncFocusWatcher {
             "focus",
             this.handleFocus
         );
+        this.target.addEventListener(
+            "online",
+            this.handleFocus
+        );
 
         this.started = true;
 
@@ -47,6 +51,10 @@ export class SyncFocusWatcher {
 
         this.target.removeEventListener(
             "focus",
+            this.handleFocus
+        );
+        this.target.removeEventListener(
+            "online",
             this.handleFocus
         );
 
