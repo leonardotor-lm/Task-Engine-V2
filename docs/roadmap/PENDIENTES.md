@@ -14,19 +14,6 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Verificación operativa final de la PWA
-
-- **Estado:** Pendiente de verificación.
-- **Implementación:** fusionada en la PR #194.
-- Confirmar en la aplicación instalada que Atrás muestra el aviso antes de salir desde la vista raíz.
-- Abrir y recargar la aplicación instalada sin conexión.
-- Modificar una tarea sin conexión y comprobar que sincroniza al recuperar internet.
-- Confirmar en una instalación nueva que los datos de ejemplo no generan un conflicto con la nube.
-- Verificar que una nueva versión publicada sustituye correctamente la caché anterior.
-- Comprobar el recorrido **Cómo instalar** en escritorio y celular cuando el navegador no entrega el diálogo nativo.
-
-Este bloque es una validación posterior a la fusión. No implica reconstruir la PWA ni modificar su arquitectura salvo que alguna prueba revele un defecto reproducible.
-
 ### Verificación de la creación de tareas desde Objetivos
 
 - **Estado:** Pendiente de verificación.
