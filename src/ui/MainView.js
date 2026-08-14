@@ -64,6 +64,12 @@ export class MainView {
                 };
 
             }),
+            mobileMenuOpen: Boolean(
+                document.querySelector(".layout")
+                    ?.classList.contains(
+                        "mobileMenuOpen"
+                    )
+            ),
             windowX: window.scrollX,
             windowY: window.scrollY
         };
@@ -104,6 +110,21 @@ export class MainView {
 
     }
 
+    restoreMobileMenuState(scrollState) {
+
+        if (!scrollState?.mobileMenuOpen) return;
+
+        document.querySelector(".layout")
+            ?.classList.add("mobileMenuOpen");
+        document.getElementById(
+            "toggleMobileMenu"
+        )?.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+
     scheduleFinalScrollRestore(scrollState) {
 
         const restoreId =
@@ -111,7 +132,7 @@ export class MainView {
 
         this.scrollRestoreId = restoreId;
 
-        queueMicrotask(() => {
+        const restoreIfCurrent = () => {
 
             if (
                 this.scrollRestoreId !== restoreId
@@ -120,6 +141,26 @@ export class MainView {
             }
 
             this.restoreScrollState(scrollState);
+
+        };
+
+        queueMicrotask(() => {
+
+            restoreIfCurrent();
+
+            const scheduleFrame =
+                globalThis.window
+                    ?.requestAnimationFrame
+                    ?.bind(globalThis.window);
+
+            if (!scheduleFrame) return;
+
+            scheduleFrame(() => {
+
+                restoreIfCurrent();
+                scheduleFrame(restoreIfCurrent);
+
+            });
 
         });
 
@@ -568,6 +609,7 @@ export class MainView {
             calendarDayDialog.showModal();
         }
 
+        this.restoreMobileMenuState(scrollState);
         this.restoreScrollState(scrollState);
         this.restoreActiveControlState(
             activeControlState
