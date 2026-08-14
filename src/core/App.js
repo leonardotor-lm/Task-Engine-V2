@@ -724,6 +724,15 @@ export class App {
 
             },
 
+            onSaveSidebarUserName: (name) => {
+
+                this.taskDisplayPreferences
+                    .setSidebarUserName(name);
+
+                this.render();
+
+            },
+
             onToggleTaskExpansion: (id) => {
 
                 const expandedTaskIds =
@@ -2772,6 +2781,9 @@ export class App {
             showTaskMetadata:
                 this.taskDisplayPreferences
                     .isMetadataVisible(),
+            sidebarUserName:
+                this.taskDisplayPreferences
+                    .getSidebarUserName(),
             showCompletedTasks,
             taskViewCounts,
             activityEvents:

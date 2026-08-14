@@ -56,3 +56,30 @@ test("recuerda el modo reducido", () => {
     );
 
 });
+
+test("recuerda el nombre que identifica la barra lateral", () => {
+
+    const storage = new MemoryStorage();
+
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.getSidebarUserName(),
+        ""
+    );
+
+    assert.equal(
+        preferences.setSidebarUserName(
+            "  Leo  "
+        ),
+        "Leo"
+    );
+
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getSidebarUserName(),
+        "Leo"
+    );
+
+});

@@ -1578,6 +1578,36 @@ h3 {
     line-height: 1.45;
 }
 
+.applicationTools form {
+    display: grid;
+    gap: 7px;
+}
+
+.applicationTools label {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+}
+
+.applicationTools input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 7px;
+}
+
+.applicationTools .settingsHint {
+    margin: 0;
+}
+
+.applicationTools form button {
+    width: 100%;
+}
+
+.applicationInstallTools {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+}
+
 .settingsToolHeader {
     display: flex;
     align-items: flex-start;

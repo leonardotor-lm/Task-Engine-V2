@@ -443,7 +443,8 @@ export class MainView {
             bulkSelectionMode,
             showCompletedTasks,
             showTaskMetadata,
-            taskViewCounts
+            taskViewCounts,
+            sidebarUserName
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -503,7 +504,8 @@ export class MainView {
                     taskToolsDialogOpen,
                     showTaskMetadata,
                     settingsDialogOpen,
-                    settingsSection
+                    settingsSection,
+                    sidebarUserName
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -1794,6 +1796,20 @@ export class MainView {
 
             event.preventDefault();
             closeSettings();
+
+        });
+
+        document.getElementById(
+            "sidebarUserNameForm"
+        )?.addEventListener("submit", event => {
+
+            event.preventDefault();
+
+            this.callbacks.onSaveSidebarUserName(
+                document.getElementById(
+                    "sidebarUserName"
+                ).value
+            );
 
         });
 

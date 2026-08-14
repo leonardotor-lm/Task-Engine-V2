@@ -36,7 +36,8 @@ export class Sidebar {
         taskToolsDialogOpen = false,
         showTaskMetadata = true,
         settingsDialogOpen = false,
-        settingsSection = null
+        settingsSection = null,
+        sidebarUserName = ""
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -525,23 +526,60 @@ export class Sidebar {
             </section>
         `;
 
+        const normalizedSidebarUserName =
+            String(sidebarUserName).trim();
+
+        const sidebarTitle = normalizedSidebarUserName
+            ? `Mis tareas — ${normalizedSidebarUserName}`
+            : "Mis tareas";
+
         const applicationTools = `
             <section class="applicationTools settingsToolPanel">
 
-                <h3>Aplicación</h3>
+                <form id="sidebarUserNameForm">
 
-                <p id="pwaInstallDescription">
-                    Comprobando si la aplicación se puede instalar…
-                </p>
+                    <label for="sidebarUserName">
+                        Nombre del usuario
+                    </label>
 
-                <button
-                    id="installApp"
-                    type="button"
-                    class="primaryAction"
-                    hidden
-                    disabled>
-                    Instalar aplicación
-                </button>
+                    <input
+                        id="sidebarUserName"
+                        type="text"
+                        value="${escapeHtml(normalizedSidebarUserName)}"
+                        maxlength="40"
+                        placeholder="Ej.: Leo"
+                        autocomplete="name">
+
+                    <p class="settingsHint">
+                        Se mostrará junto a “Mis tareas” en la parte superior de la barra lateral.
+                    </p>
+
+                    <button
+                        type="submit"
+                        class="primaryAction">
+                        Guardar nombre
+                    </button>
+
+                </form>
+
+                <div class="applicationInstallTools">
+
+                    <h3>Instalación</h3>
+
+                    <p id="pwaInstallDescription">
+                        Comprobando si la aplicación se puede instalar…
+                    </p>
+
+                    <button
+                        id="installApp"
+                        type="button"
+                        class="primaryAction"
+                        hidden
+                        disabled>
+                        Instalar aplicación
+                    </button>
+
+                </div>
 
             </section>
         `;
@@ -628,7 +666,7 @@ export class Sidebar {
                 aria-label="Navegación principal">
 
                 <div class="sidebarBrand">
-                    <h3>Mis tareas</h3>
+                    <h3>${escapeHtml(sidebarTitle)}</h3>
 
                     <span
                         class="sidebarSyncStatus ${syncStatusClass}"
