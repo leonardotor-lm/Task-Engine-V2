@@ -69,7 +69,7 @@ Se corrigieron la distribución y el espaciado de los controles de búsqueda y c
 - persistencia, sincronización, copias, orden, filtros y búsqueda avanzada incluyen el nuevo dato;
 - `activaEn` localiza tareas cuyo período se superpone con un intervalo consultado.
 
-### PWA instalable y funcionamiento sin conexión — PR #194
+### PWA instalable y funcionamiento sin conexión — PR #194 y #200 a #203
 
 - manifiesto e íconos de instalación;
 - service worker con caché de la aplicación;
@@ -79,19 +79,27 @@ Se corrigieron la distribución y el espaciado de los controles de búsqueda y c
 - prevención de conflictos entre datos de ejemplo y una nube ya configurada;
 - intercepción de Atrás en modo instalado para pedir confirmación antes de salir.
 
-La implementación está fusionada. Su matriz operativa final permanece como **Pendiente de verificación** en `PENDIENTES.md`.
+La matriz operativa final quedó verificada en escritorio y Android:
 
-### Continuidad de interacción durante la sincronización — PR #199
+- la aplicación abre, conserva datos y permite cambios sin conexión;
+- al recuperar internet, reanuda la sincronización automáticamente, incluso si Android no cambia el foco de la PWA;
+- una instalación limpia reemplaza los ejemplos intactos por los datos de la nube sin generar un conflicto falso;
+- una versión publicada sustituye la caché anterior;
+- la guía manual de instalación funciona cuando el navegador no ofrece el diálogo nativo;
+- Atrás muestra el aviso de salida y explica la limitación propia de Android.
+
+### Continuidad de interacción durante la sincronización — PR #199 y #202
 
 - conserva el foco, el texto todavía no enviado y la posición del cursor cuando un render de sincronización reconstruye la interfaz;
 - restaura controles repetidos mediante su contenedor estable y mantiene abierto el desplegable correspondiente;
 - evita reemplazar formularios y editores con cambios sin guardar;
 - conserva la posición vertical de la barra lateral después de completar los ajustes de diseño posteriores al render;
+- mantiene abierta la barra lateral móvil y repone su desplazamiento después de los ajustes tardíos de Android;
 - mantiene la sincronización y la incorporación de cambios remotos sin congelar de forma general la interfaz.
 
 ## Etapa operativa actual
 
-La prioridad operativa sigue siendo cerrar la verificación posterior a la fusión de la PWA. El siguiente bloque funcional aprobado es investigar y corregir la aparición de proyectos borrados en Estadísticas, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA está cerrada. La prioridad actual es verificar la creación de tareas desde Objetivos. El siguiente bloque de implementación aprobado es investigar y corregir la aparición de proyectos borrados en Estadísticas, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
