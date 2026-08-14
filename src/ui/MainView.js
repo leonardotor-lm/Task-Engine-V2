@@ -104,10 +104,269 @@ export class MainView {
 
     }
 
+    scheduleFinalScrollRestore(scrollState) {
+
+        const restoreId =
+            (this.scrollRestoreId ?? 0) + 1;
+
+        this.scrollRestoreId = restoreId;
+
+        queueMicrotask(() => {
+
+            if (
+                this.scrollRestoreId !== restoreId
+            ) {
+                return;
+            }
+
+            this.restoreScrollState(scrollState);
+
+        });
+
+    }
+
+    captureActiveControlState() {
+
+        const control = document.activeElement;
+        const appRoot = document.getElementById("app");
+
+        if (
+            !control ||
+            !appRoot ||
+            typeof appRoot.contains !== "function" ||
+            !appRoot.contains(control)
+        ) {
+            return null;
+        }
+
+        const locator = this.createElementLocator(
+            control
+        );
+
+        if (!locator) return null;
+
+        const preservesFormValue = [
+            "INPUT",
+            "TEXTAREA",
+            "SELECT"
+        ].includes(control.tagName);
+        const preservesCheckedState =
+            control.tagName === "INPUT" &&
+            ["checkbox", "radio"].includes(
+                control.type
+            );
+
+        const state = {
+            locator,
+            value:
+                preservesFormValue
+                    ? control.value
+                    : null,
+            checked:
+                preservesCheckedState
+                    ? control.checked
+                    : null,
+            selectionStart:
+                typeof control.selectionStart ===
+                    "number"
+                    ? control.selectionStart
+                    : null,
+            selectionEnd:
+                typeof control.selectionEnd ===
+                    "number"
+                    ? control.selectionEnd
+                    : null,
+            selectionDirection:
+                control.selectionDirection ?? null,
+            openAncestor:
+                this.createElementLocator(
+                    control.closest?.("details[open]")
+                )
+        };
+
+        return state;
+
+    }
+
+    createElementLocator(element) {
+
+        if (!element) return null;
+
+        if (element.id) {
+            return {
+                kind: "id",
+                id: element.id
+            };
+        }
+
+        const anchor = element.closest?.(
+            "[data-parent-id], [data-picker-id], [data-searchable-select-id], [data-id]"
+        );
+
+        if (!anchor) return null;
+
+        const dataKey = [
+            "parentId",
+            "pickerId",
+            "searchableSelectId",
+            "id"
+        ].find(key =>
+            anchor.dataset?.[key] !== undefined
+        );
+
+        if (!dataKey) return null;
+
+        const candidates = Array.from(
+            anchor.querySelectorAll(
+                element.tagName.toLowerCase()
+            )
+        ).filter(candidate =>
+            candidate.type === element.type &&
+            candidate.className === element.className
+        );
+
+        return {
+            kind: "anchored",
+            anchorTag: anchor.tagName.toLowerCase(),
+            dataKey,
+            dataValue: anchor.dataset[dataKey],
+            tagName: element.tagName.toLowerCase(),
+            type: element.type ?? "",
+            className: element.className ?? "",
+            index: Math.max(
+                0,
+                candidates.indexOf(element)
+            )
+        };
+
+    }
+
+    findElement(locator) {
+
+        if (!locator) return null;
+
+        if (locator.kind === "id") {
+            return document.getElementById(
+                locator.id
+            );
+        }
+
+        const anchors = Array.from(
+            document.querySelectorAll(
+                `${locator.anchorTag}[data-${this.toKebabCase(locator.dataKey)}]`
+            )
+        );
+        const anchor = anchors.find(candidate =>
+            candidate.dataset?.[locator.dataKey] ===
+                locator.dataValue
+        );
+
+        if (!anchor) return null;
+
+        const candidates = Array.from(
+            anchor.querySelectorAll(
+                locator.tagName
+            )
+        ).filter(candidate =>
+            candidate.type === locator.type &&
+            candidate.className === locator.className
+        );
+
+        return candidates[locator.index] ?? null;
+
+    }
+
+    toKebabCase(value) {
+
+        return String(value).replace(
+            /[A-Z]/g,
+            letter => `-${letter.toLowerCase()}`
+        );
+
+    }
+
+    restoreActiveControlState(state) {
+
+        if (!state) return;
+
+        const openAncestor = this.findElement(
+            state.openAncestor
+        );
+
+        if (openAncestor) {
+            openAncestor.open = true;
+        }
+
+        const control = this.findElement(
+            state.locator
+        );
+
+        if (!control || control.disabled) return;
+
+        let valueChanged = false;
+
+        if (
+            state.value !== null &&
+            "value" in control
+        ) {
+            valueChanged =
+                control.value !== state.value;
+            control.value = state.value;
+        }
+
+        if (
+            state.checked !== null &&
+            "checked" in control
+        ) {
+            valueChanged =
+                valueChanged ||
+                control.checked !== state.checked;
+            control.checked = state.checked;
+        }
+
+        if (
+            valueChanged &&
+            typeof control.dispatchEvent ===
+                "function" &&
+            typeof globalThis.Event ===
+                "function"
+        ) {
+            control.dispatchEvent(
+                new Event("input", {
+                    bubbles: true
+                })
+            );
+        }
+
+        try {
+            control.focus({
+                preventScroll: true
+            });
+        } catch {
+            control.focus?.();
+        }
+
+        if (
+            state.selectionStart !== null &&
+            state.selectionEnd !== null &&
+            typeof control.setSelectionRange ===
+                "function"
+        ) {
+            control.setSelectionRange(
+                state.selectionStart,
+                state.selectionEnd,
+                state.selectionDirection ?? undefined
+            );
+        }
+
+    }
+
     render(state) {
 
         const scrollState =
             this.captureScrollState();
+        const activeControlState =
+            this.captureActiveControlState();
 
         const {
             view,
@@ -310,6 +569,12 @@ export class MainView {
         }
 
         this.restoreScrollState(scrollState);
+        this.restoreActiveControlState(
+            activeControlState
+        );
+        this.scheduleFinalScrollRestore(
+            scrollState
+        );
 
     }
 
@@ -376,6 +641,76 @@ export class MainView {
                 color &&
                 color !== "#3b82f6"
             )
+        );
+
+    }
+
+    hasActiveTransientForm(goal) {
+
+        if (this.hasUnsavedGoalEdit(goal)) {
+            return true;
+        }
+
+        const activeElement =
+            document.activeElement;
+        const activeOnlyForms =
+            document.querySelectorAll(
+                ".customFilterRenameForm:not([hidden])"
+            );
+
+        if (
+            Array.from(activeOnlyForms).some(
+                form => form.contains?.(
+                    activeElement
+                )
+            )
+        ) {
+            return true;
+        }
+
+        return [
+            document.getElementById("goalForm"),
+            document.querySelector(
+                ".inlineSubtaskForm"
+            )
+        ].some(form => {
+
+            if (!form) return false;
+
+            if (form.contains?.(activeElement)) {
+                return true;
+            }
+
+            return Array.from(
+                form.querySelectorAll(
+                    "input:not([type='hidden']), textarea"
+                )
+            ).some(control =>
+                String(control.value ?? "").trim()
+            );
+
+        });
+
+    }
+
+    hasUnsavedGoalEdit(goal) {
+
+        const form = document.getElementById(
+            "goalEditorForm"
+        );
+
+        if (!goal || !form) return false;
+
+        return (
+            document.getElementById(
+                "goalTitleEdit"
+            )?.value !== goal.title ||
+            document.getElementById(
+                "goalDescriptionEdit"
+            )?.value !== goal.description ||
+            document.getElementById(
+                "goalDueDateEdit"
+            )?.value !== (goal.dueDate ?? "")
         );
 
     }

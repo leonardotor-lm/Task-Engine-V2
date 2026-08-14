@@ -145,6 +145,10 @@ export class App {
                         this.mainView
                             ?.hasActiveEntityCreation() ||
                         this.mainView
+                            ?.hasActiveTransientForm(
+                                this.selectedGoal
+                            ) ||
+                        this.mainView
                             ?.hasUnsavedTaskEdit(
                                 this.selectedTask
                             )
@@ -2481,6 +2485,10 @@ export class App {
                     ?.hasActiveEntityEdit() ||
                 this.mainView
                     ?.hasActiveEntityCreation() ||
+                this.mainView
+                    ?.hasActiveTransientForm(
+                        this.selectedGoal
+                    ) ||
                 this.mainView
                     ?.hasUnsavedTaskEdit(
                         this.selectedTask
