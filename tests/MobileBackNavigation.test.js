@@ -10,6 +10,7 @@ test("la PWA arma el aviso de salida después de una interacción", async t => {
     const originalConfirm = Dialog.confirmAsync;
     const listeners = new Map();
     const historyCalls = [];
+    let confirmation = null;
 
     const windowRef = {
         navigator: {
@@ -55,7 +56,10 @@ test("la PWA arma el aviso de salida después de una interacción", async t => {
         }
     };
 
-    Dialog.confirmAsync = async () => true;
+    Dialog.confirmAsync = async (...args) => {
+        confirmation = args;
+        return true;
+    };
 
     t.after(() => {
         globalThis.window = originalWindow;
@@ -94,6 +98,13 @@ test("la PWA arma el aviso de salida después de una interacción", async t => {
         historyCalls.map(([type]) => type),
         ["replace", "push", "back"]
     );
+    assert.deepEqual(confirmation, [
+        "Android puede requerir que presiones Atrás una vez más después de confirmar. ¿Querés continuar?",
+        {
+            title: "Salir de la aplicación",
+            confirmLabel: "Continuar"
+        }
+    ]);
 
 });
 

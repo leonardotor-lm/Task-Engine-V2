@@ -18,7 +18,10 @@ const sidebarSource = fs.readFileSync(
 test("la interfaz muestra Mis tareas como nombre de la aplicación", () => {
     assert.match(indexHtml, /<title>Mis tareas<\/title>/);
     assert.match(mainViewSource, /<strong>Mis tareas<\/strong>/);
-    assert.match(mainViewSource, /¿Salir de Mis tareas\?/);
+    assert.match(
+        mainViewSource,
+        /Salir de la aplicación/
+    );
     assert.match(sidebarSource, /<h3>Mis tareas<\/h3>/);
     assert.doesNotMatch(mainViewSource, /Task Engine/);
 });

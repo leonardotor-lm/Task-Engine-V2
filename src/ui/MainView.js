@@ -1055,10 +1055,10 @@ export class MainView {
 
             if (
                 !await Dialog.confirmAsync(
-                    "¿Salir de Mis tareas?",
+                    "Android puede requerir que presiones Atrás una vez más después de confirmar. ¿Querés continuar?",
                     {
                         title: "Salir de la aplicación",
-                        confirmLabel: "Salir"
+                        confirmLabel: "Continuar"
                     }
                 )
             ) {
