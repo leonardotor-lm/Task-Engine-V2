@@ -235,7 +235,8 @@ export function createSafeMergedSyncBackup({
     for (
         const property of [
             "taskSortPreferences",
-            "taskFilterPreferences"
+            "taskFilterPreferences",
+            "displayPreferences"
         ]
     ) {
 

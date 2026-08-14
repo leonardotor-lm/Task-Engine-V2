@@ -15,7 +15,11 @@ const mainViewSource = await readFile(
     "utf8"
 );
 
-const renderSettings = section =>
+const renderSettings = (
+    section,
+    sidebarTitle = "",
+    sidebarTitleSaved = false
+) =>
     new Sidebar().render(
         View.TODAY,
         "",
@@ -46,7 +50,9 @@ const renderSettings = section =>
         false,
         true,
         true,
-        section
+        section,
+        sidebarTitle,
+        sidebarTitleSaved
     );
 
 test("configuración ofrece cuatro accesos independientes", () => {
@@ -101,10 +107,19 @@ test("sincronización y copia se muestran sólo al elegirlas", () => {
 
 test("aplicación ofrece la instalación de la PWA", () => {
 
-    const html = renderSettings("application");
+    const html = renderSettings(
+        "application",
+        "Tareas de Leo",
+        true
+    );
 
     assert.match(html, /id="installApp"/);
     assert.match(html, /id="pwaInstallDescription"/);
+    assert.match(html, /id="sidebarTitleForm"/);
+    assert.match(html, /value="Tareas de Leo"/);
+    assert.match(html, /<h3>Tareas de Leo<\/h3>/);
+    assert.match(html, />\s*Guardado\s*<\/button>/);
+    assert.match(html, /Nombre actualizado\./);
 
 });
 

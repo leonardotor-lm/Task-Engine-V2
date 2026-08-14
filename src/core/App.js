@@ -112,6 +112,7 @@ export class App {
         this.taskToolsDialogOpen = false;
         this.settingsDialogOpen = false;
         this.settingsSection = null;
+        this.sidebarTitleSaved = false;
         this.advancedSearchExpression = null;
         this.advancedSearchError = "";
         this.currentCustomFilterId = null;
@@ -690,6 +691,7 @@ export class App {
 
                 this.settingsDialogOpen = true;
                 this.settingsSection = null;
+                this.sidebarTitleSaved = false;
                 this.advancedSearchDialogOpen = false;
                 this.taskToolsDialogOpen = false;
                 this.render();
@@ -700,6 +702,7 @@ export class App {
 
                 this.settingsDialogOpen = false;
                 this.settingsSection = null;
+                this.sidebarTitleSaved = false;
                 this.render();
 
             },
@@ -707,6 +710,7 @@ export class App {
             onOpenSettingsSection: (section) => {
 
                 this.settingsSection = section;
+                this.sidebarTitleSaved = false;
                 this.render();
 
             },
@@ -720,6 +724,18 @@ export class App {
                 ].includes(this.settingsSection)
                     ? "organization"
                     : null;
+                this.sidebarTitleSaved = false;
+                this.render();
+
+            },
+
+            onSaveSidebarTitle: (title) => {
+
+                this.taskDisplayPreferences
+                    .setSidebarTitle(title);
+
+                this.sidebarTitleSaved = true;
+
                 this.render();
 
             },
@@ -2772,6 +2788,11 @@ export class App {
             showTaskMetadata:
                 this.taskDisplayPreferences
                     .isMetadataVisible(),
+            sidebarTitle:
+                this.taskDisplayPreferences
+                    .getSidebarTitle(),
+            sidebarTitleSaved:
+                this.sidebarTitleSaved,
             showCompletedTasks,
             taskViewCounts,
             activityEvents:

@@ -156,6 +156,19 @@ function optionalDataIsEmpty(data, tasks) {
                 data.taskSortPreferences
             ).length === 0
         )
+    ) &&
+    (
+        !data.displayPreferences ||
+        (
+            typeof data.displayPreferences ===
+                "object" &&
+            !Array.isArray(
+                data.displayPreferences
+            ) &&
+            Object.keys(
+                data.displayPreferences
+            ).length === 0
+        )
     );
 
 }

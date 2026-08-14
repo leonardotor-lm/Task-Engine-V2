@@ -99,6 +99,9 @@ test("Apps Script conserva historial filtros y preferencias en un round trip", (
                 priority: "",
                 due: ""
             }
+        },
+        displayPreferences: {
+            sidebarTitle: "Tareas de Leo"
         }
     });
 
@@ -117,6 +120,9 @@ test("Apps Script conserva historial filtros y preferencias en un round trip", (
     ));
     assert.ok(types.includes(
         "taskFilterPreferences"
+    ));
+    assert.ok(types.includes(
+        "displayPreferences"
     ));
 
     const restored = plain(
@@ -141,6 +147,11 @@ test("Apps Script conserva historial filtros y preferencias en un round trip", (
         sourceSnapshot.data
             .taskFilterPreferences
     );
+    assert.deepEqual(
+        restored.displayPreferences,
+        sourceSnapshot.data
+            .displayPreferences
+    );
 
 });
 
@@ -164,7 +175,10 @@ test("loadSnapshot reconstruye el mismo contrato persistido en la revisión acti
             taskSortPreferences: {
                 "view:TODAY": "DUE_DATE"
             },
-            taskFilterPreferences: {}
+            taskFilterPreferences: {},
+            displayPreferences: {
+                sidebarTitle: "Trabajo"
+            }
         }),
         12
     );
@@ -218,6 +232,11 @@ test("loadSnapshot reconstruye el mismo contrato persistido en la revisión acti
         result.data.data.taskFilterPreferences,
         {}
     );
+    assert.equal(
+        result.data.data.displayPreferences
+            .sidebarTitle,
+        "Trabajo"
+    );
 
 });
 
@@ -229,7 +248,8 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
             customFilters: [],
             activityEvents: [],
             taskSortPreferences: {},
-            taskFilterPreferences: {}
+            taskFilterPreferences: {},
+            displayPreferences: {}
         }),
         8
     );
@@ -260,6 +280,13 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
         ),
         true
     );
+    assert.equal(
+        hasOwn(
+            restored,
+            "displayPreferences"
+        ),
+        true
+    );
 
     assert.deepEqual(restored.customFilters, []);
     assert.deepEqual(restored.activityEvents, []);
@@ -269,6 +296,10 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
     );
     assert.deepEqual(
         restored.taskFilterPreferences,
+        {}
+    );
+    assert.deepEqual(
+        restored.displayPreferences,
         {}
     );
 
@@ -301,6 +332,13 @@ test("una revisión histórica sin esquema omite datos opcionales en vez de borr
         hasOwn(
             restored,
             "taskFilterPreferences"
+        ),
+        false
+    );
+    assert.equal(
+        hasOwn(
+            restored,
+            "displayPreferences"
         ),
         false
     );
@@ -354,6 +392,13 @@ test("el contrato puede persistir filtros aunque un cliente anterior no envíe p
         ),
         false
     );
+    assert.equal(
+        hasOwn(
+            restored,
+            "displayPreferences"
+        ),
+        false
+    );
 
 });
 
@@ -400,6 +445,25 @@ test("valida los valores de orden antes de escribirlos en Sheets", () => {
                 }
             }),
             11
+        ),
+        error =>
+            error.code === "INVALID_SNAPSHOT"
+    );
+
+});
+
+test("valida el título lateral antes de escribirlo en Sheets", () => {
+
+    const backend = loadBackend();
+
+    assert.throws(
+        () => backend.snapshotToRows_(
+            snapshot({
+                displayPreferences: {
+                    sidebarTitle: "x".repeat(41)
+                }
+            }),
+            13
         ),
         error =>
             error.code === "INVALID_SNAPSHOT"

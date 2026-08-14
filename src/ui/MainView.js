@@ -443,7 +443,9 @@ export class MainView {
             bulkSelectionMode,
             showCompletedTasks,
             showTaskMetadata,
-            taskViewCounts
+            taskViewCounts,
+            sidebarTitle,
+            sidebarTitleSaved
         } = state;
 
         document.getElementById("app").innerHTML = `
@@ -503,7 +505,9 @@ export class MainView {
                     taskToolsDialogOpen,
                     showTaskMetadata,
                     settingsDialogOpen,
-                    settingsSection
+                    settingsSection,
+                    sidebarTitle,
+                    sidebarTitleSaved
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -1794,6 +1798,45 @@ export class MainView {
 
             event.preventDefault();
             closeSettings();
+
+        });
+
+        document.getElementById(
+            "sidebarTitleForm"
+        )?.addEventListener("submit", event => {
+
+            event.preventDefault();
+
+            this.callbacks.onSaveSidebarTitle(
+                document.getElementById(
+                    "sidebarTitle"
+                ).value
+            );
+
+        });
+
+        document.getElementById(
+            "sidebarTitle"
+        )?.addEventListener("input", () => {
+
+            const saveButton =
+                document.getElementById(
+                    "sidebarTitleSaveButton"
+                );
+
+            const saveStatus =
+                document.getElementById(
+                    "sidebarTitleSaveStatus"
+                );
+
+            if (saveButton) {
+                saveButton.textContent =
+                    "Guardar nombre";
+            }
+
+            if (saveStatus) {
+                saveStatus.hidden = true;
+            }
 
         });
 

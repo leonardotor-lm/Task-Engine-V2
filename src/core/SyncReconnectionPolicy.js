@@ -32,7 +32,8 @@ const OPTIONAL_COLLECTIONS = [
 
 const OPTIONAL_PREFERENCES = [
     "taskSortPreferences",
-    "taskFilterPreferences"
+    "taskFilterPreferences",
+    "displayPreferences"
 ];
 
 const COLLECTIONS = [

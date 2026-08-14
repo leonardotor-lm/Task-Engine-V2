@@ -163,6 +163,27 @@ export function createSyncFingerprint(
 
     }
 
+    if (
+        Object.prototype.hasOwnProperty.call(
+            data,
+            "displayPreferences"
+        )
+    ) {
+
+        const preferences =
+            normalizePreferences(
+                data.displayPreferences,
+                "Las preferencias de visualización están incompletas."
+            );
+        const entries = Object.entries(preferences);
+
+        if (entries.length > 0) {
+            fingerprint.displayPreferences =
+                stableValue(preferences);
+        }
+
+    }
+
     return JSON.stringify(fingerprint);
 
 }

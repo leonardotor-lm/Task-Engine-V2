@@ -270,6 +270,11 @@ export function createSyncConflictDiagnostics({
             local.data.taskFilterPreferences,
             remote.data.taskFilterPreferences,
             "Filtros rápidos"
+        ),
+        ...comparePreferences(
+            local.data.displayPreferences,
+            remote.data.displayPreferences,
+            "Visualización"
         )
     );
 

@@ -22,7 +22,14 @@ test("la interfaz muestra Mis tareas como nombre de la aplicación", () => {
         mainViewSource,
         /Salir de la aplicación/
     );
-    assert.match(sidebarSource, /<h3>Mis tareas<\/h3>/);
+    assert.match(
+        sidebarSource,
+        /normalizedSidebarTitle \|\| "Mis tareas"/
+    );
+    assert.match(
+        sidebarSource,
+        /<h3>\$\{escapeHtml\(visibleSidebarTitle\)\}<\/h3>/
+    );
     assert.doesNotMatch(mainViewSource, /Task Engine/);
 });
 

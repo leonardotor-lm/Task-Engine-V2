@@ -87,7 +87,8 @@ const OPTIONAL_SERIALIZERS = {
 
 const OPTIONAL_PREFERENCES = [
     "taskSortPreferences",
-    "taskFilterPreferences"
+    "taskFilterPreferences",
+    "displayPreferences"
 ];
 
 function hasOwn(object, property) {

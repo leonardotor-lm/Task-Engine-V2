@@ -703,7 +703,8 @@ function rowsToSnapshotData_(rows) {
 
         if (
             type === "taskSortPreferences" ||
-            type === "taskFilterPreferences"
+            type === "taskFilterPreferences" ||
+            type === "displayPreferences"
         ) {
 
             try {
@@ -847,6 +848,40 @@ function rowsToSnapshotData_(rows) {
         data.taskFilterPreferences =
             specialPayloads
                 .taskFilterPreferences;
+
+    }
+
+    if (
+        optionalFields.displayPreferences === true
+    ) {
+
+        if (
+            !hasOwn_(
+                specialPayloads,
+                "displayPreferences"
+            )
+        ) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "Faltan preferencias de visualización en la revisión remota."
+            );
+        }
+
+        try {
+            validateDisplayPreferences_(
+                specialPayloads
+                    .displayPreferences
+            );
+        } catch (error) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "La hoja contiene preferencias de visualización inválidas."
+            );
+        }
+
+        data.displayPreferences =
+            specialPayloads
+                .displayPreferences;
 
     }
 
@@ -1028,6 +1063,11 @@ function snapshotToRows_(
             hasOwn_(
                 snapshot.data,
                 "taskFilterPreferences"
+            ),
+        displayPreferences:
+            hasOwn_(
+                snapshot.data,
+                "displayPreferences"
             )
     };
 
@@ -1035,7 +1075,8 @@ function snapshotToRows_(
         optionalFields.customFilters ||
         optionalFields.activityEvents ||
         optionalFields.taskSortPreferences ||
-        optionalFields.taskFilterPreferences;
+        optionalFields.taskFilterPreferences ||
+        optionalFields.displayPreferences;
 
     if (hasOptionalFields) {
 
@@ -1096,6 +1137,26 @@ function snapshotToRows_(
                 .SYNC_SCHEMA_VERSION,
             "",
             filterPayload
+        ]);
+
+    }
+
+    if (optionalFields.displayPreferences) {
+
+        var displayPayload = JSON.stringify(
+            snapshot.data.displayPreferences
+        );
+
+        assertPayloadSize_(displayPayload);
+
+        rows.push([
+            revision,
+            "displayPreferences",
+            "preferences",
+            TASK_ENGINE_SETTINGS
+                .SYNC_SCHEMA_VERSION,
+            "",
+            displayPayload
         ]);
 
     }
@@ -1228,6 +1289,17 @@ function validateSnapshot_(snapshot) {
     ) {
         validateTaskFilterPreferences_(
             snapshot.data.taskFilterPreferences
+        );
+    }
+
+    if (
+        hasOwn_(
+            snapshot.data,
+            "displayPreferences"
+        )
+    ) {
+        validateDisplayPreferences_(
+            snapshot.data.displayPreferences
         );
     }
 
@@ -1367,6 +1439,51 @@ function validateTaskFilterPreferences_(
             });
 
         });
+
+}
+
+function validateDisplayPreferences_(
+    preferences
+) {
+
+    if (
+        !preferences ||
+        typeof preferences !== "object" ||
+        Array.isArray(preferences)
+    ) {
+        throw protocolError_(
+            "INVALID_SNAPSHOT",
+            "La copia contiene preferencias de visualización inválidas."
+        );
+    }
+
+    var keys = Object.keys(preferences);
+
+    keys.forEach(function(key) {
+
+        if (key !== "sidebarTitle") {
+            throw protocolError_(
+                "INVALID_SNAPSHOT",
+                "La copia contiene una preferencia de visualización desconocida."
+            );
+        }
+
+    });
+
+    if (
+        hasOwn_(preferences, "sidebarTitle") &&
+        (
+            typeof preferences.sidebarTitle !==
+                "string" ||
+            preferences.sidebarTitle.trim().length >
+                40
+        )
+    ) {
+        throw protocolError_(
+            "INVALID_SNAPSHOT",
+            "La copia contiene un título lateral inválido."
+        );
+    }
 
 }
 
