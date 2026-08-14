@@ -23,6 +23,10 @@ class EventTargetStub {
         this.listeners.get("focus")?.();
     }
 
+    reconnect() {
+        this.listeners.get("online")?.();
+    }
+
 }
 
 test("comprueba la nube al recuperar el foco", () => {
@@ -44,6 +48,25 @@ test("comprueba la nube al recuperar el foco", () => {
 
 });
 
+test("comprueba la nube al recuperar la conexión", () => {
+
+    const target = new EventTargetStub();
+    let checks = 0;
+
+    const watcher = new SyncFocusWatcher({
+        target,
+        onFocus: () => {
+            checks += 1;
+        }
+    });
+
+    watcher.start();
+    target.reconnect();
+
+    assert.equal(checks, 1);
+
+});
+
 test("no registra dos veces el mismo observador", () => {
 
     const target = new EventTargetStub();
@@ -59,8 +82,9 @@ test("no registra dos veces el mismo observador", () => {
     watcher.start();
     watcher.start();
     target.focus();
+    target.reconnect();
 
-    assert.equal(checks, 1);
+    assert.equal(checks, 2);
 
 });
 
@@ -79,6 +103,7 @@ test("deja de comprobar después de detenerse", () => {
     watcher.start();
     watcher.stop();
     target.focus();
+    target.reconnect();
 
     assert.equal(checks, 0);
 
