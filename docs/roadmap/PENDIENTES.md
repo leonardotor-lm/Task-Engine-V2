@@ -43,16 +43,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 1 — Integridad y continuidad de uso
 
-#### 1. Preservar la interacción durante la sincronización
-
-- **Estado:** En desarrollo.
-- **Dificultad prevista:** Alta.
-- Evitar que una sincronización quite el foco, mueva el cursor o descarte texto todavía no volcado al estado de la aplicación.
-- Proteger especialmente la búsqueda y los formularios o editores abiertos.
-- Evaluar si corresponde restaurar de forma segura el estado transitorio o aplazar el render de reconciliación mientras exista una interacción activa.
-- No ocultar cambios remotos relevantes ni bloquear indefinidamente la actualización de la interfaz.
-
-#### 2. Excluir de Estadísticas los proyectos borrados
+#### 1. Excluir de Estadísticas los proyectos borrados
 
 - **Estado:** Pendiente de investigación y corrección.
 - **Dificultad prevista:** Media para reproducir; baja o media para corregir.
@@ -60,28 +51,28 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Determinar si intervienen datos históricos, referencias huérfanas o una ruta no cubierta por la prueba actual.
 - Garantizar que los proyectos en Papelera o eliminados definitivamente no aparezcan en ninguna estadística.
 
-#### 3. Conservar la jerarquía al duplicar subtareas
+#### 2. Conservar la jerarquía al duplicar subtareas
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja.
 - La copia de una subtarea debe conservar el mismo `parentTaskId` que la tarea original.
 - Si se duplica un subárbol, sus descendientes deben quedar vinculados a la copia correspondiente y no al subárbol original.
 
-#### 4. Restaurar Editar objetivo en celular
+#### 3. Restaurar Editar objetivo en celular
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja.
 - Mostrar en la vista móvil la acción **Editar objetivo** que ya existe en la estructura de la interfaz.
 - Integrarla sin sumar una fila adicional de controles ni romper la geometría del encabezado.
 
-#### 5. Unificar la creación dentro de Proyectos
+#### 4. Unificar la creación dentro de Proyectos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja.
 - Dentro de un proyecto, dejar una única acción de alta: **Agregar subtarea**.
 - Ocultar o transformar contextualmente la acción general **Nueva tarea** para evitar la creación accidental de una tarea suelta en Inbox.
 
-#### 6. Corregir el contador de progreso de Proyectos
+#### 5. Corregir el contador de progreso de Proyectos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja.
@@ -90,7 +81,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 2 — Seguridad de acciones y claridad visual
 
-#### 7. Incorporar Deshacer contextual al completar tareas
+#### 6. Incorporar Deshacer contextual al completar tareas
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja o media.
@@ -99,7 +90,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Diseñar la base para admitir otras acciones acotadas sólo cuando exista una necesidad concreta y una reversión segura.
 - No incorporar un botón permanente ni un historial general de deshacer.
 
-#### 8. Mostrar la ruta jerárquica de subtareas aisladas
+#### 7. Mostrar la ruta jerárquica de subtareas aisladas
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -107,14 +98,14 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Omitir la ruta cuando el origen ya resulte evidente por la estructura visible.
 - Truncar rutas extensas y ocultarlas junto con los demás metadatos.
 
-#### 9. Representar el color del contexto como texto discreto
+#### 8. Representar el color del contexto como texto discreto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja.
 - Mantener el contexto como texto, sin convertirlo en chip.
 - Comunicar su color mediante un punto pequeño u otro acento discreto que preserve el contraste con colores personalizados.
 
-#### 10. Homogeneizar popovers y controles transitorios
+#### 9. Homogeneizar popovers y controles transitorios
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -122,7 +113,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Unificar geometría, espaciado, sombras, botones, foco, cierre con Escape o clic exterior y adaptación móvil.
 - Respetar diferencias funcionales entre controles y evitar que la homogeneidad agregue decoración o pasos innecesarios.
 
-#### 11. Cambiar la etiqueta Descripción por Notas
+#### 10. Cambiar la etiqueta Descripción por Notas
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja.
@@ -132,7 +123,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 3 — Gestión de Objetivos y Proyectos
 
-#### 12. Heredar objetivos en la jerarquía de un proyecto
+#### 11. Heredar objetivos en la jerarquía de un proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -140,14 +131,14 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Hacer que cada nueva subtarea herede todos los objetivos de su padre.
 - No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
 
-#### 13. Mostrar u ocultar completadas en Objetivos
+#### 12. Mostrar u ocultar completadas en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja o media.
 - Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
 - Mantener el mismo significado, estado accesible y persistencia del control existente.
 
-#### 14. Incorporar filtros rápidos y orden en Objetivos
+#### 13. Incorporar filtros rápidos y orden en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -155,7 +146,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Evitar una nueva fila permanente de controles.
 - Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
 
-#### 15. Agregar un filtro rápido por Proyecto
+#### 14. Agregar un filtro rápido por Proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -164,7 +155,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 4 — Eficiencia avanzada sin ruido visual
 
-#### 16. Incorporar un conjunto acotado de atajos de teclado
+#### 15. Incorporar un conjunto acotado de atajos de teclado
 
 - **Estado:** Pendiente de definición funcional.
 - **Dificultad prevista:** Baja o media.
@@ -172,7 +163,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Ignorar atajos de acción mientras se escribe en campos editables.
 - Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
 
-#### 17. Permitir orden manual mediante arrastre
+#### 16. Permitir orden manual mediante arrastre
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.

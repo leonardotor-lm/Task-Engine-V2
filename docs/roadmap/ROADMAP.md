@@ -81,9 +81,17 @@ Se corrigieron la distribución y el espaciado de los controles de búsqueda y c
 
 La implementación está fusionada. Su matriz operativa final permanece como **Pendiente de verificación** en `PENDIENTES.md`.
 
+### Continuidad de interacción durante la sincronización — PR #199
+
+- conserva el foco, el texto todavía no enviado y la posición del cursor cuando un render de sincronización reconstruye la interfaz;
+- restaura controles repetidos mediante su contenedor estable y mantiene abierto el desplegable correspondiente;
+- evita reemplazar formularios y editores con cambios sin guardar;
+- conserva la posición vertical de la barra lateral después de completar los ajustes de diseño posteriores al render;
+- mantiene la sincronización y la incorporación de cambios remotos sin congelar de forma general la interfaz.
+
 ## Etapa operativa actual
 
-La prioridad es cerrar la verificación posterior a la fusión de la PWA. Si las pruebas no revelan defectos, el siguiente bloque funcional debe elegirse explícitamente entre las propuestas registradas; no hay otra gran función previamente acordada.
+La prioridad operativa sigue siendo cerrar la verificación posterior a la fusión de la PWA. El siguiente bloque funcional aprobado es investigar y corregir la aparición de proyectos borrados en Estadísticas, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
