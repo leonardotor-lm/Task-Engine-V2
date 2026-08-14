@@ -86,6 +86,47 @@ test("conserva el desplazamiento independiente de cada superficie", () => {
     }
 });
 
+test("restaura la barra lateral después de los ajustes posteriores al render", async () => {
+    const sidebar = {
+        scrollTop: 510,
+        scrollLeft: 0
+    };
+    const originalDocument = globalThis.document;
+    const originalWindow = globalThis.window;
+
+    globalThis.document = {
+        querySelector: selector =>
+            selector === "#appSidebar"
+                ? sidebar
+                : null
+    };
+    globalThis.window = {
+        scrollX: 0,
+        scrollY: 0,
+        scrollTo() {}
+    };
+
+    try {
+        const view = Object.create(
+            MainView.prototype
+        );
+        const state = view.captureScrollState();
+
+        view.scheduleFinalScrollRestore(state);
+
+        sidebar.scrollTop = 0;
+
+        await new Promise(resolve =>
+            queueMicrotask(resolve)
+        );
+
+        assert.equal(sidebar.scrollTop, 510);
+    } finally {
+        globalThis.document = originalDocument;
+        globalThis.window = originalWindow;
+    }
+});
+
 test("la sincronización protege ediciones transitorias", () => {
     const renderStart = appSource.indexOf(
         "render({ preserveTransientUi = false } = {})"

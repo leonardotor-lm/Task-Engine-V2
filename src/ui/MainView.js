@@ -104,6 +104,27 @@ export class MainView {
 
     }
 
+    scheduleFinalScrollRestore(scrollState) {
+
+        const restoreId =
+            (this.scrollRestoreId ?? 0) + 1;
+
+        this.scrollRestoreId = restoreId;
+
+        queueMicrotask(() => {
+
+            if (
+                this.scrollRestoreId !== restoreId
+            ) {
+                return;
+            }
+
+            this.restoreScrollState(scrollState);
+
+        });
+
+    }
+
     captureActiveControlState() {
 
         const control = document.activeElement;
@@ -550,6 +571,9 @@ export class MainView {
         this.restoreScrollState(scrollState);
         this.restoreActiveControlState(
             activeControlState
+        );
+        this.scheduleFinalScrollRestore(
+            scrollState
         );
 
     }
