@@ -37,7 +37,8 @@ export class Sidebar {
         showTaskMetadata = true,
         settingsDialogOpen = false,
         settingsSection = null,
-        sidebarUserName = ""
+        sidebarTitle = "",
+        sidebarTitleSaved = false
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -526,39 +527,49 @@ export class Sidebar {
             </section>
         `;
 
-        const normalizedSidebarUserName =
-            String(sidebarUserName).trim();
+        const normalizedSidebarTitle =
+            String(sidebarTitle).trim();
 
-        const sidebarTitle = normalizedSidebarUserName
-            ? `Mis tareas — ${normalizedSidebarUserName}`
-            : "Mis tareas";
+        const visibleSidebarTitle =
+            normalizedSidebarTitle || "Mis tareas";
 
         const applicationTools = `
             <section class="applicationTools settingsToolPanel">
 
-                <form id="sidebarUserNameForm">
+                <form id="sidebarTitleForm">
 
-                    <label for="sidebarUserName">
-                        Nombre del usuario
+                    <label for="sidebarTitle">
+                        Nombre en la barra lateral
                     </label>
 
                     <input
-                        id="sidebarUserName"
+                        id="sidebarTitle"
                         type="text"
-                        value="${escapeHtml(normalizedSidebarUserName)}"
+                        value="${escapeHtml(normalizedSidebarTitle)}"
                         maxlength="40"
-                        placeholder="Ej.: Leo"
-                        autocomplete="name">
+                        placeholder="Mis tareas"
+                        autocomplete="off">
 
                     <p class="settingsHint">
-                        Se mostrará junto a “Mis tareas” en la parte superior de la barra lateral.
+                        Si lo dejás vacío, se mostrará “Mis tareas”.
                     </p>
 
                     <button
+                        id="sidebarTitleSaveButton"
                         type="submit"
                         class="primaryAction">
-                        Guardar nombre
+                        ${sidebarTitleSaved
+                            ? "Guardado"
+                            : "Guardar nombre"}
                     </button>
+
+                    <p
+                        id="sidebarTitleSaveStatus"
+                        class="settingsSaveStatus"
+                        role="status"
+                        ${sidebarTitleSaved ? "" : "hidden"}>
+                        Nombre actualizado.
+                    </p>
 
                 </form>
 
@@ -666,7 +677,7 @@ export class Sidebar {
                 aria-label="Navegación principal">
 
                 <div class="sidebarBrand">
-                    <h3>${escapeHtml(sidebarTitle)}</h3>
+                    <h3>${escapeHtml(visibleSidebarTitle)}</h3>
 
                     <span
                         class="sidebarSyncStatus ${syncStatusClass}"

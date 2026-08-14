@@ -57,7 +57,7 @@ test("recuerda el modo reducido", () => {
 
 });
 
-test("recuerda el nombre que identifica la barra lateral", () => {
+test("recuerda el título personalizado de la barra lateral", () => {
 
     const storage = new MemoryStorage();
 
@@ -65,21 +65,21 @@ test("recuerda el nombre que identifica la barra lateral", () => {
         new TaskDisplayPreferences(storage);
 
     assert.equal(
-        preferences.getSidebarUserName(),
+        preferences.getSidebarTitle(),
         ""
     );
 
     assert.equal(
-        preferences.setSidebarUserName(
-            "  Leo  "
+        preferences.setSidebarTitle(
+            "  Tareas de Leo  "
         ),
-        "Leo"
+        "Tareas de Leo"
     );
 
     assert.equal(
         new TaskDisplayPreferences(storage)
-            .getSidebarUserName(),
-        "Leo"
+            .getSidebarTitle(),
+        "Tareas de Leo"
     );
 
 });

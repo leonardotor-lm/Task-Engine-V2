@@ -24,11 +24,11 @@ test("la interfaz muestra Mis tareas como nombre de la aplicación", () => {
     );
     assert.match(
         sidebarSource,
-        /Mis tareas — \$\{normalizedSidebarUserName\}/
+        /normalizedSidebarTitle \|\| "Mis tareas"/
     );
     assert.match(
         sidebarSource,
-        /<h3>\$\{escapeHtml\(sidebarTitle\)\}<\/h3>/
+        /<h3>\$\{escapeHtml\(visibleSidebarTitle\)\}<\/h3>/
     );
     assert.doesNotMatch(mainViewSource, /Task Engine/);
 });

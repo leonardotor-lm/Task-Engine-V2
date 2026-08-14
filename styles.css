@@ -1598,6 +1598,13 @@ h3 {
     margin: 0;
 }
 
+.applicationTools .settingsSaveStatus {
+    margin: 0;
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .applicationTools form button {
     width: 100%;
 }
