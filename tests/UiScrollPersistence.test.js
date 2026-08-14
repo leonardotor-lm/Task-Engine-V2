@@ -127,6 +127,121 @@ test("restaura la barra lateral después de los ajustes posteriores al render", 
     }
 });
 
+test("restaura el desplazamiento después de los ajustes tardíos de Android", async () => {
+    const sidebar = {
+        scrollTop: 510,
+        scrollLeft: 0
+    };
+    const frameCallbacks = [];
+    const originalDocument = globalThis.document;
+    const originalWindow = globalThis.window;
+
+    globalThis.document = {
+        querySelector: selector =>
+            selector === "#appSidebar"
+                ? sidebar
+                : null
+    };
+    globalThis.window = {
+        scrollX: 0,
+        scrollY: 0,
+        scrollTo() {},
+        requestAnimationFrame(callback) {
+            frameCallbacks.push(callback);
+        }
+    };
+
+    try {
+        const view = Object.create(
+            MainView.prototype
+        );
+        const state = view.captureScrollState();
+
+        view.scheduleFinalScrollRestore(state);
+        sidebar.scrollTop = 0;
+
+        await new Promise(resolve =>
+            queueMicrotask(resolve)
+        );
+
+        assert.equal(sidebar.scrollTop, 510);
+
+        sidebar.scrollTop = 0;
+        frameCallbacks.shift()();
+        assert.equal(sidebar.scrollTop, 510);
+
+        sidebar.scrollTop = 0;
+        frameCallbacks.shift()();
+        assert.equal(sidebar.scrollTop, 510);
+    } finally {
+        globalThis.document = originalDocument;
+        globalThis.window = originalWindow;
+    }
+});
+
+test("conserva abierta la barra lateral móvil durante el render", () => {
+    const addedClasses = new Set();
+    const attributes = new Map();
+    const originalDocument = globalThis.document;
+    const originalWindow = globalThis.window;
+    let layout = {
+        classList: {
+            contains: className =>
+                className === "mobileMenuOpen"
+        }
+    };
+
+    globalThis.document = {
+        querySelector(selector) {
+            if (selector === ".layout") {
+                return layout;
+            }
+            return null;
+        },
+        getElementById(id) {
+            return id === "toggleMobileMenu"
+                ? {
+                    setAttribute(name, value) {
+                        attributes.set(name, value);
+                    }
+                }
+                : null;
+        }
+    };
+    globalThis.window = {
+        scrollX: 0,
+        scrollY: 0
+    };
+
+    try {
+        const view = Object.create(
+            MainView.prototype
+        );
+        const state = view.captureScrollState();
+
+        layout = {
+            classList: {
+                add: className =>
+                    addedClasses.add(className)
+            }
+        };
+
+        view.restoreMobileMenuState(state);
+
+        assert.equal(
+            addedClasses.has("mobileMenuOpen"),
+            true
+        );
+        assert.equal(
+            attributes.get("aria-expanded"),
+            "true"
+        );
+    } finally {
+        globalThis.document = originalDocument;
+        globalThis.window = originalWindow;
+    }
+});
+
 test("la sincronización protege ediciones transitorias", () => {
     const renderStart = appSource.indexOf(
         "render({ preserveTransientUi = false } = {})"
