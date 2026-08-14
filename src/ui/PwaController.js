@@ -87,7 +87,26 @@ export class PwaController {
 
         this.registrationPromise =
             this.navigator.serviceWorker
-                .register("./service-worker.js")
+                .register(
+                    "./service-worker.js",
+                    { updateViaCache: "none" }
+                )
+                .then(async registration => {
+
+                    if (registration.active) {
+                        try {
+                            await registration.update();
+                        } catch (error) {
+                            console.warn(
+                                "No se pudo comprobar si hay una versión nueva.",
+                                error
+                            );
+                        }
+                    }
+
+                    return registration;
+
+                })
                 .catch(error => {
 
                     console.warn(

@@ -58,9 +58,11 @@ test("el service worker precarga la aplicación y responde sin conexión", async
         "service-worker.js"
     );
 
-    assert.match(worker, /cache\.addAll\(APP_SHELL\)/);
+    assert.match(worker, /cache\.addAll\(/);
+    assert.match(worker, /cache: "reload"/);
     assert.match(worker, /url\.origin !== self\.location\.origin/);
     assert.match(worker, /networkFirst\(request\)/);
+    assert.match(worker, /cache: "no-store"/);
     assert.match(worker, /cache\.match\(INDEX_URL\)/);
 
 });
@@ -72,6 +74,7 @@ test("una navegación sin red recupera la interfaz precargada", async () => {
     );
     const listeners = {};
     const offlineShell = { source: "cache" };
+    let fetchOptions = null;
     const cache = {
         async match(request) {
             return typeof request === "string" &&
@@ -87,7 +90,8 @@ test("una navegación sin red recupera la interfaz precargada", async () => {
                 "./index.html"
             ];
         },
-        fetch: async () => {
+        fetch: async (request, options) => {
+            fetchOptions = options;
             throw new Error("Sin conexión");
         },
         caches: {
@@ -119,6 +123,7 @@ test("una navegación sin red recupera la interfaz precargada", async () => {
     });
 
     assert.equal(response, offlineShell);
+    assert.equal(fetchOptions.cache, "no-store");
     assert.equal(typeof listeners.fetch, "function");
 
 });
@@ -152,6 +157,7 @@ test("el controlador registra el service worker y ofrece la instalación", async
     };
     const description = { textContent: "" };
     const registrations = [];
+    let updateCalls = 0;
     const app = {
         mainView: {
             render() {}
@@ -175,8 +181,17 @@ test("el controlador registra el service worker y ofrece la instalación", async
         },
         navigatorRef: {
             serviceWorker: {
-                async register(path) {
-                    registrations.push(path);
+                async register(path, options) {
+                    registrations.push({
+                        path,
+                        options
+                    });
+                    return {
+                        active: {},
+                        async update() {
+                            updateCalls += 1;
+                        }
+                    };
                 }
             }
         }
@@ -220,8 +235,14 @@ test("el controlador registra el service worker y ofrece la instalación", async
     assert.equal(button.hidden, true);
     assert.deepEqual(
         registrations,
-        ["./service-worker.js"]
+        [{
+            path: "./service-worker.js",
+            options: {
+                updateViaCache: "none"
+            }
+        }]
     );
+    assert.equal(updateCalls, 1);
 
 });
 
