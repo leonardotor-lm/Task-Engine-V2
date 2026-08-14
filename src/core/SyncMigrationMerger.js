@@ -14,7 +14,8 @@ const COLLECTIONS = [
 
 const PREFERENCE_MAPS = [
     "taskSortPreferences",
-    "taskFilterPreferences"
+    "taskFilterPreferences",
+    "displayPreferences"
 ];
 
 function sortObjectKeys(value) {

@@ -14,6 +14,9 @@ import { CustomFilter } from "../src/domain/CustomFilter.js";
 import {
     TaskSortPreferencesRepository
 } from "../src/infrastructure/TaskSortPreferencesRepository.js";
+import {
+    TaskDisplayPreferences
+} from "../src/infrastructure/TaskDisplayPreferences.js";
 
 class MemoryStorage {
 
@@ -83,10 +86,15 @@ function setup() {
         new TaskSortPreferencesRepository(
             storage
         );
+    const taskDisplayPreferences =
+        new TaskDisplayPreferences(storage);
 
     taskSortPreferencesRepository.set(
         "view:today",
         TaskSort.PRIORITY
+    );
+    taskDisplayPreferences.setSidebarTitle(
+        "Tareas de Leo"
     );
 
     const backupService = new BackupService({
@@ -100,7 +108,8 @@ function setup() {
 
     const app = {
         backupService,
-        taskSortPreferencesRepository
+        taskSortPreferencesRepository,
+        taskDisplayPreferences
     };
 
     new SyncOptionalDataBridge(app).start();
@@ -108,7 +117,8 @@ function setup() {
     return {
         backupService,
         customFilterRepository,
-        taskSortPreferencesRepository
+        taskSortPreferencesRepository,
+        taskDisplayPreferences
     };
 
 }
@@ -128,6 +138,12 @@ test("incluye las preferencias de orden en las copias nuevas", () => {
             "view:today": TaskSort.PRIORITY
         }
     );
+    assert.deepEqual(
+        backup.data.displayPreferences,
+        {
+            sidebarTitle: "Tareas de Leo"
+        }
+    );
 
 });
 
@@ -136,7 +152,8 @@ test("una copia antigua conserva filtros y órdenes locales", () => {
     const {
         backupService,
         customFilterRepository,
-        taskSortPreferencesRepository
+        taskSortPreferencesRepository,
+        taskDisplayPreferences
     } = setup();
 
     backupService.importBackup(
@@ -157,6 +174,10 @@ test("una copia antigua conserva filtros y órdenes locales", () => {
         ),
         TaskSort.PRIORITY
     );
+    assert.equal(
+        taskDisplayPreferences.getSidebarTitle(),
+        "Tareas de Leo"
+    );
 
 });
 
@@ -165,14 +186,16 @@ test("colecciones presentes y vacías eliminan datos de forma intencional", () =
     const {
         backupService,
         customFilterRepository,
-        taskSortPreferencesRepository
+        taskSortPreferencesRepository,
+        taskDisplayPreferences
     } = setup();
 
     backupService.importBackup(
         createBackupData({
             customFilters: [],
             goals: [],
-            taskSortPreferences: {}
+            taskSortPreferences: {},
+            displayPreferences: {}
         })
     );
 
@@ -184,6 +207,10 @@ test("colecciones presentes y vacías eliminan datos de forma intencional", () =
         taskSortPreferencesRepository.getAll(),
         {}
     );
+    assert.equal(
+        taskDisplayPreferences.getSidebarTitle(),
+        ""
+    );
 
 });
 
@@ -192,7 +219,8 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
     const {
         backupService,
         customFilterRepository,
-        taskSortPreferencesRepository
+        taskSortPreferencesRepository,
+        taskDisplayPreferences
     } = setup();
 
     backupService.importBackup(
@@ -209,6 +237,9 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
                     TaskSort.CREATED_NEWEST,
                 "area:area-1":
                     TaskSort.DUE_DATE
+            },
+            displayPreferences: {
+                sidebarTitle: "Trabajo"
             }
         })
     );
@@ -231,6 +262,10 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
         ),
         TaskSort.DUE_DATE
     );
+    assert.equal(
+        taskDisplayPreferences.getSidebarTitle(),
+        "Trabajo"
+    );
 
 });
 
@@ -248,6 +283,23 @@ test("rechaza preferencias de orden remotas inválidas", () => {
             })
         ),
         /preferencia de orden inválida/
+    );
+
+});
+
+test("rechaza títulos laterales remotos inválidos", () => {
+
+    const { backupService } = setup();
+
+    assert.throws(
+        () => backupService.importBackup(
+            createBackupData({
+                displayPreferences: {
+                    sidebarTitle: "x".repeat(41)
+                }
+            })
+        ),
+        /título lateral inválido/
     );
 
 });

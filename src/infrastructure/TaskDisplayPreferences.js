@@ -7,6 +7,9 @@ const COMPLETED_STORAGE_KEY =
 const SIDEBAR_TITLE_STORAGE_KEY =
     "task-engine-v2-sidebar-title";
 
+const LEGACY_SIDEBAR_USER_NAME_STORAGE_KEY =
+    "task-engine-v2-sidebar-user-name";
+
 export class TaskDisplayPreferences {
 
     constructor(storage = localStorage) {
@@ -61,11 +64,28 @@ export class TaskDisplayPreferences {
 
     getSidebarTitle() {
 
-        return (
+        const storedTitle = this.storage.getItem(
+            SIDEBAR_TITLE_STORAGE_KEY
+        );
+
+        if (storedTitle !== null) {
+            return storedTitle.trim();
+        }
+
+        const legacyTitle = (
             this.storage.getItem(
-                SIDEBAR_TITLE_STORAGE_KEY
+                LEGACY_SIDEBAR_USER_NAME_STORAGE_KEY
             ) || ""
         ).trim();
+
+        if (legacyTitle) {
+            this.storage.setItem(
+                SIDEBAR_TITLE_STORAGE_KEY,
+                legacyTitle
+            );
+        }
+
+        return legacyTitle;
 
     }
 

@@ -61,16 +61,68 @@ export class SyncOptionalDataBridge {
 
     }
 
+    validateDisplayPreferences(preferences) {
+
+        if (
+            !preferences ||
+            typeof preferences !== "object" ||
+            Array.isArray(preferences)
+        ) {
+            throw new Error(
+                "La copia contiene preferencias de visualización inválidas."
+            );
+        }
+
+        const allowedKeys = new Set([
+            "sidebarTitle"
+        ]);
+
+        for (const key of Object.keys(preferences)) {
+
+            if (!allowedKeys.has(key)) {
+                throw new Error(
+                    "La copia contiene una preferencia de visualización desconocida."
+                );
+            }
+
+        }
+
+        if (
+            hasOwn(preferences, "sidebarTitle") &&
+            (
+                typeof preferences.sidebarTitle !==
+                    "string" ||
+                preferences.sidebarTitle.trim().length >
+                    40
+            )
+        ) {
+            throw new Error(
+                "La copia contiene un título lateral inválido."
+            );
+        }
+
+        const sidebarTitle =
+            preferences.sidebarTitle?.trim() ?? "";
+
+        return sidebarTitle
+            ? { sidebarTitle }
+            : {};
+
+    }
+
     start() {
 
         const backupService =
             this.app?.backupService;
         const sortPreferences =
             this.app?.taskSortPreferencesRepository;
+        const displayPreferences =
+            this.app?.taskDisplayPreferences;
 
         if (
             !backupService ||
             !sortPreferences ||
+            !displayPreferences ||
             backupService[STARTED_FLAG]
         ) {
             return;
@@ -80,21 +132,24 @@ export class SyncOptionalDataBridge {
 
         this.wrapCreateBackup(
             backupService,
-            sortPreferences
+            sortPreferences,
+            displayPreferences
         );
         this.wrapParseAndValidate(
             backupService
         );
         this.wrapApplyData(
             backupService,
-            sortPreferences
+            sortPreferences,
+            displayPreferences
         );
 
     }
 
     wrapCreateBackup(
         backupService,
-        sortPreferences
+        sortPreferences,
+        displayPreferences
     ) {
 
         const originalCreateBackup =
@@ -110,7 +165,16 @@ export class SyncOptionalDataBridge {
                 data: {
                     ...backup.data,
                     taskSortPreferences:
-                        sortPreferences.getAll()
+                        sortPreferences.getAll(),
+                    displayPreferences:
+                        displayPreferences
+                            .getSidebarTitle()
+                            ? {
+                                sidebarTitle:
+                                    displayPreferences
+                                        .getSidebarTitle()
+                            }
+                            : {}
                 }
             };
 
@@ -142,6 +206,11 @@ export class SyncOptionalDataBridge {
                     rawData,
                     "taskSortPreferences"
                 );
+            const hasDisplayPreferences =
+                hasOwn(
+                    rawData,
+                    "displayPreferences"
+                );
 
             if (
                 hasCustomFilters &&
@@ -169,6 +238,13 @@ export class SyncOptionalDataBridge {
                     )
                     : null;
 
+            data.displayPreferences =
+                hasDisplayPreferences
+                    ? this.validateDisplayPreferences(
+                        rawData.displayPreferences
+                    )
+                    : null;
+
             return data;
 
         };
@@ -177,7 +253,8 @@ export class SyncOptionalDataBridge {
 
     wrapApplyData(
         backupService,
-        sortPreferences
+        sortPreferences,
+        displayPreferences
     ) {
 
         const originalApplyData =
@@ -207,6 +284,16 @@ export class SyncOptionalDataBridge {
             ) {
                 sortPreferences.replaceAll(
                     data.taskSortPreferences
+                );
+            }
+
+            if (
+                data.displayPreferences !== null &&
+                data.displayPreferences !== undefined
+            ) {
+                displayPreferences.setSidebarTitle(
+                    data.displayPreferences
+                        .sidebarTitle ?? ""
                 );
             }
 

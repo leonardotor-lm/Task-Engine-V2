@@ -17,7 +17,8 @@ const OPTIONAL_COLLECTIONS = [
 
 const PREFERENCE_MAPS = [
     "taskSortPreferences",
-    "taskFilterPreferences"
+    "taskFilterPreferences",
+    "displayPreferences"
 ];
 
 function hasOwn(object, property) {
