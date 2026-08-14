@@ -1,7 +1,7 @@
 importScripts("./pwa-assets.js");
 
 const CACHE_PREFIX = "mis-tareas-static";
-const CACHE_NAME = `${CACHE_PREFIX}-v1`;
+const CACHE_NAME = `${CACHE_PREFIX}-v2`;
 const INDEX_URL = new URL(
     "./index.html",
     self.registration.scope
@@ -15,7 +15,12 @@ self.addEventListener("install", event => {
 
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(APP_SHELL))
+            .then(cache => cache.addAll(
+                APP_SHELL.map(path => new Request(
+                    path,
+                    { cache: "reload" }
+                ))
+            ))
             .then(() => self.skipWaiting())
     );
 
@@ -60,7 +65,10 @@ async function networkFirst(request) {
 
     try {
 
-        const response = await fetch(request);
+        const response = await fetch(
+            request,
+            { cache: "no-store" }
+        );
 
         if (response.ok) {
             await cache.put(request, response.clone());
