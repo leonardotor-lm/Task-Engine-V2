@@ -262,6 +262,10 @@ export class TaskList {
                 const hasAnySubtasks =
                     totalSubtasks > 0;
 
+                const isProject =
+                    task.isProject ||
+                    hasAnySubtasks;
+
                 const isExpanded =
                     expandedTaskIds.has(task.id);
 
@@ -527,7 +531,7 @@ export class TaskList {
 
                 html += `
                     <li
-                        class="task ${depth > 0 ? "subtask" : ""} ${hasAnySubtasks ? "projectTask" : ""} ${task.isCompleted() ? "completedTask" : ""} ${selectedTaskIds.has(task.id) ? "bulkSelectedTask" : ""}"
+                        class="task ${depth > 0 ? "subtask" : ""} ${isProject ? "projectTask" : ""} ${task.isCompleted() ? "completedTask" : ""} ${selectedTaskIds.has(task.id) ? "bulkSelectedTask" : ""}"
                         style="--task-depth:${depth}"
                         data-id="${escapeHtml(task.id)}">
 

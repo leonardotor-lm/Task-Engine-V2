@@ -36,6 +36,10 @@ export class WaitingController {
 
             const tasks = originalGetVisibleTasks();
 
+            if (this.app.currentView === View.PROJECTS) {
+                return tasks;
+            }
+
             if (
                 this.app.currentView === View.AREA &&
                 this.showWaitingInArea

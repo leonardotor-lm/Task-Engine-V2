@@ -83,6 +83,11 @@ test("mueve una tarea y conserva todo su árbol", () => {
         "personal"
     );
 
+    assert.equal(
+        destination.isProject,
+        true
+    );
+
 });
 
 test("impide mover una tarea dentro de un descendiente", () => {
@@ -151,6 +156,7 @@ test("mueve varias tareas conservando sus árboles", () => {
     assert.equal(first.parentTaskId, destination.id);
     assert.equal(second.parentTaskId, destination.id);
     assert.equal(child.parentTaskId, first.id);
+    assert.equal(destination.isProject, true);
 
 });
 

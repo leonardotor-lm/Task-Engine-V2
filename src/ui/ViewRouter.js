@@ -165,6 +165,16 @@ export class ViewRouter {
                     )
                 );
 
+            case View.PROJECTS:
+
+                return this.renderTaskList(
+                    state,
+                    titleWithCount(
+                        "Proyectos",
+                        "projects"
+                    )
+                );
+
             case View.AREA:
 
                 return this.renderTaskList(

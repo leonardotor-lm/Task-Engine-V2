@@ -84,6 +84,7 @@ export class Sidebar {
             View.TOMORROW,
             View.UPCOMING,
             View.ALL,
+            View.PROJECTS,
             View.AREA,
             View.COMPLETED,
             View.ARCHIVED,
@@ -96,6 +97,7 @@ export class Sidebar {
             View.TOMORROW,
             View.UPCOMING,
             View.ALL,
+            View.PROJECTS,
             View.AREA,
             View.PROJECT
         ];
@@ -1154,6 +1156,13 @@ export class Sidebar {
                         class="${buttonClass(View.ALL)}">
                         <span>Todas</span>
                         ${count("all")}
+                    </button>
+
+                    <button
+                        id="showProjects"
+                        class="${buttonClass(View.PROJECTS)}">
+                        <span>Proyectos</span>
+                        ${count("projects")}
                     </button>
 
                     <button

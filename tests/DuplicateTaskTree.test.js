@@ -84,11 +84,13 @@ test("duplica un proyecto completo con relaciones nuevas", () => {
         "Copia de Proyecto escolar"
     );
     assert.equal(rootCopy.parentTaskId, null);
+    assert.equal(rootCopy.isProject, true);
 
     assert.equal(
         childCopy.parentTaskId,
         rootCopy.id
     );
+    assert.equal(childCopy.isProject, true);
 
     assert.equal(
         grandchildCopy.parentTaskId,

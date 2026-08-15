@@ -48,6 +48,7 @@ export class App {
             undefined,
             this.activityService
         );
+        this.taskService.ensureProjectFlags();
         this.areaService = new AreaService();
         this.contextService = new ContextService();
         this.tagService = new TagService();
@@ -1441,6 +1442,12 @@ export class App {
 
             },
 
+            onShowProjects: () => {
+
+                this.navigateTo(View.PROJECTS);
+
+            },
+
             onShowCalendar: () => {
 
                 this.calendarSelectedDate = null;
@@ -2345,6 +2352,11 @@ export class App {
 
                 return this.taskService.getAllActiveTasks();
 
+            case View.PROJECTS:
+
+                return this.taskService
+                    .getActiveProjectTasks();
+
             case View.AREA:
 
                 return this.currentAreaId
@@ -2514,12 +2526,15 @@ export class App {
             return;
         }
 
+        this.taskService.ensureProjectFlags();
+
         const activeViews = [
             View.INBOX,
             View.TODAY,
             View.TOMORROW,
             View.UPCOMING,
             View.ALL,
+            View.PROJECTS,
             View.AREA
         ];
 
@@ -2625,6 +2640,7 @@ export class App {
             [View.TOMORROW]: "ACTIVE",
             [View.UPCOMING]: "ACTIVE",
             [View.ALL]: "ACTIVE",
+            [View.PROJECTS]: "ACTIVE",
             [View.AREA]: "ACTIVE",
             [View.PROJECT]: "ACTIVE",
             [View.COMPLETED]: "COMPLETED",
@@ -2707,6 +2723,9 @@ export class App {
             upcoming:
                 this.taskService
                     .getUpcomingTasks(today).length,
+            projects:
+                this.taskService
+                    .getActiveProjectRoots().length,
             all: allActiveTasks.length
         };
 
