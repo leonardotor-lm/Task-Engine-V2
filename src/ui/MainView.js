@@ -3360,9 +3360,19 @@ export class MainView {
                                 task.parentTaskId === id
                         );
 
-                    const message = hasSubtasks
-                        ? "¿Duplicar esta tarea y todo su árbol como un proyecto nuevo?"
-                        : "¿Duplicar esta tarea?";
+                    const isSubtask = Boolean(
+                        allTasks.find(
+                            task => task.id === id
+                        )?.parentTaskId
+                    );
+
+                    const message = isSubtask
+                        ? hasSubtasks
+                            ? "¿Duplicar esta subtarea y todo su árbol dentro del mismo proyecto?"
+                            : "¿Duplicar esta subtarea dentro del mismo proyecto?"
+                        : hasSubtasks
+                            ? "¿Duplicar esta tarea y todo su árbol como un proyecto nuevo?"
+                            : "¿Duplicar esta tarea?";
 
                     if (!await Dialog.confirmAsync(
                         message,
