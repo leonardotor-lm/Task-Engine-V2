@@ -97,9 +97,7 @@ export class TaskList {
 
         const visibleRows = flattenTaskTree(
             tasks,
-            searchQuery || filtersActive
-                ? null
-                : expandedTaskIds
+            expandedTaskIds
         );
 
         const visibleSelectableIds =
@@ -265,8 +263,6 @@ export class TaskList {
                     totalSubtasks > 0;
 
                 const isExpanded =
-                    Boolean(searchQuery) ||
-                    filtersActive ||
                     expandedTaskIds.has(task.id);
 
                 const toggleHtml = hasSubtasks
