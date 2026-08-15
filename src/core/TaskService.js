@@ -1214,7 +1214,7 @@ export class TaskService {
 
             const copiedParentId =
                 source.id === root.id
-                    ? null
+                    ? root.parentTaskId
                     : copiesBySourceId
                         .get(source.parentTaskId)
                         ?.id ?? null;
