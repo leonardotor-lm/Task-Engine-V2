@@ -68,6 +68,20 @@ export class GoalView {
 
         const headingActions = `
             <button
+                id="openGoalTaskCreation"
+                type="button"
+                class="primaryAction goalHeadingAction responsiveIconButton"
+                aria-label="Nueva tarea"
+                title="Nueva tarea">
+                <span class="responsiveButtonIcon">
+                    ${Icon.render("plus")}
+                </span>
+                <span class="responsiveButtonLabel">
+                    Nueva tarea
+                </span>
+            </button>
+
+            <button
                 id="editGoal"
                 type="button"
                 class="secondaryAction goalHeadingAction responsiveIconButton"

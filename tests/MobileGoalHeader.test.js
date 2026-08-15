@@ -26,14 +26,15 @@ const projectView = await readFile(
     "utf8"
 );
 
-test("el encabezado del objetivo conserva sólo la acción de edición", () => {
+test("el encabezado del objetivo ofrece crear una tarea y editar", () => {
 
     assert.doesNotMatch(goalView, /id="backToParentGoal"/);
     assert.doesNotMatch(goalView, /id="closeGoalView"/);
     assert.match(goalView, /id="editGoal"/);
+    assert.match(goalView, /id="openGoalTaskCreation"/);
     assert.equal(
         goalView.match(/goalHeadingAction/g)?.length,
-        1
+        2
     );
 
 });

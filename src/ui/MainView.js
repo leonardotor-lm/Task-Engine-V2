@@ -1741,6 +1741,14 @@ export class MainView {
         });
 
         document.getElementById(
+            "openGoalTaskCreation"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onOpenTaskCreation();
+
+        });
+
+        document.getElementById(
             "toggleTaskMetadata"
         )?.addEventListener("click", () => {
 

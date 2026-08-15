@@ -55,6 +55,14 @@ test("muestra el objetivo como espacio de trabajo", () => {
     assert.match(html, /Preparar el manuscrito/);
     assert.match(html, /2027-03-01/);
     assert.match(html, /id="editGoal"/);
+    assert.match(
+        html,
+        /id="openGoalTaskCreation"/
+    );
+    assert.match(
+        html,
+        /openGoalTaskCreation[\s\S]*?Nueva tarea/
+    );
     assert.match(html, /id="goalBreadcrumbRoot"/);
     assert.doesNotMatch(html, /id="closeGoalView"/);
     assert.doesNotMatch(html, /id="backToParentGoal"/);
