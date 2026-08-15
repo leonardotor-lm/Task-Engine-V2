@@ -1571,64 +1571,6 @@ export class TaskService {
 
     }
 
-    includeActiveDescendants(tasks) {
-
-        const allTasks = this.repository.getAll();
-        const includedIds = new Set(
-            tasks.map(task => task.id)
-        );
-        const childrenByParent = new Map();
-
-        for (const task of allTasks) {
-
-            if (
-                !task.parentTaskId ||
-                !this.isActiveTask(task)
-            ) {
-                continue;
-            }
-
-            const children =
-                childrenByParent.get(
-                    task.parentTaskId
-                ) ?? [];
-
-            children.push(task);
-            childrenByParent.set(
-                task.parentTaskId,
-                children
-            );
-
-        }
-
-        const pendingIds = [...includedIds];
-
-        while (pendingIds.length > 0) {
-
-            const parentId = pendingIds.shift();
-
-            for (
-                const child of
-                childrenByParent.get(parentId) ?? []
-            ) {
-
-                if (includedIds.has(child.id)) {
-                    continue;
-                }
-
-                includedIds.add(child.id);
-                pendingIds.push(child.id);
-
-            }
-
-        }
-
-        return allTasks.filter(
-            task => includedIds.has(task.id)
-        );
-
-    }
-
     getInboxTasks() {
 
         return this.repository

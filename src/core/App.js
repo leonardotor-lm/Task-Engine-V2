@@ -2330,27 +2330,16 @@ export class App {
 
             case View.TODAY:
 
-                return this.taskService
-                    .includeActiveDescendants(
-                        this.taskService
-                            .getTodayTasks(today)
-                    );
+                return this.taskService.getTodayTasks(today);
 
             case View.TOMORROW:
 
                 return this.taskService
-                    .includeActiveDescendants(
-                        this.taskService
-                            .getTomorrowTasks(today)
-                    );
+                    .getTomorrowTasks(today);
 
             case View.UPCOMING:
 
-                return this.taskService
-                    .includeActiveDescendants(
-                        this.taskService
-                            .getUpcomingTasks(today)
-                    );
+                return this.taskService.getUpcomingTasks(today);
 
             case View.ALL:
 
