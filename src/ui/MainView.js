@@ -1741,6 +1741,14 @@ export class MainView {
         });
 
         document.getElementById(
+            "openGoalTaskCreation"
+        )?.addEventListener("click", () => {
+
+            this.callbacks.onOpenTaskCreation();
+
+        });
+
+        document.getElementById(
             "toggleTaskMetadata"
         )?.addEventListener("click", () => {
 
@@ -2134,2505 +2142,581 @@ export class MainView {
                 "submit",
                 event => {
 
-                    event.preventDefault();
-
-                    const title = document
-                        .getElementById(
-                            "goalTitle"
-                        )
-                        .value
-                        .trim();
-
-                    if (!title) return;
-
-                    const description = document
-                        .getElementById(
-                            "goalDescription"
-                        )
-                        .value
-                        .trim();
-
-                    const dueDate = document
-                        .getElementById(
-                            "goalDueDate"
-                        )
-                        .value || null;
-
-                    this.callbacks.onCreateGoal({
-                        title,
-                        description,
-                        dueDate
-                    });
-
-                }
-            );
-
-        }
-
-        if (view === View.CALENDAR) {
-
-            document.getElementById(
-                "previousCalendarMonth"
-            )?.addEventListener(
-                "click",
-                () => this.callbacks
-                    .onChangeCalendarMonth(-1)
-            );
-
-            document.getElementById(
-                "nextCalendarMonth"
-            )?.addEventListener(
-                "click",
-                () => this.callbacks
-                    .onChangeCalendarMonth(1)
-            );
-
-            document.querySelectorAll(
-                ".calendarDay.hasPendingTasks"
-            ).forEach(button => {
-                button.addEventListener(
-                    "click",
-                    () => this.callbacks
-                        .onOpenCalendarDay(
-                            button.dataset.date
-                        )
-                );
-            });
-
-            const closeCalendarDay = () =>
-                this.callbacks.onCloseCalendarDay();
-
-            document.getElementById(
-                "closeCalendarDay"
-            )?.addEventListener(
-                "click",
-                closeCalendarDay
-            );
-            document.getElementById(
-                "closeCalendarDayAction"
-            )?.addEventListener(
-                "click",
-                closeCalendarDay
-            );
-            document.getElementById(
-                "calendarDayDialog"
-            )?.addEventListener(
-                "cancel",
-                event => {
-                    event.preventDefault();
-                    closeCalendarDay();
-                }
-            );
-
-        }
-
-        if (selectedGoal) {
-
-            this.goalEditor
-                .bindAssociationSelectors();
-
-            document.getElementById(
-                "closeGoalView"
-            )?.addEventListener(
-                "click",
-                () =>
-                    this.callbacks
-                        .onCloseGoalView()
-            );
-
-            document.getElementById(
-                "editGoal"
-            )?.addEventListener(
-                "click",
-                () =>
-                    this.callbacks
-                        .onOpenGoalEditor()
-            );
-
-            document.getElementById(
-                "closeGoalEditor"
-            )?.addEventListener(
-                "click",
-                () =>
-                    this.callbacks
-                        .onCloseGoalEditor()
-            );
-
-            document.getElementById(
-                "goalEditorForm"
-            )?.addEventListener(
-                "submit",
-                event => {
-
-                    event.preventDefault();
-
-                    const title = document
-                        .getElementById(
-                            "goalTitleEdit"
-                        )
-                        .value
-                        .trim();
-
-                    if (!title) return;
-
-                    this.callbacks.onUpdateGoal(
-                        selectedGoal.id,
-                        {
-                            title,
-                            description: document
-                                .getElementById(
-                                    "goalDescriptionEdit"
-                                )
-                                .value
-                                .trim(),
-                            dueDate: document
-                                .getElementById(
-                                    "goalDueDateEdit"
-                                )
-                                .value || null
-                        }
-                    );
-
-                }
-            );
-
-            document.getElementById(
-                "completeGoal"
-            )?.addEventListener(
-                "click",
-                async () => {
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Marcar este objetivo como completado?",
-                        {
-                            title: "Completar objetivo",
-                            confirmLabel: "Completar"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    this.callbacks
-                        .onCompleteGoal(
-                            selectedGoal.id
-                        );
-
-                }
-            );
-
-            document.getElementById(
-                "archiveGoal"
-            )?.addEventListener(
-                "click",
-                async () => {
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Archivar este objetivo?",
-                        {
-                            title: "Archivar objetivo",
-                            confirmLabel: "Archivar"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    this.callbacks
-                        .onArchiveGoal(
-                            selectedGoal.id
-                        );
-
-                }
-            );
-
-            document.getElementById(
-                "deleteGoalFromEditor"
-            )?.addEventListener(
-                "click",
-                async () => {
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Mover este objetivo y sus subobjetivos a la papelera?",
-                        {
-                            title: "Mover objetivo a la papelera",
-                            confirmLabel: "Mover a la papelera",
-                            variant: "danger"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    this.callbacks.onDeleteGoal(
-                        selectedGoal.id
-                    );
-
-                }
-            );
-
-            document.getElementById(
-                "subgoalForm"
-            )?.addEventListener(
-                "submit",
-                event => {
-
-                    event.preventDefault();
-
-                    const title = document
-                        .getElementById(
-                            "subgoalTitle"
-                        )
-                        .value
-                        .trim();
-
-                    if (!title) return;
-
-                    this.callbacks.onCreateSubgoal(
-                        selectedGoal.id,
-                        title
-                    );
-
-                }
-            );
-
-            document.getElementById(
-                "goalParentForm"
-            )?.addEventListener(
-                "submit",
-                event => {
-
-                    event.preventDefault();
-
-                    const parentGoalId = document
-                        .getElementById(
-                            "goalParentId"
-                        )
-                        .value;
-
-                    if (!parentGoalId) return;
-
-                    try {
-                        this.callbacks.onMoveGoal(
-                            selectedGoal.id,
-                            parentGoalId
-                        );
-                    } catch (error) {
-                        Dialog.alert(error.message);
-                    }
-
-                }
-            );
-
-            document.getElementById(
-                "goalTaskForm"
-            )?.addEventListener(
-                "submit",
-                event => {
-
-                    event.preventDefault();
-
-                    const taskId = document
-                        .getElementById(
-                            "goalTaskId"
-                        )
-                        .value;
-
-                    if (!taskId) return;
-
-                    try {
-                        this.callbacks
-                            .onAssociateTaskToGoal(
-                                taskId,
-                                selectedGoal.id
-                            );
-                    } catch (error) {
-                        Dialog.alert(error.message);
-                    }
-
-                }
-            );
-
-            document.getElementById(
-                "goalTaskDetachForm"
-            )?.addEventListener(
-                "submit",
-                event => {
-
-                    event.preventDefault();
-
-                    const taskId = document
-                        .getElementById(
-                            "goalTaskDetachId"
-                        )
-                        .value;
-
-                    if (!taskId) return;
-
-                    try {
-                        this.callbacks
-                            .onDetachTaskFromGoal(
-                                taskId,
-                                selectedGoal.id
-                            );
-                    } catch (error) {
-                        Dialog.alert(error.message);
-                    }
-
-                }
-            );
-
-            document.getElementById(
-                "detachGoal"
-            )?.addEventListener(
-                "click",
-                () => {
-
-                    try {
-                        this.callbacks.onDetachGoal(
-                            selectedGoal.id
-                        );
-                    } catch (error) {
-                        Dialog.alert(error.message);
-                    }
-
-                }
-            );
-
-        }
-
-        document.querySelectorAll(
-            ".showAreaView"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                async () => {
-
-                    if (
-                        selectedTask &&
-                        !await this.confirmDiscardTaskChanges(
-                            selectedTask
-                        )
-                    ) {
-                        return;
-                    }
-
-                    this.navigateFromSidebar(
-                        () =>
-                            this.callbacks
-                                .onShowArea(
-                                    button.dataset.id
-                                )
-                    );
-
-                }
-            );
-
-        });
-
-        document.querySelectorAll(
-            ".showCustomFilter"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                async () => {
-
-                    if (
-                        selectedTask &&
-                        !await this.confirmDiscardTaskChanges(
-                            selectedTask
-                        )
-                    ) {
-                        return;
-                    }
-
-                    this.navigateFromSidebar(
-                        () =>
-                            this.callbacks
-                                .onApplyCustomFilter(
-                                    button.dataset.id
-                                )
-                    );
-
-                }
-            );
-
-        });
-
-        document.querySelectorAll(
-            ".renameCustomFilter"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const item = button.closest(
-                        ".customFilterItem"
-                    );
-
-                    item.querySelector(
-                        ".customFilterDisplay"
-                    ).hidden = true;
-
-                    const form = item.querySelector(
-                        ".customFilterRenameForm"
-                    );
-
-                    form.hidden = false;
-                    form.querySelector(
-                        ".customFilterRenameInput"
-                    ).focus();
-
-                }
-            );
-
-        });
-
-        document.querySelectorAll(
-            ".cancelCustomFilterRename"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const item = button.closest(
-                        ".customFilterItem"
-                    );
-
-                    item.querySelector(
-                        ".customFilterRenameForm"
-                    ).hidden = true;
-
-                    item.querySelector(
-                        ".customFilterDisplay"
-                    ).hidden = false;
-
-                }
-            );
-
-        });
-
-        document.querySelectorAll(
-            ".customFilterRenameForm"
-        ).forEach(form => {
-
-            form.addEventListener(
-                "submit",
-                event => {
-
-                    event.preventDefault();
-
-                    const name = form
-                        .querySelector(
-                            ".customFilterRenameInput"
-                        )
-                        .value.trim();
-
-                    if (!name) return;
-
-                    try {
-
-                        this.callbacks
-                            .onRenameCustomFilter(
-                                form.dataset.id,
-                                name
-                            );
-
-                    } catch (error) {
-
-                        Dialog.alert(
-                            error.message
-                        );
-
-                    }
-
-                }
-            );
-
-        });
-
-        document.querySelectorAll(
-            ".deleteCustomFilter"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                async () => {
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Eliminar este filtro personalizado?",
-                        {
-                            title: "Eliminar filtro",
-                            confirmLabel: "Eliminar",
-                            variant: "danger"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    this.callbacks
-                        .onDeleteCustomFilter(
-                            button.dataset.id
-                        );
-
-                }
-            );
-
-        });
-
-        const taskViews = [
-
-            View.INBOX,
-            View.TODAY,
-            View.TOMORROW,
-            View.UPCOMING,
-            View.ALL,
-            View.AREA,
-            View.COMPLETED,
-            View.ARCHIVED,
-            View.TRASH,
-            View.PROJECT,
-            View.GOAL
-
-        ];
-
-        if (taskViews.includes(view)) {
-
-            document.getElementById(
-                "cancelTaskCreation"
-            )?.addEventListener("click", () => {
-
-                this.callbacks.onCancelTaskCreation();
-
-            });
-
-            document.getElementById("taskForm")?.addEventListener("submit", event => {
-
-                event.preventDefault();
-
-                const input = document.getElementById("taskTitle");
-                const title = input.value.trim();
-
-                if (!title) return;
-
-                if (view === View.PROJECT) {
-
-                    this.callbacks
-                        .onCreateProjectSubtask(title);
-
-                    return;
-
-                }
-
-                this.callbacks.onCreateTask(title);
-
-            });
-
-            document.querySelectorAll(
-                ".taskCompleteCheckbox"
-            ).forEach(checkbox => {
-
-                checkbox.addEventListener(
-                    "click",
-                    event =>
-                        event.stopPropagation()
-                );
-
-                checkbox.addEventListener(
-                    "change",
-                    async () => {
-
-                        const succeeded =
-                            await this
-                                .toggleTaskWithAssistedParentCompletion(
-                                    checkbox.dataset.id
-                                );
-
-                        if (!succeeded) {
-                            checkbox.checked = false;
-                        }
-
-                    }
-                );
-
-            });
-
-            document.querySelectorAll(
-                ".bulkTaskCheckbox"
-            ).forEach(checkbox => {
-
-                checkbox.addEventListener(
-                    "click",
-                    event =>
-                        event.stopPropagation()
-                );
-
-                checkbox.addEventListener(
-                    "change",
-                    () => {
-
-                        this.preserveContentScroll(
-                            () =>
-                                this.callbacks
-                                    .onToggleBulkSelection(
-                                        checkbox.dataset.id,
-                                        checkbox.checked
-                                    )
-                        );
-
-                    }
-                );
-
-            });
-
-            const bulkSelectAll =
-                document.getElementById(
-                    "bulkSelectAll"
-                );
-
-            if (bulkSelectAll) {
-
-                bulkSelectAll.indeterminate =
-                    bulkSelectAll.dataset
-                        .indeterminate === "true";
-
-                bulkSelectAll.addEventListener(
-                    "change",
-                    () => {
-
-                        const visibleIds = [
-                            ...document.querySelectorAll(
-                                ".bulkTaskCheckbox"
-                            )
-                        ].map(
-                            checkbox =>
-                                checkbox.dataset.id
-                        );
-
-                        this.preserveContentScroll(
-                            () =>
-                                this.callbacks
-                                    .onSetVisibleBulkSelection(
-                                        visibleIds,
-                                        bulkSelectAll.checked
-                                    )
-                        );
-
-                    }
-                );
-
-            }
-
-            document.getElementById(
-                "clearBulkSelection"
-            )?.addEventListener("click", () => {
-
-                this.callbacks
-                    .onClearBulkSelection();
-
-            });
-
-            document.getElementById(
-                "bulkRestoreTasks"
-            )?.addEventListener("click", async () => {
-
-                const action =
-                    view === View.COMPLETED
-                        ? "reactivar"
-                        : "restaurar";
-
-                if (!await Dialog.confirmAsync(
-                    `Â¿${action === "reactivar" ? "Reactivar" : "Restaurar"} las tareas seleccionadas y sus subtareas?`,
-                    {
-                        title: `${action === "reactivar" ? "Reactivar" : "Restaurar"} tareas`,
-                        confirmLabel: action === "reactivar"
-                            ? "Reactivar"
-                            : "Restaurar"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-
-                    const count =
-                        this.callbacks
-                            .onBulkRestoreTasks();
-
-                    Dialog.alert(
-                        `Se ${action === "reactivar" ? "reactivaron" : "restauraron"} ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "applyBulkChanges"
-            )?.addEventListener("click", () => {
-
-                const priorityValue =
-                    document.getElementById(
-                        "bulkPriority"
-                    ).value;
-
-                const dueDate = document
-                    .getElementById(
-                        "bulkDueDate"
-                    ).value;
-
-                const dueTime = document
-                    .getElementById(
-                        "bulkDueTime"
-                    ).value;
-
-                const areaValue = document
-                    .getElementById(
-                        "bulkArea"
-                    ).value;
-
-                const contextValue = document
-                    .getElementById(
-                        "bulkContext"
-                    ).value;
-
-                const addTagIds = [
-                    ...document
-                        .querySelectorAll(
-                            ".bulkTagCheckbox"
-                        )
-                ].map(checkbox => checkbox.value);
-
-                const addGoalIds = [
-                    ...document
-                        .querySelectorAll(
-                            ".bulkGoalInput"
-                        )
-                ].map(input => input.value);
-
-                const changes = {};
-
-                if (priorityValue !== "") {
-                    changes.priority =
-                        Number(priorityValue);
-                }
-
-                if (dueDate) {
-                    changes.dueDate = dueDate;
-                    changes.dueTime =
-                        dueTime || null;
-                }
-
-                if (areaValue !== "") {
-                    changes.areaId =
-                        areaValue === "__CLEAR__"
-                            ? null
-                            : areaValue;
-                }
-
-                if (contextValue !== "") {
-                    changes.contextId =
-                        contextValue === "__CLEAR__"
-                            ? null
-                            : contextValue;
-                }
-
-                if (addTagIds.length > 0) {
-                    changes.addTagIds =
-                        addTagIds;
-                }
-
-                if (addGoalIds.length > 0) {
-                    changes.addGoalIds =
-                        addGoalIds;
-                }
-
-                if (
-                    Object.keys(changes)
-                        .length === 0
-                ) {
-
-                    Dialog.alert(
-                        "ElegÃ­ al menos un cambio para aplicar."
-                    );
-
-                    return;
-
-                }
-
-                try {
-
-                    const count =
-                        this.callbacks
-                            .onBulkUpdateTasks({
-                                ...changes
-                            });
-
-                    Dialog.alert(
-                        `Cambios aplicados en ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            const bulkMoveDialog =
-                document.getElementById(
-                    "bulkMoveDialog"
-                );
-
-            document.getElementById(
-                "openBulkMoveDialog"
-            )?.addEventListener("click", () => {
-                bulkMoveDialog?.showModal();
-            });
-
-            document.getElementById(
-                "cancelBulkMoveDialog"
-            )?.addEventListener("click", () => {
-                bulkMoveDialog?.close();
-            });
-
-            document.getElementById(
-                "bulkMoveTasks"
-            )?.addEventListener("click", async () => {
-
-                const targetId = document
-                    .getElementById("bulkMoveTarget")
-                    ?.value;
-
-                if (!targetId) {
-                    Dialog.alert("ElegÃ­ un destino.");
-                    return;
-                }
-
-                const detachTasks = targetId === "__ROOT__";
-
-                if (!await Dialog.confirmAsync(
-                    detachTasks
-                        ? "Â¿Convertir las tareas seleccionadas en tareas principales?"
-                        : "Â¿Mover las tareas seleccionadas y sus Ã¡rboles al proyecto elegido?",
-                    {
-                        title: "Mover tareas",
-                        confirmLabel: "Mover"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-                    const count = this.callbacks
-                        .onBulkMoveTasks(
-                            detachTasks ? null : targetId
-                        );
-
-                    bulkMoveDialog?.close();
-                    Dialog.alert(
-                        `Se movieron ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-                } catch (error) {
-                    Dialog.alert(error.message);
-                }
-
-            });
-
-            const bulkDueDate =
-                document.getElementById(
-                    "bulkDueDate"
-                );
-            const bulkDueTime =
-                document.getElementById(
-                    "bulkDueTime"
-                );
-
-            bulkDueDate?.addEventListener(
-                "change",
-                () => {
-                    const hasDate =
-                        Boolean(bulkDueDate.value);
-
-                    bulkDueTime.disabled =
-                        !hasDate;
-
-                    if (!hasDate) {
-                        bulkDueTime.value = "";
-                    }
-                }
-            );
-
-            document.getElementById(
-                "bulkCompleteTasks"
-            )?.addEventListener("click", async () => {
-
-                if (!await Dialog.confirmAsync(
-                    "Â¿Completar todas las tareas seleccionadas?",
-                    {
-                        title: "Completar tareas",
-                        confirmLabel: "Completar"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-
-                    const count =
-                        this.callbacks
-                            .onBulkCompleteTasks();
-
-                    Dialog.alert(
-                        `Se completaron ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "bulkArchiveTasks"
-            )?.addEventListener("click", async () => {
-
-                if (!await Dialog.confirmAsync(
-                    "Â¿Archivar todas las tareas seleccionadas?",
-                    {
-                        title: "Archivar tareas",
-                        confirmLabel: "Archivar"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-
-                    const count =
-                        this.callbacks
-                            .onBulkArchiveTasks();
-
-                    Dialog.alert(
-                        `Se archivaron ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "bulkDeleteTasks"
-            )?.addEventListener("click", async () => {
-
-                if (!await Dialog.confirmAsync(
-                    "Â¿Enviar a la papelera las tareas seleccionadas? Las subtareas descendientes tambiÃ©n serÃ¡n enviadas.",
-                    {
-                        title: "Enviar tareas a la papelera",
-                        confirmLabel: "Enviar",
-                        variant: "danger"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-
-                    const count =
-                        this.callbacks
-                            .onBulkDeleteTasks();
-
-                    Dialog.alert(
-                        `Se enviaron ${count} ${count === 1 ? "tarea" : "tareas"} a la papelera.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "bulkPermanentlyDeleteTasks"
-            )?.addEventListener("click", async () => {
-
-                if (!await Dialog.confirmAsync(
-                    "Â¿Eliminar definitivamente las tareas seleccionadas y sus subtareas? Esta acciÃ³n no se puede deshacer.",
-                    {
-                        title: "Eliminar tareas definitivamente",
-                        confirmLabel: "Continuar",
-                        variant: "danger"
-                    }
-                )) {
-                    return;
-                }
-
-                if (!await Dialog.confirmAsync(
-                    "ConfirmÃ¡ nuevamente la eliminaciÃ³n definitiva. Las tareas no podrÃ¡n recuperarse.",
-                    {
-                        title: "ConfirmaciÃ³n final",
-                        confirmLabel: "Eliminar definitivamente",
-                        variant: "danger"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-
-                    const count =
-                        this.callbacks
-                            .onBulkPermanentlyDeleteTasks();
-
-                    Dialog.alert(
-                        `Se eliminaron definitivamente ${count} ${count === 1 ? "tarea" : "tareas"}.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "emptyTrash"
-            )?.addEventListener("click", async () => {
-
-                const count = allTasks.filter(
-                    task => task.isDeleted()
-                ).length;
-
-                if (!await Dialog.confirmAsync(
-                    `Â¿Eliminar definitivamente las ${count} ${count === 1 ? "tarea" : "tareas"} de la papelera? Esta acciÃ³n no se puede deshacer.`,
-                    {
-                        title: "Vaciar papelera",
-                        confirmLabel: "Continuar",
-                        variant: "danger"
-                    }
-                )) {
-                    return;
-                }
-
-                if (!await Dialog.confirmAsync(
-                    "ConfirmÃ¡ nuevamente que querÃ©s vaciar la papelera. Las tareas no podrÃ¡n recuperarse.",
-                    {
-                        title: "ConfirmaciÃ³n final",
-                        confirmLabel: "Vaciar definitivamente",
-                        variant: "danger"
-                    }
-                )) {
-                    return;
-                }
-
-                try {
-
-                    const deletedCount =
-                        this.callbacks.onEmptyTrash();
-
-                    Dialog.alert(
-                        `Se vaciÃ³ la papelera: ${deletedCount} ${deletedCount === 1 ? "tarea eliminada" : "tareas eliminadas"} definitivamente.`
-                    );
-
-                } catch (error) {
-
-                    Dialog.alert(error.message);
-
-                }
-
-            });
-
-            document.getElementById(
-                "openProjectTaskCreation"
-            )?.addEventListener("click", () => {
-
-                this.callbacks
-                    .onOpenProjectTaskCreation();
-
-            });
-
-            document.getElementById(
-                "closeProjectView"
-            )?.addEventListener("click", () => {
-
-                this.callbacks.onCloseProject();
-
-            });
-
-            document.getElementById(
-                "editProjectTask"
-            )?.addEventListener("click", event => {
-
-                this.callbacks.onEditProjectTask(
-                    event.currentTarget.dataset.id
-                );
-
-            });
-
-            document.querySelectorAll(
-                ".quickMoreActions"
-            ).forEach(menu => {
-
-                menu.addEventListener(
-                    "click",
-                    event => event.stopPropagation()
-                );
-
-            });
-
-            document.querySelectorAll(
-                ".closeQuickActions"
-            ).forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
-
-                        button.closest(
-                            ".quickMoreActions"
-                        ).open = false;
-
-                    }
-                );
-
-            });
-
-            document.querySelectorAll(
-                ".quickEditTask"
-            ).forEach(button => {
-
-                button.addEventListener("click", event => {
-
-                    event.stopPropagation();
-
-                    this.callbacks.onSelectTask(
-                        button.closest(
-                            ".quickMoreActions"
-                        ).dataset.id
-                    );
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickDuplicateTask"
-            ).forEach(button => {
-
-                button.addEventListener("click", async event => {
-
-                    event.stopPropagation();
-
-                    const id = button.closest(
-                        ".quickMoreActions"
-                    ).dataset.id;
-
-                    const hasSubtasks =
-                        allTasks.some(
-                            task =>
-                                task.parentTaskId === id
-                        );
-
-                    const message = hasSubtasks
-                        ? "Â¿Duplicar esta tarea y todo su Ã¡rbol como un proyecto nuevo?"
-                        : "Â¿Duplicar esta tarea?";
-
-                    if (!await Dialog.confirmAsync(
-                        message,
-                        {
-                            title: "Duplicar tarea",
-                            confirmLabel: "Duplicar"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        const duplicatedId =
-                            this.callbacks
-                                .onDuplicateTask(id);
-
-                        if (!duplicatedId) return;
-
-                        let duplicatedTask =
-                            [...document.querySelectorAll(
-                                ".task"
-                            )].find(
-                                task =>
-                                    task.dataset.id ===
-                                    duplicatedId
-                            );
-
-                        if (!duplicatedTask) {
-
-                            this.callbacks
-                                .onRevealTask(
-                                    duplicatedId
-                                );
-
-                            duplicatedTask =
-                                [...document.querySelectorAll(
-                                    ".task"
-                                )].find(
-                                    task =>
-                                        task.dataset.id ===
-                                        duplicatedId
-                                );
-
-                        }
-
-                        if (duplicatedTask) {
-
-                            duplicatedTask.classList.add(
-                                "recentlyDuplicatedTask"
-                            );
-
-                            duplicatedTask.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center"
-                            });
-
-                        }
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickSkipRecurringTask"
-            ).forEach(button => {
-
-                button.addEventListener("click", async event => {
-
-                    event.stopPropagation();
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Saltear esta instancia y avanzar a la prÃ³xima fecha?",
-                        {
-                            title: "Saltear recurrencia",
-                            confirmLabel: "Saltear"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        this.callbacks
-                            .onQuickSkipRecurringTask(
-                                button.closest(
-                                    ".quickMoreActions"
-                                ).dataset.id
-                            );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickEndRecurrence"
-            ).forEach(button => {
-
-                button.addEventListener("click", async event => {
-
-                    event.stopPropagation();
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Finalizar la recurrencia? La tarea conservarÃ¡ su fecha actual, pero dejarÃ¡ de repetirse.",
-                        {
-                            title: "Finalizar recurrencia",
-                            confirmLabel: "Finalizar"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        this.callbacks
-                            .onQuickEndRecurrence(
-                                button.closest(
-                                    ".quickMoreActions"
-                                ).dataset.id
-                            );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickArchiveTask"
-            ).forEach(button => {
-
-                button.addEventListener("click", async event => {
-
-                    event.stopPropagation();
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Archivar esta tarea?",
-                        {
-                            title: "Archivar tarea",
-                            confirmLabel: "Archivar"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        this.callbacks.onArchiveTask(
-                            button.closest(
-                                ".quickMoreActions"
-                            ).dataset.id
-                        );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickDeleteTask"
-            ).forEach(button => {
-
-                button.addEventListener("click", async event => {
-
-                    event.stopPropagation();
-
-                    const id = button.closest(
-                        ".quickMoreActions"
-                    ).dataset.id;
-
-                    const hasSubtasks =
-                        allTasks.some(
-                            task =>
-                                task.parentTaskId === id
-                        );
-
-                    const message = hasSubtasks
-                        ? "Â¿Mover esta tarea y todas sus subtareas a la papelera?"
-                        : "Â¿Mover esta tarea a la papelera?";
-
-                    if (!await Dialog.confirmAsync(
-                        message,
-                        {
-                            title: "Mover a la papelera",
-                            confirmLabel:
-                                "Mover a la papelera",
-                            variant: "danger"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    this.callbacks.onDeleteTask(id);
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickPostpone"
-            ).forEach(menu => {
-
-                menu.addEventListener(
-                    "click",
-                    event => event.stopPropagation()
-                );
-
-            });
-
-            document.querySelectorAll(
-                ".quickPostponePreset"
-            ).forEach(button => {
-
-                button.addEventListener("click", event => {
-
-                    event.stopPropagation();
-
-                    try {
-
-                        this.callbacks
-                            .onQuickPostponeTask(
-                                button.closest(
-                                    ".quickPostpone"
-                                ).dataset.id,
-                                button.dataset.date
-                            );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".applyQuickPostpone"
-            ).forEach(button => {
-
-                button.addEventListener("click", event => {
-
-                    event.stopPropagation();
-
-                    const menu = button.closest(
-                        ".quickPostpone"
-                    );
-
-                    const date = menu
-                        .querySelector(
-                            ".quickPostponeDate"
-                        )
-                        .value;
-
-                    if (!date) {
-
-                        Dialog.alert(
-                            "ElegÃ­ una fecha."
-                        );
-
-                        return;
-
-                    }
-
-                    try {
-
-                        this.callbacks
-                            .onQuickPostponeTask(
-                                menu.dataset.id,
-                                date
-                            );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".quickAddSubtask"
-            ).forEach(button => {
-
-                button.addEventListener("click", event => {
-
-                    event.stopPropagation();
-
-                    this.callbacks.onOpenInlineSubtask(
-                        button.dataset.id
-                    );
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".inlineSubtaskForm"
-            ).forEach(form => {
-
-                form.addEventListener(
-                    "click",
-                    event => event.stopPropagation()
-                );
-
-                form.addEventListener("submit", event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const input = form.querySelector(
-                        ".inlineSubtaskTitle"
-                    );
-
-                    const title = input.value.trim();
-
-                    if (!title) return;
-
-                    try {
-
-                        this.callbacks
-                            .onCreateInlineSubtask(
-                                form.dataset.parentId,
-                                title
-                            );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".cancelInlineSubtask"
-            ).forEach(button => {
-
-                button.addEventListener("click", event => {
-
-                    event.stopPropagation();
-
-                    this.callbacks
-                        .onCancelInlineSubtask();
-
-                });
-
-            });
-
-            document.querySelectorAll(".task").forEach(item => {
-
-                item.addEventListener("click", () => {
-
-                    const hasSubtasks =
-                        allTasks.some(
-                            task =>
-                                task.parentTaskId ===
-                                item.dataset.id
-                        );
-
-                    if (hasSubtasks) {
-
-                        this.callbacks.onOpenProject(
-                            item.dataset.id
-                        );
-
-                        const content =
-                            document.querySelector(
-                                ".content"
-                            );
-
-                        if (content) {
-                            content.scrollTop = 0;
-                        }
-
-                        window.scrollTo({
-                            top: 0,
-                            left: 0,
-                            behavior: "auto"
-                        });
-
-                        return;
-
-                    }
-
-                    this.callbacks.onSelectTask(
-                        item.dataset.id
-                    );
-
-                });
-
-            });
-
-            document.querySelectorAll(".toggleSubtasks").forEach(button => {
-
-                button.addEventListener("click", event => {
-
-                    event.stopPropagation();
-
-                    this.callbacks.onToggleTaskExpansion(
-                        button.dataset.id
-                    );
-
-                });
-
-            });
-
-            if (selectedTask) {
-
-                const recurrenceSelect =
-                    document.getElementById(
-                        "taskRecurrence"
-                    );
-
-                const updateRecurrenceControls =
-                    () => {
-
-                        if (!recurrenceSelect) {
-                            return;
-                        }
-
-                        const frequency =
-                            recurrenceSelect.value;
-
-                        const advancedFields =
-                            document.getElementById(
-                                "recurrenceAdvancedFields"
-                            );
-
-                        const weekdays =
-                            document.getElementById(
-                                "recurrenceWeekdays"
-                            );
-
-                        const unit =
-                            document.getElementById(
-                                "recurrenceIntervalUnit"
-                            );
-
-                        if (advancedFields) {
-                            advancedFields.hidden =
-                                !frequency;
-                        }
-
-                        if (weekdays) {
-                            weekdays.hidden =
-                                frequency !==
-                                    "WEEKLY";
-                        }
-
-                        if (unit) {
-
-                            const units = {
-                                DAILY:
-                                    "dÃ­a(s)",
-                                WEEKLY:
-                                    "semana(s)",
-                                MONTHLY:
-                                    "mes(es)"
-                            };
-
-                            unit.textContent =
-                                units[frequency] ??
-                                "unidad";
-                        }
-
-                    };
-
-                recurrenceSelect
-                    ?.addEventListener(
-                        "change",
-                        updateRecurrenceControls
-                    );
-
-                updateRecurrenceControls();
-
-                document.getElementById(
-                    "saveRecurrence"
-                )?.addEventListener(
-                    "click",
-                    () => {
-                        document.getElementById(
-                            "saveTask"
-                        )?.click();
-                    }
-                );
-
-                document.getElementById(
-                    "cancelRecurrence"
-                )?.addEventListener(
-                    "click",
-                    () => {
-                        if (!recurrenceSelect) {
-                            return;
-                        }
-
-                        recurrenceSelect.value =
-                            selectedTask.recurrence ?? "";
-
-                        const interval =
-                            document.getElementById(
-                                "taskRecurrenceInterval"
-                            );
-
-                        if (interval) {
-                            interval.value = String(
-                                selectedTask
-                                    .recurrenceInterval ?? 1
-                            );
-                        }
-
-                        const selectedWeekdays =
-                            new Set(
-                                selectedTask
-                                    .recurrenceWeekdays ?? []
-                            );
-
-                        document.querySelectorAll(
-                            ".taskRecurrenceWeekday"
-                        ).forEach(input => {
-                            input.checked =
-                                selectedWeekdays.has(
-                                    Number(input.value)
-                                );
-                        });
-
-                        updateRecurrenceControls();
-
-                        const section =
-                            recurrenceSelect.closest(
-                                ".editorSection"
-                            );
-
-                        if (section) {
-                            section.open = false;
-                        }
-
-                        section?.querySelector(
-                            ":scope > summary"
-                        )?.focus();
-                    }
-                );
-
-                const taskDueDate =
-                    document.getElementById(
-                        "taskDueDate"
-                    );
-                const taskDueTime =
-                    document.getElementById(
-                        "taskDueTime"
-                    );
-
-                const updateDueTimeControl = () => {
-                    if (!taskDueTime) return;
-                    taskDueTime.disabled =
-                        !taskDueDate?.value ||
-                        taskDueDate.disabled;
-                    if (!taskDueDate?.value) {
-                        taskDueTime.value = "";
-                    }
-                };
-
-                taskDueDate?.addEventListener(
-                    "change",
-                    updateDueTimeControl
-                );
-                updateDueTimeControl();
-
-                document.getElementById("subtaskForm")?.addEventListener("submit", event => {
-
-                    event.preventDefault();
-
-                    const title = document
-                        .getElementById("subtaskTitle")
-                        .value
-                        .trim();
-
-                    if (!title) return;
-
-                    this.callbacks.onCreateSubtask(
-                        selectedTask.id,
-                        title
-                    );
-
-                });
-
-                document.querySelectorAll(".subtaskLink").forEach(button => {
-
-                    button.addEventListener("click", () => {
-                        this.callbacks.onSelectTask(button.dataset.id);
-                    });
-
-                });
-
-                document.getElementById(
-                    "openParentTask"
-                )?.addEventListener("click", async event => {
-
-                    if (
-                        !await this.confirmDiscardTaskChanges(
-                            selectedTask
-                        )
-                    ) {
-                        return;
-                    }
-
-                    this.callbacks.onOpenProject(
-                        event.currentTarget.dataset.id
-                    );
-
-                });
-
-                document.getElementById("toggleTask")?.addEventListener("click", () => {
-
-                    this.toggleTaskWithAssistedParentCompletion(
-                        selectedTask.id
-                    );
-
-                });
-
-                document.getElementById("reopenTask")?.addEventListener("click", () => {
-
-                    try {
-
-                        this.callbacks.onToggleTask(selectedTask.id);
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-                document.getElementById("postponeTask")?.addEventListener("click", () => {
-
-                    const newDate =
-                        document.getElementById("postponeDate").value;
-
-                    if (!newDate) {
-
-                        Dialog.alert(
-                            "ElegÃ­ una nueva fecha para posponer la tarea."
-                        );
-
-                        return;
-
-                    }
-
-                    try {
-
-                        this.callbacks.onPostponeTask(
-                            selectedTask.id,
-                            newDate
-                        );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-                document.getElementById("skipRecurringTask")?.addEventListener("click", async () => {
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Saltear esta vez y avanzar a la prÃ³xima fecha?",
-                        {
-                            title: "Saltear recurrencia",
-                            confirmLabel: "Saltear esta vez"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        this.callbacks.onSkipRecurringTask(
-                            selectedTask.id
-                        );
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-                document.getElementById("archiveTask")?.addEventListener("click", async () => {
-
-                    if (!await Dialog.confirmAsync(
-                        "Â¿Archivar esta tarea?",
-                        {
-                            title: "Archivar tarea",
-                            confirmLabel: "Archivar"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        this.callbacks.onArchiveTask(selectedTask.id);
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-                document.getElementById("deleteTask")?.addEventListener("click", async () => {
-
-                    const hasSubtasks = allTasks.some(
-                        task => task.parentTaskId === selectedTask.id
-                    );
-
-                    const message = hasSubtasks
-                        ? "Â¿Mover esta tarea y todas sus subtareas a la papelera?"
-                        : "Â¿Mover esta tarea a la papelera?";
-
-                    if (!await Dialog.confirmAsync(message, {
-                        title: "Enviar a la papelera",
-                        confirmLabel: "Enviar a la papelera",
-                        variant: "danger"
-                    })) {
-                        return;
-                    }
-
-                    this.callbacks.onDeleteTask(selectedTask.id);
-
-                });
-
-                document.getElementById("restoreArchivedTask")?.addEventListener("click", () => {
-
-                    this.callbacks.onRestoreArchivedTask(selectedTask.id);
-
-                });
-
-                document.getElementById("restoreDeletedTask")?.addEventListener("click", () => {
-
-                    this.callbacks.onRestoreDeletedTask(selectedTask.id);
-
-                });
-
-                document.getElementById("permanentlyDeleteTask")?.addEventListener("click", async () => {
-
-                    const hasSubtasks = allTasks.some(
-                        task => task.parentTaskId === selectedTask.id
-                    );
-
-                    const message = hasSubtasks
-                        ? "Esta acciÃ³n no se puede deshacer. Â¿Eliminar definitivamente esta tarea y todas sus subtareas?"
-                        : "Esta acciÃ³n no se puede deshacer. Â¿Eliminar definitivamente esta tarea?";
-
-                    if (!await Dialog.confirmAsync(message, {
-                        title: "Eliminar tarea",
-                        confirmLabel: "Continuar",
-                        variant: "danger"
-                    })) {
-                        return;
-                    }
-
-                    if (!await Dialog.confirmAsync(
-                        "ConfirmÃ¡ nuevamente la eliminaciÃ³n definitiva. La tarea no podrÃ¡ recuperarse.",
-                        {
-                            title: "ConfirmaciÃ³n final",
-                            confirmLabel: "Eliminar definitivamente",
-                            variant: "danger"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    this.callbacks.onPermanentlyDeleteTask(selectedTask.id);
-
-                });
-
-                document.getElementById("saveTask")?.addEventListener("click", () => {
-
-                    const title = document
-                        .getElementById("taskTitleEdit")
-                        .value
-                        .trim();
-
-                    const description = document
-                        .getElementById("taskDescriptionEdit")
-                        .value
-                        .trim();
-
-                    const areaId =
-                        document.getElementById("taskArea").value || null;
-
-                    const contextId =
-                        document.getElementById("taskContext").value || null;
-
-                    const priority = Number(
-                        document.getElementById("taskPriority").value
-                    );
-
-                    const dueDate =
-                        document.getElementById("taskDueDate").value || null;
-
-                    const startDate =
-                        document.getElementById("taskStartDate").value || null;
-
-                    const dueTime =
-                        document.getElementById("taskDueTime").value || null;
-
-                    const tagIds = Array
-                        .from(document.querySelectorAll(".taskTag"))
-                        .map(input => input.value);
-
-                    const goalIds = Array
-                        .from(document.querySelectorAll(".taskGoal"))
-                        .map(input => input.value);
-
-                    const recurrence =
-                        document.getElementById(
-                            "taskRecurrence"
-                        ).value || null;
-
-                    const recurrenceInterval =
-                        recurrence
-                            ? Number(
-                                document.getElementById(
-                                    "taskRecurrenceInterval"
-                                ).value
-                            )
-                            : 1;
-
-                    const recurrenceWeekdays =
-                        recurrence === "WEEKLY"
-                            ? [
-                                ...document
-                                    .querySelectorAll(
-                                        ".taskRecurrenceWeekday:checked"
-                                    )
-                            ].map(
-                                input =>
-                                    Number(
-                                        input.value
-                                    )
-                            )
-                            : [];
-
-                    if (!title) return;
-
-                    try {
-
-                        this.callbacks.onUpdateTask(selectedTask.id, {
-
-                            title,
-                            description,
-                            areaId,
-                            contextId,
-                            priority,
-                            startDate,
-                            dueDate,
-                            dueTime,
-                            tagIds,
-                            goalIds,
-                            recurrence,
-                            recurrenceInterval,
-                            recurrenceWeekdays
-
-                        });
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-                document.getElementById(
-                    "saveTaskMobile"
-                )?.addEventListener(
-                    "click",
-                    () => {
-
-                        document.getElementById(
-                            "saveTask"
-                        )?.click();
-
-                    }
-                );
-
-                document.getElementById(
-                    "moveTaskFromEditor"
-                )?.addEventListener(
-                    "click",
-                    async () => {
-
-                        const targetId = document
-                            .getElementById(
-                                "taskMoveTarget"
-                            )
-                            .value;
-
-                        if (!targetId) {
-                            Dialog.alert(
-                                "ElegÃ­ un destino."
-                            );
-                            return;
-                        }
-
-                        if (
-                            hasTaskEditorChanges(
-                                selectedTask
-                            )
-                        ) {
-                            Dialog.alert(
-                                "GuardÃ¡ los cambios de la tarea antes de moverla."
-                            );
-                            return;
-                        }
-
-                        const detachTask = targetId === "__ROOT__";
-
-                        if (!await Dialog.confirmAsync(
-                            detachTask
-                                ? "Â¿Convertir esta subtarea en una tarea principal?"
-                                : "Â¿Mover esta tarea y todo su Ã¡rbol al proyecto seleccionado?",
-                            {
-                                title: detachTask
-                                    ? "Convertir en tarea principal"
-                                    : "Mover tarea",
-                                confirmLabel: detachTask
-                                    ? "Convertir"
-                                    : "Mover"
-                            }
-                        )) {
-                            return;
-                        }
-
-                        try {
-
-                            if (targetId === "__ROOT__") {
-                                this.callbacks
-                                    .onDetachSubtask(
-                                        selectedTask.id
-                                    );
-                            } else {
-                                this.callbacks
-                                    .onMoveTaskToProject(
-                                        selectedTask.id,
-                                        targetId
-                                    );
-                            }
-
-                        } catch (error) {
-                            Dialog.alert(error.message);
-                        }
-
-                    }
-                );
-
-            }
-
-        }
-
-        const settingsEntityViews = {
-            areas: View.AREAS,
-            contexts: View.CONTEXTS,
-            tags: View.TAGS
-        };
-
-        const entityView =
-            settingsEntityViews[settingsSection] ??
-            view;
-
-        if (
-            entityView === View.AREAS ||
-            entityView === View.CONTEXTS ||
-            entityView === View.TAGS
-        ) {
-
-            const config = {
-
-                [View.AREAS]: {
-                    entities: areas,
-                    name: "Ã¡rea",
-                    prompt: "Nombre del Ã¡rea:",
-                    create: this.callbacks.onCreateArea,
-                    update: this.callbacks.onUpdateArea,
-                    remove: this.callbacks.onDeleteArea,
-                    isInUse: this.callbacks.onIsAreaInUse,
-                    move: this.callbacks.onMoveArea
-                },
-
-                [View.CONTEXTS]: {
-                    entities: contexts,
-                    name: "contexto",
-                    prompt: "Nombre del contexto:",
-                    create: this.callbacks.onCreateContext,
-                    update: this.callbacks.onUpdateContext,
-                    remove: this.callbacks.onDeleteContext,
-                    isInUse:
-                        this.callbacks.onIsContextInUse
-                },
-
-                [View.TAGS]: {
-                    entities: tags,
-                    name: "etiqueta",
-                    prompt: "Nombre de la etiqueta:",
-                    create: this.callbacks.onCreateTag,
-                    update: this.callbacks.onUpdateTag,
-                    remove: this.callbacks.onDeleteTag,
-                    isInUse: this.callbacks.onIsTagInUse
-                }
-
-            }[entityView];
-
-            ColorSelector.bind(
-                document.querySelector(
-                    ".entityManager"
-                ) ?? document
-            );
-
-            document.getElementById("entityForm")?.addEventListener("submit", event => {
-
-                event.preventDefault();
-
-                const name = document
-                    .getElementById("entityName")
-                    .value
-                    .trim();
-
-                const color =
-                    document.getElementById("entityColor").value;
-
-                if (!name) return;
-
-                config.create(name, color);
-
-            });
-
-            document.querySelectorAll(".deleteEntity").forEach(button => {
-
-                button.addEventListener("click", async () => {
-
-                    const article = config.name === "contexto"
-                        ? "este"
-                        : "esta";
-
-                    if (config.isInUse(
-                        button.dataset.id
-                    )) {
-                        await Dialog.alert(
-                            `No se puede eliminar ${article} ${config.name} porque estÃ¡ asignado a una o mÃ¡s tareas.`,
-                            {
-                                title:
-                                    `${config.name[0].toUpperCase()}${config.name.slice(1)} en uso`
-                            }
-                        );
-                        return;
-                    }
-
-                    if (!await Dialog.confirmAsync(
-                        `Eliminar ${article} ${config.name} puede afectar a mÃºltiples tareas que lo utilizan. Â¿QuerÃ©s continuar?`,
-                        {
-                            title: `Eliminar ${config.name}`,
-                            confirmLabel: "Continuar",
-                            variant: "danger"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    if (!await Dialog.confirmAsync(
-                        `Esta acciÃ³n es definitiva y no puede deshacerse. Â¿ConfirmÃ¡s la eliminaciÃ³n de ${article} ${config.name}?`,
-                        {
-                            title: "ConfirmaciÃ³n definitiva",
-                            confirmLabel:
-                                "Eliminar definitivamente",
-                            variant: "danger"
-                        }
-                    )) {
-                        return;
-                    }
-
-                    try {
-
-                        config.remove(button.dataset.id);
-
-                    } catch (error) {
-
-                        Dialog.alert(error.message);
-
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".moveEntity"
-            ).forEach(button => {
-
-                button.addEventListener("click", () => {
-
-                    if (!config.move) return;
-
-                    try {
-                        config.move(
-                            button.dataset.id,
-                            button.dataset.direction
-                        );
-                    } catch (error) {
-                        Dialog.alert(error.message);
-                    }
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".editEntity"
-            ).forEach(button => {
-
-                button.addEventListener("click", () => {
-
-                    const item = button.closest(
-                        ".entityItem"
-                    );
-
-                    item.querySelector(
-                        ".entityDisplay"
-                    ).hidden = true;
-
-                    const form = item.querySelector(
-                        ".entityEditForm"
-                    );
-
-                    form.hidden = false;
-
-                    form.querySelector(
-                        ".entityEditName"
-                    ).focus();
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".cancelEntityEdit"
-            ).forEach(button => {
-
-                button.addEventListener("click", () => {
-
-                    const item = button.closest(
-                        ".entityItem"
-                    );
-
-                    item.querySelector(
-                        ".entityEditForm"
-                    ).hidden = true;
-
-                    item.querySelector(
-                        ".entityDisplay"
-                    ).hidden = false;
-
-                });
-
-            });
-
-            document.querySelectorAll(
-                ".entityEditForm"
-            ).forEach(form => {
-
-                const saveEntity = () => {
-
-                    const entity =
-                        config.entities.find(
-                            entity =>
-                                entity.id ===
-                                    form.dataset.id
-                        );
-
-                    if (!entity) return;
-
-                    const name =
-                        form.querySelector(
-                            ".entityEditName"
-                        ).value.trim();
-
-                    const color =
-                        form.querySelector(
-                            ".entityEditColor"
-                        ).value;
-
-                    if (!name) return;
-
-                    try {
-
-                        config.update(
-                            entity.id,
-                            name,
-                            color
-                        );
-
-                    } catch (error) {
-
-                        Dialog.alert(
-                            error.message
-                        );
-
-                    }
-
-                };
-
-                form.addEventListener(
-                    "submit",
-                    event => {
-
-                        event.preventDefault();
-
-                    }
-                );
-
-                form.querySelector(
-                    ".saveEntityEdit"
-                ).addEventListener(
-                    "click",
-                    saveEntity
-                );
-
-                form.querySelector(
-                    ".entityEditName"
-                ).addEventListener(
-                    "keydown",
-                    event => {
-
-                        if (
-                            event.key !==
-                            "Enter"
-                        ) {
-                            return;
-                        }
-
-                        event.preventDefault();
-                        saveEntity();
-
-                    }
-                );
-
-            });;
-
-        }
-    }
-
-}
+                   ;×mí¢G§²ÚîÆ­yÒˆK›X\
+ÚXÚØ›ÞOˆÚXÚØ›Þ˜[YJNÂ‚ˆÛÛœÝYÛØ[YÈHÂˆ‹‹™ØÝ[Y[ˆœ]Y\žTÙ[XÝÜ[
+ˆ‹˜[ÑÛØ[[œ]‚ˆ
+BˆK›X\
+[œ]Oˆ[œ]˜[YJNÂ‚ˆÛÛœÝÚ[™Ù\ÈHßNÂ‚ˆYˆ
+š[Üš]U˜[YHOOHˆŠHÂˆÚ[™Ù\Ëœš[Üš]HBˆ[X™\Šš[Üš]U˜[YJNÂˆB‚ˆYˆ
+YQ]JHÂˆÚ[™Ù\Ë™YQ]HHYQ]NÂˆÚ[™Ù\Ë™YU[YHBˆYU[YH[ÂˆB‚ˆYˆ
+\™XU˜[YHOOHˆŠHÂˆÚ[™Ù\Ë˜\™XRYBˆ\™XU˜[YHOOH—×ÐÓPT—×È‚ˆÈ[ˆˆ\™XU˜[YNÂˆB‚ˆYˆ
+ÛÛ^˜[YHOOHˆŠHÂˆÚ[™Ù\Ë˜ÛÛ^YBˆÛÛ^˜[YHOOH—×ÐÓPT—×È‚ˆÈ[ˆˆÛÛ^˜[YNÂˆB‚ˆYˆ
+YYÒYË›[™Ýˆ
+HÂˆÚ[™Ù\Ë˜YYÒYÈBˆYYÒYÎÂˆB‚ˆYˆ
+YÛØ[YË›[™Ýˆ
+HÂˆÚ[™Ù\Ë˜YÛØ[YÈBˆYÛØ[YÎÂˆB‚ˆYˆ
+ˆØš™XÝšÙ^\ÊÚ[™Ù\ÊBˆ›[™ÝOOHˆ
+HÂ‚ˆX[ÙË˜[\
+ˆ‘[YðëH[Y[›ÜÈ[ˆØ[Xš[È\˜H\XØ\‹ˆ‚ˆ
+NÂ‚ˆ™]\›ŽÂ‚ˆB‚ˆžHÂ‚ˆÛÛœÝÛÝ[Bˆ\Ë˜Ø[˜XÚÜÂˆ›Û[Õ\]U\ÚÜÊÂˆ‹‹˜Ú[™Ù\ÂˆJNÂ‚ˆX[ÙË˜[\
+ˆØ[Xš[ÜÈ\XØYÜÈ[ˆ	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸK˜ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆÛÛœÝ[Ó[Ý™QX[ÙÈBˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[Ó[Ý™QX[ÙÈ‚ˆ
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ›Ü[[Ó[Ý™QX[ÙÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ[Ó[Ý™QX[ÙÏËœÚÝÓ[Ù[
+
+NÂˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜Ø[˜Ù[[Ó[Ý™QX[ÙÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ[Ó[Ý™QX[ÙÏË˜ÛÜÙJ
+NÂˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[Ó[Ý™U\ÚÜÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆÛÛœÝ\™Ù]YHØÝ[Y[ˆ™Ù][[Y[žRY
+˜[Ó[Ý™U\™Ù]ŠBˆË˜[YNÂ‚ˆYˆ
+]\™Ù]Y
+HÂˆX[ÙË˜[\
+‘[YðëH[ˆ\Ý[›ËˆŠNÂˆ™]\›ŽÂˆB‚ˆÛÛœÝ]XÚ\ÚÜÈH\™Ù]YOOH—×Ô“ÓÕ×ÈŽÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ]XÚ\ÚÜÂˆÈ°¯ÐÛÛ™\\ˆ\È\™X\ÈÙ[XØÚ[Û˜Y\È[ˆ\™X\Èš[˜Ú\[\ÏÈ‚ˆˆ°¯Ó[Ý™\ˆ\È\™X\ÈÙ[XØÚ[Û˜Y\ÈHÝ\È0è\˜›Û\È[›ÞYXÝÈ[YÚYÏÈ‹ˆÂˆ]Nˆ“[Ý™\ˆ\™X\È‹ˆÛÛ™š\›SX™[ˆ“[Ý™\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂˆÛÛœÝÛÝ[H\Ë˜Ø[˜XÚÜÂˆ›Û[Ó[Ý™U\ÚÜÊˆ]XÚ\ÚÜÈÈ[ˆ\™Ù]Yˆ
+NÂ‚ˆ[Ó[Ý™QX[ÙÏË˜ÛÜÙJ
+NÂˆX[ÙË˜[\
+ˆÙH[ÝšY\›Ûˆ	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸK˜ˆ
+NÂˆHØ]Ú
+\œ›ÜŠHÂˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂˆB‚ˆJNÂ‚ˆÛÛœÝ[ÑYQ]HBˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[ÑYQ]H‚ˆ
+NÂˆÛÛœÝ[ÑYU[YHBˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[ÑYU[YH‚ˆ
+NÂ‚ˆ[ÑYQ]OË˜Y]™[\Ý[™\Šˆ˜Ú[™ÙH‹ˆ
+
+HOˆÂˆÛÛœÝ\Ñ]HBˆ›ÛÛX[Š[ÑYQ]K˜[YJNÂ‚ˆ[ÑYU[YK™\ØX›YBˆZ\Ñ]NÂ‚ˆYˆ
+Z\Ñ]JHÂˆ[ÑYU[YK˜[YHHˆŽÂˆBˆBˆ
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[ÐÛÛ\]U\ÚÜÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯ÐÛÛ\]\ˆÙ\È\È\™X\ÈÙ[XØÚ[Û˜Y\ÏÈ‹ˆÂˆ]NˆÛÛ\]\ˆ\™X\È‹ˆÛÛ™š\›SX™[ˆÛÛ\]\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛœÝÛÝ[Bˆ\Ë˜Ø[˜XÚÜÂˆ›Û[ÐÛÛ\]U\ÚÜÊ
+NÂ‚ˆX[ÙË˜[\
+ˆÙHÛÛ\]\›Ûˆ	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸK˜ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[Ð\˜Ú]™U\ÚÜÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯Ð\˜Ú]˜\ˆÙ\È\È\™X\ÈÙ[XØÚ[Û˜Y\ÏÈ‹ˆÂˆ]Nˆ\˜Ú]˜\ˆ\™X\È‹ˆÛÛ™š\›SX™[ˆ\˜Ú]˜\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛœÝÛÝ[Bˆ\Ë˜Ø[˜XÚÜÂˆ›Û[Ð\˜Ú]™U\ÚÜÊ
+NÂ‚ˆX[ÙË˜[\
+ˆÙH\˜Ú]˜\›Ûˆ	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸK˜ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[Ñ[]U\ÚÜÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯Ñ[šX\ˆHH\[\˜H\È\™X\ÈÙ[XØÚ[Û˜Y\ÏÈ\ÈÝX\™X\È\ØÙ[™Y[\È[Xšpê[ˆÙ\°è[ˆ[šXY\Ëˆ‹ˆÂˆ]Nˆ‘[šX\ˆ\™X\ÈHH\[\˜H‹ˆÛÛ™š\›SX™[ˆ‘[šX\ˆ‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛœÝÛÝ[Bˆ\Ë˜Ø[˜XÚÜÂˆ›Û[Ñ[]U\ÚÜÊ
+NÂ‚ˆX[ÙË˜[\
+ˆÙH[šX\›Ûˆ	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸHHH\[\˜K˜ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜[Ô\›X[™[Q[]U\ÚÜÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯Ñ[[Z[˜\ˆYš[š]]˜[Y[H\È\™X\ÈÙ[XØÚ[Û˜Y\ÈHÝ\ÈÝX\™X\ÏÈ\ÝHXØÚpìÛˆ›ÈÙHYYH\ÚXÙ\‹ˆ‹ˆÂˆ]Nˆ‘[[Z[˜\ˆ\™X\ÈYš[š]]˜[Y[H‹ˆÛÛ™š\›SX™[ˆÛÛ[X\ˆ‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊˆÛÛ™š\›pèHY]˜[Y[HH[[Z[˜XÚpìÛˆYš[š]]˜Kˆ\È\™X\È›ÈÙ°è[ˆ™XÝ\\˜\œÙKˆ‹ˆÂˆ]NˆÛÛ™š\›XXÚpìÛˆš[˜[‹ˆÛÛ™š\›SX™[ˆ‘[[Z[˜\ˆYš[š]]˜[Y[H‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛœÝÛÝ[Bˆ\Ë˜Ø[˜XÚÜÂˆ›Û[Ô\›X[™[Q[]U\ÚÜÊ
+NÂ‚ˆX[ÙË˜[\
+ˆÙH[[Z[˜\›ÛˆYš[š]]˜[Y[H	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸK˜ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ™[\U˜\Ú‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆÛÛœÝÛÝ[H[\ÚÜË™š[\Šˆ\ÚÈOˆ\ÚËš\Ñ[]Y
+
+Bˆ
+K›[™ÝÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ0¯Ñ[[Z[˜\ˆYš[š]]˜[Y[H\È	ØÛÝ[H	ØÛÝ[OOHHÈ\™XHˆˆ\™X\ÈŸHHH\[\˜OÈ\ÝHXØÚpìÛˆ›ÈÙHYYH\ÚXÙ\‹˜ˆÂˆ]Nˆ•˜XÚX\ˆ\[\˜H‹ˆÛÛ™š\›SX™[ˆÛÛ[X\ˆ‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊˆÛÛ™š\›pèHY]˜[Y[H]YH]Y\°ê\È˜XÚX\ˆH\[\˜Kˆ\È\™X\È›ÈÙ°è[ˆ™XÝ\\˜\œÙKˆ‹ˆÂˆ]NˆÛÛ™š\›XXÚpìÛˆš[˜[‹ˆÛÛ™š\›SX™[ˆ•˜XÚX\ˆYš[š]]˜[Y[H‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛœÝ[]YÛÝ[Bˆ\Ë˜Ø[˜XÚÜË›Û‘[\U˜\Ú
+
+NÂ‚ˆX[ÙË˜[\
+ˆÙH˜XÚpìÈH\[\˜Nˆ	Ù[]YÛÝ[H	Ù[]YÛÝ[OOHHÈ\™XH[[Z[˜YHˆˆ\™X\È[[Z[˜Y\ÈŸHYš[š]]˜[Y[K˜ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ›Ü[”›Ú™XÝ\ÚÐÜ™X][Ûˆ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›Û“Ü[”›Ú™XÝ\ÚÐÜ™X][ÛŠ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜ÛÜÙT›Ú™XÝšY]È‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆ\Ë˜Ø[˜XÚÜË›ÛÛÜÙT›Ú™XÝ
+
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ™Y]›Ú™XÝ\ÚÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û‘Y]›Ú™XÝ\ÚÊˆ]™[˜Ý\œ™[\™Ù]™]\Ù]šYˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™›Ü‘XXÚ
+Y[HOˆÂ‚ˆY[K˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ]™[Oˆ]™[œÝÜ›ÜYØ][ÛŠ
+Bˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹˜ÛÜÙT]ZXÚÐXÝ[ÛœÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆ]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K›Ü[ˆH˜[ÙNÂ‚ˆBˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÑY]\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û”Ù[XÝ\ÚÊˆ]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™]\Ù]šYˆ
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÑ\XØ]U\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆÛÛœÝYH]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™]\Ù]šYÂ‚ˆÛÛœÝ\ÔÝX\ÚÜÈBˆ[\ÚÜËœÛÛYJˆ\ÚÈO‚ˆ\ÚËœ\™[\ÚÒYOOHYˆ
+NÂ‚ˆÛÛœÝY\ÜØYÙHH\ÔÝX\ÚÜÂˆÈ°¯Ñ\XØ\ˆ\ÝH\™XHHÙÈÝH0è\˜›ÛÛÛ[È[ˆ›ÞYXÝÈY]›ÏÈ‚ˆˆ°¯Ñ\XØ\ˆ\ÝH\™XOÈŽÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊˆY\ÜØYÙKˆÂˆ]Nˆ‘\XØ\ˆ\™XH‹ˆÛÛ™š\›SX™[ˆ‘\XØ\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛœÝ\XØ]YYBˆ\Ë˜Ø[˜XÚÜÂˆ›Û‘\XØ]U\ÚÊY
+NÂ‚ˆYˆ
+Y\XØ]YY
+H™]\›ŽÂ‚ˆ]\XØ]Y\ÚÈBˆË‹‹™ØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹\ÚÈ‚ˆ
+WK™š[™
+ˆ\ÚÈO‚ˆ\ÚË™]\Ù]šYOOBˆ\XØ]YYˆ
+NÂ‚ˆYˆ
+Y\XØ]Y\ÚÊHÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›Û”™]™X[\ÚÊˆ\XØ]YYˆ
+NÂ‚ˆ\XØ]Y\ÚÈBˆË‹‹™ØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹\ÚÈ‚ˆ
+WK™š[™
+ˆ\ÚÈO‚ˆ\ÚË™]\Ù]šYOOBˆ\XØ]YYˆ
+NÂ‚ˆB‚ˆYˆ
+\XØ]Y\ÚÊHÂ‚ˆ\XØ]Y\ÚË˜Û\ÜÓ\Ý˜Y
+ˆœ™XÙ[Q\XØ]Y\ÚÈ‚ˆ
+NÂ‚ˆ\XØ]Y\ÚËœØÜ›Û[ÕšY]ÊÂˆ™Z]š[ÜŽˆœÛ[ÛÝ‹ˆ›ØÚÎˆ˜Ù[\ˆ‚ˆJNÂ‚ˆB‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÔÚÚ\™XÝ\œš[™Õ\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯ÔØ[X\ˆ\ÝH[œÝ[˜ÚXHH]˜[ž˜\ˆHH°ìÞ[XH™XÚOÈ‹ˆÂˆ]Nˆ”Ø[X\ˆ™XÝ\œ™[˜ÚXH‹ˆÛÛ™š\›SX™[ˆ”Ø[X\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›Û”]ZXÚÔÚÚ\™XÝ\œš[™Õ\ÚÊˆ]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™]\Ù]šYˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÑ[™™XÝ\œ™[˜ÙH‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯Ñš[˜[^˜\ˆH™XÝ\œ™[˜ÚXOÈH\™XHÛÛœÙ\˜\°èHÝH™XÚHXÝX[\›ÈZ˜\°èHH™\]\œÙKˆ‹ˆÂˆ]Nˆ‘š[˜[^˜\ˆ™XÝ\œ™[˜ÚXH‹ˆÛÛ™š\›SX™[ˆ‘š[˜[^˜\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›Û”]ZXÚÑ[™™XÝ\œ™[˜ÙJˆ]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™]\Ù]šYˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÐ\˜Ú]™U\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯Ð\˜Ú]˜\ˆ\ÝH\™XOÈ‹ˆÂˆ]Nˆ\˜Ú]˜\ˆ\™XH‹ˆÛÛ™š\›SX™[ˆ\˜Ú]˜\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û\˜Ú]™U\ÚÊˆ]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™]\Ù]šYˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÑ[]U\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆÛÛœÝYH]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÓ[Ü™PXÝ[ÛœÈ‚ˆ
+K™]\Ù]šYÂ‚ˆÛÛœÝ\ÔÝX\ÚÜÈBˆ[\ÚÜËœÛÛYJˆ\ÚÈO‚ˆ\ÚËœ\™[\ÚÒYOOHYˆ
+NÂ‚ˆÛÛœÝY\ÜØYÙHH\ÔÝX\ÚÜÂˆÈ°¯Ó[Ý™\ˆ\ÝH\™XHHÙ\ÈÝ\ÈÝX\™X\ÈHH\[\˜OÈ‚ˆˆ°¯Ó[Ý™\ˆ\ÝH\™XHHH\[\˜OÈŽÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊˆY\ÜØYÙKˆÂˆ]Nˆ“[Ý™\ˆHH\[\˜H‹ˆÛÛ™š\›SX™[‚ˆ“[Ý™\ˆHH\[\˜H‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆ\Ë˜Ø[˜XÚÜË›Û‘[]U\ÚÊY
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÔÜÝÛ™H‚ˆ
+K™›Ü‘XXÚ
+Y[HOˆÂ‚ˆY[K˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ]™[Oˆ]™[œÝÜ›ÜYØ][ÛŠ
+Bˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÔÜÝÛ™T™\Ù]‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›Û”]ZXÚÔÜÝÛ™U\ÚÊˆ]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÔÜÝÛ™H‚ˆ
+K™]\Ù]šYˆ]Û‹™]\Ù]™]Bˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹˜\T]ZXÚÔÜÝÛ™H‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆÛÛœÝY[HH]Û‹˜ÛÜÙ\Ý
+ˆ‹œ]ZXÚÔÜÝÛ™H‚ˆ
+NÂ‚ˆÛÛœÝ]HHY[Bˆœ]Y\žTÙ[XÝÜŠˆ‹œ]ZXÚÔÜÝÛ™Q]H‚ˆ
+Bˆ˜[YNÂ‚ˆYˆ
+Y]JHÂ‚ˆX[ÙË˜[\
+ˆ‘[YðëH[˜H™XÚKˆ‚ˆ
+NÂ‚ˆ™]\›ŽÂ‚ˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›Û”]ZXÚÔÜÝÛ™U\ÚÊˆY[K™]\Ù]šYˆ]Bˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹œ]ZXÚÐYÝX\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û“Ü[’[›[™TÝX\ÚÊˆ]Û‹™]\Ù]šYˆ
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹š[›[™TÝX\ÚÑ›Ü›H‚ˆ
+K™›Ü‘XXÚ
+›Ü›HOˆÂ‚ˆ›Ü›K˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ]™[Oˆ]™[œÝÜ›ÜYØ][ÛŠ
+Bˆ
+NÂ‚ˆ›Ü›K˜Y]™[\Ý[™\ŠœÝX›Z]‹]™[OˆÂ‚ˆ]™[œ™]™[Y˜][
+
+NÂˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆÛÛœÝ[œ]H›Ü›Kœ]Y\žTÙ[XÝÜŠˆ‹š[›[™TÝX\ÚÕ]H‚ˆ
+NÂ‚ˆÛÛœÝ]HH[œ]˜[YKš[J
+NÂ‚ˆYˆ
+]]JH™]\›ŽÂ‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›ÛÜ™X]R[›[™TÝX\ÚÊˆ›Ü›K™]\Ù]œ\™[Yˆ]Bˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹˜Ø[˜Ù[[›[™TÝX\ÚÈ‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆ\Ë˜Ø[˜XÚÜÂˆ›ÛØ[˜Ù[[›[™TÝX\ÚÊ
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+‹\ÚÈŠK™›Ü‘XXÚ
+][HOˆÂ‚ˆ][K˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆÛÛœÝ\ÔÝX\ÚÜÈBˆ[\ÚÜËœÛÛYJˆ\ÚÈO‚ˆ\ÚËœ\™[\ÚÒYOOBˆ][K™]\Ù]šYˆ
+NÂ‚ˆYˆ
+\ÔÝX\ÚÜÊHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û“Ü[”›Ú™XÝ
+ˆ][K™]\Ù]šYˆ
+NÂ‚ˆÛÛœÝÛÛ[BˆØÝ[Y[œ]Y\žTÙ[XÝÜŠˆ‹˜ÛÛ[‚ˆ
+NÂ‚ˆYˆ
+ÛÛ[
+HÂˆÛÛ[œØÜ›ÛÜHÂˆB‚ˆÚ[™ÝËœØÜ›ÛÊÂˆÜˆˆYˆˆ™Z]š[ÜŽˆ˜]]È‚ˆJNÂ‚ˆ™]\›ŽÂ‚ˆB‚ˆ\Ë˜Ø[˜XÚÜË›Û”Ù[XÝ\ÚÊˆ][K™]\Ù]šYˆ
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+‹ÙÙÛTÝX\ÚÜÈŠK™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹]™[OˆÂ‚ˆ]™[œÝÜ›ÜYØ][ÛŠ
+NÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û•ÙÙÛU\ÚÑ^[œÚ[ÛŠˆ]Û‹™]\Ù]šYˆ
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆYˆ
+Ù[XÝY\ÚÊHÂ‚ˆÛÛœÝ™XÝ\œ™[˜ÙTÙ[XÝBˆØÝ[Y[™Ù][[Y[žRY
+ˆ\ÚÔ™XÝ\œ™[˜ÙH‚ˆ
+NÂ‚ˆÛÛœÝ\]T™XÝ\œ™[˜ÙPÛÛ›ÛÈBˆ
+
+HOˆÂ‚ˆYˆ
+\™XÝ\œ™[˜ÙTÙ[XÝ
+HÂˆ™]\›ŽÂˆB‚ˆÛÛœÝœ™\]Y[˜ÞHBˆ™XÝ\œ™[˜ÙTÙ[XÝ˜[YNÂ‚ˆÛÛœÝY˜[˜ÙYšY[ÈBˆØÝ[Y[™Ù][[Y[žRY
+ˆœ™XÝ\œ™[˜ÙPY˜[˜ÙYšY[È‚ˆ
+NÂ‚ˆÛÛœÝÙYZÙ^\ÈBˆØÝ[Y[™Ù][[Y[žRY
+ˆœ™XÝ\œ™[˜ÙUÙYZÙ^\È‚ˆ
+NÂ‚ˆÛÛœÝ[š]BˆØÝ[Y[™Ù][[Y[žRY
+ˆœ™XÝ\œ™[˜ÙR[\˜[[š]‚ˆ
+NÂ‚ˆYˆ
+Y˜[˜ÙYšY[ÊHÂˆY˜[˜ÙYšY[ËšY[ˆBˆYœ™\]Y[˜ÞNÂˆB‚ˆYˆ
+ÙYZÙ^\ÊHÂˆÙYZÙ^\ËšY[ˆBˆœ™\]Y[˜ÞHOOBˆ•ÑQRÓHŽÂˆB‚ˆYˆ
+[š]
+HÂ‚ˆÛÛœÝ[š]ÈHÂˆRSN‚ˆ™0ëXJÊH‹ˆÑQRÓN‚ˆœÙ[X[˜JÊH‹ˆSÓ•N‚ˆ›Y\Ê\ÊH‚ˆNÂ‚ˆ[š]^ÛÛ[Bˆ[š]ÖÙœ™\]Y[˜ÞWHÏÂˆ[šYYŽÂˆB‚ˆNÂ‚ˆ™XÝ\œ™[˜ÙTÙ[XÝˆË˜Y]™[\Ý[™\Šˆ˜Ú[™ÙH‹ˆ\]T™XÝ\œ™[˜ÙPÛÛ›ÛÂˆ
+NÂ‚ˆ\]T™XÝ\œ™[˜ÙPÛÛ›ÛÊ
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆœØ]™T™XÝ\œ™[˜ÙH‚ˆ
+OË˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ
+
+HOˆÂˆØÝ[Y[™Ù][[Y[žRY
+ˆœØ]™U\ÚÈ‚ˆ
+OË˜ÛXÚÊ
+NÂˆBˆ
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ˜Ø[˜Ù[™XÝ\œ™[˜ÙH‚ˆ
+OË˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ
+
+HOˆÂˆYˆ
+\™XÝ\œ™[˜ÙTÙ[XÝ
+HÂˆ™]\›ŽÂˆB‚ˆ™XÝ\œ™[˜ÙTÙ[XÝ˜[YHBˆÙ[XÝY\ÚËœ™XÝ\œ™[˜ÙHÏÈˆŽÂ‚ˆÛÛœÝ[\˜[BˆØÝ[Y[™Ù][[Y[žRY
+ˆ\ÚÔ™XÝ\œ™[˜ÙR[\˜[‚ˆ
+NÂ‚ˆYˆ
+[\˜[
+HÂˆ[\˜[˜[YHHÝš[™ÊˆÙ[XÝY\ÚÂˆœ™XÝ\œ™[˜ÙR[\˜[ÏÈBˆ
+NÂˆB‚ˆÛÛœÝÙ[XÝYÙYZÙ^\ÈBˆ™]ÈÙ]
+ˆÙ[XÝY\ÚÂˆœ™XÝ\œ™[˜ÙUÙYZÙ^\ÈÏÈ×Bˆ
+NÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹\ÚÔ™XÝ\œ™[˜ÙUÙYZÙ^H‚ˆ
+K™›Ü‘XXÚ
+[œ]OˆÂˆ[œ]˜ÚXÚÙYBˆÙ[XÝYÙYZÙ^\Ëš\Êˆ[X™\Š[œ]˜[YJBˆ
+NÂˆJNÂ‚ˆ\]T™XÝ\œ™[˜ÙPÛÛ›ÛÊ
+NÂ‚ˆÛÛœÝÙXÝ[ÛˆBˆ™XÝ\œ™[˜ÙTÙ[XÝ˜ÛÜÙ\Ý
+ˆ‹™Y]Ü”ÙXÝ[Ûˆ‚ˆ
+NÂ‚ˆYˆ
+ÙXÝ[ÛŠHÂˆÙXÝ[Û‹›Ü[ˆH˜[ÙNÂˆB‚ˆÙXÝ[ÛËœ]Y\žTÙ[XÝÜŠˆŽœØÛÜHˆÝ[[X\žH‚ˆ
+OË™›ØÝ\Ê
+NÂˆBˆ
+NÂ‚ˆÛÛœÝ\ÚÑYQ]HBˆØÝ[Y[™Ù][[Y[žRY
+ˆ\ÚÑYQ]H‚ˆ
+NÂˆÛÛœÝ\ÚÑYU[YHBˆØÝ[Y[™Ù][[Y[žRY
+ˆ\ÚÑYU[YH‚ˆ
+NÂ‚ˆÛÛœÝ\]QYU[YPÛÛ›ÛH
+
+HOˆÂˆYˆ
+]\ÚÑYU[YJH™]\›ŽÂˆ\ÚÑYU[YK™\ØX›YBˆ]\ÚÑYQ]OË˜[YHˆ\ÚÑYQ]K™\ØX›YÂˆYˆ
+]\ÚÑYQ]OË˜[YJHÂˆ\ÚÑYU[YK˜[YHHˆŽÂˆBˆNÂ‚ˆ\ÚÑYQ]OË˜Y]™[\Ý[™\Šˆ˜Ú[™ÙH‹ˆ\]QYU[YPÛÛ›Ûˆ
+NÂˆ\]QYU[YPÛÛ›Û
+
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œÝX\ÚÑ›Ü›HŠOË˜Y]™[\Ý[™\ŠœÝX›Z]‹]™[OˆÂ‚ˆ]™[œ™]™[Y˜][
+
+NÂ‚ˆÛÛœÝ]HHØÝ[Y[ˆ™Ù][[Y[žRY
+œÝX\ÚÕ]HŠBˆ˜[YBˆš[J
+NÂ‚ˆYˆ
+]]JH™]\›ŽÂ‚ˆ\Ë˜Ø[˜XÚÜË›ÛÜ™X]TÝX\ÚÊˆÙ[XÝY\ÚËšYˆ]Bˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+‹œÝX\ÚÓ[šÈŠK™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë˜Ø[˜XÚÜË›Û”Ù[XÝ\ÚÊ]Û‹™]\Ù]šY
+NÂˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ›Ü[”\™[\ÚÈ‚ˆ
+OË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È]™[OˆÂ‚ˆYˆ
+ˆX]ØZ]\Ë˜ÛÛ™š\›Q\ØØ\™\ÚÐÚ[™Ù\ÊˆÙ[XÝY\ÚÂˆ
+Bˆ
+HÂˆ™]\›ŽÂˆB‚ˆ\Ë˜Ø[˜XÚÜË›Û“Ü[”›Ú™XÝ
+ˆ]™[˜Ý\œ™[\™Ù]™]\Ù]šYˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ÙÙÛU\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆ\ËÙÙÛU\ÚÕÚ]\ÜÚ\ÝY\™[ÛÛ\][ÛŠˆÙ[XÝY\ÚËšYˆ
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œ™[Ü[•\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û•ÙÙÛU\ÚÊÙ[XÝY\ÚËšY
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œÜÝÛ™U\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆÛÛœÝ™]Ñ]HBˆØÝ[Y[™Ù][[Y[žRY
+œÜÝÛ™Q]HŠK˜[YNÂ‚ˆYˆ
+[™]Ñ]JHÂ‚ˆX[ÙË˜[\
+ˆ‘[YðëH[˜HY]˜H™XÚH\˜HÜÜÛ™\ˆH\™XKˆ‚ˆ
+NÂ‚ˆ™]\›ŽÂ‚ˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û”ÜÝÛ™U\ÚÊˆÙ[XÝY\ÚËšYˆ™]Ñ]Bˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œÚÚ\™XÝ\œš[™Õ\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯ÔØ[X\ˆ\ÝH™^ˆH]˜[ž˜\ˆHH°ìÞ[XH™XÚOÈ‹ˆÂˆ]Nˆ”Ø[X\ˆ™XÝ\œ™[˜ÚXH‹ˆÛÛ™š\›SX™[ˆ”Ø[X\ˆ\ÝH™^ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û”ÚÚ\™XÝ\œš[™Õ\ÚÊˆÙ[XÝY\ÚËšYˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+˜\˜Ú]™U\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ°¯Ð\˜Ú]˜\ˆ\ÝH\™XOÈ‹ˆÂˆ]Nˆ\˜Ú]˜\ˆ\™XH‹ˆÛÛ™š\›SX™[ˆ\˜Ú]˜\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û\˜Ú]™U\ÚÊÙ[XÝY\ÚËšY
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+™[]U\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆÛÛœÝ\ÔÝX\ÚÜÈH[\ÚÜËœÛÛYJˆ\ÚÈOˆ\ÚËœ\™[\ÚÒYOOHÙ[XÝY\ÚËšYˆ
+NÂ‚ˆÛÛœÝY\ÜØYÙHH\ÔÝX\ÚÜÂˆÈ°¯Ó[Ý™\ˆ\ÝH\™XHHÙ\ÈÝ\ÈÝX\™X\ÈHH\[\˜OÈ‚ˆˆ°¯Ó[Ý™\ˆ\ÝH\™XHHH\[\˜OÈŽÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊY\ÜØYÙKÂˆ]Nˆ‘[šX\ˆHH\[\˜H‹ˆÛÛ™š\›SX™[ˆ‘[šX\ˆHH\[\˜H‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆJJHÂˆ™]\›ŽÂˆB‚ˆ\Ë˜Ø[˜XÚÜË›Û‘[]U\ÚÊÙ[XÝY\ÚËšY
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œ™\ÝÜ™P\˜Ú]™Y\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û”™\ÝÜ™P\˜Ú]™Y\ÚÊÙ[XÝY\ÚËšY
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œ™\ÝÜ™Q[]Y\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û”™\ÝÜ™Q[]Y\ÚÊÙ[XÝY\ÚËšY
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œ\›X[™[Q[]U\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆÛÛœÝ\ÔÝX\ÚÜÈH[\ÚÜËœÛÛYJˆ\ÚÈOˆ\ÚËœ\™[\ÚÒYOOHÙ[XÝY\ÚËšYˆ
+NÂ‚ˆÛÛœÝY\ÜØYÙHH\ÔÝX\ÚÜÂˆÈ‘\ÝHXØÚpìÛˆ›ÈÙHYYH\ÚXÙ\‹ˆ0¯Ñ[[Z[˜\ˆYš[š]]˜[Y[H\ÝH\™XHHÙ\ÈÝ\ÈÝX\™X\ÏÈ‚ˆˆ‘\ÝHXØÚpìÛˆ›ÈÙHYYH\ÚXÙ\‹ˆ0¯Ñ[[Z[˜\ˆYš[š]]˜[Y[H\ÝH\™XOÈŽÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊY\ÜØYÙKÂˆ]Nˆ‘[[Z[˜\ˆ\™XH‹ˆÛÛ™š\›SX™[ˆÛÛ[X\ˆ‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆJJHÂˆ™]\›ŽÂˆB‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜ÊˆÛÛ™š\›pèHY]˜[Y[HH[[Z[˜XÚpìÛˆYš[š]]˜KˆH\™XH›ÈÙ°èH™XÝ\\˜\œÙKˆ‹ˆÂˆ]NˆÛÛ™š\›XXÚpìÛˆš[˜[‹ˆÛÛ™š\›SX™[ˆ‘[[Z[˜\ˆYš[š]]˜[Y[H‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆ\Ë˜Ø[˜XÚÜË›Û”\›X[™[Q[]U\ÚÊÙ[XÝY\ÚËšY
+NÂ‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+œØ]™U\ÚÈŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆÛÛœÝ]HHØÝ[Y[ˆ™Ù][[Y[žRY
+\ÚÕ]QY]ŠBˆ˜[YBˆš[J
+NÂ‚ˆÛÛœÝ\ØÜš\[ÛˆHØÝ[Y[ˆ™Ù][[Y[žRY
+\ÚÑ\ØÜš\[Û‘Y]ŠBˆ˜[YBˆš[J
+NÂ‚ˆÛÛœÝ\™XRYBˆØÝ[Y[™Ù][[Y[žRY
+\ÚÐ\™XHŠK˜[YH[Â‚ˆÛÛœÝÛÛ^YBˆØÝ[Y[™Ù][[Y[žRY
+\ÚÐÛÛ^ŠK˜[YH[Â‚ˆÛÛœÝš[Üš]HH[X™\ŠˆØÝ[Y[™Ù][[Y[žRY
+\ÚÔš[Üš]HŠK˜[YBˆ
+NÂ‚ˆÛÛœÝYQ]HBˆØÝ[Y[™Ù][[Y[žRY
+\ÚÑYQ]HŠK˜[YH[Â‚ˆÛÛœÝÝ\]HBˆØÝ[Y[™Ù][[Y[žRY
+\ÚÔÝ\]HŠK˜[YH[Â‚ˆÛÛœÝYU[YHBˆØÝ[Y[™Ù][[Y[žRY
+\ÚÑYU[YHŠK˜[YH[Â‚ˆÛÛœÝYÒYÈH\œ˜^Bˆ™œ›ÛJØÝ[Y[œ]Y\žTÙ[XÝÜ[
+‹\ÚÕYÈŠJBˆ›X\
+[œ]Oˆ[œ]˜[YJNÂ‚ˆÛÛœÝÛØ[YÈH\œ˜^Bˆ™œ›ÛJØÝ[Y[œ]Y\žTÙ[XÝÜ[
+‹\ÚÑÛØ[ŠJBˆ›X\
+[œ]Oˆ[œ]˜[YJNÂ‚ˆÛÛœÝ™XÝ\œ™[˜ÙHBˆØÝ[Y[™Ù][[Y[žRY
+ˆ\ÚÔ™XÝ\œ™[˜ÙH‚ˆ
+K˜[YH[Â‚ˆÛÛœÝ™XÝ\œ™[˜ÙR[\˜[Bˆ™XÝ\œ™[˜ÙBˆÈ[X™\ŠˆØÝ[Y[™Ù][[Y[žRY
+ˆ\ÚÔ™XÝ\œ™[˜ÙR[\˜[‚ˆ
+K˜[YBˆ
+BˆˆNÂ‚ˆÛÛœÝ™XÝ\œ™[˜ÙUÙYZÙ^\ÈBˆ™XÝ\œ™[˜ÙHOOH•ÑQRÓH‚ˆÈÂˆ‹‹™ØÝ[Y[ˆœ]Y\žTÙ[XÝÜ[
+ˆ‹\ÚÔ™XÝ\œ™[˜ÙUÙYZÙ^N˜ÚXÚÙY‚ˆ
+BˆK›X\
+ˆ[œ]O‚ˆ[X™\Šˆ[œ]˜[YBˆ
+Bˆ
+Bˆˆ×NÂ‚ˆYˆ
+]]JH™]\›ŽÂ‚ˆžHÂ‚ˆ\Ë˜Ø[˜XÚÜË›Û•\]U\ÚÊÙ[XÝY\ÚËšYÂ‚ˆ]Kˆ\ØÜš\[Û‹ˆ\™XRYˆÛÛ^Yˆš[Üš]KˆÝ\]KˆYQ]KˆYU[YKˆYÒYËˆÛØ[YËˆ™XÝ\œ™[˜ÙKˆ™XÝ\œ™[˜ÙR[\˜[ˆ™XÝ\œ™[˜ÙUÙYZÙ^\Â‚ˆJNÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆœØ]™U\ÚÓ[Øš[H‚ˆ
+OË˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ
+
+HOˆÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆœØ]™U\ÚÈ‚ˆ
+OË˜ÛXÚÊ
+NÂ‚ˆBˆ
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+ˆ›[Ý™U\ÚÑœ›ÛQY]Üˆ‚ˆ
+OË˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆ\Þ[˜È
+
+HOˆÂ‚ˆÛÛœÝ\™Ù]YHØÝ[Y[ˆ™Ù][[Y[žRY
+ˆ\ÚÓ[Ý™U\™Ù]‚ˆ
+Bˆ˜[YNÂ‚ˆYˆ
+]\™Ù]Y
+HÂˆX[ÙË˜[\
+ˆ‘[YðëH[ˆ\Ý[›Ëˆ‚ˆ
+NÂˆ™]\›ŽÂˆB‚ˆYˆ
+ˆ\Õ\ÚÑY]ÜÚ[™Ù\ÊˆÙ[XÝY\ÚÂˆ
+Bˆ
+HÂˆX[ÙË˜[\
+ˆ‘ÝX\™0èHÜÈØ[Xš[ÜÈHH\™XH[\ÈH[Ý™\›Kˆ‚ˆ
+NÂˆ™]\›ŽÂˆB‚ˆÛÛœÝ]XÚ\ÚÈH\™Ù]YOOH—×Ô“ÓÕ×ÈŽÂ‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ]XÚ\ÚÂˆÈ°¯ÐÛÛ™\\ˆ\ÝHÝX\™XH[ˆ[˜H\™XHš[˜Ú\[È‚ˆˆ°¯Ó[Ý™\ˆ\ÝH\™XHHÙÈÝH0è\˜›Û[›ÞYXÝÈÙ[XØÚ[Û˜YÏÈ‹ˆÂˆ]Nˆ]XÚ\ÚÂˆÈÛÛ™\\ˆ[ˆ\™XHš[˜Ú\[‚ˆˆ“[Ý™\ˆ\™XH‹ˆÛÛ™š\›SX™[ˆ]XÚ\ÚÂˆÈÛÛ™\\ˆ‚ˆˆ“[Ý™\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆYˆ
+\™Ù]YOOH—×Ô“ÓÕ×ÈŠHÂˆ\Ë˜Ø[˜XÚÜÂˆ›Û‘]XÚÝX\ÚÊˆÙ[XÝY\ÚËšYˆ
+NÂˆH[ÙHÂˆ\Ë˜Ø[˜XÚÜÂˆ›Û“[Ý™U\ÚÕÔ›Ú™XÝ
+ˆÙ[XÝY\ÚËšYˆ\™Ù]Yˆ
+NÂˆB‚ˆHØ]Ú
+\œ›ÜŠHÂˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂˆB‚ˆBˆ
+NÂ‚ˆB‚ˆB‚ˆÛÛœÝÙ][™ÜÑ[]UšY]ÜÈHÂˆ\™X\ÎˆšY]ËT‘PTËˆÛÛ^ÎˆšY]ËÓÓ•VËˆYÜÎˆšY]Ë•QÔÂˆNÂ‚ˆÛÛœÝ[]UšY]ÈBˆÙ][™ÜÑ[]UšY]ÜÖÜÙ][™ÜÔÙXÝ[Û—HÏÂˆšY]ÎÂ‚ˆYˆ
+ˆ[]UšY]ÈOOHšY]ËT‘PTÈˆ[]UšY]ÈOOHšY]ËÓÓ•VÈˆ[]UšY]ÈOOHšY]Ë•QÔÂˆ
+HÂ‚ˆÛÛœÝÛÛ™šYÈHÂ‚ˆÕšY]ËT‘PT×NˆÂˆ[]Y\Îˆ\™X\Ëˆ˜[YNˆ°è\™XH‹ˆ›Û\ˆ“›ÛXœ™H[0è\™XNˆ‹ˆÜ™X]Nˆ\Ë˜Ø[˜XÚÜË›ÛÜ™X]P\™XKˆ\]Nˆ\Ë˜Ø[˜XÚÜË›Û•\]P\™XKˆ™[[Ý™Nˆ\Ë˜Ø[˜XÚÜË›Û‘[]P\™XKˆ\Ò[•\ÙNˆ\Ë˜Ø[˜XÚÜË›Û’\Ð\™XR[•\ÙKˆ[Ý™Nˆ\Ë˜Ø[˜XÚÜË›Û“[Ý™P\™XBˆK‚ˆÕšY]ËÓÓ•V×NˆÂˆ[]Y\ÎˆÛÛ^Ëˆ˜[YNˆ˜ÛÛ^È‹ˆ›Û\ˆ“›ÛXœ™H[ÛÛ^Îˆ‹ˆÜ™X]Nˆ\Ë˜Ø[˜XÚÜË›ÛÜ™X]PÛÛ^ˆ\]Nˆ\Ë˜Ø[˜XÚÜË›Û•\]PÛÛ^ˆ™[[Ý™Nˆ\Ë˜Ø[˜XÚÜË›Û‘[]PÛÛ^ˆ\Ò[•\ÙN‚ˆ\Ë˜Ø[˜XÚÜË›Û’\ÐÛÛ^[•\ÙBˆK‚ˆÕšY]Ë•QÔ×NˆÂˆ[]Y\ÎˆYÜËˆ˜[YNˆ™]\]Y]H‹ˆ›Û\ˆ“›ÛXœ™HHH]\]Y]Nˆ‹ˆÜ™X]Nˆ\Ë˜Ø[˜XÚÜË›ÛÜ™X]UYËˆ\]Nˆ\Ë˜Ø[˜XÚÜË›Û•\]UYËˆ™[[Ý™Nˆ\Ë˜Ø[˜XÚÜË›Û‘[]UYËˆ\Ò[•\ÙNˆ\Ë˜Ø[˜XÚÜË›Û’\ÕYÒ[•\ÙBˆB‚ˆVÙ[]UšY]×NÂ‚ˆÛÛÜ”Ù[XÝÜ‹˜š[™
+ˆØÝ[Y[œ]Y\žTÙ[XÝÜŠˆ‹™[]SX[˜YÙ\ˆ‚ˆ
+HÏÈØÝ[Y[ˆ
+NÂ‚ˆØÝ[Y[™Ù][[Y[žRY
+™[]Q›Ü›HŠOË˜Y]™[\Ý[™\ŠœÝX›Z]‹]™[OˆÂ‚ˆ]™[œ™]™[Y˜][
+
+NÂ‚ˆÛÛœÝ˜[YHHØÝ[Y[ˆ™Ù][[Y[žRY
+™[]S˜[YHŠBˆ˜[YBˆš[J
+NÂ‚ˆÛÛœÝÛÛÜˆBˆØÝ[Y[™Ù][[Y[žRY
+™[]PÛÛÜˆŠK˜[YNÂ‚ˆYˆ
+[˜[YJH™]\›ŽÂ‚ˆÛÛ™šYË˜Ü™X]J˜[YKÛÛÜŠNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+‹™[]Q[]HŠK™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂ‚ˆÛÛœÝ\XÛHHÛÛ™šYË›˜[YHOOH˜ÛÛ^È‚ˆÈ™\ÝH‚ˆˆ™\ÝHŽÂ‚ˆYˆ
+ÛÛ™šYËš\Ò[•\ÙJˆ]Û‹™]\Ù]šYˆ
+JHÂˆ]ØZ]X[ÙË˜[\
+ˆ›ÈÙHYYH[[Z[˜\ˆ	Ø\XÛ_H	ØÛÛ™šYË›˜[Y_HÜœ]YH\Ý0èH\ÚYÛ˜YÈH[˜HÈpè\È\™X\Ë˜ˆÂˆ]N‚ˆ	ØÛÛ™šYË›˜[YVÌKÕ\\Ø\ÙJ
+_IØÛÛ™šYË›˜[YKœÛXÙJJ_H[ˆ\ÛØˆBˆ
+NÂˆ™]\›ŽÂˆB‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ[[Z[˜\ˆ	Ø\XÛ_H	ØÛÛ™šYË›˜[Y_HYYHY™XÝ\ˆHpî›\\È\™X\È]YHÈ][^˜[‹ˆ0¯Ô]Y\°ê\ÈÛÛ[X\ØˆÂˆ]Nˆ[[Z[˜\ˆ	ØÛÛ™šYË›˜[Y_XˆÛÛ™š\›SX™[ˆÛÛ[X\ˆ‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆYˆ
+X]ØZ]X[ÙË˜ÛÛ™š\›P\Þ[˜Êˆ\ÝHXØÚpìÛˆ\ÈYš[š]]˜HH›ÈYYH\ÚXÙ\œÙKˆ0¯ÐÛÛ™š\›pè\ÈH[[Z[˜XÚpìÛˆH	Ø\XÛ_H	ØÛÛ™šYË›˜[Y_OØˆÂˆ]NˆÛÛ™š\›XXÚpìÛˆYš[š]]˜H‹ˆÛÛ™š\›SX™[‚ˆ‘[[Z[˜\ˆYš[š]]˜[Y[H‹ˆ˜\šX[ˆ™[™Ù\ˆ‚ˆBˆ
+JHÂˆ™]\›ŽÂˆB‚ˆžHÂ‚ˆÛÛ™šYËœ™[[Ý™J]Û‹™]\Ù]šY
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂ‚ˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹›[Ý™Q[]H‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆYˆ
+XÛÛ™šYË›[Ý™JH™]\›ŽÂ‚ˆžHÂˆÛÛ™šYË›[Ý™Jˆ]Û‹™]\Ù]šYˆ]Û‹™]\Ù]™\™XÝ[Û‚ˆ
+NÂˆHØ]Ú
+\œ›ÜŠHÂˆX[ÙË˜[\
+\œ›Ü‹›Y\ÜØYÙJNÂˆB‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹™Y][]H‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆÛÛœÝ][HH]Û‹˜ÛÜÙ\Ý
+ˆ‹™[]R][H‚ˆ
+NÂ‚ˆ][Kœ]Y\žTÙ[XÝÜŠˆ‹™[]Q\Ü^H‚ˆ
+KšY[ˆHYNÂ‚ˆÛÛœÝ›Ü›HH][Kœ]Y\žTÙ[XÝÜŠˆ‹™[]QY]›Ü›H‚ˆ
+NÂ‚ˆ›Ü›KšY[ˆH˜[ÙNÂ‚ˆ›Ü›Kœ]Y\žTÙ[XÝÜŠˆ‹™[]QY]˜[YH‚ˆ
+K™›ØÝ\Ê
+NÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹˜Ø[˜Ù[[]QY]‚ˆ
+K™›Ü‘XXÚ
+]ÛˆOˆÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂ‚ˆÛÛœÝ][HH]Û‹˜ÛÜÙ\Ý
+ˆ‹™[]R][H‚ˆ
+NÂ‚ˆ][Kœ]Y\žTÙ[XÝÜŠˆ‹™[]QY]›Ü›H‚ˆ
+KšY[ˆHYNÂ‚ˆ][Kœ]Y\žTÙ[XÝÜŠˆ‹™[]Q\Ü^H‚ˆ
+KšY[ˆH˜[ÙNÂ‚ˆJNÂ‚ˆJNÂ‚ˆØÝ[Y[œ]Y\žTÙ[XÝÜ[
+ˆ‹™[]QY]›Ü›H‚ˆ
+K™›Ü‘XXÚ
+›Ü›HOˆÂ‚ˆÛÛœÝØ]™Q[]HH
+
+HOˆÂ‚ˆÛÛœÝ[]HBˆÛÛ™šYË™[]Y\Ë™š[™
+ˆ[]HO‚ˆ[]KšYOOBˆ›Ü›K™]\Ù]šYˆ
+NÂ‚ˆYˆ
+Y[]JH™]\›ŽÂ‚ˆÛÛœÝ˜[YHBˆ›Ü›Kœ]Y\žTÙ[XÝÜŠˆ‹™[]QY]˜[YH‚ˆ
+K˜[YKš[J
+NÂ‚ˆÛÛœÝÛÛÜˆBˆ›Ü›Kœ]Y\žTÙ[XÝÜŠˆ‹™[]QY]ÛÛÜˆ‚ˆ
+K˜[YNÂ‚ˆYˆ
+[˜[YJH™]\›ŽÂ‚ˆžHÂ‚ˆÛÛ™šYË\]Jˆ[]KšYˆ˜[YKˆÛÛÜ‚ˆ
+NÂ‚ˆHØ]Ú
+\œ›ÜŠHÂ‚ˆX[ÙË˜[\
+ˆ\œ›Ü‹›Y\ÜØYÙBˆ
+NÂ‚ˆB‚ˆNÂ‚ˆ›Ü›K˜Y]™[\Ý[™\ŠˆœÝX›Z]‹ˆ]™[OˆÂ‚ˆ]™[œ™]™[Y˜][
+
+NÂ‚ˆBˆ
+NÂ‚ˆ›Ü›Kœ]Y\žTÙ[XÝÜŠˆ‹œØ]™Q[]QY]‚ˆ
+K˜Y]™[\Ý[™\Šˆ˜ÛXÚÈ‹ˆØ]™Q[]Bˆ
+NÂ‚ˆ›Ü›Kœ]Y\žTÙ[XÝÜŠˆ‹™[]QY]˜[YH‚ˆ
+K˜Y]™[\Ý[™\ŠˆšÙ^YÝÛˆ‹ˆ]™[OˆÂ‚ˆYˆ
+ˆ]™[šÙ^HOOBˆ‘[\ˆ‚ˆ
+HÂˆ™]\›ŽÂˆB‚ˆ]™[œ™]™[Y˜][
+
+NÂˆØ]™Q[]J
+NÂ‚ˆBˆ
+NÂ‚ˆJNÎÂ‚ˆBˆB‚ŸB
