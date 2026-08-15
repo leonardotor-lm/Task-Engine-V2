@@ -1870,6 +1870,7 @@ export class MainView {
             ["showTomorrow", "onShowTomorrow"],
             ["showUpcoming", "onShowUpcoming"],
             ["showAll", "onShowAll"],
+            ["showProjects", "onShowProjects"],
             ["showCalendar", "onShowCalendar"],
             ["showActivity", "onShowActivity"],
             ["showStatistics", "onShowStatistics"],
@@ -2696,6 +2697,7 @@ export class MainView {
             View.TOMORROW,
             View.UPCOMING,
             View.ALL,
+            View.PROJECTS,
             View.AREA,
             View.COMPLETED,
             View.ARCHIVED,
@@ -3740,14 +3742,12 @@ export class MainView {
 
                 item.addEventListener("click", () => {
 
-                    const hasSubtasks =
-                        allTasks.some(
-                            task =>
-                                task.parentTaskId ===
-                                item.dataset.id
+                    const isProject =
+                        item.classList.contains(
+                            "projectTask"
                         );
 
-                    if (hasSubtasks) {
+                    if (isProject) {
 
                         this.callbacks.onOpenProject(
                             item.dataset.id
@@ -3826,6 +3826,11 @@ export class MainView {
                                 "recurrenceIntervalUnit"
                             );
 
+                        const projectControl =
+                            document.getElementById(
+                                "taskIsProject"
+                            );
+
                         if (advancedFields) {
                             advancedFields.hidden =
                                 !frequency;
@@ -3851,6 +3856,24 @@ export class MainView {
                             unit.textContent =
                                 units[frequency] ??
                                 "unidad";
+                        }
+
+                        if (
+                            projectControl &&
+                            frequency
+                        ) {
+                            projectControl.checked = false;
+                            projectControl.disabled = true;
+                        } else if (
+                            projectControl &&
+                            !selectedTask.isCompleted() &&
+                            !allTasks.some(
+                                task =>
+                                    task.parentTaskId ===
+                                    selectedTask.id
+                            )
+                        ) {
+                            projectControl.disabled = false;
                         }
 
                     };
@@ -4199,6 +4222,12 @@ export class MainView {
                     const dueTime =
                         document.getElementById("taskDueTime").value || null;
 
+                    const isProject =
+                        document.getElementById(
+                            "taskIsProject"
+                        )?.checked ??
+                        Boolean(selectedTask.isProject);
+
                     const tagIds = Array
                         .from(document.querySelectorAll(".taskTag"))
                         .map(input => input.value);
@@ -4250,6 +4279,7 @@ export class MainView {
                             startDate,
                             dueDate,
                             dueTime,
+                            isProject,
                             tagIds,
                             goalIds,
                             recurrence,

@@ -63,6 +63,7 @@ export class ProjectWorkspaceController {
 
                 if (
                     task &&
+                    !task.isProject &&
                     this.app.taskService
                         .getProjectDescendants(id)
                         .length === 0

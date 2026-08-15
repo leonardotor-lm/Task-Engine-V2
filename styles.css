@@ -3223,6 +3223,30 @@ textarea,
     padding: 6px;
 }
 
+.projectTaskEditorField .projectTaskControl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.projectTaskEditorField {
+    margin-top: 10px;
+}
+
+.projectTaskControl input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.projectTaskHelp {
+    margin: 3px 0 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
 @media (min-width: 761px) {
 
     .taskEditorHeader h3 {

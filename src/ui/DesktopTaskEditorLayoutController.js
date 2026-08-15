@@ -305,6 +305,18 @@ export class DesktopTaskEditorLayoutController {
             properties.append(waitingField);
         }
 
+        const projectField =
+            primaryBody.querySelector(
+                ".projectTaskEditorField"
+            );
+
+        if (projectField) {
+            projectField.classList.add(
+                "desktopTaskEditorProjectProperty"
+            );
+            properties.append(projectField);
+        }
+
         const tagsField =
             organizationBody.querySelector(
                 '[data-picker-id="taskTags"]'

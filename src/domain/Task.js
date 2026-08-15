@@ -57,6 +57,8 @@ export class Task {
                 TaskStatus.PENDING
             ].includes(this.status);
 
+        this.isProject = data.isProject === true;
+
         this.parentTaskId = data.parentTaskId ?? null;
 
         this.recurrenceId = data.recurrenceId ?? null;
@@ -368,6 +370,9 @@ export class Task {
 
         }
 
+        if (data.isProject !== undefined)
+            this.isProject = Boolean(data.isProject);
+
         if (data.startDate !== undefined)
             this.startDate = data.startDate;
 
@@ -634,6 +639,8 @@ export class Task {
             ),
 
             isWaiting: this.isWaiting,
+
+            isProject: this.isProject,
 
             parentTaskId: this.parentTaskId,
 

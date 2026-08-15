@@ -13,6 +13,7 @@ const FILTER_VIEWS = new Set([
     View.TOMORROW,
     View.UPCOMING,
     View.ALL,
+    View.PROJECTS,
     View.AREA,
     View.COMPLETED,
     View.ARCHIVED,

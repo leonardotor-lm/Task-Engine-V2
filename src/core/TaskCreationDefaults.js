@@ -48,6 +48,11 @@ export function getTaskCreationDefaults(
                 isWaiting: true
             };
 
+        case View.PROJECTS:
+            return {
+                isProject: true
+            };
+
         default:
             return {};
 
@@ -63,6 +68,7 @@ export function getTaskCreationView(view) {
         View.TOMORROW,
         View.UPCOMING,
         View.ALL,
+        View.PROJECTS,
         View.AREA,
         View.WAITING,
         View.GOAL

@@ -81,6 +81,35 @@ test("una tarea sin descendientes visibles abre el editor y no un proyecto vací
 
 });
 
+test("un proyecto persistente vacío abre su espacio de proyecto", () => {
+
+    const project = new Task({
+        id: "empty-project",
+        title: "Proyecto preparado",
+        isProject: true
+    });
+
+    const {
+        app,
+        openedProjects,
+        selectedTasks
+    } = createControllerApp({
+        task: project,
+        descendants: []
+    });
+
+    new ProjectWorkspaceController(
+        app,
+        { documentRef: null }
+    ).start();
+
+    app.mainView.callbacks.onOpenProject(project.id);
+
+    assert.deepEqual(openedProjects, [project.id]);
+    assert.deepEqual(selectedTasks, []);
+
+});
+
 test("una tarea con descendientes válidos conserva la navegación de proyecto", () => {
 
     const project = new Task({

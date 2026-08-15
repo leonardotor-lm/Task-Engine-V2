@@ -242,6 +242,7 @@ export class ProjectView {
             [View.TOMORROW]: "Mañana",
             [View.UPCOMING]: "Próximas",
             [View.ALL]: "Todas",
+            [View.PROJECTS]: "Proyectos",
             [View.WAITING]: "En espera",
             [View.CALENDAR]: "Calendario",
             [View.COMPLETED]: "Completadas",

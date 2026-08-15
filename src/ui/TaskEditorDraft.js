@@ -49,6 +49,8 @@ export function createTaskDraft(task) {
             task.dueDate || null,
         dueTime:
             task.dueTime || null,
+        isProject:
+            Boolean(task.isProject),
         tagIds:
             normalizeTagIds(task.tagIds),
         goalIds:
@@ -120,6 +122,12 @@ export function readTaskEditorDraft(
             root.querySelector(
                 "#taskDueTime"
             )?.value || null,
+        isProject:
+            Boolean(
+                root.querySelector(
+                    "#taskIsProject"
+                )?.checked
+            ),
         tagIds:
             normalizeTagIds(
                 [

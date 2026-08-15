@@ -25,7 +25,22 @@ export class TaskService {
         } = {}
     ) {
 
+        if (
+            data?.isProject === true &&
+            data?.recurrence
+        ) {
+            throw new Error(
+                "La recurrencia sólo puede aplicarse a tareas sin subtareas."
+            );
+        }
+
         const task = this.repository.add(data);
+
+        if (task.parentTaskId) {
+            this.markTaskAsProject(
+                task.parentTaskId
+            );
+        }
 
         if (recordActivity) {
             this.activityService?.recordTask(
@@ -64,6 +79,8 @@ export class TaskService {
             areaId: parent.areaId,
             status: parent.status
         });
+
+        this.markTaskAsProject(parent.id);
 
         this.activityService?.recordTask(
             ActivityType.TASK_CREATED,
@@ -108,12 +125,26 @@ export class TaskService {
             data.recurrence !== undefined
                 ? data.recurrence
                 : (task.recurrence ?? null);
+        const nextIsProject =
+            data.isProject !== undefined
+                ? Boolean(data.isProject)
+                : task.isProject;
+
+        if (
+            data.isProject === false &&
+            this.getDirectSubtasks(id).length > 0
+        ) {
+            throw new Error(
+                "Una tarea con subtareas debe seguir siendo un proyecto."
+            );
+        }
 
         if (
             nextRecurrence !== null &&
             (
                 task.parentTaskId !== null ||
-                this.getDescendants(id).length > 0
+                this.getDescendants(id).length > 0 ||
+                nextIsProject
             )
         ) {
             throw new Error(
@@ -124,6 +155,12 @@ export class TaskService {
         task.update(data);
 
         this.repository.update(task);
+
+        if (task.parentTaskId) {
+            this.markTaskAsProject(
+                task.parentTaskId
+            );
+        }
 
         const details = this.activityService
             ?.describeChanges(
@@ -1199,6 +1236,13 @@ export class TaskService {
                             ...attachment
                         })
                     ),
+                isProject:
+                    source.isProject ||
+                    sourceTasks.some(
+                        task =>
+                            task.parentTaskId ===
+                            source.id
+                    ),
                 parentTaskId: copiedParentId,
                 recurrenceId: null,
                 recurrence: null,
@@ -1294,6 +1338,8 @@ export class TaskService {
         });
 
         this.repository.update(task);
+
+        this.markTaskAsProject(parent.id);
 
         this.activityService?.recordTask(
             ActivityType.TASK_MOVED,
@@ -1391,6 +1437,10 @@ export class TaskService {
             this.repository.update(task);
         });
 
+        if (parent) {
+            this.markTaskAsProject(parent.id);
+        }
+
         this.activityService?.recordTasks(
             ActivityType.TASK_MOVED,
             rootTasks,
@@ -1472,6 +1522,121 @@ export class TaskService {
                 !task.isDeleted() &&
                 !task.isArchived()
         );
+
+    }
+
+    markTaskAsProject(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task || task.isProject) {
+            return task;
+        }
+
+        task.update({
+            isProject: true
+        });
+        this.repository.update?.(task);
+
+        return task;
+
+    }
+
+    ensureProjectFlags() {
+
+        const tasks = this.repository.getAll();
+        const parentIds = new Set(
+            tasks
+                .map(task => task.parentTaskId)
+                .filter(Boolean)
+        );
+        const updated = tasks.filter(
+            task =>
+                parentIds.has(task.id) &&
+                !task.isProject
+        );
+
+        for (const task of updated) {
+            task.update({
+                isProject: true
+            });
+        }
+
+        if (updated.length > 0) {
+            if (this.repository.updateMany) {
+                this.repository.updateMany(updated);
+            } else {
+                for (const task of updated) {
+                    this.repository.update?.(task);
+                }
+            }
+        }
+
+        return updated;
+
+    }
+
+    getActiveProjectRoots() {
+
+        const tasks = this.repository.getAll();
+        const taskById = new Map(
+            tasks.map(task => [task.id, task])
+        );
+
+        return tasks.filter(task => {
+
+            if (
+                !task.isProject ||
+                !this.isActiveTask(task)
+            ) {
+                return false;
+            }
+
+            const visited = new Set([task.id]);
+            let parentId = task.parentTaskId;
+
+            while (parentId && !visited.has(parentId)) {
+
+                const parent = taskById.get(parentId);
+
+                if (!parent || !this.isActiveTask(parent)) {
+                    break;
+                }
+
+                if (parent.isProject) {
+                    return false;
+                }
+
+                visited.add(parent.id);
+                parentId = parent.parentTaskId;
+
+            }
+
+            return true;
+
+        });
+
+    }
+
+    getActiveProjectTasks() {
+
+        const taskIds = new Set();
+
+        for (const project of this.getActiveProjectRoots()) {
+
+            taskIds.add(project.id);
+
+            for (const descendant of this.getDescendants(project.id)) {
+                if (this.isActiveTask(descendant)) {
+                    taskIds.add(descendant.id);
+                }
+            }
+
+        }
+
+        return this.repository
+            .getAll()
+            .filter(task => taskIds.has(task.id));
 
     }
 

@@ -593,6 +593,27 @@ export class TaskEditor {
                             ${!task.dueDate ? "disabled" : ""}
                             ${disabled}>
 
+                        <div class="projectTaskEditorField">
+                            <label
+                                class="projectTaskControl"
+                                for="taskIsProject">
+                                <input
+                                    id="taskIsProject"
+                                    type="checkbox"
+                                    ${task.isProject || directSubtasks.length > 0
+                                        ? "checked"
+                                        : ""}
+                                    ${isLocked || directSubtasks.length > 0 || task.recurrence
+                                        ? "disabled"
+                                        : ""}>
+                                <span>Proyecto</span>
+                            </label>
+
+                            <p class="fieldHelp projectTaskHelp">
+                                Se mantiene en la vista Proyectos aunque no tenga subtareas.
+                            </p>
+                        </div>
+
                     </div>
 
                 </details>
