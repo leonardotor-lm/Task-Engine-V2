@@ -3223,12 +3223,16 @@ textarea,
     padding: 6px;
 }
 
-.editorSectionBody > .projectTaskControl {
+.projectTaskEditorField .projectTaskControl {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-top: 12px;
     cursor: pointer;
+}
+
+.projectTaskEditorField {
+    margin-top: 10px;
 }
 
 .projectTaskControl input {

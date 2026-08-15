@@ -135,6 +135,7 @@
             minmax(0, 1.15fr)
             minmax(0, 1.15fr)
             minmax(0, 1fr)
+            auto
             auto;
         align-items: end;
         gap: 7px;
@@ -174,6 +175,33 @@
         width: 16px;
         height: 16px;
         margin: 0;
+    }
+
+    .desktopTaskEditorProjectProperty {
+        min-width: 100px;
+        margin: 0;
+    }
+
+    .desktopTaskEditorProjectProperty
+        .projectTaskControl {
+        justify-content: center;
+        box-sizing: border-box;
+        height: 32px;
+        min-height: 32px;
+        margin: 0;
+        padding: 0 8px;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .desktopTaskEditorProjectProperty
+        .projectTaskHelp {
+        display: none;
     }
 
     .desktopTaskEditorToolRow {
