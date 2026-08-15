@@ -17,6 +17,26 @@ function isIncludedTask(task) {
     ].includes(task.status);
 }
 
+function hasIncludedHierarchy(task, tasksById) {
+    const visited = new Set([task.id]);
+    let parentId = task.parentTaskId;
+
+    while (parentId) {
+        if (visited.has(parentId)) return false;
+
+        const parent = tasksById.get(parentId);
+
+        if (!parent || !isIncludedTask(parent)) {
+            return false;
+        }
+
+        visited.add(parent.id);
+        parentId = parent.parentTaskId;
+    }
+
+    return true;
+}
+
 function percentage(completed, total) {
     return total > 0
         ? Math.round((completed / total) * 100)
@@ -175,8 +195,13 @@ export function buildProgressStatistics({
         String(period),
         today
     );
+    const tasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
     const includedTasks = tasks.filter(
-        isIncludedTask
+        task =>
+            isIncludedTask(task) &&
+            hasIncludedHierarchy(task, tasksById)
     );
     const childrenByParent = new Map();
 

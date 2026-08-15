@@ -64,6 +64,83 @@ test("excluye archivadas y papelera del desglose", () => {
     assert.equal(result.projects.length, 0);
 });
 
+test("excluye el árbol si su proyecto raíz está en la papelera", () => {
+    const result = buildProgressStatistics({
+        tasks: [
+            task("deleted-project", {
+                status: "DELETED"
+            }),
+            task("nested-project", {
+                parentTaskId: "deleted-project"
+            }),
+            task("nested-child", {
+                parentTaskId: "nested-project"
+            })
+        ],
+        today: "2026-08-11"
+    });
+
+    assert.deepEqual(result.projects, []);
+    assert.equal(result.panorama.total, 0);
+});
+
+test("excluye descendientes huérfanos de un proyecto eliminado definitivamente", () => {
+    const result = buildProgressStatistics({
+        tasks: [
+            task("orphan-project", {
+                parentTaskId: "missing-project"
+            }),
+            task("orphan-child", {
+                parentTaskId: "orphan-project"
+            })
+        ],
+        today: "2026-08-11"
+    });
+
+    assert.deepEqual(result.projects, []);
+    assert.equal(result.panorama.total, 0);
+});
+
+test("vuelve a incluir un proyecto restaurado con todo su árbol", () => {
+    const result = buildProgressStatistics({
+        tasks: [
+            task("restored-project"),
+            task("restored-child", {
+                parentTaskId: "restored-project"
+            })
+        ],
+        today: "2026-08-11"
+    });
+
+    assert.deepEqual(
+        result.projects.map(project => project.id),
+        ["restored-project"]
+    );
+    assert.equal(result.projects[0].total, 1);
+});
+
+test("excluye descendientes de un proyecto archivado", () => {
+    const result = buildProgressStatistics({
+        tasks: [
+            task("archived-project", {
+                status: "ARCHIVED"
+            }),
+            task("completed-subproject", {
+                parentTaskId: "archived-project",
+                status: "COMPLETED"
+            }),
+            task("completed-child", {
+                parentTaskId: "completed-subproject",
+                status: "COMPLETED"
+            })
+        ],
+        today: "2026-08-11"
+    });
+
+    assert.deepEqual(result.projects, []);
+    assert.equal(result.panorama.total, 0);
+});
+
 test("marca proyectos sin descendientes activos como inexistentes", () => {
     const result = buildProgressStatistics({
         tasks: [task("standalone")],
