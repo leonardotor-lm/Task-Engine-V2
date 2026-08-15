@@ -320,8 +320,13 @@ export class WaitingController {
                 }
 
                 this.showWaitingInArea = false;
-                this.app.navigateTo(View.WAITING);
-                this.resetContentScroll();
+                this.app.mainView
+                    .navigateFromSidebar(
+                        () =>
+                            this.app.navigateTo(
+                                View.WAITING
+                            )
+                    );
 
             }
         );
@@ -511,24 +516,6 @@ export class WaitingController {
         document.querySelector(
             ".content"
         )?.classList.add("waitingTasksView");
-
-    }
-
-    resetContentScroll() {
-
-        const content = document.querySelector(
-            ".content"
-        );
-
-        if (content) {
-            content.scrollTop = 0;
-        }
-
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "auto"
-        });
 
     }
 

@@ -223,3 +223,40 @@ test("la fecha de inicio reemplaza al vencimiento en las vistas operativas", () 
     );
 
 });
+
+test("las vistas cronológicas no arrastran subtareas con otra fecha", () => {
+
+    const tasks = [
+        {
+            id: "today-project",
+            status: TaskStatus.PENDING,
+            dueDate: "2026-07-23",
+            parentTaskId: null
+        },
+        {
+            id: "undated-child",
+            status: TaskStatus.PENDING,
+            dueDate: null,
+            parentTaskId: "today-project"
+        },
+        {
+            id: "tomorrow-child",
+            status: TaskStatus.PENDING,
+            dueDate: "2026-07-24",
+            parentTaskId: "today-project"
+        }
+    ];
+    const service = new TaskService({
+        getAll: () => tasks
+    });
+
+    assert.deepEqual(
+        getIds(service.getTodayTasks("2026-07-23")),
+        ["today-project"]
+    );
+    assert.deepEqual(
+        getIds(service.getTomorrowTasks("2026-07-23")),
+        ["tomorrow-child"]
+    );
+
+});
