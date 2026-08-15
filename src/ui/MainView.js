@@ -882,6 +882,29 @@ export class MainView {
 
     }
 
+    closeMobileMenu() {
+
+        document.querySelector(".layout")
+            ?.classList.remove(
+                "mobileMenuOpen"
+            );
+
+        document.getElementById(
+            "toggleMobileMenu"
+        )?.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+    navigateFromSidebar(callback) {
+
+        this.closeMobileMenu();
+        this.navigateAndResetScroll(callback);
+
+    }
+
     preserveContentScroll(callback) {
 
         const content =
@@ -1218,14 +1241,7 @@ export class MainView {
 
         const closeMobileMenu = () => {
 
-            layout?.classList.remove(
-                "mobileMenuOpen"
-            );
-
-            mobileMenuButton?.setAttribute(
-                "aria-expanded",
-                "false"
-            );
+            this.closeMobileMenu();
 
         };
 
@@ -1878,7 +1894,7 @@ export class MainView {
                     return;
                 }
 
-                this.navigateAndResetScroll(
+                this.navigateFromSidebar(
                     () =>
                         this.callbacks[
                             callbackName
@@ -2499,7 +2515,7 @@ export class MainView {
                         return;
                     }
 
-                    this.navigateAndResetScroll(
+                    this.navigateFromSidebar(
                         () =>
                             this.callbacks
                                 .onShowArea(
@@ -2529,7 +2545,7 @@ export class MainView {
                         return;
                     }
 
-                    this.navigateAndResetScroll(
+                    this.navigateFromSidebar(
                         () =>
                             this.callbacks
                                 .onApplyCustomFilter(
