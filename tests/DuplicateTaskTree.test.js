@@ -127,6 +127,96 @@ test("duplica un proyecto completo con relaciones nuevas", () => {
 
 });
 
+test("duplica una subtarea junto a la original", () => {
+
+    const project = new Task({
+        id: "project",
+        title: "Proyecto"
+    });
+    const subtask = new Task({
+        id: "subtask",
+        title: "Preparar materiales",
+        parentTaskId: project.id
+    });
+    const repository = new MemoryRepository([
+        project,
+        subtask
+    ]);
+    const service = new TaskService(repository);
+
+    const result = service.duplicateTaskTree(
+        subtask.id
+    );
+
+    assert.equal(result.tasks.length, 1);
+    assert.equal(
+        result.root.parentTaskId,
+        project.id
+    );
+    assert.equal(
+        result.root.title,
+        "Copia de Preparar materiales"
+    );
+
+});
+
+test("duplica un subárbol dentro del mismo proyecto", () => {
+
+    const project = new Task({
+        id: "project",
+        title: "Proyecto"
+    });
+    const subproject = new Task({
+        id: "subproject",
+        title: "Organizar jornada",
+        parentTaskId: project.id
+    });
+    const child = new Task({
+        id: "child",
+        title: "Reservar salón",
+        parentTaskId: subproject.id
+    });
+    const grandchild = new Task({
+        id: "grandchild",
+        title: "Confirmar horario",
+        parentTaskId: child.id
+    });
+    const repository = new MemoryRepository([
+        project,
+        subproject,
+        child,
+        grandchild
+    ]);
+    const service = new TaskService(repository);
+
+    const result = service.duplicateTaskTree(
+        subproject.id
+    );
+    const [
+        subprojectCopy,
+        childCopy,
+        grandchildCopy
+    ] = result.tasks;
+
+    assert.equal(
+        subprojectCopy.parentTaskId,
+        project.id
+    );
+    assert.equal(
+        childCopy.parentTaskId,
+        subprojectCopy.id
+    );
+    assert.equal(
+        grandchildCopy.parentTaskId,
+        childCopy.id
+    );
+    assert.notEqual(
+        childCopy.parentTaskId,
+        subproject.id
+    );
+
+});
+
 test("no permite duplicar una tarea recurrente", () => {
 
     const recurring = new Task({
