@@ -2761,7 +2761,20 @@ export class MainView {
 
                         if (!succeeded) {
                             checkbox.checked = false;
+                            return;
                         }
+
+                        this.taskSwipeController
+                            .showCompletionNotice(
+                                checkbox.dataset.id,
+                                id =>
+                                    this.toggleTaskWithAssistedParentCompletion(
+                                        id,
+                                        {
+                                            offerParentCompletion: false
+                                        }
+                                    )
+                            );
 
                     }
                 );
