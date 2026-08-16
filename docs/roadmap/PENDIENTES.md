@@ -14,31 +14,7 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Cambiar la etiqueta Descripción por Notas
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Baja.
-- Conservar el campo, su modelo de datos, su sincronización y su comportamiento actual.
-- Cambiar únicamente el nombre visible de **Descripción** a **Notas** en todos los editores y textos relacionados.
-- No crear notas múltiples, una entidad nueva ni otra sección del editor.
-
-## Backlog aprobado
-
-El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
-
-### Etapa 1 — Claridad editorial
-
-#### 1. Cambiar la etiqueta Descripción por Notas
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Baja.
-- Conservar el campo, su modelo de datos, su sincronización y su comportamiento actual.
-- Cambiar únicamente el nombre visible de **Descripción** a **Notas** en todos los editores y textos relacionados.
-- No crear notas múltiples, una entidad nueva ni otra sección del editor.
-
-### Etapa 2 — Gestión de Objetivos y Proyectos
-
-#### 2. Heredar objetivos en la jerarquía de un proyecto
+### Heredar objetivos en la jerarquía de un proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -46,14 +22,28 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Hacer que cada nueva subtarea herede todos los objetivos de su padre.
 - No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
 
-#### 3. Mostrar u ocultar completadas en Objetivos
+## Backlog aprobado
+
+El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Etapa 1 — Gestión de Objetivos y Proyectos
+
+#### 1. Heredar objetivos en la jerarquía de un proyecto
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Al asignar un objetivo a un proyecto, sumarlo a todas sus tareas descendientes sin eliminar otras asociaciones existentes.
+- Hacer que cada nueva subtarea herede todos los objetivos de su padre.
+- No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
+
+#### 2. Mostrar u ocultar completadas en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja o media.
 - Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
 - Mantener el mismo significado, estado accesible y persistencia del control existente.
 
-#### 4. Incorporar filtros rápidos y orden en Objetivos
+#### 3. Incorporar filtros rápidos y orden en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -61,16 +51,16 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Evitar una nueva fila permanente de controles.
 - Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
 
-#### 5. Agregar un filtro rápido por Proyecto
+#### 4. Agregar un filtro rápido por Proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
 - Permitir filtrar por un proyecto y todo su subárbol desde el panel existente de filtros rápidos.
 - Usar un selector buscable y mostrar la ruta del proyecto cuando sea necesaria para distinguir nombres repetidos.
 
-### Etapa 3 — Eficiencia avanzada sin ruido visual
+### Etapa 2 — Eficiencia avanzada sin ruido visual
 
-#### 6. Incorporar un conjunto acotado de atajos de teclado
+#### 5. Incorporar un conjunto acotado de atajos de teclado
 
 - **Estado:** Pendiente de definición funcional.
 - **Dificultad prevista:** Baja o media.
@@ -78,7 +68,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Ignorar atajos de acción mientras se escribe en campos editables.
 - Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
 
-#### 7. Permitir orden manual mediante arrastre
+#### 6. Permitir orden manual mediante arrastre
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.
@@ -122,7 +112,8 @@ Sólo deben incorporarse como pendientes después de definir su necesidad, alcan
 
 También quedan descartados por decisión de alcance:
 
-- un sistema de notas múltiples: el campo actual se conservará y sólo pasará a llamarse **Notas**;
+- renombrar **Descripción** como **Notas**: el campo local conserva su nombre para distinguirlo de las futuras notas vinculadas de Notion;
+- un sistema local de notas múltiples: las notas extensas se resolverán mediante la futura integración con Notion;
 - un botón general o permanente de deshacer: sólo se implementará una reversión contextual y temporal para acciones expresamente cubiertas.
 
 ## Principios de planificación
