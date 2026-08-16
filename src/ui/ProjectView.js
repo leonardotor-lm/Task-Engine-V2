@@ -25,12 +25,25 @@ export class ProjectView {
 
         }
 
+        const projectPresentationTasks =
+            this.getProjectPresentationTasks(
+                project,
+                state.allTasks ?? [
+                    project,
+                    ...state.tasks
+                ]
+            );
+        const projectProgressTasks =
+            this.getProjectProgressTasks(
+                project,
+                projectPresentationTasks
+            );
         const completed =
-            state.tasks.filter(
+            projectProgressTasks.filter(
                 task => task.isCompleted()
             ).length;
 
-        const total = state.tasks.length;
+        const total = projectProgressTasks.length;
         const taskById = new Map(
             (state.allTasks ?? [])
                 .map(task => [task.id, task])
@@ -41,12 +54,6 @@ export class ProjectView {
         );
         const originLabel =
             this.getOriginLabel(state);
-        const projectPresentationTasks =
-            this.getProjectPresentationTasks(
-                project,
-                state.allTasks ?? []
-            );
-
         const headingActions = `
             <button
                 id="editProjectTask"
@@ -191,6 +198,54 @@ export class ProjectView {
                 !task.isDeleted() &&
                 !task.isArchived()
         );
+
+    }
+
+    getProjectProgressTasks(project, presentationTasks) {
+
+        const childrenByParent = new Map();
+
+        for (const task of presentationTasks) {
+
+            if (!task.parentTaskId) continue;
+
+            const children =
+                childrenByParent.get(
+                    task.parentTaskId
+                ) ?? [];
+
+            children.push(task);
+            childrenByParent.set(
+                task.parentTaskId,
+                children
+            );
+
+        }
+
+        const progressTasks = [];
+        const visited = new Set([project.id]);
+        const pendingParentIds = [project.id];
+
+        while (pendingParentIds.length > 0) {
+
+            const parentId = pendingParentIds.shift();
+
+            for (
+                const task of
+                childrenByParent.get(parentId) ?? []
+            ) {
+
+                if (visited.has(task.id)) continue;
+
+                visited.add(task.id);
+                progressTasks.push(task);
+                pendingParentIds.push(task.id);
+
+            }
+
+        }
+
+        return progressTasks;
 
     }
 
