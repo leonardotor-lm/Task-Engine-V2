@@ -14,13 +14,12 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Incorporar filtros rápidos y orden en Objetivos
+### Agregar un filtro rápido por Proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
-- Reutilizar **Herramientas de la lista** para filtrar y ordenar las tareas de los proyectos asociados al objetivo.
-- Evitar una nueva fila permanente de controles.
-- Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
+- Permitir filtrar por un proyecto y todo su subárbol desde el panel existente de filtros rápidos.
+- Usar un selector buscable y mostrar la ruta del proyecto cuando sea necesaria para distinguir nombres repetidos.
 
 ## Backlog aprobado
 
@@ -28,15 +27,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 1 — Gestión de Objetivos y Proyectos
 
-#### 1. Incorporar filtros rápidos y orden en Objetivos
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Media.
-- Reutilizar **Herramientas de la lista** para filtrar y ordenar las tareas de los proyectos asociados al objetivo.
-- Evitar una nueva fila permanente de controles.
-- Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
-
-#### 2. Agregar un filtro rápido por Proyecto
+#### 1. Agregar un filtro rápido por Proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -45,7 +36,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 2 — Eficiencia avanzada sin ruido visual
 
-#### 3. Incorporar un conjunto acotado de atajos de teclado
+#### 2. Incorporar un conjunto acotado de atajos de teclado
 
 - **Estado:** Pendiente de definición funcional.
 - **Dificultad prevista:** Baja o media.
@@ -53,7 +44,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Ignorar atajos de acción mientras se escribe en campos editables.
 - Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
 
-#### 4. Permitir orden manual mediante arrastre
+#### 3. Permitir orden manual mediante arrastre
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.
