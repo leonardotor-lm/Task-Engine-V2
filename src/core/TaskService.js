@@ -1764,7 +1764,17 @@ export class TaskService {
 
         return this.repository
             .getAll()
-            .filter(task => task.status === TaskStatus.INBOX);
+            .filter(task => {
+
+                return (
+                    task.status === TaskStatus.INBOX ||
+                    (
+                        task.status === TaskStatus.PENDING &&
+                        task.areaId === null
+                    )
+                );
+
+            });
 
     }
 
