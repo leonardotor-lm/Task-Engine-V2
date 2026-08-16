@@ -1189,6 +1189,24 @@ export class MainView {
 
     }
 
+    undoTaskCompletion(id) {
+
+        try {
+
+            this.callbacks
+                .onUndoTaskCompletion(id);
+
+            return true;
+
+        } catch (error) {
+
+            Dialog.alert(error.message);
+            return false;
+
+        }
+
+    }
+
     bindEvents(state) {
 
         const {
@@ -1218,12 +1236,7 @@ export class MainView {
                     id
                 ),
             onUndoComplete: id =>
-                this.toggleTaskWithAssistedParentCompletion(
-                    id,
-                    {
-                        offerParentCompletion: false
-                    }
-                )
+                this.undoTaskCompletion(id)
         });
 
         if (selectedTask) {
@@ -2768,12 +2781,7 @@ export class MainView {
                             .showCompletionNotice(
                                 checkbox.dataset.id,
                                 id =>
-                                    this.toggleTaskWithAssistedParentCompletion(
-                                        id,
-                                        {
-                                            offerParentCompletion: false
-                                        }
-                                    )
+                                    this.undoTaskCompletion(id)
                             );
 
                     }
