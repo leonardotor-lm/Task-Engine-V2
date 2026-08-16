@@ -45,6 +45,22 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
 - Definir el comportamiento ante filtros activos, subtareas contraídas y listas parciales antes de implementar.
 
+### Etapa 2 — Notas externas vinculadas
+
+#### 3. Integrar Notion como base externa de notas
+
+- **Estado:** Pendiente aprobado; seguimiento en issue #212.
+- **Dificultad prevista:** Media o alta, dividida en etapas independientes.
+- Mantener Google Sheets como base principal de Task Engine.
+- Cada usuario conecta su propia cuenta y espacio de trabajo de Notion mediante su instalación y Apps Script independientes.
+- El token de Notion debe permanecer fuera del frontend y del repositorio.
+- Permitir elegir una base contenedora específica de Notion para las notas de Task Engine.
+- Las tareas y los objetivos/proyectos podrán crear, abrir y desvincular una página de Notion.
+- Task Engine conservará solamente el identificador y la URL de la página vinculada; el contenido se editará exclusivamente en Notion.
+- El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
+- Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
+- Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
+
 ## Propuesta pendiente de decisión
 
 ### Diagnóstico visible de errores de sincronización
@@ -72,7 +88,7 @@ El incidente observado durante la validación de la PWA justificó registrar est
 Las siguientes cuestiones fueron exploradas, pero no constituyen trabajo comprometido:
 
 - notificaciones o recordatorios del sistema;
-- múltiples usuarios o una segunda instancia de la aplicación;
+- múltiples usuarios o una segunda instancia de la aplicación como función multiusuario compartida;
 - criterio avanzado `tieneContexto`;
 - una nueva reorganización general de la barra lateral.
 
