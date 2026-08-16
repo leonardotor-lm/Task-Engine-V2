@@ -17,7 +17,8 @@ const FILTER_VIEWS = new Set([
     View.AREA,
     View.COMPLETED,
     View.ARCHIVED,
-    View.TRASH
+    View.TRASH,
+    View.GOAL
 ]);
 
 export class TaskFilterPreferencesController {
