@@ -226,11 +226,11 @@ body {
     top: calc(100% + 5px);
     left: 0;
     width: 240px;
-    padding: 10px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 6px;
+    padding: var(--transient-surface-padding);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
-    box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+    box-shadow: var(--transient-surface-shadow);
 }
 
 .bulkTagControl
@@ -267,13 +267,13 @@ body {
     right: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--transient-surface-gap);
     min-width: 170px;
-    padding: 8px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 6px;
+    padding: var(--transient-surface-padding);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
-    box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+    box-shadow: var(--transient-surface-shadow);
 }
 
 .bulkStateActions button {
@@ -1107,11 +1107,11 @@ body {
     right: 0;
     width: min(260px, calc(100vw - 32px));
     box-sizing: border-box;
-    padding: 12px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 0;
+    padding: var(--transient-surface-padding);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
-    box-shadow: 0 10px 28px rgb(15 23 42 / 16%);
+    box-shadow: var(--transient-surface-shadow);
 }
 
 .colorSelectorPalette {
@@ -1340,6 +1340,20 @@ body {
     --task-padding-y: 7px;
     --task-padding-x: 8px;
     --compact-gap: 6px;
+    --transient-surface-border:
+        1px solid var(--color-border-strong);
+    --transient-surface-radius: 0;
+    --transient-surface-shadow:
+        0 10px 28px rgb(15 23 42 / 16%);
+    --transient-dialog-shadow:
+        0 18px 48px rgb(15 23 42 / 20%);
+    --transient-backdrop:
+        rgb(15 23 42 / 38%);
+    --transient-surface-gap: 6px;
+    --transient-surface-padding: 10px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
 }
 
 body {
@@ -1500,14 +1514,15 @@ h3 {
     margin: 0;
     padding: 0;
     overflow: auto;
-    border: 1px solid var(--color-border-strong);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
     color: var(--color-text);
-    box-shadow: 0 14px 34px rgb(15 23 42 / 20%);
+    box-shadow: var(--transient-dialog-shadow);
 }
 
 .settingsDialog::backdrop {
-    background: rgb(15 23 42 / 38%);
+    background: var(--transient-backdrop);
 }
 
 .settingsDialogHeader {
@@ -1517,7 +1532,7 @@ h3 {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 14px;
+    padding: var(--transient-header-padding);
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -1529,7 +1544,7 @@ h3 {
 }
 
 .settingsDialogBody {
-    padding: 14px;
+    padding: var(--transient-body-padding);
 }
 
 .settingsMenu,
@@ -1632,7 +1647,7 @@ h3 {
     bottom: 0;
     display: flex;
     justify-content: flex-end;
-    padding: 8px 14px;
+    padding: var(--transient-actions-padding);
     border-top: 1px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -1709,14 +1724,15 @@ h3 {
     max-height: min(760px, calc(100dvh - 32px));
     padding: 0;
     overflow: auto;
-    border: 1px solid var(--color-border-strong);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
     color: var(--color-text);
-    box-shadow: 0 18px 48px rgb(15 23 42 / 24%);
+    box-shadow: var(--transient-dialog-shadow);
 }
 
 .advancedSearchDialog::backdrop {
-    background: rgb(15 23 42 / 38%);
+    background: var(--transient-backdrop);
 }
 
 .advancedSearchDialogHeader {
@@ -1727,7 +1743,7 @@ h3 {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 14px 16px;
+    padding: var(--transient-header-padding);
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -1740,7 +1756,7 @@ h3 {
 .advancedSearchDialog form {
     display: grid;
     gap: 8px;
-    padding: 16px;
+    padding: var(--transient-body-padding);
 }
 
 .advancedSearchDialog input {
@@ -1800,14 +1816,15 @@ h3 {
     margin: 0;
     padding: 0;
     overflow: auto;
-    border: 1px solid var(--color-border-strong);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
     color: var(--color-text);
-    box-shadow: 0 14px 34px rgb(15 23 42 / 20%);
+    box-shadow: var(--transient-dialog-shadow);
 }
 
 .taskToolsDialog::backdrop {
-    background: rgb(15 23 42 / 38%);
+    background: var(--transient-backdrop);
 }
 
 .taskToolsDialogHeader {
@@ -1818,7 +1835,7 @@ h3 {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px 14px;
+    padding: var(--transient-header-padding);
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -1831,7 +1848,7 @@ h3 {
 .taskToolsDialogBody {
     display: grid;
     gap: 14px;
-    padding: 14px;
+    padding: var(--transient-body-padding);
 }
 
 .taskToolsDialog .taskToolsSection {
@@ -1882,7 +1899,7 @@ h3 {
     display: flex;
     justify-content: flex-end;
     gap: 6px;
-    padding: 8px 14px;
+    padding: var(--transient-actions-padding);
     border-top: 1px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -2502,12 +2519,12 @@ textarea,
     right: 0;
     display: grid;
     min-width: 190px;
-    gap: 6px;
-    padding: 8px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 6px;
+    gap: var(--transient-surface-gap);
+    padding: var(--transient-surface-padding);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
-    box-shadow: 0 8px 20px rgb(15 23 42 / 14%);
+    box-shadow: var(--transient-surface-shadow);
 }
 
 .quickPostponeMenu label {
@@ -2561,12 +2578,12 @@ textarea,
     right: 0;
     display: grid;
     min-width: 170px;
-    gap: 4px;
-    padding: 8px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 6px;
+    gap: var(--transient-surface-gap);
+    padding: var(--transient-surface-padding);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
-    box-shadow: 0 8px 20px rgb(15 23 42 / 14%);
+    box-shadow: var(--transient-surface-shadow);
 }
 
 .quickMoreMenu button {
@@ -3729,14 +3746,21 @@ textarea,
     width: min(480px, calc(100vw - 28px));
     max-height: min(620px, calc(100vh - 28px));
     padding: 0;
-    border: 1px solid var(--color-border-strong);
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--transient-dialog-shadow);
+}
+
+.calendarDayDialog::backdrop {
+    background: var(--transient-backdrop);
 }
 
 .calendarDayDialog > header {
     justify-content: space-between;
     gap: 12px;
-    padding: 14px;
+    padding: var(--transient-header-padding);
     border-bottom: 1px solid var(--color-border);
 }
 
@@ -3759,7 +3783,7 @@ textarea,
 }
 
 .calendarDayDialog .dialogActions {
-    padding: 10px 14px;
+    padding: var(--transient-actions-padding);
     border-top: 1px solid var(--color-border);
     text-align: right;
 }
@@ -3768,15 +3792,15 @@ textarea,
     width: min(440px, calc(100vw - 28px));
     max-width: none;
     padding: 0;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 0;
+    border: var(--transient-surface-border);
+    border-radius: var(--transient-surface-radius);
     background: var(--color-surface);
     color: var(--color-text);
-    box-shadow: 0 18px 48px rgb(15 23 42 / 18%);
+    box-shadow: var(--transient-dialog-shadow);
 }
 
 .appDialog::backdrop {
-    background: rgb(15 23 42 / 32%);
+    background: var(--transient-backdrop);
 }
 
 .appDialogHeader,
@@ -3784,11 +3808,11 @@ textarea,
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 14px;
 }
 
 .appDialogHeader {
     justify-content: space-between;
+    padding: var(--transient-header-padding);
     border-bottom: 1px solid var(--color-border);
 }
 
@@ -3798,7 +3822,7 @@ textarea,
 }
 
 .appDialogBody {
-    padding: 18px 14px;
+    padding: var(--transient-body-padding);
 }
 
 .appDialogBody p {
@@ -3834,6 +3858,7 @@ textarea,
 
 .appDialogActions {
     justify-content: flex-end;
+    padding: var(--transient-actions-padding);
     border-top: 1px solid var(--color-border);
     background: var(--color-surface-subtle);
 }
