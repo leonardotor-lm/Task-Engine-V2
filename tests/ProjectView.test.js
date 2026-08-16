@@ -68,6 +68,7 @@ test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
     assert.match(html, /aria-label="Editar proyecto"/);
     assert.match(html, /aria-label="Agregar subtarea"/);
     assert.match(html, /responsiveButtonIcon/);
+    assert.doesNotMatch(html, /taskHierarchyPath/);
 
 });
 

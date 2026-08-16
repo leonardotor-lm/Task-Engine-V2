@@ -80,6 +80,19 @@ export class TaskList {
             tags.map(tag => [tag.id, tag])
         );
 
+        const allTasksById = new Map(
+            allTasks.map(task => [task.id, task])
+        );
+
+        const listedTaskIds = new Set(
+            tasks.map(task => task.id)
+        );
+
+        const isProjectWorkspace =
+            contentClass
+                .split(/\s+/)
+                .includes("projectWorkspace");
+
 
         const childrenByParent = new Map();
 
@@ -297,6 +310,33 @@ export class TaskList {
                         </span>
                     `
                     : "";
+
+                const hierarchyPath =
+                    showTaskMetadata &&
+                    !isProjectWorkspace
+                        ? this.getIsolatedHierarchyPath(
+                            task,
+                            listedTaskIds,
+                            allTasksById
+                        )
+                        : [];
+
+                const hierarchyPathText =
+                    hierarchyPath
+                        .map(item => item.title)
+                        .join(" › ");
+
+                const hierarchyPathHtml =
+                    hierarchyPath.length > 0
+                        ? `
+                            <div
+                                class="taskHierarchyPath"
+                                title="${escapeHtml(hierarchyPathText)}"
+                                aria-label="Ruta: ${escapeHtml(hierarchyPathText)}">
+                                ${escapeHtml(hierarchyPathText)}
+                            </div>
+                        `
+                        : "";
 
                 const area = areasById.get(task.areaId);
 
@@ -569,6 +609,8 @@ export class TaskList {
                                 : ""}
 
                             <div class="taskBody">
+
+                                ${hierarchyPathHtml}
 
                                 <div class="taskTitleLine">
 
@@ -854,6 +896,48 @@ export class TaskList {
         `;
 
         return html;
+
+    }
+
+    getIsolatedHierarchyPath(
+        task,
+        listedTaskIds,
+        allTasksById
+    ) {
+
+        if (
+            !task.parentTaskId ||
+            listedTaskIds.has(task.parentTaskId)
+        ) {
+            return [];
+        }
+
+        const path = [task];
+        const visited = new Set([task.id]);
+        let current = task;
+
+        while (current.parentTaskId) {
+
+            const parent = allTasksById.get(
+                current.parentTaskId
+            );
+
+            if (
+                !parent ||
+                visited.has(parent.id)
+            ) {
+                break;
+            }
+
+            path.push(parent);
+            visited.add(parent.id);
+            current = parent;
+
+        }
+
+        return path.length > 1
+            ? path.reverse()
+            : [];
 
     }
 
