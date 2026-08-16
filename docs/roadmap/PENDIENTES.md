@@ -16,11 +16,12 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ### Incorporar un conjunto acotado de atajos de teclado
 
-- **Estado:** Pendiente de definición funcional.
+- **Estado:** En desarrollo.
 - **Dificultad prevista:** Baja o media.
-- Definir con el usuario un conjunto pequeño antes de implementar.
-- Ignorar atajos de acción mientras se escribe en campos editables.
-- Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
+- Alcance definido: `N` abre **Nueva tarea**, `/` enfoca la búsqueda simple y `C` completa la tarea que tiene el foco.
+- Los atajos de acción se ignoran mientras se escribe en `input`, `textarea`, `select` o contenido editable.
+- No se interceptan combinaciones con Ctrl, Alt o Cmd/Meta para evitar conflictos con el navegador o el sistema.
+- La navegación por flechas, Home/End, Enter/Espacio y jerarquía permanece separada y sin cambios.
 
 ## Backlog aprobado
 
@@ -30,11 +31,13 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 #### 1. Incorporar un conjunto acotado de atajos de teclado
 
-- **Estado:** Pendiente de definición funcional.
+- **Estado:** En desarrollo.
 - **Dificultad prevista:** Baja o media.
-- Definir con el usuario un conjunto pequeño antes de implementar.
-- Ignorar atajos de acción mientras se escribe en campos editables.
-- Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
+- `N`: abrir **Nueva tarea** cuando esa acción esté disponible en la vista actual.
+- `/`: enfocar y seleccionar el contenido de la búsqueda simple cuando la vista disponga de ella.
+- `C`: completar la tarea cuya fila tiene el foco, reutilizando el control de finalización existente.
+- Ignorar los atajos dentro de campos editables y cuando intervienen Ctrl, Alt o Cmd/Meta.
+- No agregar una ayuda permanente en pantalla ni modificar la navegación por teclado ya implementada.
 
 #### 2. Permitir orden manual mediante arrastre
 
