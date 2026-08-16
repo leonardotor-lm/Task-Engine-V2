@@ -107,6 +107,11 @@ export class Sidebar {
             View.PROJECT
         ];
 
+        const taskToolViews = [
+            ...taskViews,
+            View.GOAL
+        ];
+
         const optionList = (
             entities,
             selectedId
@@ -138,7 +143,7 @@ export class Sidebar {
         ).join("");
 
         const filters =
-            taskViews.includes(activeView) &&
+            taskToolViews.includes(activeView) &&
             !advancedSearchMode
             ? `
                 <section class="taskToolsSection taskFilters">
@@ -227,7 +232,7 @@ export class Sidebar {
             : "";
 
         const viewOptions =
-            taskViews.includes(activeView)
+            taskToolViews.includes(activeView)
             ? `
                 <section class="taskToolsSection taskViewOptions">
 
