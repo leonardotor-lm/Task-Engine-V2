@@ -43,6 +43,7 @@ function createApp() {
     const app = {
         currentView: View.TODAY,
         currentAreaId: null,
+        selectedGoal: null,
         currentCustomFilterId: null,
         advancedSearchMode: false,
         taskFilters: emptyFilters(),
@@ -148,6 +149,51 @@ test("distingue filtros rápidos entre áreas", () => {
         "context-1"
     );
     assert.equal(app.taskFilters.priority, "");
+
+});
+
+test("distingue filtros rápidos entre objetivos", () => {
+
+    const app = createApp();
+    app.currentView = View.GOAL;
+    app.selectedGoal = { id: "goal-1" };
+
+    const controller =
+        new TaskFilterPreferencesController(
+            app,
+            { storage: createStorage() }
+        );
+
+    controller.start();
+
+    app.mainView.callbacks.onApplyTaskFilters({
+        ...emptyFilters(),
+        priority: "3",
+        contextId: "context-1"
+    });
+
+    app.selectedGoal = { id: "goal-2" };
+    app.render();
+
+    assert.deepEqual(
+        app.taskFilters,
+        emptyFilters()
+    );
+
+    app.mainView.callbacks.onApplyTaskFilters({
+        ...emptyFilters(),
+        due: "UPCOMING"
+    });
+
+    app.selectedGoal = { id: "goal-1" };
+    app.render();
+
+    assert.equal(app.taskFilters.priority, "3");
+    assert.equal(
+        app.taskFilters.contextId,
+        "context-1"
+    );
+    assert.equal(app.taskFilters.due, "");
 
 });
 
