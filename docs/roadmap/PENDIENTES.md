@@ -14,27 +14,7 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Mostrar u ocultar completadas en Objetivos
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Baja o media.
-- Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
-- Mantener el mismo significado, estado accesible y persistencia del control existente.
-
-## Backlog aprobado
-
-El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
-
-### Etapa 1 — Gestión de Objetivos y Proyectos
-
-#### 1. Mostrar u ocultar completadas en Objetivos
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Baja o media.
-- Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
-- Mantener el mismo significado, estado accesible y persistencia del control existente.
-
-#### 2. Incorporar filtros rápidos y orden en Objetivos
+### Incorporar filtros rápidos y orden en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -42,7 +22,21 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Evitar una nueva fila permanente de controles.
 - Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
 
-#### 3. Agregar un filtro rápido por Proyecto
+## Backlog aprobado
+
+El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Etapa 1 — Gestión de Objetivos y Proyectos
+
+#### 1. Incorporar filtros rápidos y orden en Objetivos
+
+- **Estado:** Pendiente.
+- **Dificultad prevista:** Media.
+- Reutilizar **Herramientas de la lista** para filtrar y ordenar las tareas de los proyectos asociados al objetivo.
+- Evitar una nueva fila permanente de controles.
+- Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
+
+#### 2. Agregar un filtro rápido por Proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -51,7 +45,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 2 — Eficiencia avanzada sin ruido visual
 
-#### 4. Incorporar un conjunto acotado de atajos de teclado
+#### 3. Incorporar un conjunto acotado de atajos de teclado
 
 - **Estado:** Pendiente de definición funcional.
 - **Dificultad prevista:** Baja o media.
@@ -59,7 +53,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Ignorar atajos de acción mientras se escribe en campos editables.
 - Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
 
-#### 5. Permitir orden manual mediante arrastre
+#### 4. Permitir orden manual mediante arrastre
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.
