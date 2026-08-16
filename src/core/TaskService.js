@@ -1557,9 +1557,7 @@ export class TaskService {
         );
 
         for (const task of updated) {
-            task.update({
-                isProject: true
-            });
+            task.isProject = true;
         }
 
         if (updated.length > 0) {
