@@ -189,4 +189,14 @@ test("ofrece una referencia de criterios avanzados", () => {
         /posposiciones/
     );
 
+    assert.match(
+        html,
+        /proyecto/
+    );
+
+    assert.match(
+        html,
+        /esProyecto/
+    );
+
 });

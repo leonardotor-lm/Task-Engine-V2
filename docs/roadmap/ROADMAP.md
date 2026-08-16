@@ -125,9 +125,13 @@ La vista de un objetivo reutiliza el control de ojo y la preferencia persistente
 
 Cada objetivo reutiliza **Herramientas de la lista** para filtrar por área, contexto, etiqueta, prioridad o fecha y ordenar su árbol de tareas. Filtros y orden se guardan con una clave propia por objetivo, participan de las copias y la sincronización de preferencias existentes y no agregan una fila permanente de controles.
 
+### Búsqueda avanzada por proyectos
+
+La búsqueda avanzada admite `esProyecto:si/no` como alias semántico de `tieneSubtareas:si/no`. El criterio `proyecto:"Nombre"` incluye el proyecto coincidente y todas las tareas de su árbol, y puede combinarse con los demás operadores sin agregar controles a los filtros rápidos.
+
 ## Etapa operativa actual
 
-La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es agregar un filtro rápido por Proyecto, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es definir un conjunto acotado de atajos de teclado, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
