@@ -694,19 +694,23 @@ export class Sidebar {
                     </span>
                 </div>
 
-                <button
-                    id="openTaskCreation"
-                    type="button"
-                    class="newTaskButton createActionButton"
-                    aria-label="Nueva tarea"
-                    title="Nueva tarea">
-                    <span class="createActionIcon">
-                        ${Icon.render("plus")}
-                    </span>
-                    <span class="createActionLabel">
-                        Nueva tarea
-                    </span>
-                </button>
+                ${activeView === View.PROJECT
+                    ? ""
+                    : `
+                        <button
+                            id="openTaskCreation"
+                            type="button"
+                            class="newTaskButton createActionButton"
+                            aria-label="Nueva tarea"
+                            title="Nueva tarea">
+                            <span class="createActionIcon">
+                                ${Icon.render("plus")}
+                            </span>
+                            <span class="createActionLabel">
+                                Nueva tarea
+                            </span>
+                        </button>
+                    `}
 
                 ${taskControlViews.includes(activeView)
                     ? `

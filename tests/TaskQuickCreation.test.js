@@ -81,6 +81,19 @@ test("la barra lateral ofrece Nueva tarea", () => {
 
 });
 
+test("un proyecto deja Agregar subtarea como única acción de alta", () => {
+
+    const sidebarHtml = new Sidebar().render(
+        View.PROJECT
+    );
+
+    assert.doesNotMatch(
+        sidebarHtml,
+        /id="openTaskCreation"/
+    );
+
+});
+
 test("la captura rápida puede cancelarse", () => {
 
     const html = new TaskList().render(
