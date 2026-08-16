@@ -142,3 +142,16 @@ export function filterTaskTreeByCriteria(
     );
 
 }
+
+export function filterCompletedTasks(
+    tasks,
+    showCompletedTasks = false
+) {
+
+    return showCompletedTasks
+        ? [...tasks]
+        : tasks.filter(
+            task => !task.isCompleted()
+        );
+
+}
