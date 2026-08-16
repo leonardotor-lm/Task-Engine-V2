@@ -54,7 +54,7 @@ export class KeyboardActionShortcutsController {
         if (
             !event ||
             event.defaultPrevented ||
-            event.altKey ||
+            !event.altKey ||
             event.ctrlKey ||
             event.metaKey ||
             this.isEditableTarget(event.target)
@@ -70,7 +70,7 @@ export class KeyboardActionShortcutsController {
             return;
         }
 
-        if (event.key === "/") {
+        if (key === "b") {
             this.focusSearch(event);
             return;
         }
