@@ -22,6 +22,7 @@ import { Priority } from "../domain/Priority.js";
 import { View } from "./View.js";
 import { buildProgressStatistics } from "./Statistics.js";
 import {
+    filterCompletedTasks,
     filterTaskTreeByCriteria,
     hasActiveTaskFilters
 } from "./TaskFilters.js";
@@ -2549,6 +2550,10 @@ export class App {
         ];
 
         let visibleTasks = this.getVisibleTasks();
+        const goalWorkspaceTasks =
+            this.currentView === View.GOAL
+                ? [...visibleTasks]
+                : [];
 
         const showCompletedTasks =
             this.taskDisplayPreferences
@@ -2567,13 +2572,14 @@ export class App {
 
         }
 
-        if (
-            this.currentView === View.PROJECT &&
-            !showCompletedTasks
-        ) {
+        if ([
+            View.PROJECT,
+            View.GOAL
+        ].includes(this.currentView)) {
 
-            visibleTasks = visibleTasks.filter(
-                task => !task.isCompleted()
+            visibleTasks = filterCompletedTasks(
+                visibleTasks,
+                showCompletedTasks
             );
 
         }
@@ -2781,6 +2787,7 @@ export class App {
             taskCreationOpen:
                 this.taskCreationOpen,
             tasks: visibleTasks,
+            goalWorkspaceTasks,
             allTasks: this.taskService.getAllTasks(),
             expandedTaskIds: this.expandedTaskIds,
             goalExpandedTaskIds:
