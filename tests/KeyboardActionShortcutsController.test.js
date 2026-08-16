@@ -76,7 +76,7 @@ function createTarget(tagName = "DIV") {
     };
 }
 
-test("N abre Nueva tarea", () => {
+test("Alt+N abre Nueva tarea", () => {
     const button = createControl();
     const documentRef = createDocument({
         newTaskButton: button
@@ -88,7 +88,8 @@ test("N abre Nueva tarea", () => {
         );
     const event = createEvent(
         "n",
-        createTarget()
+        createTarget(),
+        { altKey: true }
     );
 
     controller.handleKeydown(event);
@@ -97,7 +98,7 @@ test("N abre Nueva tarea", () => {
     assert.equal(button.clicked, 1);
 });
 
-test("/ enfoca y selecciona la búsqueda simple", () => {
+test("Alt+B enfoca y selecciona la búsqueda simple", () => {
     const searchInput = createControl();
     const controller =
         new KeyboardActionShortcutsController(
@@ -109,8 +110,9 @@ test("/ enfoca y selecciona la búsqueda simple", () => {
             }
         );
     const event = createEvent(
-        "/",
-        createTarget()
+        "b",
+        createTarget(),
+        { altKey: true }
     );
 
     controller.handleKeydown(event);
@@ -120,7 +122,7 @@ test("/ enfoca y selecciona la búsqueda simple", () => {
     assert.equal(searchInput.selected, 1);
 });
 
-test("C completa la tarea enfocada usando su control existente", () => {
+test("Alt+C completa la tarea enfocada usando su control existente", () => {
     const checkbox = createControl();
     const row = createTarget("LI");
     row.classList = {
@@ -138,7 +140,11 @@ test("C completa la tarea enfocada usando su control existente", () => {
             {},
             { documentRef: createDocument() }
         );
-    const event = createEvent("c", row);
+    const event = createEvent(
+        "c",
+        row,
+        { altKey: true }
+    );
 
     controller.handleKeydown(event);
 
@@ -166,7 +172,8 @@ test("no ejecuta atajos dentro de campos editables", () => {
         controller.handleKeydown(
             createEvent(
                 "n",
-                createTarget(tagName)
+                createTarget(tagName),
+                { altKey: true }
             )
         );
     }
@@ -174,7 +181,7 @@ test("no ejecuta atajos dentro de campos editables", () => {
     assert.equal(button.clicked, 0);
 });
 
-test("no intercepta combinaciones con modificadores", () => {
+test("no ejecuta letras sueltas ni combinaciones con Ctrl o Meta", () => {
     const button = createControl();
     const controller =
         new KeyboardActionShortcutsController(
@@ -187,17 +194,20 @@ test("no intercepta combinaciones con modificadores", () => {
         );
 
     controller.handleKeydown(
+        createEvent("n", createTarget())
+    );
+    controller.handleKeydown(
         createEvent(
             "n",
             createTarget(),
-            { ctrlKey: true }
+            { altKey: true, ctrlKey: true }
         )
     );
     controller.handleKeydown(
         createEvent(
             "n",
             createTarget(),
-            { altKey: true }
+            { altKey: true, metaKey: true }
         )
     );
 
