@@ -445,8 +445,23 @@
         display: none;
     }
 
-    .goalHeadingAction {
+    #openGoalTaskCreation {
         display: none;
+    }
+
+    .taskListHeading:has(.goalHeadingAction) {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .taskListHeading:has(.goalHeadingAction)
+        .taskListHeadingActions {
+        width: auto;
+        flex-wrap: nowrap;
+    }
+
+    #editGoal {
+        display: inline-flex;
     }
 
     .content {
