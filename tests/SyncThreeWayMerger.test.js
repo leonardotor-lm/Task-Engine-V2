@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
     createThreeWayMergedSyncBackup
 } from "../src/core/SyncThreeWayMerger.js";
+import { Task } from "../src/domain/Task.js";
 
 const DATE = "2026-08-07T12:00:00.000Z";
 
@@ -37,6 +38,19 @@ function filter(overrides = {}) {
         updatedAt: DATE,
         ...overrides
     };
+
+}
+
+function task(overrides = {}) {
+
+    return new Task({
+        id: "task-1",
+        title: "Proyecto",
+        version: 1,
+        createdAt: DATE,
+        updatedAt: DATE,
+        ...overrides
+    }).toJSON();
 
 }
 
@@ -203,6 +217,115 @@ test("mantiene conflicto sólo cuando ambos lados cambian el mismo dato de forma
     assert.deepEqual(
         result.conflicts,
         ["customFilters:filter-1"]
+    );
+
+});
+
+test("fusiona la misma migración técnica con fechas de actualización distintas", () => {
+
+    const baseBackup = backup({
+        tasks: [task()]
+    });
+    const localBackup = backup({
+        tasks: [task({
+            isProject: true,
+            version: 2,
+            updatedAt: "2026-08-15T20:00:00.000Z"
+        })]
+    });
+    const remoteBackup = backup({
+        tasks: [task({
+            isProject: true,
+            version: 2,
+            updatedAt: "2026-08-15T20:00:01.000Z"
+        })]
+    });
+
+    const result = createThreeWayMergedSyncBackup({
+        baseBackup,
+        localBackup,
+        remoteBackup
+    });
+
+    assert.deepEqual(result.conflicts, []);
+    assert.equal(
+        result.backup.data.tasks[0].isProject,
+        true
+    );
+    assert.equal(
+        result.backup.data.tasks[0].updatedAt,
+        "2026-08-15T20:00:01.000Z"
+    );
+
+});
+
+test("fusiona la migración entre clientes nuevos y anteriores", () => {
+
+    const baseBackup = backup({
+        tasks: [task()]
+    });
+    const localBackup = backup({
+        tasks: [task({
+            isProject: true
+        })]
+    });
+    const remoteBackup = backup({
+        tasks: [task({
+            isProject: true,
+            version: 2,
+            updatedAt: "2026-08-15T20:00:01.000Z"
+        })]
+    });
+
+    const result = createThreeWayMergedSyncBackup({
+        baseBackup,
+        localBackup,
+        remoteBackup
+    });
+
+    assert.deepEqual(result.conflicts, []);
+    assert.equal(
+        result.backup.data.tasks[0].isProject,
+        true
+    );
+    assert.equal(
+        result.backup.data.tasks[0].version,
+        2
+    );
+
+});
+
+test("mantiene el conflicto si junto con la migración cambió contenido real", () => {
+
+    const baseBackup = backup({
+        tasks: [task()]
+    });
+    const localBackup = backup({
+        tasks: [task({
+            isProject: true,
+            version: 2,
+            updatedAt: "2026-08-15T20:00:00.000Z"
+        })]
+    });
+    const remoteBackup = backup({
+        tasks: [task({
+            title: "Proyecto modificado",
+            isProject: true,
+            version: 2,
+            updatedAt: "2026-08-15T20:00:01.000Z"
+        })]
+    });
+
+    const result = createThreeWayMergedSyncBackup({
+        baseBackup,
+        localBackup,
+        remoteBackup
+    });
+
+    assert.equal(result.backup, null);
+    assert.deepEqual(
+        result.conflicts,
+        ["tasks:task-1"]
     );
 
 });

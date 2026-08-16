@@ -97,6 +97,74 @@ function mergeValue(base, local, remote) {
 
 }
 
+function entityContent(value) {
+
+    if (
+        !value ||
+        typeof value !== "object" ||
+        Array.isArray(value)
+    ) {
+        return value;
+    }
+
+    const {
+        updatedAt,
+        version,
+        ...content
+    } = value;
+
+    return content;
+
+}
+
+function selectNewestEntity(local, remote) {
+
+    const localVersion = Number(local?.version) || 0;
+    const remoteVersion = Number(remote?.version) || 0;
+
+    if (localVersion !== remoteVersion) {
+        return localVersion > remoteVersion
+            ? local
+            : remote;
+    }
+
+    return String(local?.updatedAt ?? "") >=
+        String(remote?.updatedAt ?? "")
+        ? local
+        : remote;
+
+}
+
+function mergeEntityValue(base, local, remote) {
+
+    const result = mergeValue(
+        base,
+        local,
+        remote
+    );
+
+    if (
+        result.conflict &&
+        local !== undefined &&
+        remote !== undefined &&
+        same(
+            entityContent(local),
+            entityContent(remote)
+        )
+    ) {
+        return {
+            conflict: false,
+            value: selectNewestEntity(
+                local,
+                remote
+            )
+        };
+    }
+
+    return result;
+
+}
+
 function collectionMap(items) {
 
     return new Map(
@@ -153,7 +221,7 @@ function mergeCollection(
         )
     ) {
 
-        const result = mergeValue(
+        const result = mergeEntityValue(
             base.get(id),
             local.get(id),
             remote.get(id)
