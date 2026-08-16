@@ -860,6 +860,32 @@ export class TaskService {
 
     }
 
+    undoTaskCompletion(id) {
+
+        const task = this.repository.getById(id);
+
+        if (!task) {
+            return null;
+        }
+
+        if (task.recurrence) {
+            throw new Error(
+                "No se puede reabrir una instancia recurrente completada. Editá la siguiente instancia."
+            );
+        }
+
+        task.undoCompletion();
+        this.repository.update(task);
+
+        this.activityService?.recordTask(
+            ActivityType.TASK_REOPENED,
+            task
+        );
+
+        return task;
+
+    }
+
     createNextRecurringTask(task) {
 
         const nextDueDate = getNextRecurrenceDate(
