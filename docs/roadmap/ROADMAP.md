@@ -97,9 +97,25 @@ La matriz operativa final quedó verificada en escritorio y Android:
 - mantiene abierta la barra lateral móvil y repone su desplazamiento después de los ajustes tardíos de Android;
 - mantiene la sincronización y la incorporación de cambios remotos sin congelar de forma general la interfaz.
 
+### Integridad y claridad de tareas — PR #207 y #210 a #219
+
+- la creación desde Objetivos comunica su alcance y hereda el objetivo actual;
+- Estadísticas excluye proyectos borrados y sus árboles;
+- duplicar subtareas conserva correctamente toda la jerarquía;
+- las migraciones técnicas equivalentes se reconcilian sin generar conflictos falsos;
+- **Editar objetivo** volvió al encabezado móvil;
+- Proyectos ofrece una única acción de alta y calcula su progreso con todas las tareas válidas;
+- completar desde la casilla o desde el celular comparte un deshacer contextual;
+- las subtareas aisladas muestran su ruta sin duplicarla dentro de Proyectos;
+- los contextos se presentan como `@Nombre` con la tipografía en su color configurado.
+
+### Superficies transitorias consistentes
+
+Diálogos, popovers, menús rápidos y selectores comparten tokens de borde, geometría, espaciado, elevación y fondo modal. Se conservaron los cierres existentes por `Escape` y clic exterior, las áreas táctiles móviles y las diferencias funcionales de cada control.
+
 ## Etapa operativa actual
 
-La verificación operativa de la PWA está cerrada. La prioridad actual es verificar la creación de tareas desde Objetivos. El siguiente bloque de implementación aprobado es investigar y corregir la aparición de proyectos borrados en Estadísticas, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La prioridad actual es cambiar la etiqueta visible **Descripción** por **Notas**, sin modificar el modelo de datos, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
