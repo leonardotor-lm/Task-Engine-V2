@@ -14,14 +14,15 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Incorporar un conjunto acotado de atajos de teclado
+### Permitir orden manual mediante arrastre
 
 - **Estado:** En desarrollo.
-- **Dificultad prevista:** Baja o media.
-- Alcance definido: `N` abre **Nueva tarea**, `/` enfoca la búsqueda simple y `C` completa la tarea que tiene el foco.
-- Los atajos de acción se ignoran mientras se escribe en `input`, `textarea`, `select` o contenido editable.
-- No se interceptan combinaciones con Ctrl, Alt o Cmd/Meta para evitar conflictos con el navegador o el sistema.
-- La navegación por flechas, Home/End, Enter/Espacio y jerarquía permanece separada y sin cambios.
+- **Dificultad prevista:** Media o alta.
+- Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
+- Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
+- En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
+- Deshabilitar el arrastre cuando haya búsqueda, búsqueda avanzada, filtros o selección múltiple activos.
+- Al reordenar una lista parcial, recalcular el grupo completo de hermanos para conservar posiciones coherentes de tareas momentáneamente no visibles.
 
 ## Backlog aprobado
 
@@ -29,28 +30,19 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 1 — Eficiencia avanzada sin ruido visual
 
-#### 1. Incorporar un conjunto acotado de atajos de teclado
+#### 1. Permitir orden manual mediante arrastre
 
 - **Estado:** En desarrollo.
-- **Dificultad prevista:** Baja o media.
-- `N`: abrir **Nueva tarea** cuando esa acción esté disponible en la vista actual.
-- `/`: enfocar y seleccionar el contenido de la búsqueda simple cuando la vista disponga de ella.
-- `C`: completar la tarea cuya fila tiene el foco, reutilizando el control de finalización existente.
-- Ignorar los atajos dentro de campos editables y cuando intervienen Ctrl, Alt o Cmd/Meta.
-- No agregar una ayuda permanente en pantalla ni modificar la navegación por teclado ya implementada.
-
-#### 2. Permitir orden manual mediante arrastre
-
-- **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.
 - Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
 - Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
 - En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
-- Definir el comportamiento ante filtros activos, subtareas contraídas y listas parciales antes de implementar.
+- Deshabilitar el arrastre cuando haya búsqueda, búsqueda avanzada, filtros o selección múltiple activos.
+- Al reordenar una lista parcial, recalcular el grupo completo de hermanos para conservar posiciones coherentes de tareas momentáneamente no visibles.
 
 ### Etapa 2 — Notas externas vinculadas
 
-#### 3. Integrar Notion como base externa de notas
+#### 2. Integrar Notion como base externa de notas
 
 - **Estado:** Pendiente aprobado; seguimiento en issue #212.
 - **Dificultad prevista:** Media o alta, dividida en etapas independientes.
@@ -63,6 +55,15 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
 - Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
 - Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
+
+## Implementado recientemente
+
+### Atajos de teclado de acción
+
+- `Alt+N`: abrir **Nueva tarea** cuando la acción esté disponible.
+- `Alt+B`: enfocar y seleccionar la búsqueda simple.
+- `Alt+C`: completar la tarea cuya fila tiene el foco.
+- Los atajos se ignoran dentro de campos editables y no reemplazan la navegación existente por flechas, Home/End, Enter/Espacio y jerarquía.
 
 ## Propuesta pendiente de decisión
 
