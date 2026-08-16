@@ -82,6 +82,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/GoalView.js",
     "./src/ui/GoalWorkspaceController.js",
     "./src/ui/Icon.js",
+    "./src/ui/KeyboardActionShortcutsController.js",
     "./src/ui/KeyboardNavigationController.js",
     "./src/ui/MainView.js",
     "./src/ui/MobileMainLayoutController.js",
