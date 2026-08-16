@@ -34,7 +34,9 @@ export class TaskService {
             );
         }
 
-        const task = this.repository.add(data);
+        const task = this.repository.add(
+            this.withInheritedParentGoalIds(data)
+        );
 
         if (task.parentTaskId) {
             this.markTaskAsProject(
@@ -77,7 +79,8 @@ export class TaskService {
             title,
             parentTaskId: parent.id,
             areaId: parent.areaId,
-            status: parent.status
+            status: parent.status,
+            goalIds: [...(parent.goalIds ?? [])]
         });
 
         this.markTaskAsProject(parent.id);
@@ -152,9 +155,23 @@ export class TaskService {
             );
         }
 
+        const previousGoalIds = new Set(
+            task.goalIds ?? []
+        );
+
         task.update(data);
 
         this.repository.update(task);
+
+        if (task.isProject) {
+            this.addGoalIdsToDescendants(
+                task.id,
+                (task.goalIds ?? []).filter(
+                    goalId =>
+                        !previousGoalIds.has(goalId)
+                )
+            );
+        }
 
         if (task.parentTaskId) {
             this.markTaskAsProject(
@@ -363,6 +380,33 @@ export class TaskService {
         this.repository.updateMany(
             updatedTasks
         );
+
+        const previousTasksById = new Map(
+            tasks.map(task => [
+                task.id,
+                task
+            ])
+        );
+
+        for (const task of updatedTasks) {
+
+            if (!task.isProject) continue;
+
+            const previousGoalIds = new Set(
+                previousTasksById
+                    .get(task.id)
+                    ?.goalIds ?? []
+            );
+
+            this.addGoalIdsToDescendants(
+                task.id,
+                (task.goalIds ?? []).filter(
+                    goalId =>
+                        !previousGoalIds.has(goalId)
+                )
+            );
+
+        }
 
         this.activityService?.recordTasks(
             ActivityType.TASK_UPDATED,
@@ -1201,6 +1245,88 @@ export class TaskService {
         }
 
         return descendants;
+
+    }
+
+    withInheritedParentGoalIds(data = {}) {
+
+        if (!data.parentTaskId) {
+            return data;
+        }
+
+        const parent = this.repository.getById(
+            data.parentTaskId
+        );
+
+        if (!parent) {
+            return data;
+        }
+
+        return {
+            ...data,
+            goalIds: [
+                ...new Set([
+                    ...(parent.goalIds ?? []),
+                    ...(data.goalIds ?? [])
+                ])
+            ]
+        };
+
+    }
+
+    addGoalIdsToDescendants(
+        parentId,
+        goalIds
+    ) {
+
+        const inheritedGoalIds = [
+            ...new Set(goalIds ?? [])
+        ];
+
+        if (inheritedGoalIds.length === 0) {
+            return [];
+        }
+
+        const updated = this.getDescendants(parentId)
+            .filter(task =>
+                inheritedGoalIds.some(
+                    goalId =>
+                        !(task.goalIds ?? [])
+                            .includes(goalId)
+                )
+            )
+            .map(task => {
+
+                const copy = new Task(
+                    task.toJSON()
+                );
+
+                copy.update({
+                    goalIds: [
+                        ...new Set([
+                            ...(copy.goalIds ?? []),
+                            ...inheritedGoalIds
+                        ])
+                    ]
+                });
+
+                return copy;
+
+            });
+
+        if (updated.length === 0) {
+            return updated;
+        }
+
+        if (this.repository.updateMany) {
+            this.repository.updateMany(updated);
+        } else {
+            for (const task of updated) {
+                this.repository.update(task);
+            }
+        }
+
+        return updated;
 
     }
 

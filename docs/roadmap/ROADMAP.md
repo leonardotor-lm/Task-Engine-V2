@@ -113,9 +113,13 @@ La matriz operativa final quedó verificada en escritorio y Android:
 
 Diálogos, popovers, menús rápidos y selectores comparten tokens de borde, geometría, espaciado, elevación y fondo modal. Se conservaron los cierres existentes por `Escape` y clic exterior, las áreas táctiles móviles y las diferencias funcionales de cada control.
 
+### Herencia de objetivos en proyectos
+
+Al asociar un objetivo a un proyecto, la aplicación lo suma a todas sus tareas descendientes sin eliminar otras asociaciones. Las nuevas subtareas heredan los objetivos de su padre tanto desde el alta rápida como desde el editor completo. Quitar un objetivo del proyecto no lo retira automáticamente de los descendientes, porque podrían haberlo recibido o conservado por una asociación manual.
+
 ## Etapa operativa actual
 
-La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es heredar objetivos en la jerarquía de un proyecto, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es mostrar u ocultar tareas completadas dentro de Objetivos, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
