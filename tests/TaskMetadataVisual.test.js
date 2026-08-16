@@ -1,9 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import { Priority } from "../src/domain/Priority.js";
 import { Task } from "../src/domain/Task.js";
 import { TaskList } from "../src/ui/TaskList.js";
+
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
 
 function renderTask(task, entities = {}) {
 
@@ -79,6 +85,16 @@ test("diferencia visualmente área, contexto y etiquetas", () => {
     assert.match(
         html,
         /title="Contexto: Escuela"/
+    );
+
+    assert.match(
+        html,
+        /class="taskMetaEntity taskMetaContext"[\s\S]*?style="--meta-color: #22c55e"[\s\S]*?@Escuela/
+    );
+
+    assert.match(
+        styles,
+        /\.taskMetaContext\s*\{[\s\S]*?padding:\s*0;[\s\S]*?border:\s*0;[\s\S]*?background:\s*transparent;[\s\S]*?color:\s*var\(--meta-color\);/
     );
 
     assert.match(
@@ -345,6 +361,7 @@ test("el modo reducido conserva sólo alertas importantes", () => {
         priority: Priority.CRITICAL,
         dueDate: "2026-07-24",
         areaId: "area-hidden",
+        contextId: "context-hidden",
         tagIds: ["tag-hidden"]
     });
 
@@ -357,7 +374,11 @@ test("el modo reducido conserva sólo alertas importantes", () => {
             name: "Área oculta",
             color: "#3b82f6"
         }],
-        [],
+        [{
+            id: "context-hidden",
+            name: "Contexto oculto",
+            color: "#22c55e"
+        }],
         [{
             id: "tag-hidden",
             name: "Etiqueta oculta",
@@ -391,6 +412,11 @@ test("el modo reducido conserva sólo alertas importantes", () => {
     assert.doesNotMatch(
         html,
         /taskMetaTag/
+    );
+
+    assert.doesNotMatch(
+        html,
+        /taskMetaContext/
     );
 
 });
