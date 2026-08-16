@@ -191,6 +191,49 @@ test("distingue el orden de cada área", () => {
 
 });
 
+test("distingue el orden de cada objetivo", () => {
+
+    const storage = createStorage();
+    const app = createApp();
+
+    app.currentView = View.GOAL;
+    app.selectedGoal = { id: "goal-1" };
+
+    const controller =
+        new TaskSortPreferencesController(
+            app,
+            { storage }
+        );
+
+    controller.start();
+    app.render();
+
+    app.mainView.callbacks.onChangeTaskSort(
+        TaskSort.PRIORITY
+    );
+
+    app.selectedGoal = { id: "goal-2" };
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.MANUAL
+    );
+
+    app.mainView.callbacks.onChangeTaskSort(
+        TaskSort.DUE_DATE
+    );
+
+    app.selectedGoal = { id: "goal-1" };
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.PRIORITY
+    );
+
+});
+
 test("restaura el orden de la vista en cada render", () => {
 
     const storage = createStorage();
