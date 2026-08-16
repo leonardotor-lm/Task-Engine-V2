@@ -830,10 +830,10 @@ export class Sidebar {
                             <summary>Ver criterios disponibles</summary>
 
                             <p><strong>Contenido:</strong> titulo, descripcion.</p>
-                            <p><strong>Organización:</strong> area, areaContiene, contexto, contextoContiene, etiqueta, etiquetaContiene, objetivo, objetivoJerarquia, objetivoDescripcion, objetivoEstado, objetivoFecha, objetivoNivel.</p>
+                            <p><strong>Organización:</strong> area, areaContiene, contexto, contextoContiene, etiqueta, etiquetaContiene, proyecto, objetivo, objetivoJerarquia, objetivoDescripcion, objetivoEstado, objetivoFecha, objetivoNivel.</p>
                             <p><strong>Fechas:</strong> activaEn; inicio, inicioAntes, inicioDespues, inicioDentro, inicioEntre; fecha, fechaAntes, fechaDespues, fechaDentro, fechaEntre; completada, creada, actualizada y sus variantes Entre.</p>
                             <p><strong>Período activo:</strong> usá activaEn:01/08/2026..07/08/2026 para encontrar tareas cuyo intervalo entre inicio y vencimiento se superpone con esas fechas. Las tareas sin inicio ni vencimiento no se incluyen.</p>
-                            <p><strong>Propiedades:</strong> prioridad, estado, tieneInicio, tieneFecha, hora, tieneHora, tieneEtiquetas, tieneObjetivos, tieneSubtareas, esSubtarea, recurrente, repeticion, posposiciones.</p>
+                            <p><strong>Propiedades:</strong> prioridad, estado, tieneInicio, tieneFecha, hora, tieneHora, tieneEtiquetas, tieneObjetivos, tieneSubtareas, esProyecto, esSubtarea, recurrente, repeticion, posposiciones.</p>
                             <p><strong>Valores útiles:</strong> hoy, ayer, mañana, viernes, “en 3 dias”, 15/08, &gt;3 y rangos entre fechas.</p>
                         </details>
 

@@ -41,6 +41,10 @@ const FIELD_ALIASES = Object.freeze({
     inicia: "start",
     hassubtasks: "hasSubtasks",
     tienesubtareas: "hasSubtasks",
+    isproject: "hasSubtasks",
+    esproyecto: "hasSubtasks",
+    project: "project",
+    proyecto: "project",
     isrecurring: "isRecurring",
     recurrente: "isRecurring",
     isarchived: "isArchived",
@@ -548,6 +552,68 @@ function matchingGoalIds(
     }
 
     return matchingIds;
+
+}
+
+function belongsToProject(
+    task,
+    value,
+    context
+) {
+
+    const normalizedValue =
+        normalizeSearchText(value);
+    let projectIds =
+        context.projectMatchCache.get(
+            normalizedValue
+        );
+
+    if (!projectIds) {
+
+        const parentIds = new Set(
+            context.tasks
+                .map(item => item.parentTaskId)
+                .filter(Boolean)
+        );
+
+        projectIds = new Set(
+            context.tasks
+                .filter(candidate =>
+                    parentIds.has(candidate.id) &&
+                    normalizeSearchText(
+                        candidate.title ?? ""
+                    ).includes(normalizedValue)
+                )
+                .map(candidate => candidate.id)
+        );
+
+        context.projectMatchCache.set(
+            normalizedValue,
+            projectIds
+        );
+
+    }
+
+    const visitedIds = new Set();
+    let currentTask = task;
+
+    while (
+        currentTask &&
+        !visitedIds.has(currentTask.id)
+    ) {
+
+        if (projectIds.has(currentTask.id)) {
+            return true;
+        }
+
+        visitedIds.add(currentTask.id);
+        currentTask = context.tasksById.get(
+            currentTask.parentTaskId
+        );
+
+    }
+
+    return false;
 
 }
 
@@ -1118,6 +1184,13 @@ function matchesField(task, node, context) {
             );
         }
 
+        case "project":
+            return belongsToProject(
+                task,
+                node.value,
+                context
+            );
+
         case "goalHierarchy": {
             const goalIds = matchingGoalIds(
                 node.value,
@@ -1556,6 +1629,13 @@ export function matchesAdvancedSearch(
         tags: context.tags ?? [],
         goals: context.goals ?? [],
         tasks: context.tasks ?? [],
+        tasksById: context.tasksById ?? new Map(
+            (context.tasks ?? []).map(
+                item => [item.id, item]
+            )
+        ),
+        projectMatchCache:
+            context.projectMatchCache ?? new Map(),
         today: context.today ?? ""
     };
 

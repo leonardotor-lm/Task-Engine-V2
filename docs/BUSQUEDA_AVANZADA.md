@@ -66,6 +66,7 @@ bibliografia
 | `etiqueta` | Una etiqueta determinada | `etiqueta:Importante` |
 | `etiquetaContiene` | Parte del nombre de una etiqueta | `etiquetaContiene:import` |
 | `tieneEtiquetas` | Si posee alguna etiqueta | `tieneEtiquetas:si` |
+| `proyecto` | Proyecto indicado y todas las tareas de su árbol | `proyecto:"Planificación anual"` |
 | `objetivo` | Título parcial de un objetivo asociado directamente | `objetivo:"Leer clásicos"` |
 | `objetivoJerarquia` | Objetivo indicado o cualquiera de sus subobjetivos | `objetivoJerarquia:Lectura` |
 | `tieneObjetivos` | Si posee algún objetivo asociado | `tieneObjetivos:si` |
@@ -75,6 +76,8 @@ bibliografia
 | `objetivoNivel` | Objetivo principal o subobjetivo | `objetivoNivel:subobjetivo` |
 
 Los criterios booleanos aceptan `si` y `no`.
+
+`proyecto` busca una coincidencia parcial en el título. Si más de un proyecto coincide, incluye los árboles de todos ellos y puede combinarse con otros criterios para acotar el resultado.
 
 ## Adjuntos
 
@@ -332,6 +335,7 @@ posposiciones:>=3 AND estado:incompleta
 | Criterio | Qué busca | Ejemplo |
 |---|---|---|
 | `tieneSubtareas` | Tareas padre con subtareas directas | `tieneSubtareas:si` |
+| `esProyecto` | Alias más claro de `tieneSubtareas` | `esProyecto:si` |
 | `esSubtarea` | Tareas que dependen de otra | `esSubtarea:si` |
 | `recurrente` | Tareas con alguna recurrencia | `recurrente:si` |
 | `repeticion` | Una frecuencia determinada | `repeticion:semanal` |

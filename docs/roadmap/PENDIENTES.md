@@ -14,29 +14,7 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Agregar un filtro rápido por Proyecto
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Media.
-- Permitir filtrar por un proyecto y todo su subárbol desde el panel existente de filtros rápidos.
-- Usar un selector buscable y mostrar la ruta del proyecto cuando sea necesaria para distinguir nombres repetidos.
-
-## Backlog aprobado
-
-El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
-
-### Etapa 1 — Gestión de Objetivos y Proyectos
-
-#### 1. Agregar un filtro rápido por Proyecto
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Media.
-- Permitir filtrar por un proyecto y todo su subárbol desde el panel existente de filtros rápidos.
-- Usar un selector buscable y mostrar la ruta del proyecto cuando sea necesaria para distinguir nombres repetidos.
-
-### Etapa 2 — Eficiencia avanzada sin ruido visual
-
-#### 2. Incorporar un conjunto acotado de atajos de teclado
+### Incorporar un conjunto acotado de atajos de teclado
 
 - **Estado:** Pendiente de definición funcional.
 - **Dificultad prevista:** Baja o media.
@@ -44,7 +22,21 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Ignorar atajos de acción mientras se escribe en campos editables.
 - Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
 
-#### 3. Permitir orden manual mediante arrastre
+## Backlog aprobado
+
+El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Etapa 1 — Eficiencia avanzada sin ruido visual
+
+#### 1. Incorporar un conjunto acotado de atajos de teclado
+
+- **Estado:** Pendiente de definición funcional.
+- **Dificultad prevista:** Baja o media.
+- Definir con el usuario un conjunto pequeño antes de implementar.
+- Ignorar atajos de acción mientras se escribe en campos editables.
+- Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
+
+#### 2. Permitir orden manual mediante arrastre
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.

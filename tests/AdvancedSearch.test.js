@@ -194,6 +194,118 @@ test("filtra estados y propiedades booleanas", () => {
 
 });
 
+test("esProyecto conserva el criterio tieneSubtareas", () => {
+
+    const parent = task({
+        id: "project",
+        title: "Proyecto anual"
+    });
+    const child = task({
+        id: "child",
+        parentTaskId: parent.id
+    });
+    const searchContext = {
+        ...context,
+        tasks: [parent, child]
+    };
+
+    assert.equal(
+        matchesAdvancedSearch(
+            parent,
+            compileAdvancedSearch("esProyecto:si"),
+            searchContext
+        ),
+        true
+    );
+
+    assert.equal(
+        matchesAdvancedSearch(
+            child,
+            compileAdvancedSearch("esProyecto:si"),
+            searchContext
+        ),
+        false
+    );
+
+    assert.equal(
+        matchesAdvancedSearch(
+            child,
+            compileAdvancedSearch("esProyecto:no"),
+            searchContext
+        ),
+        true
+    );
+
+});
+
+test("proyecto busca el proyecto y todo su arbol", () => {
+
+    const project = task({
+        id: "annual-project",
+        title: "Planificación anual"
+    });
+    const nestedProject = task({
+        id: "term-project",
+        title: "Primer trimestre",
+        parentTaskId: project.id
+    });
+    const descendant = task({
+        id: "class-task",
+        title: "Preparar clase",
+        parentTaskId: nestedProject.id,
+        priority: 3
+    });
+    const coincidentalLeaf = task({
+        id: "coincidental-leaf",
+        title: "Revisar planificación anual"
+    });
+    const unrelated = task({
+        id: "unrelated",
+        title: "Comprar alimentos"
+    });
+    const tasks = [
+        project,
+        nestedProject,
+        descendant,
+        coincidentalLeaf,
+        unrelated
+    ];
+    const expression = compileAdvancedSearch(
+        "proyecto:\"Planificacion anual\""
+    );
+    const searchContext = {
+        ...context,
+        tasks
+    };
+
+    assert.deepEqual(
+        tasks
+            .filter(item => matchesAdvancedSearch(
+                item,
+                expression,
+                searchContext
+            ))
+            .map(item => item.id),
+        [
+            "annual-project",
+            "term-project",
+            "class-task"
+        ]
+    );
+
+    assert.equal(
+        matchesAdvancedSearch(
+            descendant,
+            compileAdvancedSearch(
+                "proyecto:\"Planificacion anual\" AND prioridad:alta"
+            ),
+            searchContext
+        ),
+        true
+    );
+
+});
+
 test("filtra fechas relativas y fechas exactas", () => {
 
     assert.equal(
@@ -252,7 +364,7 @@ test("informa un campo desconocido", () => {
 
     assert.throws(
         () => compileAdvancedSearch(
-            "proyecto:Escuela"
+            "campoInexistente:Escuela"
         ),
         error =>
             error instanceof
