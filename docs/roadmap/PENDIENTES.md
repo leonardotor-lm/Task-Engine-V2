@@ -14,13 +14,12 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Heredar objetivos en la jerarquía de un proyecto
+### Mostrar u ocultar completadas en Objetivos
 
 - **Estado:** Pendiente.
-- **Dificultad prevista:** Media.
-- Al asignar un objetivo a un proyecto, sumarlo a todas sus tareas descendientes sin eliminar otras asociaciones existentes.
-- Hacer que cada nueva subtarea herede todos los objetivos de su padre.
-- No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
+- **Dificultad prevista:** Baja o media.
+- Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
+- Mantener el mismo significado, estado accesible y persistencia del control existente.
 
 ## Backlog aprobado
 
@@ -28,22 +27,14 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 1 — Gestión de Objetivos y Proyectos
 
-#### 1. Heredar objetivos en la jerarquía de un proyecto
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Media.
-- Al asignar un objetivo a un proyecto, sumarlo a todas sus tareas descendientes sin eliminar otras asociaciones existentes.
-- Hacer que cada nueva subtarea herede todos los objetivos de su padre.
-- No retirar automáticamente de los descendientes un objetivo que se quite del proyecto hasta definir una regla segura para asociaciones agregadas manualmente.
-
-#### 2. Mostrar u ocultar completadas en Objetivos
+#### 1. Mostrar u ocultar completadas en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Baja o media.
 - Incorporar en la vista de objetivos el ícono de ojo ya utilizado por las demás vistas.
 - Mantener el mismo significado, estado accesible y persistencia del control existente.
 
-#### 3. Incorporar filtros rápidos y orden en Objetivos
+#### 2. Incorporar filtros rápidos y orden en Objetivos
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -51,7 +42,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Evitar una nueva fila permanente de controles.
 - Conservar las preferencias por objetivo si el contrato actual de persistencia por vista lo permite sin ambigüedades.
 
-#### 4. Agregar un filtro rápido por Proyecto
+#### 3. Agregar un filtro rápido por Proyecto
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media.
@@ -60,7 +51,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 
 ### Etapa 2 — Eficiencia avanzada sin ruido visual
 
-#### 5. Incorporar un conjunto acotado de atajos de teclado
+#### 4. Incorporar un conjunto acotado de atajos de teclado
 
 - **Estado:** Pendiente de definición funcional.
 - **Dificultad prevista:** Baja o media.
@@ -68,7 +59,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Ignorar atajos de acción mientras se escribe en campos editables.
 - Evitar conflictos con el navegador y documentar los atajos sin mantener una ayuda permanente en pantalla.
 
-#### 6. Permitir orden manual mediante arrastre
+#### 5. Permitir orden manual mediante arrastre
 
 - **Estado:** Pendiente.
 - **Dificultad prevista:** Media o alta.
