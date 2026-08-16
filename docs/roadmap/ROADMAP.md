@@ -115,7 +115,7 @@ Diálogos, popovers, menús rápidos y selectores comparten tokens de borde, geo
 
 ## Etapa operativa actual
 
-La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La prioridad actual es cambiar la etiqueta visible **Descripción** por **Notas**, sin modificar el modelo de datos, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es heredar objetivos en la jerarquía de un proyecto, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
