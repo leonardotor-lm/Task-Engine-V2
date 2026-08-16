@@ -36,6 +36,10 @@ export class Task {
 
         this.statusBeforeDelete = data.statusBeforeDelete ?? null;
 
+        this.statusBeforeCompletion = null;
+
+        this.isWaitingBeforeCompletion = null;
+
         this.areaId = data.areaId ?? null;
 
         this.contextId = data.contextId ?? null;
@@ -496,6 +500,8 @@ export class Task {
             throw new Error("No se puede completar esta tarea.");
         }
 
+        this.statusBeforeCompletion = this.status;
+        this.isWaitingBeforeCompletion = this.isWaiting;
         this.status = TaskStatus.COMPLETED;
         this.isWaiting = false;
 
@@ -512,7 +518,37 @@ export class Task {
         }
 
         this.status = TaskStatus.PENDING;
+        this.statusBeforeCompletion = null;
+        this.isWaitingBeforeCompletion = null;
 
+        this.completedAt = null;
+
+        this.touch();
+
+    }
+
+    undoCompletion() {
+
+        if (!this.isCompleted()) {
+            throw new Error("La tarea no está completada.");
+        }
+
+        this.status = [
+            TaskStatus.INBOX,
+            TaskStatus.PENDING
+        ].includes(this.statusBeforeCompletion)
+            ? this.statusBeforeCompletion
+            : (
+                this.areaId
+                    ? TaskStatus.PENDING
+                    : TaskStatus.INBOX
+            );
+
+        this.statusBeforeCompletion = null;
+        this.isWaiting = Boolean(
+            this.isWaitingBeforeCompletion
+        );
+        this.isWaitingBeforeCompletion = null;
         this.completedAt = null;
 
         this.touch();

@@ -349,38 +349,49 @@ export class TaskSwipeController {
         notice.innerHTML = `
             <span>Tarea completada</span>
 
-            <button type="button">
-                Deshacer
-            </button>
+            <div class="taskCompletionNoticeActions">
+                <button
+                    type="button"
+                    class="undoTaskCompletion">
+                    Deshacer
+                </button>
+
+                <button
+                    type="button"
+                    class="closeTaskCompletionNotice"
+                    aria-label="Cerrar aviso">
+                    Cerrar
+                </button>
+            </div>
         `;
 
         const remove = () => {
             notice.remove();
         };
 
-        const timeout =
-            window.setTimeout(
-                remove,
-                5000
-            );
-
         notice.querySelector(
-            "button"
+            ".undoTaskCompletion"
         ).addEventListener(
             "click",
-            () => {
+            async () => {
 
-                window.clearTimeout(
-                    timeout
-                );
-
-                onUndoComplete?.(
+                const succeeded =
+                    await onUndoComplete?.(
                     taskId
                 );
 
-                remove();
+                if (succeeded !== false) {
+                    remove();
+                }
 
             }
+        );
+
+        notice.querySelector(
+            ".closeTaskCompletionNotice"
+        ).addEventListener(
+            "click",
+            remove
         );
 
         document.body.appendChild(

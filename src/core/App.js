@@ -257,6 +257,16 @@ export class App {
 
             },
 
+            onUndoTaskCompletion: (id) => {
+
+                this.taskService
+                    .undoTaskCompletion(id);
+
+                this.selectedTask = null;
+                this.render();
+
+            },
+
             onQuickPostponeTask: (id, newDate) => {
 
                 this.taskService.postponeTask(

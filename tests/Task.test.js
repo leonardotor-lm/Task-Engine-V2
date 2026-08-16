@@ -48,6 +48,35 @@ test("completar y reabrir una tarea conserva un estado válido", () => {
 
 });
 
+test("deshacer una tarea de Inbox restaura su estado original", () => {
+
+    const task = new Task({
+        title: "Clasificar apuntes"
+    });
+
+    task.complete();
+    task.undoCompletion();
+
+    assert.equal(task.status, TaskStatus.INBOX);
+
+});
+
+test("deshacer conserva la condición de espera anterior", () => {
+
+    const task = new Task({
+        title: "Esperar respuesta",
+        status: TaskStatus.PENDING,
+        isWaiting: true
+    });
+
+    task.complete();
+    task.undoCompletion();
+
+    assert.equal(task.status, TaskStatus.PENDING);
+    assert.equal(task.isWaiting, true);
+
+});
+
 test("no permite crear una tarea sin título", () => {
 
     assert.throws(
