@@ -55,7 +55,11 @@ test("la interfaz móvil conserva una sola acción de alta y alinea sus herramie
     );
     assert.match(
         interfaceStyles,
-        /\.goalHeadingAction\s*\{\s*display:\s*none;/
+        /#openGoalTaskCreation\s*\{\s*display:\s*none;/
+    );
+    assert.match(
+        interfaceStyles,
+        /#editGoal\s*\{\s*display:\s*inline-flex;/
     );
     assert.match(
         interfaceStyles,

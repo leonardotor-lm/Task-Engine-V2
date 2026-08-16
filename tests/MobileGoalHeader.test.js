@@ -18,6 +18,14 @@ const styles = await readFile(
     "utf8"
 );
 
+const interfaceStyles = await readFile(
+    new URL(
+        "../styles/task-interface.css",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 const projectView = await readFile(
     new URL(
         "../src/ui/ProjectView.js",
@@ -76,15 +84,15 @@ test("el proyecto elimina Volver al incorporar breadcrumb", () => {
 
 });
 
-test("apila el encabezado del objetivo sólo en móvil", () => {
+test("mantiene editar objetivo junto al título en móvil", () => {
 
     const mobileRule =
-        styles.indexOf(
+        interfaceStyles.indexOf(
             ".taskListHeading:has(.goalHeadingAction)"
         );
 
     const goalMediaRule =
-        styles.lastIndexOf(
+        interfaceStyles.lastIndexOf(
             "@media (max-width: 760px)",
             mobileRule
         );
@@ -93,8 +101,20 @@ test("apila el encabezado del objetivo sólo en móvil", () => {
     assert.notEqual(goalMediaRule, -1);
     assert.ok(goalMediaRule < mobileRule);
     assert.match(
-        styles.slice(mobileRule),
-        /grid-template-columns:\s*minmax\(0, 1fr\)/
+        interfaceStyles.slice(mobileRule),
+        /grid-template-columns:\s*minmax\(0, 1fr\)\s+auto/
+    );
+    assert.match(
+        interfaceStyles.slice(mobileRule),
+        /\.taskListHeadingActions\s*\{[\s\S]*?width:\s*auto;[\s\S]*?flex-wrap:\s*nowrap;/
+    );
+    assert.match(
+        interfaceStyles.slice(goalMediaRule),
+        /#openGoalTaskCreation\s*\{\s*display:\s*none;/
+    );
+    assert.match(
+        interfaceStyles.slice(mobileRule),
+        /#editGoal\s*\{\s*display:\s*inline-flex;/
     );
 
 });
