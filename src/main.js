@@ -27,6 +27,9 @@ import {
     KeyboardNavigationController
 } from "./ui/KeyboardNavigationController.js";
 import {
+    KeyboardActionShortcutsController
+} from "./ui/KeyboardActionShortcutsController.js";
+import {
     MobileMainLayoutController
 } from "./ui/MobileMainLayoutController.js";
 import {
@@ -86,6 +89,8 @@ const accessibilityStateController =
     new AccessibilityStateController(app);
 const keyboardNavigationController =
     new KeyboardNavigationController(app);
+const keyboardActionShortcutsController =
+    new KeyboardActionShortcutsController(app);
 const mobileMainLayoutController =
     new MobileMainLayoutController(app);
 const directTaskCreationController =
@@ -139,4 +144,5 @@ desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
 accessibilityStateController.start();
 keyboardNavigationController.start();
+keyboardActionShortcutsController.start();
 app.start();
