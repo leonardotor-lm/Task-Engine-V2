@@ -314,10 +314,10 @@
         padding: 0 12px 12px;
         overflow-x: hidden;
         overflow-y: auto;
-        border: 1px solid var(--color-border);
-        border-radius: 8px;
+        border: var(--transient-surface-border);
+        border-radius: var(--transient-surface-radius);
         background: var(--color-surface);
-        box-shadow: 0 12px 32px rgb(15 23 42 / 18%);
+        box-shadow: var(--transient-dialog-shadow);
         color: var(--color-text-subtle);
         font-size: 14px;
     }
