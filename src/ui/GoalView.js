@@ -32,7 +32,10 @@ export class GoalView {
             goal,
             goalById
         );
-        const completedTasks = state.tasks.filter(
+        const progressTasks =
+            state.goalWorkspaceTasks ??
+            state.tasks;
+        const completedTasks = progressTasks.filter(
             task => task.isCompleted()
         ).length;
         const directSubgoals = goals
@@ -50,9 +53,9 @@ export class GoalView {
             .length;
         const progressParts = [];
 
-        if (state.tasks.length > 0) {
+        if (progressTasks.length > 0) {
             progressParts.push(
-                `Tareas ${completedTasks}/${state.tasks.length}`
+                `Tareas ${completedTasks}/${progressTasks.length}`
             );
         }
 
@@ -92,6 +95,33 @@ export class GoalView {
                 </span>
                 <span class="responsiveButtonLabel">
                     Editar objetivo
+                </span>
+            </button>
+
+            <button
+                id="toggleCompletedTasks"
+                type="button"
+                class="taskToolsButton ${state.showCompletedTasks
+                    ? "active"
+                    : ""}"
+                aria-label="${state.showCompletedTasks
+                    ? "Ocultar tareas completadas"
+                    : "Mostrar tareas completadas"}"
+                aria-pressed="${Boolean(
+                    state.showCompletedTasks
+                )}"
+                title="${state.showCompletedTasks
+                    ? "Ocultar tareas completadas"
+                    : "Mostrar tareas completadas"}">
+                ${Icon.render(
+                    state.showCompletedTasks
+                        ? "eye-off"
+                        : "eye"
+                )}
+                <span>
+                    ${state.showCompletedTasks
+                        ? "Ocultar completadas"
+                        : "Mostrar completadas"}
                 </span>
             </button>
         `;

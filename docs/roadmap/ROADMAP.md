@@ -117,9 +117,13 @@ Diálogos, popovers, menús rápidos y selectores comparten tokens de borde, geo
 
 Al asociar un objetivo a un proyecto, la aplicación lo suma a todas sus tareas descendientes sin eliminar otras asociaciones. Las nuevas subtareas heredan los objetivos de su padre tanto desde el alta rápida como desde el editor completo. Quitar un objetivo del proyecto no lo retira automáticamente de los descendientes, porque podrían haberlo recibido o conservado por una asociación manual.
 
+### Visibilidad de tareas completadas en Objetivos
+
+La vista de un objetivo reutiliza el control de ojo y la preferencia persistente de las demás listas para mostrar u ocultar tareas completadas. Las completadas permanecen ocultas por defecto, mientras que el progreso conserva el total real aunque parte de la lista no esté visible.
+
 ## Etapa operativa actual
 
-La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es mostrar u ocultar tareas completadas dentro de Objetivos, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es incorporar filtros rápidos y orden dentro de Objetivos, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 
