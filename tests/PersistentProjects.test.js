@@ -71,7 +71,10 @@ test("migra como proyectos todos los niveles que ya tienen subtareas", () => {
 
     const root = new Task({
         id: "root",
-        title: "Proyecto"
+        title: "Proyecto",
+        version: 4,
+        createdAt: "2026-08-01T10:00:00.000Z",
+        updatedAt: "2026-08-10T12:00:00.000Z"
     });
     const nested = new Task({
         id: "nested",
@@ -100,6 +103,11 @@ test("migra como proyectos todos los niveles que ya tienen subtareas", () => {
     assert.equal(root.isProject, true);
     assert.equal(nested.isProject, true);
     assert.equal(leaf.isProject, false);
+    assert.equal(root.version, 4);
+    assert.equal(
+        root.updatedAt,
+        "2026-08-10T12:00:00.000Z"
+    );
 
 });
 
