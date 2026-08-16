@@ -71,6 +71,48 @@ test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
 
 });
 
+test("el progreso incluye completadas aunque estén ocultas", () => {
+
+    const project = new Task({
+        id: "project-progress",
+        title: "Proyecto"
+    });
+    const pendingChild = new Task({
+        id: "pending-child",
+        title: "Pendiente",
+        parentTaskId: project.id
+    });
+    const completedChild = new Task({
+        id: "completed-child",
+        title: "Terminada",
+        parentTaskId: project.id
+    });
+
+    completedChild.complete();
+
+    const html = new ProjectView().render({
+        projectTask: project,
+        projectOriginView: View.ALL,
+        projectTaskCreationOpen: false,
+        tasks: [pendingChild],
+        allTasks: [
+            project,
+            pendingChild,
+            completedChild
+        ],
+        areas: [],
+        contexts: [],
+        tags: [],
+        expandedTaskIds: new Set(),
+        showTaskMetadata: true,
+        today: "2026-08-16"
+    });
+
+    assert.match(html, /1 de 2 completadas/);
+    assert.doesNotMatch(html, /Terminada/);
+
+});
+
 test("abre un formulario contextual para crear una subtarea", () => {
 
     const project = new Task({
