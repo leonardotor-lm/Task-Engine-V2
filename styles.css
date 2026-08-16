@@ -4558,14 +4558,22 @@ textarea,
     line-height: 1.35;
 }
 
-.taskMetaArea,
-.taskMetaContext {
+.taskMetaArea {
     gap: 4px;
     padding: 0;
     border: 0;
     background: transparent;
     color: var(--color-text-muted);
     font-weight: 400;
+}
+
+.taskMetaContext {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--meta-color);
+    font-weight: 600;
 }
 
 .taskMetaTag {
