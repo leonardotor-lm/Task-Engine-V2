@@ -121,9 +121,13 @@ Al asociar un objetivo a un proyecto, la aplicación lo suma a todas sus tareas 
 
 La vista de un objetivo reutiliza el control de ojo y la preferencia persistente de las demás listas para mostrar u ocultar tareas completadas. Las completadas permanecen ocultas por defecto, mientras que el progreso conserva el total real aunque parte de la lista no esté visible.
 
+### Filtros rápidos y orden por Objetivo
+
+Cada objetivo reutiliza **Herramientas de la lista** para filtrar por área, contexto, etiqueta, prioridad o fecha y ordenar su árbol de tareas. Filtros y orden se guardan con una clave propia por objetivo, participan de las copias y la sincronización de preferencias existentes y no agregan una fila permanente de controles.
+
 ## Etapa operativa actual
 
-La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es incorporar filtros rápidos y orden dentro de Objetivos, según el orden vigente de `PENDIENTES.md`.
+La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es agregar un filtro rápido por Proyecto, según el orden vigente de `PENDIENTES.md`.
 
 ## Fases históricas
 

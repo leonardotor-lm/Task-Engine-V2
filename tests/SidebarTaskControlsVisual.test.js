@@ -94,6 +94,21 @@ test("la búsqueda simple precede al acceso avanzado", () => {
 
 });
 
+test("Objetivos reutiliza filtros y orden sin agregar búsqueda lateral", () => {
+
+    const html = new Sidebar().render(
+        View.GOAL
+    );
+
+    assert.match(html, /id="openTaskTools"/);
+    assert.match(html, /id="taskToolsDialog"/);
+    assert.match(html, /id="taskFilterForm"/);
+    assert.match(html, /id="taskSort"/);
+    assert.doesNotMatch(html, /id="taskSearchForm"/);
+    assert.doesNotMatch(html, /id="toggleBulkMode"/);
+
+});
+
 test("los controles usan una jerarquía visual compacta", () => {
 
     assert.match(

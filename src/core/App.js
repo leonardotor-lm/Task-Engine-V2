@@ -2585,8 +2585,7 @@ export class App {
         }
 
         if (
-            this.currentView !== View.PROJECT &&
-            this.currentView !== View.GOAL
+            this.currentView !== View.PROJECT
         ) {
 
             visibleTasks = filterTaskTreeByCriteria(
