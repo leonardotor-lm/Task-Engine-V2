@@ -136,18 +136,27 @@ La búsqueda avanzada admite `esProyecto:si/no` como alias semántico de `tieneS
 - `Alt+C` completa la tarea cuya fila tiene el foco;
 - los atajos se ignoran dentro de campos editables y no reemplazan la navegación por teclado ya existente.
 
-### Orden manual mediante arrastre — PR #228
+### Orden manual mediante arrastre — PR #228, #231 a #238
 
 - el arrastre se habilita únicamente con **Orden manual** y sin búsqueda, búsqueda avanzada, filtros ni selección múltiple activos;
-- sólo permite reordenar tareas hermanas y nunca cambia el proyecto o `parentTaskId`;
-- persiste el resultado en `manualOrder` y normaliza el grupo completo de hermanos, incluso si parte de la lista no está visible;
-- en celular utiliza un tirador explícito para no interferir con el desplazamiento vertical;
-- los proyectos abiertos disponen de **Filtros rápidos** y **Orden**, de modo que sus subtareas pueden reordenarse con el mismo criterio;
-- la función fue verificada manualmente antes de la fusión.
+- persiste el resultado en `manualOrder` y nunca cambia el proyecto ni `parentTaskId`;
+- en celular utiliza un tirador explícito y manejo de pointer events para no interferir con el desplazamiento vertical;
+- en vistas donde el padre está presente conserva la restricción jerárquica;
+- cuando el padre no aparece en la vista, sus hijas pueden ordenarse con las tareas del nivel visible sin perder su relación real;
+- se eliminó la barrera invisible que separaba grupos por `parentTaskId` aunque visualmente compartieran el mismo nivel;
+- el flujo quedó verificado manualmente en Android, incluyendo movimientos hacia las posiciones 1 y 2.
+
+### Recuperación y estabilización de conflictos de sincronización — PR #235
+
+- `pull()` registra como huella sincronizada el backup resultante después de importar la nube;
+- se reducen conflictos falsos derivados de reordenamientos masivos de `manualOrder` sin introducir una fusión genérica de campos;
+- una recuperación manual exitosa limpia diagnósticos obsoletos y renueva la base de sincronización;
+- la corrección mantiene los conflictos reales cuando existen cambios incompatibles de contenido;
+- el flujo quedó verificado manualmente: tras **Recuperar desde la nube**, los conflictos no reaparecen en sesiones posteriores si no hubo cambios independientes genuinos.
 
 ## Etapa operativa actual
 
-Los bloques de eficiencia avanzada sin ruido visual —atajos de acción y orden manual por arrastre— están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La próxima prioridad aprobada es la integración de Notion como base externa de notas, según `PENDIENTES.md` y el issue #212.
+Los bloques de eficiencia avanzada sin ruido visual —atajos de acción, orden manual por arrastre y estabilización de recuperación de sync— están cerrados y verificados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La próxima prioridad aprobada es la integración de Notion como base externa de notas, según `PENDIENTES.md` y el issue #212.
 
 ## Fases históricas
 
