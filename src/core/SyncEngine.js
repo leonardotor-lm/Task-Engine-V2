@@ -428,10 +428,16 @@ export class SyncEngine {
             JSON.stringify(response.data)
         );
 
+        const importedBackup =
+            typeof this.backupService.createBackup ===
+                "function"
+                ? this.backupService.createBackup()
+                : response.data;
+
         this.config.setRevision(revision);
         this.config.markSynchronized(
             createSyncFingerprint(
-                response.data
+                importedBackup
             )
         );
 

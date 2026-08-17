@@ -117,6 +117,27 @@ function entityContent(value) {
 
 }
 
+function taskContentWithoutOrder(value) {
+
+    if (
+        !value ||
+        typeof value !== "object" ||
+        Array.isArray(value)
+    ) {
+        return value;
+    }
+
+    const {
+        updatedAt,
+        version,
+        manualOrder,
+        ...content
+    } = value;
+
+    return content;
+
+}
+
 function selectNewestEntity(local, remote) {
 
     const localVersion = Number(local?.version) || 0;
@@ -162,6 +183,90 @@ function mergeEntityValue(base, local, remote) {
     }
 
     return result;
+
+}
+
+function isEntityObject(value) {
+
+    return Boolean(
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value)
+    );
+
+}
+
+function mergeTaskEntityValue(base, local, remote) {
+
+    const direct = mergeEntityValue(
+        base,
+        local,
+        remote
+    );
+
+    if (!direct.conflict) {
+        return direct;
+    }
+
+    if (
+        !isEntityObject(base) ||
+        !isEntityObject(local) ||
+        !isEntityObject(remote)
+    ) {
+        return direct;
+    }
+
+    const contentResult = mergeValue(
+        taskContentWithoutOrder(base),
+        taskContentWithoutOrder(local),
+        taskContentWithoutOrder(remote)
+    );
+    const orderResult = mergeValue(
+        base.manualOrder,
+        local.manualOrder,
+        remote.manualOrder
+    );
+
+    if (
+        contentResult.conflict ||
+        orderResult.conflict
+    ) {
+        return direct;
+    }
+
+    const mergedContent = {
+        ...contentResult.value,
+        manualOrder: orderResult.value
+    };
+
+    if (same(mergedContent, entityContent(local))) {
+        return {
+            conflict: false,
+            value: local
+        };
+    }
+
+    if (same(mergedContent, entityContent(remote))) {
+        return {
+            conflict: false,
+            value: remote
+        };
+    }
+
+    const version = Math.max(
+        Number(base.version) || 0,
+        Number(local.version) || 0,
+        Number(remote.version) || 0
+    ) + 1;
+
+    return {
+        conflict: false,
+        value: {
+            ...mergedContent,
+            version,
+            updatedAt: new Date().toISOString()
+        }
+    };
 
 }
 
@@ -221,7 +326,11 @@ function mergeCollection(
         )
     ) {
 
-        const result = mergeEntityValue(
+        const mergeEntity =
+            collection === "tasks"
+                ? mergeTaskEntityValue
+                : mergeEntityValue;
+        const result = mergeEntity(
             base.get(id),
             local.get(id),
             remote.get(id)
