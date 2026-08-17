@@ -5,12 +5,31 @@ import {
 } from "../src/ui/ManualTaskOrderController.js";
 
 function createDocument() {
+    const listeners = new Map();
+
     return {
+        listeners,
         createElement() {
             return {};
         },
         querySelectorAll() {
             return [];
+        },
+        addEventListener(type, handler, capture) {
+            listeners.set(type, {
+                handler,
+                capture
+            });
+        },
+        removeEventListener(type, handler, capture) {
+            const current = listeners.get(type);
+
+            if (
+                current?.handler === handler &&
+                current.capture === capture
+            ) {
+                listeners.delete(type);
+            }
         }
     };
 }
@@ -112,6 +131,53 @@ test("deshabilita el arrastre en selección múltiple", () => {
 
     assert.equal(
         controller.canReorder(),
+        false
+    );
+});
+
+test("mantiene el gesto activo a nivel de documento", () => {
+    const documentRef = createDocument();
+    const controller =
+        new ManualTaskOrderController(
+            createApp(),
+            { documentRef }
+        );
+
+    controller.bindActivePointer();
+
+    assert.deepEqual(
+        [...documentRef.listeners.keys()].sort(),
+        ["pointercancel", "pointermove", "pointerup"]
+    );
+    assert.equal(
+        documentRef.listeners.get("pointermove")
+            .capture,
+        true
+    );
+
+    controller.unbindActivePointer();
+
+    assert.equal(documentRef.listeners.size, 0);
+});
+
+test("ignora eventos de otro dedo durante el arrastre", () => {
+    const controller =
+        new ManualTaskOrderController(
+            createApp(),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "task-1";
+    controller.activePointerId = 7;
+
+    assert.equal(
+        controller.isActivePointer({ pointerId: 7 }),
+        true
+    );
+    assert.equal(
+        controller.isActivePointer({ pointerId: 8 }),
         false
     );
 });
