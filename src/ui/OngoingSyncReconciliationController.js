@@ -138,6 +138,9 @@ export class OngoingSyncReconciliationController {
 
                 if (result?.action !== "CONFLICT") {
                     this.rememberCurrentBase();
+                    this.app.syncConflictDetails = [];
+                    this.app.autoSyncBlockedFingerprint =
+                        null;
                 }
 
                 return result;
