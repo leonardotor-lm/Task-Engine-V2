@@ -236,17 +236,21 @@ test("auto-scroll acelera cerca de los bordes y se detiene en el centro", () => 
     );
 });
 
-test("usa la tarea hermana válida más cercana entre filas", () => {
+test("usa sólo el mismo nivel jerárquico cuando los padres están visibles", () => {
     const tasks = new Map([
+        ["parent", activeTask(null)],
         ["drag", activeTask("parent")],
         ["a", activeTask("parent")],
         ["b", activeTask("parent")],
-        ["other", activeTask("otro")]
+        ["other-parent", activeTask(null)],
+        ["other", activeTask("other-parent")]
     ]);
     const rows = [
+        row("parent", 40, 80),
         row("a", 100, 150),
+        row("other", 151, 179),
         row("b", 180, 230),
-        row("other", 151, 179)
+        row("other-parent", 240, 280)
     ];
     const controller =
         new ManualTaskOrderController(
@@ -269,6 +273,84 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
         controller.findNearestValidRow(168)
             ?.dataset?.id,
         "b"
+    );
+});
+
+test("trata como nivel raíz una hija cuyo padre no está visible", () => {
+    const tasks = new Map([
+        ["drag", activeTask("hidden-parent")],
+        ["sibling", activeTask("hidden-parent")],
+        ["loose", activeTask(null)],
+        ["project", activeTask(null)]
+    ]);
+    const rows = [
+        row("sibling", 100, 150),
+        row("loose", 151, 200),
+        row("project", 201, 250)
+    ];
+    const controller =
+        new ManualTaskOrderController(
+            createApp({
+                taskService: {
+                    getTaskById(id) {
+                        return tasks.get(id) ?? null;
+                    }
+                }
+            }),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "drag";
+    controller.getRows = () => rows;
+
+    assert.equal(
+        controller.isValidTargetRow(rows[1]),
+        true
+    );
+    assert.equal(
+        controller.isValidTargetRow(rows[2]),
+        true
+    );
+});
+
+test("no permite salir del grupo cuando el padre sí está visible", () => {
+    const tasks = new Map([
+        ["parent", activeTask(null)],
+        ["drag", activeTask("parent")],
+        ["sibling", activeTask("parent")],
+        ["loose", activeTask(null)]
+    ]);
+    const rows = [
+        row("parent", 50, 90),
+        row("sibling", 100, 150),
+        row("loose", 151, 200)
+    ];
+    const controller =
+        new ManualTaskOrderController(
+            createApp({
+                taskService: {
+                    getTaskById(id) {
+                        return tasks.get(id) ?? null;
+                    }
+                }
+            }),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "drag";
+    controller.getRows = () => rows;
+
+    assert.equal(
+        controller.isValidTargetRow(rows[1]),
+        true
+    );
+    assert.equal(
+        controller.isValidTargetRow(rows[2]),
+        false
     );
 });
 
