@@ -225,4 +225,30 @@ export class CloudGateway {
 
     }
 
+    notionStatus({
+        url,
+        token,
+        validateRemote = false
+    }) {
+
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "notionStatus",
+                    token,
+                    validateRemote:
+                        validateRemote === true
+                })
+            }
+        );
+
+    }
+
 }
