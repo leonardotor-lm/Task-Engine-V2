@@ -5,8 +5,6 @@ import {
 const AUTO_SCROLL_TOP_EDGE = 300;
 const AUTO_SCROLL_BOTTOM_EDGE = 72;
 const AUTO_SCROLL_MAX_STEP = 14;
-const TOP_DROP_FIRST_END = 160;
-const TOP_DROP_SECOND_END = 300;
 
 export class ManualTaskOrderController {
 
@@ -293,10 +291,14 @@ export class ManualTaskOrderController {
         return true;
     }
 
-    getFirstValidTargetRow() {
-        return this.getRows().find(
+    getValidTargetRows() {
+        return this.getRows().filter(
             row => this.isValidTargetRow(row)
-        ) ?? null;
+        );
+    }
+
+    getFirstValidTargetRow() {
+        return this.getValidTargetRows()[0] ?? null;
     }
 
     isFirstTargetVisible() {
@@ -317,29 +319,44 @@ export class ManualTaskOrderController {
     }
 
     resolveTopBoundaryTarget(clientY) {
-        if (
-            !Number.isFinite(clientY) ||
-            !this.isFirstTargetVisible()
-        ) {
+        if (!Number.isFinite(clientY)) {
             return null;
         }
 
         const bounds = this.getScrollBounds();
-        const firstRow =
-            this.getFirstValidTargetRow();
+        const rows = this.getValidTargetRows();
+        const firstRow = rows[0];
+        const secondRow = rows[1] ?? null;
+        const firstRect =
+            firstRow?.getBoundingClientRect?.();
+        const secondRect =
+            secondRow?.getBoundingClientRect?.();
 
-        if (!bounds || !firstRow) {
+        if (!bounds || !firstRow || !firstRect) {
             return null;
         }
 
-        const firstSlotEnd =
-            bounds.top + TOP_DROP_FIRST_END;
-        const secondSlotEnd =
-            bounds.top + TOP_DROP_SECOND_END;
+        const firstVisible =
+            firstRect.bottom >= bounds.top &&
+            firstRect.top <= bounds.bottom;
+
+        if (!firstVisible) {
+            return null;
+        }
+
+        const firstMiddle =
+            firstRect.top + firstRect.height / 2;
+        const secondMiddle = secondRect
+            ? secondRect.top + secondRect.height / 2
+            : firstRect.bottom;
+        const zoneTop = Math.max(
+            bounds.top,
+            Math.min(firstRect.top, firstMiddle)
+        );
 
         if (
-            clientY < bounds.top ||
-            clientY > secondSlotEnd
+            clientY < zoneTop ||
+            clientY > secondMiddle
         ) {
             return null;
         }
@@ -347,7 +364,7 @@ export class ManualTaskOrderController {
         return {
             row: firstRow,
             placement:
-                clientY <= firstSlotEnd
+                clientY <= firstMiddle
                     ? "before"
                     : "after"
         };
@@ -376,11 +393,7 @@ export class ManualTaskOrderController {
         let nearest = null;
         let nearestDistance = Infinity;
 
-        for (const row of this.getRows()) {
-            if (!this.isValidTargetRow(row)) {
-                continue;
-            }
-
+        for (const row of this.getValidTargetRows()) {
             const rect =
                 row.getBoundingClientRect?.();
 
