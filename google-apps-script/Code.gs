@@ -104,6 +104,15 @@ function handleRequest_(event, method) {
             );
         }
 
+        if (
+            method === "POST" &&
+            action === "createNotionTaskPage"
+        ) {
+            return jsonResponse_(
+                createNotionTaskPage_(body.task)
+            );
+        }
+
         throw protocolError_(
             "INVALID_ACTION",
             "La acción solicitada no es válida."
