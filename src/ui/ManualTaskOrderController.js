@@ -702,7 +702,6 @@ export class ManualTaskOrderController {
     clearDropClasses() {
         for (const row of this.getRows()) {
             row.classList?.remove(
-                "manualOrderDragging",
                 "manualOrderDropBefore",
                 "manualOrderDropAfter"
             );
