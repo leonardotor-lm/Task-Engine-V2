@@ -291,6 +291,36 @@ export class ManualTaskOrderController {
         return true;
     }
 
+    getVisibleTaskIds() {
+        return this.getRows()
+            .map(row => row.dataset?.id)
+            .filter(Boolean);
+    }
+
+    getEffectiveVisibleParent(task, visibleIds) {
+        const parentId = task?.parentTaskId ?? null;
+
+        if (!parentId) return null;
+
+        return visibleIds.has(parentId)
+            ? parentId
+            : null;
+    }
+
+    isSameVisibleLevel(first, second) {
+        const visibleIds = new Set(
+            this.getVisibleTaskIds()
+        );
+
+        return this.getEffectiveVisibleParent(
+            first,
+            visibleIds
+        ) === this.getEffectiveVisibleParent(
+            second,
+            visibleIds
+        );
+    }
+
     getValidTargetRows() {
         return this.getRows().filter(
             row => this.isValidTargetRow(row)
@@ -434,8 +464,10 @@ export class ManualTaskOrderController {
 
         return Boolean(
             this.isActiveTask(target) &&
-            (dragged?.parentTaskId ?? null) ===
-                (target?.parentTaskId ?? null)
+            this.isSameVisibleLevel(
+                dragged,
+                target
+            )
         );
     }
 
@@ -621,13 +653,16 @@ export class ManualTaskOrderController {
         event.preventDefault?.();
         event.stopPropagation?.();
 
+        const visibleTaskIds =
+            this.getVisibleTaskIds();
         const changed =
             this.targetId
                 ? reorderTaskAmongSiblings(
                     this.app.taskService,
                     this.draggedId,
                     this.targetId,
-                    this.placement
+                    this.placement,
+                    visibleTaskIds
                 )
                 : false;
 

@@ -154,3 +154,76 @@ test("incluye hermanos no visibles al normalizar manualOrder", () => {
         ["visible-b", "visible-a", "oculta"]
     );
 });
+
+test("permite cruzar una hija con tareas sueltas cuando su padre no está visible", () => {
+    const tasks = [
+        task("hija-1", {
+            parentTaskId: "padre-ausente",
+            manualOrder: 0
+        }),
+        task("hija-2", {
+            parentTaskId: "padre-ausente",
+            manualOrder: 1
+        }),
+        task("suelta-a", { manualOrder: 2 }),
+        task("suelta-b", { manualOrder: 3 }),
+        task("padre-visible", { manualOrder: 4 })
+    ];
+    const taskService = service(tasks);
+    const visibleIds = tasks.map(item => item.id);
+
+    const changed = reorderTaskAmongSiblings(
+        taskService,
+        "suelta-b",
+        "hija-1",
+        "before",
+        visibleIds
+    );
+
+    assert.equal(changed, true);
+    assert.deepEqual(
+        tasks
+            .filter(item => visibleIds.includes(item.id))
+            .sort((a, b) =>
+                a.manualOrder - b.manualOrder
+            )
+            .map(item => item.id),
+        [
+            "suelta-b",
+            "hija-1",
+            "hija-2",
+            "suelta-a",
+            "padre-visible"
+        ]
+    );
+    assert.equal(
+        tasks.find(item => item.id === "hija-1")
+            .parentTaskId,
+        "padre-ausente"
+    );
+});
+
+test("mantiene la barrera jerárquica cuando el padre está visible", () => {
+    const tasks = [
+        task("padre", { manualOrder: 0 }),
+        task("hija", {
+            parentTaskId: "padre",
+            manualOrder: 0
+        }),
+        task("suelta", { manualOrder: 1 })
+    ];
+    const taskService = service(tasks);
+    const visibleIds = tasks.map(item => item.id);
+
+    assert.equal(
+        reorderTaskAmongSiblings(
+            taskService,
+            "hija",
+            "suelta",
+            "before",
+            visibleIds
+        ),
+        false
+    );
+    assert.equal(taskService.updates.length, 0);
+});

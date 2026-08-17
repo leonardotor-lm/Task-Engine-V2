@@ -3,6 +3,23 @@ function sameParent(first, second) {
         (second?.parentTaskId ?? null);
 }
 
+function effectiveParentId(task, visibleIds = null) {
+    const parentId = task?.parentTaskId ?? null;
+
+    if (!visibleIds || !parentId) {
+        return parentId;
+    }
+
+    return visibleIds.has(parentId)
+        ? parentId
+        : null;
+}
+
+function sameVisibleLevel(first, second, visibleIds) {
+    return effectiveParentId(first, visibleIds) ===
+        effectiveParentId(second, visibleIds);
+}
+
 function compareManual(first, second, positions) {
     const difference =
         (first.manualOrder ?? 0) -
@@ -25,7 +42,8 @@ export function reorderTaskAmongSiblings(
     taskService,
     draggedId,
     targetId,
-    placement = "before"
+    placement = "before",
+    visibleTaskIds = null
 ) {
     if (!taskService || draggedId === targetId) {
         return false;
@@ -37,9 +55,18 @@ export function reorderTaskAmongSiblings(
     const target = taskService.getTaskById?.(
         targetId
     );
+    const visibleIds = Array.isArray(visibleTaskIds)
+        ? new Set(visibleTaskIds)
+        : null;
+    const sameLevel = visibleIds
+        ? sameVisibleLevel(
+            dragged,
+            target,
+            visibleIds
+        )
+        : sameParent(dragged, target);
 
-    if (!dragged || !target ||
-        !sameParent(dragged, target)) {
+    if (!dragged || !target || !sameLevel) {
         return false;
     }
 
@@ -52,7 +79,20 @@ export function reorderTaskAmongSiblings(
         ])
     );
     const siblings = allTasks
-        .filter(task => sameParent(task, dragged))
+        .filter(task => {
+            if (visibleIds) {
+                return (
+                    visibleIds.has(task.id) &&
+                    sameVisibleLevel(
+                        task,
+                        dragged,
+                        visibleIds
+                    )
+                );
+            }
+
+            return sameParent(task, dragged);
+        })
         .sort((first, second) =>
             compareManual(
                 first,
