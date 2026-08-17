@@ -165,6 +165,100 @@ function mergeEntityValue(base, local, remote) {
 
 }
 
+function isEntityObject(value) {
+
+    return Boolean(
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value)
+    );
+
+}
+
+function mergeTaskEntityValue(base, local, remote) {
+
+    const direct = mergeEntityValue(
+        base,
+        local,
+        remote
+    );
+
+    if (!direct.conflict) {
+        return direct;
+    }
+
+    if (
+        !isEntityObject(base) ||
+        !isEntityObject(local) ||
+        !isEntityObject(remote)
+    ) {
+        return direct;
+    }
+
+    const technicalKeys = new Set([
+        "version",
+        "updatedAt"
+    ]);
+    const keys = new Set([
+        ...Object.keys(base),
+        ...Object.keys(local),
+        ...Object.keys(remote)
+    ]);
+    const mergedContent = {};
+
+    for (const key of keys) {
+
+        if (technicalKeys.has(key)) {
+            continue;
+        }
+
+        const result = mergeValue(
+            base[key],
+            local[key],
+            remote[key]
+        );
+
+        if (result.conflict) {
+            return direct;
+        }
+
+        if (result.value !== undefined) {
+            mergedContent[key] = result.value;
+        }
+
+    }
+
+    if (same(mergedContent, entityContent(local))) {
+        return {
+            conflict: false,
+            value: local
+        };
+    }
+
+    if (same(mergedContent, entityContent(remote))) {
+        return {
+            conflict: false,
+            value: remote
+        };
+    }
+
+    const version = Math.max(
+        Number(base.version) || 0,
+        Number(local.version) || 0,
+        Number(remote.version) || 0
+    ) + 1;
+
+    return {
+        conflict: false,
+        value: {
+            ...mergedContent,
+            version,
+            updatedAt: new Date().toISOString()
+        }
+    };
+
+}
+
 function collectionMap(items) {
 
     return new Map(
@@ -221,7 +315,11 @@ function mergeCollection(
         )
     ) {
 
-        const result = mergeEntityValue(
+        const mergeEntity =
+            collection === "tasks"
+                ? mergeTaskEntityValue
+                : mergeEntityValue;
+        const result = mergeEntity(
             base.get(id),
             local.get(id),
             remote.get(id)
