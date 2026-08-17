@@ -2,27 +2,38 @@ import {
     reorderTaskAmongSiblings
 } from "../core/ManualTaskOrder.js";
 
+const AUTO_SCROLL_EDGE = 72;
+const AUTO_SCROLL_MAX_STEP = 14;
+
 export class ManualTaskOrderController {
 
     constructor(
         app,
         {
-            documentRef = globalThis.document
+            documentRef = globalThis.document,
+            windowRef = globalThis.window
         } = {}
     ) {
         this.app = app;
         this.document = documentRef;
+        this.window = windowRef;
         this.started = false;
         this.draggedId = null;
         this.targetId = null;
         this.placement = "before";
         this.activePointerId = null;
+        this.scrollContainer = null;
+        this.lastPointerX = null;
+        this.lastPointerY = null;
+        this.autoScrollFrame = null;
         this.pointerMoveHandler =
             event => this.moveDrag(event);
         this.pointerUpHandler =
             event => this.endDrag(event);
         this.pointerCancelHandler =
             event => this.handlePointerCancel(event);
+        this.autoScrollHandler =
+            () => this.runAutoScroll();
     }
 
     start() {
@@ -154,6 +165,14 @@ export class ManualTaskOrderController {
         this.draggedId = id;
         this.activePointerId =
             event.pointerId ?? null;
+        this.lastPointerX =
+            event.clientX ?? null;
+        this.lastPointerY =
+            event.clientY ?? null;
+        this.scrollContainer =
+            row.closest?.(".content") ??
+            this.document?.scrollingElement ??
+            null;
 
         row.classList?.add(
             "manualOrderDragging"
@@ -219,51 +238,273 @@ export class ManualTaskOrderController {
 
         event.preventDefault?.();
 
-        const targetRow = this.document
+        this.lastPointerX = event.clientX;
+        this.lastPointerY = event.clientY;
+
+        this.updateDropTarget(
+            event.clientX,
+            event.clientY
+        );
+        this.ensureAutoScroll();
+    }
+
+    updateDropTarget(clientX, clientY) {
+        const targetRow = this.resolveTargetRow(
+            clientX,
+            clientY
+        );
+
+        if (!targetRow) {
+            return false;
+        }
+
+        const targetId = targetRow.dataset?.id;
+        const rect =
+            targetRow.getBoundingClientRect?.();
+        const middle = rect
+            ? rect.top + rect.height / 2
+            : clientY;
+        const placement =
+            clientY > middle
+                ? "after"
+                : "before";
+
+        this.clearDropClasses();
+
+        this.targetId = targetId;
+        this.placement = placement;
+
+        targetRow.classList?.add(
+            placement === "after"
+                ? "manualOrderDropAfter"
+                : "manualOrderDropBefore"
+        );
+
+        return true;
+    }
+
+    resolveTargetRow(clientX, clientY) {
+        const directRow = this.document
             ?.elementFromPoint?.(
-                event.clientX,
-                event.clientY
+                clientX,
+                clientY
             )
             ?.closest?.(".task");
 
-        this.clearDropTarget();
+        if (this.isValidTargetRow(directRow)) {
+            return directRow;
+        }
 
-        if (!targetRow) return;
+        return this.findNearestValidRow(clientY);
+    }
 
-        const targetId =
-            targetRow.dataset?.id;
+    findNearestValidRow(clientY) {
+        if (!Number.isFinite(clientY)) {
+            return null;
+        }
+
+        let nearest = null;
+        let nearestDistance = Infinity;
+
+        for (const row of this.getRows()) {
+            if (!this.isValidTargetRow(row)) {
+                continue;
+            }
+
+            const rect =
+                row.getBoundingClientRect?.();
+
+            if (!rect) continue;
+
+            const distance =
+                clientY < rect.top
+                    ? rect.top - clientY
+                    : clientY > rect.bottom
+                        ? clientY - rect.bottom
+                        : 0;
+
+            if (distance < nearestDistance) {
+                nearest = row;
+                nearestDistance = distance;
+            }
+        }
+
+        return nearest;
+    }
+
+    isValidTargetRow(row) {
+        if (!row) return false;
+
+        const targetId = row.dataset?.id;
+
+        if (
+            !targetId ||
+            targetId === this.draggedId
+        ) {
+            return false;
+        }
+
         const dragged = this.getTask(
             this.draggedId
         );
         const target = this.getTask(targetId);
 
-        if (
-            !targetId ||
-            targetId === this.draggedId ||
-            !this.isActiveTask(target) ||
-            (dragged?.parentTaskId ?? null) !==
+        return Boolean(
+            this.isActiveTask(target) &&
+            (dragged?.parentTaskId ?? null) ===
                 (target?.parentTaskId ?? null)
+        );
+    }
+
+    ensureAutoScroll() {
+        if (
+            this.autoScrollFrame !== null ||
+            !this.window?.requestAnimationFrame
         ) {
             return;
         }
 
-        const rect =
-            targetRow.getBoundingClientRect?.();
-        const middle = rect
-            ? rect.top + rect.height / 2
-            : event.clientY;
+        this.autoScrollFrame =
+            this.window.requestAnimationFrame(
+                this.autoScrollHandler
+            );
+    }
 
-        this.targetId = targetId;
-        this.placement =
-            event.clientY > middle
-                ? "after"
-                : "before";
+    runAutoScroll() {
+        this.autoScrollFrame = null;
 
-        targetRow.classList?.add(
-            this.placement === "after"
-                ? "manualOrderDropAfter"
-                : "manualOrderDropBefore"
+        if (
+            !this.draggedId ||
+            !Number.isFinite(this.lastPointerY)
+        ) {
+            return;
+        }
+
+        const step = this.getAutoScrollStep(
+            this.lastPointerY
         );
+
+        if (step !== 0) {
+            this.scrollBy(step);
+
+            if (
+                Number.isFinite(this.lastPointerX)
+            ) {
+                this.updateDropTarget(
+                    this.lastPointerX,
+                    this.lastPointerY
+                );
+            }
+        }
+
+        if (step !== 0) {
+            this.ensureAutoScroll();
+        }
+    }
+
+    getAutoScrollStep(pointerY) {
+        const bounds = this.getScrollBounds();
+
+        if (!bounds) return 0;
+
+        if (
+            pointerY <
+            bounds.top + AUTO_SCROLL_EDGE
+        ) {
+            const ratio = Math.min(
+                1,
+                (
+                    bounds.top +
+                    AUTO_SCROLL_EDGE -
+                    pointerY
+                ) / AUTO_SCROLL_EDGE
+            );
+
+            return -Math.max(
+                2,
+                Math.round(
+                    AUTO_SCROLL_MAX_STEP * ratio
+                )
+            );
+        }
+
+        if (
+            pointerY >
+            bounds.bottom - AUTO_SCROLL_EDGE
+        ) {
+            const ratio = Math.min(
+                1,
+                (
+                    pointerY -
+                    (bounds.bottom - AUTO_SCROLL_EDGE)
+                ) / AUTO_SCROLL_EDGE
+            );
+
+            return Math.max(
+                2,
+                Math.round(
+                    AUTO_SCROLL_MAX_STEP * ratio
+                )
+            );
+        }
+
+        return 0;
+    }
+
+    getScrollBounds() {
+        const rect = this.scrollContainer
+            ?.getBoundingClientRect?.();
+
+        if (rect) {
+            return {
+                top: rect.top,
+                bottom: rect.bottom
+            };
+        }
+
+        const height =
+            this.window?.innerHeight;
+
+        if (!Number.isFinite(height)) {
+            return null;
+        }
+
+        return {
+            top: 0,
+            bottom: height
+        };
+    }
+
+    scrollBy(step) {
+        if (
+            this.scrollContainer &&
+            typeof this.scrollContainer.scrollBy ===
+                "function"
+        ) {
+            this.scrollContainer.scrollBy({
+                top: step,
+                behavior: "auto"
+            });
+            return;
+        }
+
+        this.window?.scrollBy?.({
+            top: step,
+            behavior: "auto"
+        });
+    }
+
+    stopAutoScroll() {
+        if (
+            this.autoScrollFrame !== null &&
+            this.window?.cancelAnimationFrame
+        ) {
+            this.window.cancelAnimationFrame(
+                this.autoScrollFrame
+            );
+        }
+
+        this.autoScrollFrame = null;
     }
 
     endDrag(event) {
@@ -296,6 +537,7 @@ export class ManualTaskOrderController {
 
     cancelDrag() {
         this.unbindActivePointer();
+        this.stopAutoScroll();
 
         for (const row of this.getRows()) {
             row.classList?.remove(
@@ -309,17 +551,18 @@ export class ManualTaskOrderController {
         this.targetId = null;
         this.placement = "before";
         this.activePointerId = null;
+        this.scrollContainer = null;
+        this.lastPointerX = null;
+        this.lastPointerY = null;
     }
 
-    clearDropTarget() {
+    clearDropClasses() {
         for (const row of this.getRows()) {
             row.classList?.remove(
                 "manualOrderDropBefore",
                 "manualOrderDropAfter"
             );
         }
-
-        this.targetId = null;
     }
 
     getRows() {
