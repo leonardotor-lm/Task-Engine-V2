@@ -16,6 +16,13 @@ export class ManualTaskOrderController {
         this.draggedId = null;
         this.targetId = null;
         this.placement = "before";
+        this.activePointerId = null;
+        this.pointerMoveHandler =
+            event => this.moveDrag(event);
+        this.pointerUpHandler =
+            event => this.endDrag(event);
+        this.pointerCancelHandler =
+            event => this.handlePointerCancel(event);
     }
 
     start() {
@@ -89,16 +96,16 @@ export class ManualTaskOrderController {
                 )
             );
             handle.addEventListener(
-                "pointermove",
-                event => this.moveDrag(event)
+                "contextmenu",
+                event => {
+                    event.preventDefault();
+                }
             );
             handle.addEventListener(
-                "pointerup",
-                event => this.endDrag(event)
-            );
-            handle.addEventListener(
-                "pointercancel",
-                () => this.cancelDrag()
+                "dragstart",
+                event => {
+                    event.preventDefault();
+                }
             );
 
             header.prepend(handle);
@@ -140,18 +147,77 @@ export class ManualTaskOrderController {
         }
 
         event.preventDefault?.();
+        event.stopPropagation?.();
+
+        this.cancelDrag();
+
+        this.draggedId = id;
+        this.activePointerId =
+            event.pointerId ?? null;
+
+        row.classList?.add(
+            "manualOrderDragging"
+        );
+
         event.currentTarget?.setPointerCapture?.(
             event.pointerId
         );
 
-        this.draggedId = id;
-        row.classList?.add(
-            "manualOrderDragging"
+        this.bindActivePointer();
+    }
+
+    bindActivePointer() {
+        this.document?.addEventListener?.(
+            "pointermove",
+            this.pointerMoveHandler,
+            true
+        );
+        this.document?.addEventListener?.(
+            "pointerup",
+            this.pointerUpHandler,
+            true
+        );
+        this.document?.addEventListener?.(
+            "pointercancel",
+            this.pointerCancelHandler,
+            true
+        );
+    }
+
+    unbindActivePointer() {
+        this.document?.removeEventListener?.(
+            "pointermove",
+            this.pointerMoveHandler,
+            true
+        );
+        this.document?.removeEventListener?.(
+            "pointerup",
+            this.pointerUpHandler,
+            true
+        );
+        this.document?.removeEventListener?.(
+            "pointercancel",
+            this.pointerCancelHandler,
+            true
+        );
+    }
+
+    isActivePointer(event) {
+        return Boolean(
+            this.draggedId &&
+            (
+                this.activePointerId === null ||
+                event?.pointerId === undefined ||
+                event.pointerId ===
+                    this.activePointerId
+            )
         );
     }
 
     moveDrag(event) {
-        if (!this.draggedId) return;
+        if (!this.isActivePointer(event)) return;
+
+        event.preventDefault?.();
 
         const targetRow = this.document
             ?.elementFromPoint?.(
@@ -201,9 +267,10 @@ export class ManualTaskOrderController {
     }
 
     endDrag(event) {
-        if (!this.draggedId) return;
+        if (!this.isActivePointer(event)) return;
 
         event.preventDefault?.();
+        event.stopPropagation?.();
 
         const changed =
             this.targetId
@@ -222,7 +289,14 @@ export class ManualTaskOrderController {
         }
     }
 
+    handlePointerCancel(event) {
+        if (!this.isActivePointer(event)) return;
+        this.cancelDrag();
+    }
+
     cancelDrag() {
+        this.unbindActivePointer();
+
         for (const row of this.getRows()) {
             row.classList?.remove(
                 "manualOrderDragging",
@@ -234,6 +308,7 @@ export class ManualTaskOrderController {
         this.draggedId = null;
         this.targetId = null;
         this.placement = "before";
+        this.activePointerId = null;
     }
 
     clearDropTarget() {
