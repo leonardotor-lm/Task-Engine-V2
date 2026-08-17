@@ -117,6 +117,27 @@ function entityContent(value) {
 
 }
 
+function taskContentWithoutOrder(value) {
+
+    if (
+        !value ||
+        typeof value !== "object" ||
+        Array.isArray(value)
+    ) {
+        return value;
+    }
+
+    const {
+        updatedAt,
+        version,
+        manualOrder,
+        ...content
+    } = value;
+
+    return content;
+
+}
+
 function selectNewestEntity(local, remote) {
 
     const localVersion = Number(local?.version) || 0;
@@ -195,38 +216,28 @@ function mergeTaskEntityValue(base, local, remote) {
         return direct;
     }
 
-    const technicalKeys = new Set([
-        "version",
-        "updatedAt"
-    ]);
-    const keys = new Set([
-        ...Object.keys(base),
-        ...Object.keys(local),
-        ...Object.keys(remote)
-    ]);
-    const mergedContent = {};
+    const contentResult = mergeValue(
+        taskContentWithoutOrder(base),
+        taskContentWithoutOrder(local),
+        taskContentWithoutOrder(remote)
+    );
+    const orderResult = mergeValue(
+        base.manualOrder,
+        local.manualOrder,
+        remote.manualOrder
+    );
 
-    for (const key of keys) {
-
-        if (technicalKeys.has(key)) {
-            continue;
-        }
-
-        const result = mergeValue(
-            base[key],
-            local[key],
-            remote[key]
-        );
-
-        if (result.conflict) {
-            return direct;
-        }
-
-        if (result.value !== undefined) {
-            mergedContent[key] = result.value;
-        }
-
+    if (
+        contentResult.conflict ||
+        orderResult.conflict
+    ) {
+        return direct;
     }
+
+    const mergedContent = {
+        ...contentResult.value,
+        manualOrder: orderResult.value
+    };
 
     if (same(mergedContent, entityContent(local))) {
         return {
