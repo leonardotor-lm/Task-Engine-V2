@@ -344,7 +344,7 @@ function createNotionTaskPage_(taskData) {
     if (statusCode === 400) {
         throw protocolError_(
             "NOTION_SCHEMA_MISMATCH",
-            "La estructura de la base de Notion no coincide con la configurada en Task Engine."
+            "Notion rechazó las propiedades de la nota. Revisá la estructura de la base."
         );
     }
 
@@ -478,18 +478,54 @@ function validateNotionDataSourceSchema_(dataSource) {
 
     var mismatches = Object.keys(
         expectedTypes
-    ).filter(function(name) {
-        return !properties[name] ||
-            properties[name].type !==
-                expectedTypes[name];
-    });
+    ).map(function(name) {
+
+        var property = properties[name];
+        var expectedType = expectedTypes[name];
+
+        if (!property) {
+            return name + ": falta la propiedad";
+        }
+
+        if (property.type !== expectedType) {
+            return name +
+                ": se esperaba " +
+                notionPropertyTypeLabel_(
+                    expectedType
+                ) +
+                " y se encontró " +
+                notionPropertyTypeLabel_(
+                    property.type
+                );
+        }
+
+        return null;
+
+    }).filter(Boolean);
 
     if (mismatches.length > 0) {
         throw protocolError_(
             "NOTION_SCHEMA_MISMATCH",
-            "La estructura de la base de Notion no coincide con la configurada en Task Engine. Revisá los nombres y tipos de sus propiedades."
+            "La estructura de la base de Notion no coincide: " +
+                mismatches.join("; ") +
+                "."
         );
     }
+
+}
+
+function notionPropertyTypeLabel_(type) {
+
+    var labels = {
+        title: "Título",
+        select: "Selección",
+        rich_text: "Texto",
+        multi_select: "Selección múltiple",
+        date: "Fecha"
+    };
+
+    return labels[type] ||
+        String(type || "desconocido");
 
 }
 
