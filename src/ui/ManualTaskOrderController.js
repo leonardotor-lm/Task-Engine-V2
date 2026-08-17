@@ -4,6 +4,7 @@ import {
 
 const AUTO_SCROLL_EDGE = 72;
 const AUTO_SCROLL_MAX_STEP = 14;
+const TOP_INSERT_ZONE = 112;
 
 export class ManualTaskOrderController {
 
@@ -249,10 +250,14 @@ export class ManualTaskOrderController {
     }
 
     updateDropTarget(clientX, clientY) {
-        const targetRow = this.resolveTargetRow(
-            clientX,
-            clientY
-        );
+        const topTarget =
+            this.resolveTopInsertTarget(clientY);
+
+        const targetRow = topTarget?.row ??
+            this.resolveTargetRow(
+                clientX,
+                clientY
+            );
 
         if (!targetRow) {
             return false;
@@ -265,9 +270,12 @@ export class ManualTaskOrderController {
             ? rect.top + rect.height / 2
             : clientY;
         const placement =
-            clientY > middle
-                ? "after"
-                : "before";
+            topTarget?.placement ??
+            (
+                clientY > middle
+                    ? "after"
+                    : "before"
+            );
 
         this.clearDropClasses();
 
@@ -281,6 +289,56 @@ export class ManualTaskOrderController {
         );
 
         return true;
+    }
+
+    resolveTopInsertTarget(clientY) {
+        if (
+            !Number.isFinite(clientY) ||
+            !this.isAtScrollStart()
+        ) {
+            return null;
+        }
+
+        const bounds = this.getScrollBounds();
+
+        if (
+            !bounds ||
+            clientY > bounds.top + TOP_INSERT_ZONE
+        ) {
+            return null;
+        }
+
+        const firstRow = this.getRows().find(
+            row => this.isValidTargetRow(row)
+        );
+
+        if (!firstRow) return null;
+
+        const split =
+            bounds.top + TOP_INSERT_ZONE / 2;
+
+        return {
+            row: firstRow,
+            placement:
+                clientY <= split
+                    ? "before"
+                    : "after"
+        };
+    }
+
+    isAtScrollStart() {
+        if (!this.scrollContainer) {
+            return true;
+        }
+
+        const scrollTop =
+            this.scrollContainer.scrollTop;
+
+        if (!Number.isFinite(scrollTop)) {
+            return true;
+        }
+
+        return scrollTop <= 1;
     }
 
     resolveTargetRow(clientX, clientY) {

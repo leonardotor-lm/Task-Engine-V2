@@ -281,3 +281,99 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
         "b"
     );
 });
+
+test("ofrece posiciones uno y dos en la zona superior cuando el scroll llegó al inicio", () => {
+    const tasks = new Map([
+        ["drag", activeTask(null)],
+        ["first", activeTask(null)],
+        ["second", activeTask(null)]
+    ]);
+    const rows = [
+        {
+            dataset: { id: "first" },
+            getBoundingClientRect() {
+                return {
+                    top: 150,
+                    bottom: 200,
+                    height: 50
+                };
+            }
+        },
+        {
+            dataset: { id: "second" },
+            getBoundingClientRect() {
+                return {
+                    top: 201,
+                    bottom: 251,
+                    height: 50
+                };
+            }
+        }
+    ];
+    const controller =
+        new ManualTaskOrderController(
+            createApp({
+                taskService: {
+                    getTaskById(id) {
+                        return tasks.get(id) ?? null;
+                    }
+                }
+            }),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "drag";
+    controller.scrollContainer = {
+        scrollTop: 0,
+        getBoundingClientRect() {
+            return {
+                top: 100,
+                bottom: 700
+            };
+        }
+    };
+    controller.getRows = () => rows;
+
+    assert.deepEqual(
+        controller.resolveTopInsertTarget(120),
+        {
+            row: rows[0],
+            placement: "before"
+        }
+    );
+    assert.deepEqual(
+        controller.resolveTopInsertTarget(180),
+        {
+            row: rows[0],
+            placement: "after"
+        }
+    );
+});
+
+test("la zona superior especial se desactiva cuando la lista todavía puede subir", () => {
+    const controller =
+        new ManualTaskOrderController(
+            createApp(),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "drag";
+    controller.scrollContainer = {
+        scrollTop: 40,
+        getBoundingClientRect() {
+            return {
+                top: 100,
+                bottom: 700
+            };
+        }
+    };
+
+    assert.equal(
+        controller.resolveTopInsertTarget(120),
+        null
+    );
+});
