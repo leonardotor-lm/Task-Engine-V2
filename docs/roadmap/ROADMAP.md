@@ -129,9 +129,25 @@ Cada objetivo reutiliza **Herramientas de la lista** para filtrar por área, con
 
 La búsqueda avanzada admite `esProyecto:si/no` como alias semántico de `tieneSubtareas:si/no`. El criterio `proyecto:"Nombre"` incluye el proyecto coincidente y todas las tareas de su árbol, y puede combinarse con los demás operadores sin agregar controles a los filtros rápidos.
 
+### Atajos de teclado de acción — PR #227
+
+- `Alt+N` abre **Nueva tarea** cuando esa acción está disponible;
+- `Alt+B` enfoca y selecciona la búsqueda simple;
+- `Alt+C` completa la tarea cuya fila tiene el foco;
+- los atajos se ignoran dentro de campos editables y no reemplazan la navegación por teclado ya existente.
+
+### Orden manual mediante arrastre — PR #228
+
+- el arrastre se habilita únicamente con **Orden manual** y sin búsqueda, búsqueda avanzada, filtros ni selección múltiple activos;
+- sólo permite reordenar tareas hermanas y nunca cambia el proyecto o `parentTaskId`;
+- persiste el resultado en `manualOrder` y normaliza el grupo completo de hermanos, incluso si parte de la lista no está visible;
+- en celular utiliza un tirador explícito para no interferir con el desplazamiento vertical;
+- los proyectos abiertos disponen de **Filtros rápidos** y **Orden**, de modo que sus subtareas pueden reordenarse con el mismo criterio;
+- la función fue verificada manualmente antes de la fusión.
+
 ## Etapa operativa actual
 
-La verificación operativa de la PWA y el bloque de integridad y claridad visual están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La prioridad actual es definir un conjunto acotado de atajos de teclado, según el orden vigente de `PENDIENTES.md`.
+Los bloques de eficiencia avanzada sin ruido visual —atajos de acción y orden manual por arrastre— están cerrados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La próxima prioridad aprobada es la integración de Notion como base externa de notas, según `PENDIENTES.md` y el issue #212.
 
 ## Fases históricas
 
