@@ -77,6 +77,9 @@ import {
 import {
     PwaController
 } from "./ui/PwaController.js";
+import {
+    NotionSettingsController
+} from "./ui/NotionSettingsController.js";
 
 const app = new App();
 const attachmentController =
@@ -129,6 +132,8 @@ const ongoingSyncReconciliationController =
     new OngoingSyncReconciliationController(app);
 const pwaController =
     new PwaController(app);
+const notionSettingsController =
+    new NotionSettingsController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -151,6 +156,7 @@ smartSyncReconnectionController.start();
 ongoingSyncReconciliationController
     .start();
 pwaController.start();
+notionSettingsController.start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
 accessibilityStateController.start();
