@@ -80,6 +80,9 @@ import {
 import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
+import {
+    NotionTaskNotesController
+} from "./ui/NotionTaskNotesController.js";
 
 const app = new App();
 const attachmentController =
@@ -134,6 +137,8 @@ const pwaController =
     new PwaController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
+const notionTaskNotesController =
+    new NotionTaskNotesController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -157,6 +162,7 @@ ongoingSyncReconciliationController
     .start();
 pwaController.start();
 notionSettingsController.start();
+notionTaskNotesController.start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
 accessibilityStateController.start();
