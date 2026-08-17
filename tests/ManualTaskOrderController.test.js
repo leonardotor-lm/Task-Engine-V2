@@ -63,6 +63,19 @@ function activeTask(parentTaskId = null) {
     };
 }
 
+function row(id, top, bottom) {
+    return {
+        dataset: { id },
+        getBoundingClientRect() {
+            return {
+                top,
+                bottom,
+                height: bottom - top
+            };
+        }
+    };
+}
+
 test("habilita el arrastre sólo con orden manual limpio", () => {
     const controller =
         new ManualTaskOrderController(
@@ -231,33 +244,9 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
         ["other", activeTask("otro")]
     ]);
     const rows = [
-        {
-            dataset: { id: "a" },
-            getBoundingClientRect() {
-                return {
-                    top: 100,
-                    bottom: 150
-                };
-            }
-        },
-        {
-            dataset: { id: "b" },
-            getBoundingClientRect() {
-                return {
-                    top: 180,
-                    bottom: 230
-                };
-            }
-        },
-        {
-            dataset: { id: "other" },
-            getBoundingClientRect() {
-                return {
-                    top: 151,
-                    bottom: 179
-                };
-            }
-        }
+        row("a", 100, 150),
+        row("b", 180, 230),
+        row("other", 151, 179)
     ];
     const controller =
         new ManualTaskOrderController(
@@ -283,37 +272,24 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
     );
 });
 
-function createTopTargetHarness({
-    firstTop,
-    firstBottom,
-    scrollTop = 80
-}) {
+function createTopHarness({
+    firstTop = 320,
+    scrollTop = 0
+} = {}) {
     const tasks = new Map([
         ["drag", activeTask(null)],
         ["first", activeTask(null)],
-        ["second", activeTask(null)]
+        ["second", activeTask(null)],
+        ["third", activeTask(null)],
+        ["fourth", activeTask(null)],
+        ["fifth", activeTask(null)]
     ]);
     const rows = [
-        {
-            dataset: { id: "first" },
-            getBoundingClientRect() {
-                return {
-                    top: firstTop,
-                    bottom: firstBottom,
-                    height: firstBottom - firstTop
-                };
-            }
-        },
-        {
-            dataset: { id: "second" },
-            getBoundingClientRect() {
-                return {
-                    top: firstBottom + 1,
-                    bottom: firstBottom + 51,
-                    height: 50
-                };
-            }
-        }
+        row("first", firstTop, firstTop + 50),
+        row("second", firstTop + 51, firstTop + 101),
+        row("third", firstTop + 102, firstTop + 152),
+        row("fourth", firstTop + 153, firstTop + 203),
+        row("fifth", firstTop + 204, firstTop + 254)
     ];
     const controller =
         new ManualTaskOrderController(
@@ -344,12 +320,35 @@ function createTopTargetHarness({
     return { controller, rows };
 }
 
-test("ofrece posiciones uno y dos cuando la primera tarea ya es visible aunque scrollTop no sea cero", () => {
+test("ancla posición uno y dos a las primeras filas aunque haya encabezado alto", () => {
     const { controller, rows } =
-        createTopTargetHarness({
-            firstTop: 70,
-            firstBottom: 120,
-            scrollTop: 80
+        createTopHarness({ firstTop: 320 });
+
+    assert.deepEqual(
+        controller.resolveTopBoundaryTarget(340),
+        {
+            row: rows[0],
+            placement: "before"
+        }
+    );
+    assert.deepEqual(
+        controller.resolveTopBoundaryTarget(390),
+        {
+            row: rows[0],
+            placement: "after"
+        }
+    );
+    assert.equal(
+        controller.resolveTopBoundaryTarget(430),
+        null
+    );
+});
+
+test("una vista de varias tareas sin scroll puede llegar a posiciones uno y dos", () => {
+    const { controller, rows } =
+        createTopHarness({
+            firstTop: 280,
+            scrollTop: 0
         });
 
     assert.equal(
@@ -357,30 +356,25 @@ test("ofrece posiciones uno y dos cuando la primera tarea ya es visible aunque s
         true
     );
     assert.deepEqual(
-        controller.resolveTopBoundaryTarget(120),
+        controller.resolveTopBoundaryTarget(300),
         {
             row: rows[0],
             placement: "before"
         }
     );
     assert.deepEqual(
-        controller.resolveTopBoundaryTarget(220),
+        controller.resolveTopBoundaryTarget(350),
         {
             row: rows[0],
             placement: "after"
         }
     );
-    assert.equal(
-        controller.getAutoScrollStep(80),
-        0
-    );
 });
 
-test("mantiene auto-scroll hacia arriba mientras la primera tarea siga fuera de pantalla", () => {
+test("mantiene auto-scroll mientras la primera tarea está fuera de pantalla", () => {
     const { controller } =
-        createTopTargetHarness({
+        createTopHarness({
             firstTop: -180,
-            firstBottom: -130,
             scrollTop: 80
         });
 
@@ -397,18 +391,42 @@ test("mantiene auto-scroll hacia arriba mientras la primera tarea siga fuera de 
     );
 });
 
-test("una lista corta habilita las posiciones superiores sin depender del scroll", () => {
-    const { controller, rows } =
-        createTopTargetHarness({
-            firstTop: 180,
-            firstBottom: 230,
-            scrollTop: 0
-        });
+test("lista corta sigue permitiendo mover la segunda tarea al primer lugar", () => {
+    const tasks = new Map([
+        ["drag", activeTask(null)],
+        ["first", activeTask(null)]
+    ]);
+    const first = row("first", 280, 330);
+    const controller =
+        new ManualTaskOrderController(
+            createApp({
+                taskService: {
+                    getTaskById(id) {
+                        return tasks.get(id) ?? null;
+                    }
+                }
+            }),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "drag";
+    controller.scrollContainer = {
+        scrollTop: 0,
+        getBoundingClientRect() {
+            return {
+                top: 40,
+                bottom: 700
+            };
+        }
+    };
+    controller.getRows = () => [first];
 
     assert.deepEqual(
-        controller.resolveTopBoundaryTarget(120),
+        controller.resolveTopBoundaryTarget(300),
         {
-            row: rows[0],
+            row: first,
             placement: "before"
         }
     );
