@@ -25,15 +25,16 @@ function remoteBackup() {
     };
 }
 
-test("recuperar desde la nube registra la huella del estado importado y normalizado", async () => {
+test("recuperar desde la nube registra la huella del estado resultante de la importación", async () => {
     const rawRemote = remoteBackup();
-    const normalized = {
+    const importedBackup = {
         ...rawRemote,
         exportedAt: "2026-08-17T12:01:00.000Z",
         data: {
             ...rawRemote.data,
             tasks: [{
                 ...rawRemote.data.tasks[0],
+                version: 2,
                 createdAt: "1970-01-01T00:00:00.000Z",
                 updatedAt: "1970-01-01T00:00:00.000Z",
                 manualOrder: 0
@@ -57,7 +58,7 @@ test("recuperar desde la nube registra la huella del estado importado y normaliz
             },
             createBackup() {
                 assert.equal(imported, true);
-                return normalized;
+                return importedBackup;
             }
         },
         config: {
@@ -85,7 +86,7 @@ test("recuperar desde la nube registra la huella del estado importado y normaliz
 
     assert.equal(
         synchronizedFingerprint,
-        createSyncFingerprint(normalized)
+        createSyncFingerprint(importedBackup)
     );
     assert.notEqual(
         synchronizedFingerprint,
