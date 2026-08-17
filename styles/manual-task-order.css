@@ -1,0 +1,39 @@
+.manualOrderHandle {
+    flex: 0 0 auto;
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted, #6b7280);
+    font: inherit;
+    line-height: 1;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.manualOrderHandle:active {
+    cursor: grabbing;
+}
+
+.manualOrderDragging {
+    opacity: 0.55;
+}
+
+.manualOrderDropBefore {
+    box-shadow: inset 0 2px 0 currentColor;
+}
+
+.manualOrderDropAfter {
+    box-shadow: inset 0 -2px 0 currentColor;
+}
+
+@media (max-width: 760px) {
+    .manualOrderHandle {
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+    }
+}

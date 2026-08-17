@@ -14,43 +14,7 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Incorporar un conjunto acotado de atajos de teclado
-
-- **Estado:** En desarrollo.
-- **Dificultad prevista:** Baja o media.
-- Alcance definido: `N` abre **Nueva tarea**, `/` enfoca la búsqueda simple y `C` completa la tarea que tiene el foco.
-- Los atajos de acción se ignoran mientras se escribe en `input`, `textarea`, `select` o contenido editable.
-- No se interceptan combinaciones con Ctrl, Alt o Cmd/Meta para evitar conflictos con el navegador o el sistema.
-- La navegación por flechas, Home/End, Enter/Espacio y jerarquía permanece separada y sin cambios.
-
-## Backlog aprobado
-
-El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
-
-### Etapa 1 — Eficiencia avanzada sin ruido visual
-
-#### 1. Incorporar un conjunto acotado de atajos de teclado
-
-- **Estado:** En desarrollo.
-- **Dificultad prevista:** Baja o media.
-- `N`: abrir **Nueva tarea** cuando esa acción esté disponible en la vista actual.
-- `/`: enfocar y seleccionar el contenido de la búsqueda simple cuando la vista disponga de ella.
-- `C`: completar la tarea cuya fila tiene el foco, reutilizando el control de finalización existente.
-- Ignorar los atajos dentro de campos editables y cuando intervienen Ctrl, Alt o Cmd/Meta.
-- No agregar una ayuda permanente en pantalla ni modificar la navegación por teclado ya implementada.
-
-#### 2. Permitir orden manual mediante arrastre
-
-- **Estado:** Pendiente.
-- **Dificultad prevista:** Media o alta.
-- Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
-- Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
-- En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
-- Definir el comportamiento ante filtros activos, subtareas contraídas y listas parciales antes de implementar.
-
-### Etapa 2 — Notas externas vinculadas
-
-#### 3. Integrar Notion como base externa de notas
+### Integrar Notion como base externa de notas
 
 - **Estado:** Pendiente aprobado; seguimiento en issue #212.
 - **Dificultad prevista:** Media o alta, dividida en etapas independientes.
@@ -63,6 +27,43 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
 - Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
 - Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
+
+## Backlog aprobado
+
+El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Etapa 2 — Notas externas vinculadas
+
+#### 1. Integrar Notion como base externa de notas
+
+- **Estado:** Pendiente aprobado; seguimiento en issue #212.
+- **Dificultad prevista:** Media o alta, dividida en etapas independientes.
+- Mantener Google Sheets como base principal de Task Engine.
+- Cada usuario conecta su propia cuenta y espacio de trabajo de Notion mediante su instalación y Apps Script independientes.
+- El token de Notion debe permanecer fuera del frontend y del repositorio.
+- Permitir elegir una base contenedora específica de Notion para las notas de Task Engine.
+- Las tareas y los objetivos/proyectos podrán crear, abrir y desvincular una página de Notion.
+- Task Engine conservará solamente el identificador y la URL de la página vinculada; el contenido se editará exclusivamente en Notion.
+- El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
+- Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
+- Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
+
+## Implementado recientemente
+
+### Orden manual mediante arrastre
+
+- Disponible cuando está seleccionado **Orden manual** y no hay búsqueda, búsqueda avanzada, filtros ni selección múltiple activos.
+- Permite reordenar únicamente tareas hermanas y nunca cambia `parentTaskId`.
+- Persiste el resultado en `manualOrder` y normaliza el grupo completo de hermanos para conservar posiciones coherentes aunque parte de la lista no esté visible.
+- En celular utiliza un tirador explícito para no interferir con el desplazamiento vertical.
+- Los proyectos abiertos disponen también de **Filtros rápidos** y **Orden**, por lo que sus subtareas pueden reordenarse con el mismo criterio.
+
+### Atajos de teclado de acción
+
+- `Alt+N`: abrir **Nueva tarea** cuando la acción esté disponible.
+- `Alt+B`: enfocar y seleccionar la búsqueda simple.
+- `Alt+C`: completar la tarea cuya fila tiene el foco.
+- Los atajos se ignoran dentro de campos editables y no reemplazan la navegación existente por flechas, Home/End, Enter/Espacio y jerarquía.
 
 ## Propuesta pendiente de decisión
 
