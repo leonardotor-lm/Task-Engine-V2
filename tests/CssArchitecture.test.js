@@ -36,6 +36,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "waiting.css",
             "styles/task-interface.css",
             "styles/manual-task-order.css",
+            "styles/task-quick-actions.css",
             "styles/task-editor-desktop.css",
             "styles/task-editor-popovers.css",
             "styles/task-editor-mobile.css",
@@ -73,6 +74,21 @@ test("la hoja consolidada conserva los tres bloques funcionales", async () => {
         withoutComments.match(/\}/g)?.length ?? 0;
 
     assert.equal(openingBraces, closingBraces);
+
+});
+
+test("las acciones rápidas conservan el estilo del popover de posponer", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/task-quick-actions.css"),
+        "utf8"
+    );
+
+    assert.match(styles, /\.quickPostponeMenu\s*\{/);
+    assert.match(styles, /\.quickPostponePreset/);
+    assert.match(styles, /\.applyQuickPostpone/);
+    assert.match(styles, /var\(--transient-surface-border\)/);
+    assert.match(styles, /var\(--transient-surface-shadow\)/);
 
 });
 
