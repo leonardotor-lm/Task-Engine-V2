@@ -109,6 +109,7 @@ export class Sidebar {
 
         const taskToolViews = [
             ...taskViews,
+            View.PROJECT,
             View.GOAL
         ];
 
