@@ -14,6 +14,15 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
+### Corregir arrastre de Orden manual en celular
+
+- **Estado:** Bug confirmado; resolver antes de continuar con el siguiente bloque grande.
+- En celular se muestra correctamente el tirador de arrastre cuando está seleccionado **Orden manual**.
+- Al mantener pulsado el tirador, el dispositivo vibra, pero la tarea no se desplaza ni cambia de posición.
+- En escritorio el orden manual por arrastre funciona correctamente.
+- Revisar la interacción táctil/pointer del tirador y asegurar que el gesto de arrastre no quede absorbido por el scroll, el long-press del navegador o la lógica de swipe.
+- Mantener las reglas actuales: sólo tareas hermanas, sin cambiar `parentTaskId`, y persistencia mediante `manualOrder`.
+
 ### Integrar Notion como base externa de notas
 
 - **Estado:** Pendiente aprobado; seguimiento en issue #212.
@@ -31,6 +40,14 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 ## Backlog aprobado
 
 El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+
+### Correcciones inmediatas
+
+#### 1. Arrastre manual en celular
+
+- **Estado:** Bug confirmado.
+- El tirador aparece y responde al long-press con vibración, pero no inicia el desplazamiento de la tarea.
+- Resolver la interacción táctil sin interferir con el scroll vertical ni con otros gestos móviles.
 
 ### Etapa 2 — Notas externas vinculadas
 
@@ -55,7 +72,7 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Disponible cuando está seleccionado **Orden manual** y no hay búsqueda, búsqueda avanzada, filtros ni selección múltiple activos.
 - Permite reordenar únicamente tareas hermanas y nunca cambia `parentTaskId`.
 - Persiste el resultado en `manualOrder` y normaliza el grupo completo de hermanos para conservar posiciones coherentes aunque parte de la lista no esté visible.
-- En celular utiliza un tirador explícito para no interferir con el desplazamiento vertical.
+- En celular utiliza un tirador explícito para no interferir con el desplazamiento vertical; queda pendiente corregir el bug táctil registrado arriba.
 - Los proyectos abiertos disponen también de **Filtros rápidos** y **Orden**, por lo que sus subtareas pueden reordenarse con el mismo criterio.
 
 ### Atajos de teclado de acción
