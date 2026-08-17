@@ -1,0 +1,112 @@
+@media (max-width: 760px) {
+
+    .taskFilters .mobileFilterNativeSelect {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .mobileFilterSelect {
+        position: relative;
+        margin: 0 0 2px;
+    }
+
+    .mobileFilterSelectSummary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 44px;
+        padding: 9px 11px;
+        border: 1px solid var(--color-border-strong);
+        border-radius: var(--transient-surface-radius);
+        background: var(--color-surface);
+        color: var(--color-text);
+        cursor: pointer;
+        list-style: none;
+        font: inherit;
+    }
+
+    .mobileFilterSelectSummary::-webkit-details-marker {
+        display: none;
+    }
+
+    .mobileFilterSelectSummary:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+    }
+
+    .mobileFilterSelectValue {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobileFilterSelectChevron {
+        flex: 0 0 auto;
+        margin-left: 10px;
+        color: var(--color-text-secondary);
+        font-size: 18px;
+        line-height: 1;
+        transform: translateY(-1px);
+    }
+
+    .mobileFilterSelect[open]
+        .mobileFilterSelectChevron {
+        transform: rotate(180deg) translateY(1px);
+    }
+
+    .mobileFilterSelectMenu {
+        position: fixed;
+        z-index: 140;
+        right: 12px;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        left: 12px;
+        display: grid;
+        gap: 4px;
+        box-sizing: border-box;
+        max-height: min(62dvh, 430px);
+        padding: var(--transient-surface-padding);
+        overflow-y: auto;
+        border: var(--transient-surface-border);
+        border-radius: 12px;
+        background: var(--color-surface);
+        box-shadow: var(--transient-dialog-shadow);
+        overscroll-behavior: contain;
+    }
+
+    .mobileFilterSelectOption {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 44px;
+        padding: 9px 11px;
+        border: 1px solid transparent;
+        border-radius: var(--transient-surface-radius);
+        background: transparent;
+        color: var(--color-text);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .mobileFilterSelectOption:hover,
+    .mobileFilterSelectOption:focus-visible {
+        background: var(--color-surface-hover);
+    }
+
+    .mobileFilterSelectOption[aria-selected="true"] {
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-strong);
+        font-weight: 600;
+    }
+
+}
