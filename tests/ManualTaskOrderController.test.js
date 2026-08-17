@@ -283,15 +283,37 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
     );
 });
 
-test("ofrece zonas amplias para posiciones uno y dos al llegar al borde superior", () => {
+function createTopTargetHarness({
+    firstTop,
+    firstBottom,
+    scrollTop = 80
+}) {
     const tasks = new Map([
         ["drag", activeTask(null)],
         ["first", activeTask(null)],
         ["second", activeTask(null)]
     ]);
     const rows = [
-        { dataset: { id: "first" } },
-        { dataset: { id: "second" } }
+        {
+            dataset: { id: "first" },
+            getBoundingClientRect() {
+                return {
+                    top: firstTop,
+                    bottom: firstBottom,
+                    height: firstBottom - firstTop
+                };
+            }
+        },
+        {
+            dataset: { id: "second" },
+            getBoundingClientRect() {
+                return {
+                    top: firstBottom + 1,
+                    bottom: firstBottom + 51,
+                    height: 50
+                };
+            }
+        }
     ];
     const controller =
         new ManualTaskOrderController(
@@ -309,7 +331,7 @@ test("ofrece zonas amplias para posiciones uno y dos al llegar al borde superior
 
     controller.draggedId = "drag";
     controller.scrollContainer = {
-        scrollTop: 0,
+        scrollTop,
         getBoundingClientRect() {
             return {
                 top: 40,
@@ -319,6 +341,21 @@ test("ofrece zonas amplias para posiciones uno y dos al llegar al borde superior
     };
     controller.getRows = () => rows;
 
+    return { controller, rows };
+}
+
+test("ofrece posiciones uno y dos cuando la primera tarea ya es visible aunque scrollTop no sea cero", () => {
+    const { controller, rows } =
+        createTopTargetHarness({
+            firstTop: 70,
+            firstBottom: 120,
+            scrollTop: 80
+        });
+
+    assert.equal(
+        controller.isFirstTargetVisible(),
+        true
+    );
     assert.deepEqual(
         controller.resolveTopBoundaryTarget(120),
         {
@@ -333,72 +370,46 @@ test("ofrece zonas amplias para posiciones uno y dos al llegar al borde superior
             placement: "after"
         }
     );
+    assert.equal(
+        controller.getAutoScrollStep(80),
+        0
+    );
 });
 
-test("no fuerza posiciones superiores mientras todavía queda scroll hacia arriba", () => {
-    const tasks = new Map([
-        ["drag", activeTask(null)],
-        ["first", activeTask(null)]
-    ]);
-    const row = {
-        dataset: { id: "first" }
-    };
-    const controller =
-        new ManualTaskOrderController(
-            createApp({
-                taskService: {
-                    getTaskById(id) {
-                        return tasks.get(id) ?? null;
-                    }
-                }
-            }),
-            {
-                documentRef: createDocument()
-            }
-        );
+test("mantiene auto-scroll hacia arriba mientras la primera tarea siga fuera de pantalla", () => {
+    const { controller } =
+        createTopTargetHarness({
+            firstTop: -180,
+            firstBottom: -130,
+            scrollTop: 80
+        });
 
-    controller.draggedId = "drag";
-    controller.scrollContainer = {
-        scrollTop: 80,
-        getBoundingClientRect() {
-            return {
-                top: 40,
-                bottom: 700
-            };
-        }
-    };
-    controller.getRows = () => [row];
-
+    assert.equal(
+        controller.isFirstTargetVisible(),
+        false
+    );
     assert.equal(
         controller.resolveTopBoundaryTarget(120),
         null
     );
     assert.ok(
-        controller.getAutoScrollStep(50) < 0
+        controller.getAutoScrollStep(80) < 0
     );
 });
 
-test("al llegar al inicio deja de insistir con auto-scroll hacia arriba", () => {
-    const controller =
-        new ManualTaskOrderController(
-            createApp(),
-            {
-                documentRef: createDocument()
-            }
-        );
+test("una lista corta habilita las posiciones superiores sin depender del scroll", () => {
+    const { controller, rows } =
+        createTopTargetHarness({
+            firstTop: 180,
+            firstBottom: 230,
+            scrollTop: 0
+        });
 
-    controller.scrollContainer = {
-        scrollTop: 0,
-        getBoundingClientRect() {
-            return {
-                top: 40,
-                bottom: 700
-            };
+    assert.deepEqual(
+        controller.resolveTopBoundaryTarget(120),
+        {
+            row: rows[0],
+            placement: "before"
         }
-    };
-
-    assert.equal(
-        controller.getAutoScrollStep(50),
-        0
     );
 });
