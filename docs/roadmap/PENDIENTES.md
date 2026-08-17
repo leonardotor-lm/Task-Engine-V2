@@ -14,35 +14,27 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Permitir orden manual mediante arrastre
+### Integrar Notion como base externa de notas
 
-- **Estado:** En desarrollo.
-- **Dificultad prevista:** Media o alta.
-- Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
-- Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
-- En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
-- Deshabilitar el arrastre cuando haya búsqueda, búsqueda avanzada, filtros o selección múltiple activos.
-- Al reordenar una lista parcial, recalcular el grupo completo de hermanos para conservar posiciones coherentes de tareas momentáneamente no visibles.
+- **Estado:** Pendiente aprobado; seguimiento en issue #212.
+- **Dificultad prevista:** Media o alta, dividida en etapas independientes.
+- Mantener Google Sheets como base principal de Task Engine.
+- Cada usuario conecta su propia cuenta y espacio de trabajo de Notion mediante su instalación y Apps Script independientes.
+- El token de Notion debe permanecer fuera del frontend y del repositorio.
+- Permitir elegir una base contenedora específica de Notion para las notas de Task Engine.
+- Las tareas y los objetivos/proyectos podrán crear, abrir y desvincular una página de Notion.
+- Task Engine conservará solamente el identificador y la URL de la página vinculada; el contenido se editará exclusivamente en Notion.
+- El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
+- Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
+- Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
 
 ## Backlog aprobado
 
 El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
 
-### Etapa 1 — Eficiencia avanzada sin ruido visual
-
-#### 1. Permitir orden manual mediante arrastre
-
-- **Estado:** En desarrollo.
-- **Dificultad prevista:** Media o alta.
-- Habilitar el arrastre sólo cuando esté seleccionado **Orden manual** y únicamente entre tareas hermanas.
-- Persistir el resultado en `manualOrder` y mantenerlo mediante sincronización.
-- En celular, utilizar un tirador explícito para no interferir con el desplazamiento vertical ni con los gestos laterales.
-- Deshabilitar el arrastre cuando haya búsqueda, búsqueda avanzada, filtros o selección múltiple activos.
-- Al reordenar una lista parcial, recalcular el grupo completo de hermanos para conservar posiciones coherentes de tareas momentáneamente no visibles.
-
 ### Etapa 2 — Notas externas vinculadas
 
-#### 2. Integrar Notion como base externa de notas
+#### 1. Integrar Notion como base externa de notas
 
 - **Estado:** Pendiente aprobado; seguimiento en issue #212.
 - **Dificultad prevista:** Media o alta, dividida en etapas independientes.
@@ -57,6 +49,14 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 - Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
 
 ## Implementado recientemente
+
+### Orden manual mediante arrastre
+
+- Disponible cuando está seleccionado **Orden manual** y no hay búsqueda, búsqueda avanzada, filtros ni selección múltiple activos.
+- Permite reordenar únicamente tareas hermanas y nunca cambia `parentTaskId`.
+- Persiste el resultado en `manualOrder` y normaliza el grupo completo de hermanos para conservar posiciones coherentes aunque parte de la lista no esté visible.
+- En celular utiliza un tirador explícito para no interferir con el desplazamiento vertical.
+- Los proyectos abiertos disponen también de **Filtros rápidos** y **Orden**, por lo que sus subtareas pueden reordenarse con el mismo criterio.
 
 ### Atajos de teclado de acción
 
