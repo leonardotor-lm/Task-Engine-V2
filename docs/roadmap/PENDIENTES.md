@@ -2,7 +2,7 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 16 de agosto de 2026.
+Última actualización: 17 de agosto de 2026.
 
 ## Estados
 
@@ -13,15 +13,6 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 - **Propuesta:** mejora identificada que aún requiere una decisión antes de entrar al backlog.
 
 ## Prioridad actual
-
-### Corregir arrastre de Orden manual en celular
-
-- **Estado:** Bug confirmado; resolver antes de continuar con el siguiente bloque grande.
-- En celular se muestra correctamente el tirador de arrastre cuando está seleccionado **Orden manual**.
-- Al mantener pulsado el tirador, el dispositivo vibra, pero la tarea no se desplaza ni cambia de posición.
-- En escritorio el orden manual por arrastre funciona correctamente.
-- Revisar la interacción táctil/pointer del tirador y asegurar que el gesto de arrastre no quede absorbido por el scroll, el long-press del navegador o la lógica de swipe.
-- Mantener las reglas actuales: sólo tareas hermanas, sin cambiar `parentTaskId`, y persistencia mediante `manualOrder`.
 
 ### Integrar Notion como base externa de notas
 
@@ -40,14 +31,6 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 ## Backlog aprobado
 
 El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
-
-### Correcciones inmediatas
-
-#### 1. Arrastre manual en celular
-
-- **Estado:** Bug confirmado.
-- El tirador aparece y responde al long-press con vibración, pero no inicia el desplazamiento de la tarea.
-- Resolver la interacción táctil sin interferir con el scroll vertical ni con otros gestos móviles.
 
 ### Etapa 2 — Notas externas vinculadas
 
@@ -70,10 +53,18 @@ El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de
 ### Orden manual mediante arrastre
 
 - Disponible cuando está seleccionado **Orden manual** y no hay búsqueda, búsqueda avanzada, filtros ni selección múltiple activos.
-- Permite reordenar únicamente tareas hermanas y nunca cambia `parentTaskId`.
-- Persiste el resultado en `manualOrder` y normaliza el grupo completo de hermanos para conservar posiciones coherentes aunque parte de la lista no esté visible.
-- En celular utiliza un tirador explícito para no interferir con el desplazamiento vertical; queda pendiente corregir el bug táctil registrado arriba.
-- Los proyectos abiertos disponen también de **Filtros rápidos** y **Orden**, por lo que sus subtareas pueden reordenarse con el mismo criterio.
+- Persiste el resultado en `manualOrder` y nunca modifica `parentTaskId`.
+- En vistas donde el padre está visible, conserva la restricción jerárquica y reordena sólo dentro del grupo correspondiente.
+- Cuando el padre no aparece en la vista, sus hijas participan del nivel visible de esa lista para evitar barreras invisibles con tareas sueltas, sin alterar la jerarquía real.
+- En celular utiliza un tirador explícito y el flujo quedó verificado manualmente, incluyendo movimientos hacia las posiciones 1 y 2.
+- Los proyectos abiertos disponen también de **Filtros rápidos** y **Orden**.
+
+### Recuperación y conflictos de sincronización
+
+- La recuperación desde la nube registra como nueva base sincronizada el estado efectivamente importado.
+- Los conflictos asociados sólo a cambios de `manualOrder` se reconcilian de forma conservadora cuando el contenido real cambió únicamente en uno de los lados.
+- Una recuperación manual exitosa limpia diagnósticos de conflicto obsoletos y renueva la base de sincronización.
+- El flujo quedó verificado manualmente: después de **Recuperar desde la nube**, los conflictos no reaparecen al cerrar y reabrir la aplicación si no existen cambios independientes genuinos.
 
 ### Atajos de teclado de acción
 
