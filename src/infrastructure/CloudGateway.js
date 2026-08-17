@@ -125,12 +125,7 @@ export class CloudGateway {
 
     }
 
-    postAction(
-        url,
-        token,
-        action,
-        data = {}
-    ) {
+    load({ url, token }) {
 
         return this.request(
             this.buildUrl(url),
@@ -142,21 +137,10 @@ export class CloudGateway {
                         "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({
-                    action,
-                    token,
-                    ...data
+                    action: "load",
+                    token
                 })
             }
-        );
-
-    }
-
-    load({ url, token }) {
-
-        return this.postAction(
-            url,
-            token,
-            "load"
         );
 
     }
@@ -168,13 +152,20 @@ export class CloudGateway {
         data
     }) {
 
-        return this.postAction(
-            url,
-            token,
-            "save",
+        return this.request(
+            this.buildUrl(url),
             {
-                baseRevision,
-                data
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "save",
+                    token,
+                    baseRevision,
+                    data
+                })
             }
         );
 
@@ -188,16 +179,23 @@ export class CloudGateway {
         base64Data
     }) {
 
-        return this.postAction(
-            url,
-            token,
-            "uploadAttachment",
+        return this.request(
+            this.buildUrl(url),
             {
-                attachment: {
-                    name,
-                    mimeType,
-                    base64Data
-                }
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "uploadAttachment",
+                    token,
+                    attachment: {
+                        name,
+                        mimeType,
+                        base64Data
+                    }
+                })
             }
         );
 
@@ -209,11 +207,20 @@ export class CloudGateway {
         driveFileId
     }) {
 
-        return this.postAction(
-            url,
-            token,
-            "trashAttachment",
-            { driveFileId }
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "trashAttachment",
+                    token,
+                    driveFileId
+                })
+            }
         );
 
     }
@@ -224,13 +231,21 @@ export class CloudGateway {
         validateRemote = false
     }) {
 
-        return this.postAction(
-            url,
-            token,
-            "notionStatus",
+        return this.request(
+            this.buildUrl(url),
             {
-                validateRemote:
-                    validateRemote === true
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "notionStatus",
+                    token,
+                    validateRemote:
+                        validateRemote === true
+                })
             }
         );
 
