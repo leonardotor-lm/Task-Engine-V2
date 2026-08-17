@@ -429,7 +429,10 @@ export class SyncEngine {
         );
 
         const importedBackup =
-            this.backupService.createBackup();
+            typeof this.backupService.createBackup ===
+                "function"
+                ? this.backupService.createBackup()
+                : response.data;
 
         this.config.setRevision(revision);
         this.config.markSynchronized(
