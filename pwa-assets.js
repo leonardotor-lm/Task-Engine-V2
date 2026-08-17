@@ -90,6 +90,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/MobileMainLayoutController.js",
     "./src/ui/MobileTaskEditorLayoutController.js",
     "./src/ui/MobileTaskFilterSelectController.js",
+    "./src/ui/NotionSettingsController.js",
     "./src/ui/OngoingSyncReconciliationController.js",
     "./src/ui/OverlayDismissalController.js",
     "./src/ui/PriorityOptions.js",
