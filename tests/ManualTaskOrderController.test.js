@@ -202,6 +202,7 @@ test("auto-scroll acelera cerca de los bordes y se detiene en el centro", () => 
         );
 
     controller.scrollContainer = {
+        scrollTop: 50,
         getBoundingClientRect() {
             return {
                 top: 100,
@@ -282,33 +283,15 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
     );
 });
 
-test("ofrece posiciones uno y dos según la geometría de la primera tarea visible", () => {
+test("ofrece zonas amplias para posiciones uno y dos al llegar al borde superior", () => {
     const tasks = new Map([
         ["drag", activeTask(null)],
         ["first", activeTask(null)],
         ["second", activeTask(null)]
     ]);
     const rows = [
-        {
-            dataset: { id: "first" },
-            getBoundingClientRect() {
-                return {
-                    top: 150,
-                    bottom: 200,
-                    height: 50
-                };
-            }
-        },
-        {
-            dataset: { id: "second" },
-            getBoundingClientRect() {
-                return {
-                    top: 201,
-                    bottom: 251,
-                    height: 50
-                };
-            }
-        }
+        { dataset: { id: "first" } },
+        { dataset: { id: "second" } }
     ];
     const controller =
         new ManualTaskOrderController(
@@ -326,10 +309,10 @@ test("ofrece posiciones uno y dos según la geometría de la primera tarea visib
 
     controller.draggedId = "drag";
     controller.scrollContainer = {
-        scrollTop: 240,
+        scrollTop: 0,
         getBoundingClientRect() {
             return {
-                top: 100,
+                top: 40,
                 bottom: 700
             };
         }
@@ -337,14 +320,14 @@ test("ofrece posiciones uno y dos según la geometría de la primera tarea visib
     controller.getRows = () => rows;
 
     assert.deepEqual(
-        controller.resolveTopInsertTarget(140),
+        controller.resolveTopBoundaryTarget(120),
         {
             row: rows[0],
             placement: "before"
         }
     );
     assert.deepEqual(
-        controller.resolveTopInsertTarget(190),
+        controller.resolveTopBoundaryTarget(220),
         {
             row: rows[0],
             placement: "after"
@@ -352,20 +335,13 @@ test("ofrece posiciones uno y dos según la geometría de la primera tarea visib
     );
 });
 
-test("no ofrece posiciones superiores si la primera tarea todavía está fuera de pantalla", () => {
+test("no fuerza posiciones superiores mientras todavía queda scroll hacia arriba", () => {
     const tasks = new Map([
         ["drag", activeTask(null)],
         ["first", activeTask(null)]
     ]);
     const row = {
-        dataset: { id: "first" },
-        getBoundingClientRect() {
-            return {
-                top: 20,
-                bottom: 70,
-                height: 50
-            };
-        }
+        dataset: { id: "first" }
     };
     const controller =
         new ManualTaskOrderController(
@@ -383,10 +359,10 @@ test("no ofrece posiciones superiores si la primera tarea todavía está fuera d
 
     controller.draggedId = "drag";
     controller.scrollContainer = {
-        scrollTop: 300,
+        scrollTop: 80,
         getBoundingClientRect() {
             return {
-                top: 100,
+                top: 40,
                 bottom: 700
             };
         }
@@ -394,7 +370,35 @@ test("no ofrece posiciones superiores si la primera tarea todavía está fuera d
     controller.getRows = () => [row];
 
     assert.equal(
-        controller.resolveTopInsertTarget(110),
+        controller.resolveTopBoundaryTarget(120),
         null
+    );
+    assert.ok(
+        controller.getAutoScrollStep(50) < 0
+    );
+});
+
+test("al llegar al inicio deja de insistir con auto-scroll hacia arriba", () => {
+    const controller =
+        new ManualTaskOrderController(
+            createApp(),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.scrollContainer = {
+        scrollTop: 0,
+        getBoundingClientRect() {
+            return {
+                top: 40,
+                bottom: 700
+            };
+        }
+    };
+
+    assert.equal(
+        controller.getAutoScrollStep(50),
+        0
     );
 });
