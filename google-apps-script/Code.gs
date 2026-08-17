@@ -93,6 +93,17 @@ function handleRequest_(event, method) {
             );
         }
 
+        if (
+            method === "POST" &&
+            action === "notionStatus"
+        ) {
+            return jsonResponse_(
+                getNotionStatus_(
+                    body.validateRemote === true
+                )
+            );
+        }
+
         throw protocolError_(
             "INVALID_ACTION",
             "La acción solicitada no es válida."
