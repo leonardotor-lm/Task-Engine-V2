@@ -282,7 +282,7 @@ test("usa la tarea hermana válida más cercana entre filas", () => {
     );
 });
 
-test("ofrece posiciones uno y dos en la zona superior cuando el scroll llegó al inicio", () => {
+test("ofrece posiciones uno y dos según la geometría de la primera tarea visible", () => {
     const tasks = new Map([
         ["drag", activeTask(null)],
         ["first", activeTask(null)],
@@ -326,7 +326,7 @@ test("ofrece posiciones uno y dos en la zona superior cuando el scroll llegó al
 
     controller.draggedId = "drag";
     controller.scrollContainer = {
-        scrollTop: 0,
+        scrollTop: 240,
         getBoundingClientRect() {
             return {
                 top: 100,
@@ -337,14 +337,14 @@ test("ofrece posiciones uno y dos en la zona superior cuando el scroll llegó al
     controller.getRows = () => rows;
 
     assert.deepEqual(
-        controller.resolveTopInsertTarget(120),
+        controller.resolveTopInsertTarget(140),
         {
             row: rows[0],
             placement: "before"
         }
     );
     assert.deepEqual(
-        controller.resolveTopInsertTarget(180),
+        controller.resolveTopInsertTarget(190),
         {
             row: rows[0],
             placement: "after"
@@ -352,10 +352,30 @@ test("ofrece posiciones uno y dos en la zona superior cuando el scroll llegó al
     );
 });
 
-test("la zona superior especial se desactiva cuando la lista todavía puede subir", () => {
+test("no ofrece posiciones superiores si la primera tarea todavía está fuera de pantalla", () => {
+    const tasks = new Map([
+        ["drag", activeTask(null)],
+        ["first", activeTask(null)]
+    ]);
+    const row = {
+        dataset: { id: "first" },
+        getBoundingClientRect() {
+            return {
+                top: 20,
+                bottom: 70,
+                height: 50
+            };
+        }
+    };
     const controller =
         new ManualTaskOrderController(
-            createApp(),
+            createApp({
+                taskService: {
+                    getTaskById(id) {
+                        return tasks.get(id) ?? null;
+                    }
+                }
+            }),
             {
                 documentRef: createDocument()
             }
@@ -363,7 +383,7 @@ test("la zona superior especial se desactiva cuando la lista todavía puede subi
 
     controller.draggedId = "drag";
     controller.scrollContainer = {
-        scrollTop: 40,
+        scrollTop: 300,
         getBoundingClientRect() {
             return {
                 top: 100,
@@ -371,9 +391,10 @@ test("la zona superior especial se desactiva cuando la lista todavía puede subi
             };
         }
     };
+    controller.getRows = () => [row];
 
     assert.equal(
-        controller.resolveTopInsertTarget(120),
+        controller.resolveTopInsertTarget(110),
         null
     );
 });
