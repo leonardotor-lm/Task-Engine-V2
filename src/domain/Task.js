@@ -10,6 +10,18 @@ import {
     normalizeAttachments
 } from "./Attachment.js";
 
+function normalizeOptionalString(value) {
+
+    if (value === null || value === undefined) {
+        return null;
+    }
+
+    const normalized = String(value).trim();
+
+    return normalized || null;
+
+}
+
 export class Task {
 
     constructor(data = {}) {
@@ -53,6 +65,16 @@ export class Task {
         this.attachments = normalizeAttachments(
             data.attachments ?? []
         );
+
+        this.notionPageId =
+            normalizeOptionalString(
+                data.notionPageId
+            );
+
+        this.notionPageUrl =
+            normalizeOptionalString(
+                data.notionPageUrl
+            );
 
         this.isWaiting =
             Boolean(data.isWaiting) &&
@@ -349,6 +371,20 @@ export class Task {
             this.attachments =
                 normalizeAttachments(
                     data.attachments
+                );
+        }
+
+        if (data.notionPageId !== undefined) {
+            this.notionPageId =
+                normalizeOptionalString(
+                    data.notionPageId
+                );
+        }
+
+        if (data.notionPageUrl !== undefined) {
+            this.notionPageUrl =
+                normalizeOptionalString(
+                    data.notionPageUrl
                 );
         }
 
@@ -673,6 +709,10 @@ export class Task {
                     ...attachment
                 })
             ),
+
+            notionPageId: this.notionPageId,
+
+            notionPageUrl: this.notionPageUrl,
 
             isWaiting: this.isWaiting,
 
