@@ -2,9 +2,11 @@ import {
     reorderTaskAmongSiblings
 } from "../core/ManualTaskOrder.js";
 
-const AUTO_SCROLL_EDGE = 72;
+const AUTO_SCROLL_TOP_EDGE = 300;
+const AUTO_SCROLL_BOTTOM_EDGE = 72;
 const AUTO_SCROLL_MAX_STEP = 14;
-const TOP_DROP_SLOT_HEIGHT = 120;
+const TOP_DROP_FIRST_END = 160;
+const TOP_DROP_SECOND_END = 300;
 const SCROLL_START_TOLERANCE = 2;
 
 export class ManualTaskOrderController {
@@ -310,9 +312,9 @@ export class ManualTaskOrderController {
         }
 
         const firstSlotEnd =
-            bounds.top + TOP_DROP_SLOT_HEIGHT;
+            bounds.top + TOP_DROP_FIRST_END;
         const secondSlotEnd =
-            firstSlotEnd + TOP_DROP_SLOT_HEIGHT;
+            bounds.top + TOP_DROP_SECOND_END;
 
         if (
             clientY < bounds.top ||
@@ -466,7 +468,7 @@ export class ManualTaskOrderController {
 
         if (
             pointerY <
-            bounds.top + AUTO_SCROLL_EDGE
+            bounds.top + AUTO_SCROLL_TOP_EDGE
         ) {
             if (this.isAtScrollStart()) {
                 return 0;
@@ -476,9 +478,9 @@ export class ManualTaskOrderController {
                 1,
                 (
                     bounds.top +
-                    AUTO_SCROLL_EDGE -
+                    AUTO_SCROLL_TOP_EDGE -
                     pointerY
-                ) / AUTO_SCROLL_EDGE
+                ) / AUTO_SCROLL_TOP_EDGE
             );
 
             return -Math.max(
@@ -491,14 +493,17 @@ export class ManualTaskOrderController {
 
         if (
             pointerY >
-            bounds.bottom - AUTO_SCROLL_EDGE
+            bounds.bottom - AUTO_SCROLL_BOTTOM_EDGE
         ) {
             const ratio = Math.min(
                 1,
                 (
                     pointerY -
-                    (bounds.bottom - AUTO_SCROLL_EDGE)
-                ) / AUTO_SCROLL_EDGE
+                    (
+                        bounds.bottom -
+                        AUTO_SCROLL_BOTTOM_EDGE
+                    )
+                ) / AUTO_SCROLL_BOTTOM_EDGE
             );
 
             return Math.max(
