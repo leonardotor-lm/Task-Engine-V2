@@ -4,7 +4,8 @@ import {
 
 const AUTO_SCROLL_EDGE = 72;
 const AUTO_SCROLL_MAX_STEP = 14;
-const TOP_INSERT_MARGIN = 36;
+const TOP_DROP_SLOT_HEIGHT = 120;
+const SCROLL_START_TOLERANCE = 2;
 
 export class ManualTaskOrderController {
 
@@ -251,7 +252,7 @@ export class ManualTaskOrderController {
 
     updateDropTarget(clientX, clientY) {
         const topTarget =
-            this.resolveTopInsertTarget(clientY);
+            this.resolveTopBoundaryTarget(clientY);
 
         const targetRow = topTarget?.row ??
             this.resolveTargetRow(
@@ -291,55 +292,50 @@ export class ManualTaskOrderController {
         return true;
     }
 
-    resolveTopInsertTarget(clientY) {
-        if (!Number.isFinite(clientY)) {
-            return null;
-        }
-
-        const firstRow = this.getRows().find(
-            row => this.isValidTargetRow(row)
-        );
-        const bounds = this.getScrollBounds();
-        const rect = firstRow
-            ?.getBoundingClientRect?.();
-
-        if (!firstRow || !bounds || !rect) {
-            return null;
-        }
-
-        const firstRowVisible =
-            rect.bottom >= bounds.top &&
-            rect.top <= bounds.bottom;
-
-        if (!firstRowVisible) {
-            return null;
-        }
-
-        const zoneTop = Math.max(
-            bounds.top,
-            rect.top - TOP_INSERT_MARGIN
-        );
-        const zoneBottom =
-            rect.bottom + TOP_INSERT_MARGIN;
-
+    resolveTopBoundaryTarget(clientY) {
         if (
-            clientY < zoneTop ||
-            clientY > zoneBottom
+            !Number.isFinite(clientY) ||
+            !this.isAtScrollStart()
         ) {
             return null;
         }
 
-        const middle = Number.isFinite(rect.height)
-            ? rect.top + rect.height / 2
-            : (rect.top + rect.bottom) / 2;
+        const bounds = this.getScrollBounds();
+        const firstRow = this.getRows().find(
+            row => this.isValidTargetRow(row)
+        );
+
+        if (!bounds || !firstRow) {
+            return null;
+        }
+
+        const firstSlotEnd =
+            bounds.top + TOP_DROP_SLOT_HEIGHT;
+        const secondSlotEnd =
+            firstSlotEnd + TOP_DROP_SLOT_HEIGHT;
+
+        if (
+            clientY < bounds.top ||
+            clientY > secondSlotEnd
+        ) {
+            return null;
+        }
 
         return {
             row: firstRow,
             placement:
-                clientY <= middle
+                clientY <= firstSlotEnd
                     ? "before"
                     : "after"
         };
+    }
+
+    isAtScrollStart() {
+        const scrollTop =
+            this.scrollContainer?.scrollTop;
+
+        return Number.isFinite(scrollTop) &&
+            scrollTop <= SCROLL_START_TOLERANCE;
     }
 
     resolveTargetRow(clientX, clientY) {
@@ -443,20 +439,22 @@ export class ManualTaskOrderController {
             this.lastPointerY
         );
 
-        if (step !== 0) {
-            this.scrollBy(step);
-
-            if (
-                Number.isFinite(this.lastPointerX)
-            ) {
-                this.updateDropTarget(
-                    this.lastPointerX,
-                    this.lastPointerY
-                );
-            }
+        if (step === 0) {
+            return;
         }
 
-        if (step !== 0) {
+        const moved = this.scrollBy(step);
+
+        if (
+            Number.isFinite(this.lastPointerX)
+        ) {
+            this.updateDropTarget(
+                this.lastPointerX,
+                this.lastPointerY
+            );
+        }
+
+        if (moved) {
             this.ensureAutoScroll();
         }
     }
@@ -470,6 +468,10 @@ export class ManualTaskOrderController {
             pointerY <
             bounds.top + AUTO_SCROLL_EDGE
         ) {
+            if (this.isAtScrollStart()) {
+                return 0;
+            }
+
             const ratio = Math.min(
                 1,
                 (
@@ -540,17 +542,33 @@ export class ManualTaskOrderController {
             typeof this.scrollContainer.scrollBy ===
                 "function"
         ) {
+            const before =
+                this.scrollContainer.scrollTop;
+
             this.scrollContainer.scrollBy({
                 top: step,
                 behavior: "auto"
             });
-            return;
+
+            const after =
+                this.scrollContainer.scrollTop;
+
+            if (
+                Number.isFinite(before) &&
+                Number.isFinite(after)
+            ) {
+                return after !== before;
+            }
+
+            return true;
         }
 
         this.window?.scrollBy?.({
             top: step,
             behavior: "auto"
         });
+
+        return true;
     }
 
     stopAutoScroll() {
