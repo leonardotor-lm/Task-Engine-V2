@@ -7,7 +7,6 @@ const AUTO_SCROLL_BOTTOM_EDGE = 72;
 const AUTO_SCROLL_MAX_STEP = 14;
 const TOP_DROP_FIRST_END = 160;
 const TOP_DROP_SECOND_END = 300;
-const SCROLL_START_TOLERANCE = 2;
 
 export class ManualTaskOrderController {
 
@@ -294,18 +293,40 @@ export class ManualTaskOrderController {
         return true;
     }
 
+    getFirstValidTargetRow() {
+        return this.getRows().find(
+            row => this.isValidTargetRow(row)
+        ) ?? null;
+    }
+
+    isFirstTargetVisible() {
+        const bounds = this.getScrollBounds();
+        const firstRow =
+            this.getFirstValidTargetRow();
+        const rect =
+            firstRow?.getBoundingClientRect?.();
+
+        if (!bounds || !firstRow || !rect) {
+            return false;
+        }
+
+        return (
+            rect.bottom >= bounds.top &&
+            rect.top <= bounds.bottom
+        );
+    }
+
     resolveTopBoundaryTarget(clientY) {
         if (
             !Number.isFinite(clientY) ||
-            !this.isAtScrollStart()
+            !this.isFirstTargetVisible()
         ) {
             return null;
         }
 
         const bounds = this.getScrollBounds();
-        const firstRow = this.getRows().find(
-            row => this.isValidTargetRow(row)
-        );
+        const firstRow =
+            this.getFirstValidTargetRow();
 
         if (!bounds || !firstRow) {
             return null;
@@ -330,14 +351,6 @@ export class ManualTaskOrderController {
                     ? "before"
                     : "after"
         };
-    }
-
-    isAtScrollStart() {
-        const scrollTop =
-            this.scrollContainer?.scrollTop;
-
-        return Number.isFinite(scrollTop) &&
-            scrollTop <= SCROLL_START_TOLERANCE;
     }
 
     resolveTargetRow(clientX, clientY) {
@@ -470,7 +483,7 @@ export class ManualTaskOrderController {
             pointerY <
             bounds.top + AUTO_SCROLL_TOP_EDGE
         ) {
-            if (this.isAtScrollStart()) {
+            if (this.isFirstTargetVisible()) {
                 return 0;
             }
 
