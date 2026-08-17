@@ -54,6 +54,15 @@ function createApp(overrides = {}) {
     };
 }
 
+function activeTask(parentTaskId = null) {
+    return {
+        parentTaskId,
+        isCompleted: () => false,
+        isArchived: () => false,
+        isDeleted: () => false
+    };
+}
+
 test("habilita el arrastre sólo con orden manual limpio", () => {
     const controller =
         new ManualTaskOrderController(
@@ -179,5 +188,96 @@ test("ignora eventos de otro dedo durante el arrastre", () => {
     assert.equal(
         controller.isActivePointer({ pointerId: 8 }),
         false
+    );
+});
+
+test("auto-scroll acelera cerca de los bordes y se detiene en el centro", () => {
+    const controller =
+        new ManualTaskOrderController(
+            createApp(),
+            {
+                documentRef: createDocument(),
+                windowRef: { innerHeight: 800 }
+            }
+        );
+
+    controller.scrollContainer = {
+        getBoundingClientRect() {
+            return {
+                top: 100,
+                bottom: 700
+            };
+        }
+    };
+
+    assert.ok(
+        controller.getAutoScrollStep(110) < 0
+    );
+    assert.equal(
+        controller.getAutoScrollStep(400),
+        0
+    );
+    assert.ok(
+        controller.getAutoScrollStep(690) > 0
+    );
+});
+
+test("usa la tarea hermana válida más cercana entre filas", () => {
+    const tasks = new Map([
+        ["drag", activeTask("parent")],
+        ["a", activeTask("parent")],
+        ["b", activeTask("parent")],
+        ["other", activeTask("otro")]
+    ]);
+    const rows = [
+        {
+            dataset: { id: "a" },
+            getBoundingClientRect() {
+                return {
+                    top: 100,
+                    bottom: 150
+                };
+            }
+        },
+        {
+            dataset: { id: "b" },
+            getBoundingClientRect() {
+                return {
+                    top: 180,
+                    bottom: 230
+                };
+            }
+        },
+        {
+            dataset: { id: "other" },
+            getBoundingClientRect() {
+                return {
+                    top: 151,
+                    bottom: 179
+                };
+            }
+        }
+    ];
+    const controller =
+        new ManualTaskOrderController(
+            createApp({
+                taskService: {
+                    getTaskById(id) {
+                        return tasks.get(id) ?? null;
+                    }
+                }
+            }),
+            {
+                documentRef: createDocument()
+            }
+        );
+
+    controller.draggedId = "drag";
+    controller.getRows = () => rows;
+
+    assert.equal(
+        controller.findNearestValidRow(168)
+            ?.dataset?.id,
+        "b"
     );
 });
