@@ -200,11 +200,13 @@ function createNotionTaskPage_(taskData) {
         dataSource
     );
 
+    var titlePropertyName =
+        resolveNotionTitlePropertyName_(
+            dataSource
+        );
     var properties = {};
 
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES.TITLE
-    ] = {
+    properties[titlePropertyName] = {
         title: [notionTextObject_(task.title)]
     };
     properties[
@@ -439,15 +441,39 @@ function notionTextObject_(content) {
 
 }
 
+function resolveNotionTitlePropertyName_(dataSource) {
+
+    var properties =
+        dataSource && dataSource.properties || {};
+    var names = Object.keys(properties);
+    var titleName = names.find(function(name) {
+        var property = properties[name];
+        return property &&
+            (
+                property.type === "title" ||
+                property.id === "title"
+            );
+    });
+
+    if (!titleName) {
+        throw protocolError_(
+            "NOTION_SCHEMA_MISMATCH",
+            "La estructura de la base de Notion no contiene una propiedad de título."
+        );
+    }
+
+    return titleName;
+
+}
+
 function validateNotionDataSourceSchema_(dataSource) {
 
     var properties =
         dataSource && dataSource.properties || {};
     var expectedTypes = {};
 
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES.TITLE
-    ] = "title";
+    resolveNotionTitlePropertyName_(dataSource);
+
     expectedTypes[
         TASK_ENGINE_NOTION_PROPERTIES.TYPE
     ] = "select";
