@@ -32,6 +32,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
         hrefs,
         [
             "styles.css",
+            "styles/themes/default.css",
             "styles/attachments.css",
             "styles/waiting.css",
             "styles/task-interface.css",
@@ -51,6 +52,25 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             access(resolve(ROOT, href))
         )
     );
+
+});
+
+test("el documento declara explícitamente el tema predeterminado", async () => {
+
+    const [index, theme] = await Promise.all([
+        readFile(resolve(ROOT, "index.html"), "utf8"),
+        readFile(
+            resolve(ROOT, "styles/themes/default.css"),
+            "utf8"
+        )
+    ]);
+
+    assert.match(index, /<html[^>]*data-theme="default"/);
+    assert.match(theme, /:root\[data-theme="default"\]/);
+    assert.match(theme, /--color-surface:\s*#fff/);
+    assert.match(theme, /--color-accent:\s*#2563eb/);
+    assert.match(theme, /--interface-radius:\s*0/);
+    assert.match(theme, /--transient-surface-shadow:/);
 
 });
 

@@ -16,7 +16,7 @@ const main = await readFile(
 );
 
 const styles = await readFile(
-    new URL("../waiting.css", import.meta.url),
+    new URL("../styles/waiting.css", import.meta.url),
     "utf8"
 );
 
