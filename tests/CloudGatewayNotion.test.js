@@ -33,37 +33,13 @@ test("consulta el estado de Notion mediante el backend de Task Engine", async ()
         validateRemote: true
     });
 
-    assert.equal(
-        request.body.action,
-        "notionStatus"
-    );
-    assert.equal(
-        request.body.token,
-        "task-engine-token"
-    );
-    assert.equal(
-        request.body.validateRemote,
-        true
-    );
-    assert.equal(
-        request.url.includes("token="),
-        false
-    );
-    assert.equal(
-        request.url.includes("action="),
-        false
-    );
-    assert.equal(
-        Object.hasOwn(
-            request.body,
-            "notionToken"
-        ),
-        false
-    );
-    assert.equal(
-        result.dataSourceName,
-        "Notas de Task Engine"
-    );
+    assert.equal(request.body.action, "notionStatus");
+    assert.equal(request.body.token, "task-engine-token");
+    assert.equal(request.body.validateRemote, true);
+    assert.equal(request.url.includes("token="), false);
+    assert.equal(request.url.includes("action="), false);
+    assert.equal(Object.hasOwn(request.body, "notionToken"), false);
+    assert.equal(result.dataSourceName, "Notas de Task Engine");
 
 });
 
@@ -84,8 +60,7 @@ test("crea una nota de tarea mediante Apps Script sin exponer el token de Notion
                 json: async () => ({
                     ok: true,
                     pageId: "page-1",
-                    pageUrl:
-                        "https://www.notion.so/page-1"
+                    pageUrl: "https://www.notion.so/page-1"
                 })
             };
         }
@@ -102,36 +77,67 @@ test("crea una nota de tarea mediante Apps Script sin exponer el token de Notion
         completedAt: null
     };
 
-    const result =
-        await gateway.createNotionTaskPage({
-            url: "https://script.google.com/macros/s/demo/exec?token=old&action=old",
-            token: "task-engine-token",
-            task
-        });
+    const result = await gateway.createNotionTaskPage({
+        url: "https://script.google.com/macros/s/demo/exec?token=old&action=old",
+        token: "task-engine-token",
+        task
+    });
+
+    assert.equal(request.body.action, "createNotionTaskPage");
+    assert.equal(request.body.token, "task-engine-token");
+    assert.deepEqual(request.body.task, task);
+    assert.equal(Object.hasOwn(request.body, "notionToken"), false);
+    assert.equal(request.url.includes("token="), false);
+    assert.equal(result.pageId, "page-1");
+
+});
+
+test("actualiza una nota vinculada reutilizando la ruta autenticada", async () => {
+
+    let request = null;
+
+    const gateway = new CloudGateway({
+        fetchFn: async (url, options) => {
+            request = {
+                url,
+                body: JSON.parse(options.body)
+            };
+            return {
+                ok: true,
+                json: async () => ({
+                    ok: true,
+                    pageId: "page-1",
+                    pageUrl: "https://www.notion.so/page-1"
+                })
+            };
+        }
+    });
+
+    await gateway.updateNotionTaskPage({
+        url: "https://script.google.com/macros/s/demo/exec",
+        token: "task-engine-token",
+        pageId: "page-1",
+        task: {
+            id: "task-1",
+            title: "Título actualizado"
+        }
+    });
 
     assert.equal(
         request.body.action,
         "createNotionTaskPage"
     );
     assert.equal(
-        request.body.token,
-        "task-engine-token"
-    );
-    assert.deepEqual(
-        request.body.task,
-        task
+        request.body.task.notionPageId,
+        "page-1"
     );
     assert.equal(
-        Object.hasOwn(
-            request.body,
-            "notionToken"
-        ),
-        false
+        request.body.task.title,
+        "Título actualizado"
     );
     assert.equal(
-        request.url.includes("token="),
+        Object.hasOwn(request.body, "notionToken"),
         false
     );
-    assert.equal(result.pageId, "page-1");
 
 });
