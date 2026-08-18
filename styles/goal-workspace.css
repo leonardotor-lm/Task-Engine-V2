@@ -116,4 +116,41 @@
         flex: 0 0 auto;
     }
 
+    .editorNotionSection,
+    .editorNotionGoalSection {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .editorNotionSection .fieldHelp,
+    .editorNotionGoalSection .fieldHelp,
+    .editorNotionSection .syncErrorHint,
+    .editorNotionGoalSection .syncErrorHint {
+        overflow-wrap: anywhere;
+    }
+
+    .editorNotionSection .taskEditorActions,
+    .editorNotionGoalSection .taskEditorActions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .editorNotionSection .taskEditorActions > a,
+    .editorNotionSection .taskEditorActions > button,
+    .editorNotionGoalSection .taskEditorActions > a,
+    .editorNotionGoalSection .taskEditorActions > button,
+    .editorNotionSection > .editorSectionBody > .secondaryAction,
+    .editorNotionGoalSection > .editorSectionBody > .secondaryAction {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        min-height: 44px;
+        margin: 0;
+        text-align: center;
+    }
+
 }
