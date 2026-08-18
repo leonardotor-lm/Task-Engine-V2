@@ -89,6 +89,9 @@ import {
 import {
     NotionGoalNotesEventBridge
 } from "./ui/NotionGoalNotesEventBridge.js";
+import {
+    NotionSyncRetryController
+} from "./ui/NotionSyncRetryController.js";
 
 const app = new App();
 const attachmentController =
@@ -152,6 +155,8 @@ const notionGoalNotesEventBridge =
         app,
         notionGoalNotesController
     );
+const notionSyncRetryController =
+    new NotionSyncRetryController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -175,6 +180,7 @@ ongoingSyncReconciliationController
     .start();
 pwaController.start();
 notionSettingsController.start();
+notionSyncRetryController.start();
 notionTaskNotesController.start();
 notionGoalNotesController.start();
 notionGoalNotesEventBridge.start();
