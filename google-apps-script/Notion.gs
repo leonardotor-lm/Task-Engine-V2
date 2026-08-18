@@ -37,8 +37,7 @@ function setupNotion() {
 
 function getNotionStatus_(validateRemote) {
 
-    var configuration =
-        getNotionConfiguration_();
+    var configuration = getNotionConfiguration_();
 
     if (!configuration.configured) {
         return {
@@ -55,51 +54,39 @@ function getNotionStatus_(validateRemote) {
             ok: true,
             configured: true,
             connected: null,
-            dataSourceId:
-                configuration.dataSourceId,
+            dataSourceId: configuration.dataSourceId,
             dataSourceName: ""
         };
     }
 
-    var dataSource =
-        retrieveNotionDataSource_(
-            configuration
-        );
+    var dataSource = retrieveNotionDataSource_(configuration);
 
     return {
         ok: true,
         configured: true,
         connected: true,
         dataSourceId: dataSource.id,
-        dataSourceName:
-            notionRichTextToPlainText_(
-                dataSource.title
-            )
+        dataSourceName: notionRichTextToPlainText_(dataSource.title)
     };
 
 }
 
 function getNotionConfiguration_() {
 
-    var properties =
-        PropertiesService.getScriptProperties();
+    var properties = PropertiesService.getScriptProperties();
     var token = String(
         properties.getProperty(
-            TASK_ENGINE_NOTION_SETTINGS
-                .TOKEN_PROPERTY
+            TASK_ENGINE_NOTION_SETTINGS.TOKEN_PROPERTY
         ) || ""
     ).trim();
     var dataSourceId = String(
         properties.getProperty(
-            TASK_ENGINE_NOTION_SETTINGS
-                .DATA_SOURCE_ID_PROPERTY
+            TASK_ENGINE_NOTION_SETTINGS.DATA_SOURCE_ID_PROPERTY
         ) || ""
     ).trim();
 
     return {
-        configured: Boolean(
-            token && dataSourceId
-        ),
+        configured: Boolean(token && dataSourceId),
         token: token,
         dataSourceId: dataSourceId
     };
@@ -119,45 +106,21 @@ function retrieveNotionDataSource_(configuration) {
         );
     }
 
-    var response;
-
-    try {
-        response = UrlFetchApp.fetch(
-            TASK_ENGINE_NOTION_SETTINGS
-                .API_BASE_URL +
-            "/data_sources/" +
-            encodeURIComponent(
-                configuration.dataSourceId
-            ),
-            {
-                method: "get",
-                headers: {
-                    Authorization:
-                        "Bearer " +
-                        configuration.token,
-                    "Notion-Version":
-                        TASK_ENGINE_NOTION_SETTINGS
-                            .API_VERSION,
-                    Accept: "application/json"
-                },
-                muteHttpExceptions: true
-            }
-        );
-    } catch (error) {
-        throw protocolError_(
-            "NOTION_UNAVAILABLE",
-            "No se pudo conectar con Notion."
-        );
-    }
-
-    var statusCode = Number(
-        response.getResponseCode()
+    var response = notionFetch_(
+        TASK_ENGINE_NOTION_SETTINGS.API_BASE_URL +
+        "/data_sources/" +
+        encodeURIComponent(configuration.dataSourceId),
+        {
+            method: "get",
+            headers: notionHeaders_(configuration.token),
+            muteHttpExceptions: true
+        },
+        "No se pudo conectar con Notion."
     );
-    var payload =
-        parseNotionResponse_(response);
+    var statusCode = Number(response.getResponseCode());
+    var payload = parseNotionResponse_(response);
 
     if (statusCode >= 200 && statusCode < 300) {
-
         if (
             !payload ||
             payload.object !== "data_source" ||
@@ -168,7 +131,6 @@ function retrieveNotionDataSource_(configuration) {
                 "Notion devolvió una respuesta inesperada."
             );
         }
-
         return payload;
     }
 
@@ -178,8 +140,7 @@ function retrieveNotionDataSource_(configuration) {
 
 function createNotionTaskPage_(taskData) {
 
-    var configuration =
-        getNotionConfiguration_();
+    var configuration = getNotionConfiguration_();
 
     if (!configuration.configured) {
         throw protocolError_(
@@ -188,142 +149,52 @@ function createNotionTaskPage_(taskData) {
         );
     }
 
-    var task = normalizeNotionTaskData_(
-        taskData
+    var task = normalizeNotionTaskData_(taskData);
+    var pageId = String(
+        taskData && taskData.notionPageId || ""
+    ).trim();
+    var dataSource = retrieveNotionDataSource_(configuration);
+    var schema = validateNotionDataSourceSchema_(dataSource);
+    var properties = buildNotionTaskProperties_(
+        task,
+        schema.titleName
     );
-    var dataSource =
-        retrieveNotionDataSource_(
-            configuration
-        );
 
-    validateNotionDataSourceSchema_(
-        dataSource
-    );
-
-    var titlePropertyName =
-        resolveNotionTitlePropertyName_(
-            dataSource
-        );
-    var properties = {};
-
-    properties[titlePropertyName] = {
-        title: [notionTextObject_(task.title)]
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES.TYPE
-    ] = {
-        select: {
-            name: task.isProject
-                ? "Proyecto"
-                : "Tarea"
-        }
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES.STATUS
-    ] = {
-        select: {
-            name: notionTaskStatusName_(
-                task.status
-            )
-        }
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES
-            .TASK_ENGINE_ID
-    ] = {
-        rich_text: [
-            notionTextObject_(task.id)
-        ]
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES.AREA
-    ] = {
-        select: task.areaName
-            ? { name: task.areaName }
-            : null
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES.CONTEXTS
-    ] = {
-        multi_select:
-            task.contextNames.map(
-                function(name) {
-                    return { name: name };
-                }
-            )
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES.TAGS
-    ] = {
-        multi_select:
-            task.tagNames.map(
-                function(name) {
-                    return { name: name };
-                }
-            )
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES
-            .COMPLETED_AT
-    ] = {
-        date: task.completedAt
-            ? { start: task.completedAt }
-            : null
-    };
-    properties[
-        TASK_ENGINE_NOTION_PROPERTIES
-            .UPDATED_AT
-    ] = {
-        date: {
-            start: new Date().toISOString()
-        }
-    };
-
-    var response;
-
-    try {
-        response = UrlFetchApp.fetch(
-            TASK_ENGINE_NOTION_SETTINGS
-                .API_BASE_URL +
-            "/pages",
-            {
-                method: "post",
-                contentType: "application/json",
-                headers: {
-                    Authorization:
-                        "Bearer " +
-                        configuration.token,
-                    "Notion-Version":
-                        TASK_ENGINE_NOTION_SETTINGS
-                            .API_VERSION,
-                    Accept: "application/json"
-                },
-                payload: JSON.stringify({
-                    parent: {
-                        type: "data_source_id",
-                        data_source_id:
-                            configuration.dataSourceId
-                    },
-                    properties: properties
-                }),
-                muteHttpExceptions: true
-            }
-        );
-    } catch (error) {
-        throw protocolError_(
-            "NOTION_UNAVAILABLE",
-            "No se pudo crear la nota en Notion."
+    if (pageId) {
+        return updateNotionTaskPage_(
+            configuration,
+            pageId,
+            properties
         );
     }
 
-    var statusCode = Number(
-        response.getResponseCode()
+    return createNotionPage_(configuration, properties);
+
+}
+
+function createNotionPage_(configuration, properties) {
+
+    var response = notionFetch_(
+        TASK_ENGINE_NOTION_SETTINGS.API_BASE_URL + "/pages",
+        {
+            method: "post",
+            contentType: "application/json",
+            headers: notionHeaders_(configuration.token),
+            payload: JSON.stringify({
+                parent: {
+                    type: "data_source_id",
+                    data_source_id: configuration.dataSourceId
+                },
+                properties: properties
+            }),
+            muteHttpExceptions: true
+        },
+        "No se pudo crear la nota en Notion."
     );
-    var payload =
-        parseNotionResponse_(response);
+    var statusCode = Number(response.getResponseCode());
+    var payload = parseNotionResponse_(response);
 
     if (statusCode >= 200 && statusCode < 300) {
-
         if (
             !payload ||
             payload.object !== "page" ||
@@ -335,7 +206,6 @@ function createNotionTaskPage_(taskData) {
                 "Notion creó la nota pero devolvió una respuesta inesperada."
             );
         }
-
         return {
             ok: true,
             pageId: payload.id,
@@ -354,6 +224,109 @@ function createNotionTaskPage_(taskData) {
 
 }
 
+function updateNotionTaskPage_(configuration, pageId, properties) {
+
+    if (!/^[A-Za-z0-9-]+$/.test(pageId)) {
+        throw protocolError_(
+            "INVALID_NOTION_PAGE",
+            "El vínculo con la nota de Notion no es válido."
+        );
+    }
+
+    var response = notionFetch_(
+        TASK_ENGINE_NOTION_SETTINGS.API_BASE_URL +
+        "/pages/" + encodeURIComponent(pageId),
+        {
+            method: "patch",
+            contentType: "application/json",
+            headers: notionHeaders_(configuration.token),
+            payload: JSON.stringify({
+                properties: properties
+            }),
+            muteHttpExceptions: true
+        },
+        "No se pudo actualizar la nota en Notion."
+    );
+    var statusCode = Number(response.getResponseCode());
+    var payload = parseNotionResponse_(response);
+
+    if (statusCode >= 200 && statusCode < 300) {
+        if (
+            !payload ||
+            payload.object !== "page" ||
+            !payload.id
+        ) {
+            throw protocolError_(
+                "NOTION_INVALID_RESPONSE",
+                "Notion actualizó la nota pero devolvió una respuesta inesperada."
+            );
+        }
+        return {
+            ok: true,
+            pageId: payload.id,
+            pageUrl: payload.url || ""
+        };
+    }
+
+    if (statusCode === 400) {
+        throw protocolError_(
+            "NOTION_SCHEMA_MISMATCH",
+            "Notion rechazó la actualización de propiedades. Revisá la estructura de la base."
+        );
+    }
+
+    throwNotionRequestError_(statusCode);
+
+}
+
+function buildNotionTaskProperties_(task, titleName) {
+
+    var properties = {};
+
+    properties[titleName] = {
+        title: [notionTextObject_(task.title)]
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.TYPE] = {
+        select: {
+            name: task.isProject ? "Proyecto" : "Tarea"
+        }
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.STATUS] = {
+        select: {
+            name: notionTaskStatusName_(task.status)
+        }
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.TASK_ENGINE_ID] = {
+        rich_text: [notionTextObject_(task.id)]
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.AREA] = {
+        select: task.areaName ? { name: task.areaName } : null
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.CONTEXTS] = {
+        multi_select: task.contextNames.map(function(name) {
+            return { name: name };
+        })
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.TAGS] = {
+        multi_select: task.tagNames.map(function(name) {
+            return { name: name };
+        })
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.COMPLETED_AT] = {
+        date: task.completedAt
+            ? { start: task.completedAt }
+            : null
+    };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.UPDATED_AT] = {
+        date: {
+            start: new Date().toISOString()
+        }
+    };
+
+    return properties;
+
+}
+
 function normalizeNotionTaskData_(taskData) {
 
     var task = taskData || {};
@@ -363,33 +336,23 @@ function normalizeNotionTaskData_(taskData) {
     if (!id || !title) {
         throw protocolError_(
             "INVALID_NOTION_TASK",
-            "La tarea no contiene los datos necesarios para crear una nota."
+            "La tarea no contiene los datos necesarios para sincronizar una nota."
         );
     }
 
     return {
         id: id,
         title: title.slice(0, 2000),
-        status: String(
-            task.status || "PENDING"
-        ),
+        status: String(task.status || "PENDING"),
         isProject: task.isProject === true,
-        areaName:
-            String(task.areaName || "")
-                .trim()
-                .slice(0, 100),
-        contextNames:
-            normalizeNotionNames_(
-                task.contextNames
-            ),
-        tagNames:
-            normalizeNotionNames_(
-                task.tagNames
-            ),
-        completedAt:
-            task.completedAt
-                ? String(task.completedAt)
-                : null
+        areaName: String(task.areaName || "")
+            .trim()
+            .slice(0, 100),
+        contextNames: normalizeNotionNames_(task.contextNames),
+        tagNames: normalizeNotionNames_(task.tagNames),
+        completedAt: task.completedAt
+            ? String(task.completedAt)
+            : null
     };
 
 }
@@ -441,93 +404,53 @@ function notionTextObject_(content) {
 
 }
 
-function resolveNotionTitlePropertyName_(dataSource) {
+function validateNotionDataSourceSchema_(dataSource) {
 
-    var properties =
-        dataSource && dataSource.properties || {};
-    var names = Object.keys(properties);
-    var titleName = names.find(function(name) {
-        var property = properties[name];
-        return property &&
-            (
-                property.type === "title" ||
-                property.id === "title"
-            );
-    });
+    var properties = dataSource && dataSource.properties || {};
+    var titleNames = Object.keys(properties)
+        .filter(function(name) {
+            return properties[name] &&
+                properties[name].type === "title";
+        });
+    var mismatches = [];
 
-    if (!titleName) {
-        throw protocolError_(
-            "NOTION_SCHEMA_MISMATCH",
-            "La estructura de la base de Notion no contiene una propiedad de título."
+    if (titleNames.length !== 1) {
+        mismatches.push(
+            "Título: no se encontró una única propiedad de título"
         );
     }
 
-    return titleName;
-
-}
-
-function validateNotionDataSourceSchema_(dataSource) {
-
-    var properties =
-        dataSource && dataSource.properties || {};
     var expectedTypes = {};
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.TYPE] = "select";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.STATUS] = "select";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.TASK_ENGINE_ID] = "rich_text";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.AREA] = "select";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.CONTEXTS] = "multi_select";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.TAGS] = "multi_select";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.COMPLETED_AT] = "date";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.UPDATED_AT] = "date";
 
-    resolveNotionTitlePropertyName_(dataSource);
-
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES.TYPE
-    ] = "select";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES.STATUS
-    ] = "select";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES
-            .TASK_ENGINE_ID
-    ] = "rich_text";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES.AREA
-    ] = "select";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES.CONTEXTS
-    ] = "multi_select";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES.TAGS
-    ] = "multi_select";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES
-            .COMPLETED_AT
-    ] = "date";
-    expectedTypes[
-        TASK_ENGINE_NOTION_PROPERTIES
-            .UPDATED_AT
-    ] = "date";
-
-    var mismatches = Object.keys(
-        expectedTypes
-    ).map(function(name) {
+    Object.keys(expectedTypes).forEach(function(name) {
 
         var property = properties[name];
         var expectedType = expectedTypes[name];
 
         if (!property) {
-            return name + ": falta la propiedad";
+            mismatches.push(name + ": falta la propiedad");
+            return;
         }
 
         if (property.type !== expectedType) {
-            return name +
+            mismatches.push(
+                name +
                 ": se esperaba " +
-                notionPropertyTypeLabel_(
-                    expectedType
-                ) +
+                notionPropertyTypeLabel_(expectedType) +
                 " y se encontró " +
-                notionPropertyTypeLabel_(
-                    property.type
-                );
+                notionPropertyTypeLabel_(property.type)
+            );
         }
 
-        return null;
-
-    }).filter(Boolean);
+    });
 
     if (mismatches.length > 0) {
         throw protocolError_(
@@ -537,6 +460,10 @@ function validateNotionDataSourceSchema_(dataSource) {
                 "."
         );
     }
+
+    return {
+        titleName: titleNames[0]
+    };
 
 }
 
@@ -550,8 +477,30 @@ function notionPropertyTypeLabel_(type) {
         date: "Fecha"
     };
 
-    return labels[type] ||
-        String(type || "desconocido");
+    return labels[type] || String(type || "desconocido");
+
+}
+
+function notionHeaders_(token) {
+
+    return {
+        Authorization: "Bearer " + token,
+        "Notion-Version": TASK_ENGINE_NOTION_SETTINGS.API_VERSION,
+        Accept: "application/json"
+    };
+
+}
+
+function notionFetch_(url, options, publicMessage) {
+
+    try {
+        return UrlFetchApp.fetch(url, options);
+    } catch (error) {
+        throw protocolError_(
+            "NOTION_UNAVAILABLE",
+            publicMessage
+        );
+    }
 
 }
 
@@ -574,7 +523,7 @@ function throwNotionRequestError_(statusCode) {
     if (statusCode === 404) {
         throw protocolError_(
             "NOTION_NOT_FOUND",
-            "No se encontró la base de Notion configurada."
+            "No se encontró la nota o la base de Notion configurada."
         );
     }
 
@@ -594,9 +543,7 @@ function throwNotionRequestError_(statusCode) {
 
 function parseNotionResponse_(response) {
 
-    var contents = String(
-        response.getContentText() || ""
-    );
+    var contents = String(response.getContentText() || "");
 
     if (!contents) {
         return null;
@@ -622,9 +569,7 @@ function notionRichTextToPlainText_(richText) {
     return richText
         .map(function(item) {
             return String(
-                item &&
-                item.plain_text ||
-                ""
+                item && item.plain_text || ""
             );
         })
         .join("")
