@@ -17,6 +17,7 @@ export class NotionTaskNotesController {
         this.creatingTaskId = null;
         this.errorTaskId = null;
         this.errorMessage = "";
+        this.syncQueues = new Map();
         this.started = false;
 
     }
@@ -26,6 +27,7 @@ export class NotionTaskNotesController {
         if (this.started) return;
 
         this.started = true;
+        this.wrapTaskMutations();
         this.wrapRender();
 
     }
@@ -40,11 +42,193 @@ export class NotionTaskNotesController {
             mainView.render.bind(mainView);
 
         mainView.render = state => {
-
             originalRender(state);
             this.apply(state);
-
         };
+
+    }
+
+    wrapTaskMutations() {
+
+        const service = this.app?.taskService;
+
+        if (!service) return;
+
+        const methods = [
+            "createSubtask",
+            "updateTask",
+            "updateTasks",
+            "completeTasks",
+            "archiveTasks",
+            "deleteTasks",
+            "reopenCompletedTrees",
+            "restoreArchivedTrees",
+            "restoreDeletedTrees",
+            "toggleTask",
+            "undoTaskCompletion",
+            "archiveTask",
+            "deleteTask",
+            "restoreArchivedTask",
+            "restoreDeletedTask",
+            "moveTaskToProject",
+            "detachSubtask"
+        ];
+
+        for (const methodName of methods) {
+
+            const original = service[methodName];
+
+            if (typeof original !== "function") {
+                continue;
+            }
+
+            service[methodName] = (...args) => {
+
+                const before =
+                    this.captureLinkedTaskMetadata();
+                const result = original.apply(
+                    service,
+                    args
+                );
+
+                this.syncChangedLinkedTasks(before);
+
+                return result;
+
+            };
+
+        }
+
+    }
+
+    captureLinkedTaskMetadata() {
+
+        const tasks = this.app?.taskService
+            ?.getAllTasks?.() ?? [];
+        const metadata = new Map();
+
+        for (const task of tasks) {
+            if (
+                !task.notionPageId ||
+                !task.notionPageUrl
+            ) {
+                continue;
+            }
+
+            metadata.set(
+                task.id,
+                this.getSyncFingerprint(task)
+            );
+        }
+
+        return metadata;
+
+    }
+
+    getSyncFingerprint(task) {
+
+        return JSON.stringify({
+            title: task.title,
+            status: task.status,
+            isProject: task.isProject === true,
+            areaId: task.areaId ?? null,
+            contextId: task.contextId ?? null,
+            tagIds: [...(task.tagIds ?? [])].sort(),
+            completedAt: task.completedAt ?? null
+        });
+
+    }
+
+    syncChangedLinkedTasks(before) {
+
+        const tasks = this.app?.taskService
+            ?.getAllTasks?.() ?? [];
+
+        for (const task of tasks) {
+
+            if (
+                !task.notionPageId ||
+                !task.notionPageUrl
+            ) {
+                continue;
+            }
+
+            const previous = before.get(task.id);
+
+            if (
+                previous === undefined ||
+                previous === this.getSyncFingerprint(task)
+            ) {
+                continue;
+            }
+
+            this.enqueueSync(task);
+        }
+
+    }
+
+    enqueueSync(task) {
+
+        if (
+            !this.app?.syncConfig?.isConfigured?.() ||
+            !this.app?.syncEngine?.gateway
+                ?.updateNotionTaskPage
+        ) {
+            return;
+        }
+
+        const taskId = task.id;
+        const pageId = task.notionPageId;
+        const payload = this.buildTaskPayload(task);
+        const connection = this.app.syncConfig.get();
+        const previous =
+            this.syncQueues.get(taskId) ??
+            Promise.resolve();
+
+        const current = previous
+            .catch(() => {})
+            .then(() =>
+                this.app.syncEngine.gateway
+                    .updateNotionTaskPage({
+                        ...connection,
+                        pageId,
+                        task: payload
+                    })
+            )
+            .then(() => {
+                if (this.errorTaskId === taskId) {
+                    this.clearError();
+                    if (
+                        this.app.selectedTask?.id ===
+                        taskId
+                    ) {
+                        this.app.render();
+                    }
+                }
+            })
+            .catch(error => {
+                this.errorTaskId = taskId;
+                this.errorMessage =
+                    "La tarea se guardó, pero no se pudo actualizar su nota en Notion: " +
+                    (error?.message || "Error desconocido.");
+
+                if (
+                    this.app.selectedTask?.id ===
+                    taskId
+                ) {
+                    this.app.render();
+                }
+            })
+            .finally(() => {
+                if (
+                    this.syncQueues.get(taskId) ===
+                    current
+                ) {
+                    this.syncQueues.delete(taskId);
+                }
+            });
+
+        this.syncQueues.set(taskId, current);
 
     }
 
@@ -359,10 +543,8 @@ export class NotionTaskNotesController {
     }
 
     clearError() {
-
         this.errorTaskId = null;
         this.errorMessage = "";
-
     }
 
 }
