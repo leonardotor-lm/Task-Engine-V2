@@ -364,7 +364,7 @@ export class NotionTaskNotesController {
 
     }
 
-    buildTaskPayload(task) {
+    buildTaskPayload(task, { linked = true } = {}) {
 
         const area = task.areaId
             ? this.app.areaService
@@ -393,7 +393,8 @@ export class NotionTaskNotesController {
                     ? [context.name]
                     : [],
             tagNames,
-            completedAt: task.completedAt ?? null
+            completedAt: task.completedAt ?? null,
+            linked
         };
 
     }
@@ -503,7 +504,7 @@ export class NotionTaskNotesController {
         }
 
         const confirmed = await Dialog.confirmAsync(
-            "La página seguirá existiendo en Notion. Sólo se quitará el vínculo desde Task Engine.",
+            "La página seguirá existiendo en Notion y quedará marcada como desvinculada de Task Engine.",
             {
                 title: "Desvincular nota",
                 confirmLabel: "Desvincular"
@@ -512,18 +513,52 @@ export class NotionTaskNotesController {
 
         if (!confirmed) return;
 
-        const updated =
-            this.app.taskService.updateTask(
+        const gateway = this.app.syncEngine?.gateway;
+
+        if (
+            !this.app.syncConfig.isConfigured() ||
+            !gateway?.updateNotionTaskPage
+        ) {
+            this.setError(
                 taskId,
-                {
-                    notionPageId: null,
-                    notionPageUrl: null
-                }
+                "No se puede desvincular la nota hasta recuperar la conexión con Apps Script."
+            );
+            return;
+        }
+
+        try {
+
+            await gateway.updateNotionTaskPage({
+                ...this.app.syncConfig.get(),
+                pageId: task.notionPageId,
+                task: this.buildTaskPayload(
+                    task,
+                    { linked: false }
+                )
+            });
+
+            const updated =
+                this.app.taskService.updateTask(
+                    taskId,
+                    {
+                        notionPageId: null,
+                        notionPageUrl: null
+                    }
+                );
+
+            this.app.selectedTask = updated;
+            this.clearError();
+            this.app.render();
+
+        } catch (error) {
+
+            this.setError(
+                taskId,
+                "No se pudo marcar la nota como desvinculada en Notion: " +
+                    (error?.message || "Error desconocido.")
             );
 
-        this.app.selectedTask = updated;
-        this.clearError();
-        this.app.render();
+        }
 
     }
 
