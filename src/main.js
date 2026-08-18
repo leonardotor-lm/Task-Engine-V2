@@ -203,5 +203,5 @@ accessibilityStateController.start();
 keyboardNavigationController.start();
 keyboardActionShortcutsController.start();
 manualTaskOrderController.start();
-themeController.start();
 app.start();
+themeController.start();
