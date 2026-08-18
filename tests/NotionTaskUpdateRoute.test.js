@@ -22,7 +22,8 @@ function schema() {
         Contextos: { type: "multi_select" },
         Etiquetas: { type: "multi_select" },
         "Fecha de finalización": { type: "date" },
-        "Última actualización desde Task Engine": { type: "date" }
+        "Última actualización desde Task Engine": { type: "date" },
+        "Vinculada a Task Engine": { type: "checkbox" }
     };
 }
 
@@ -143,6 +144,64 @@ test("actualiza por PATCH la página ya vinculada y conserva su ID", () => {
             payload.properties.Contextos.multi_select
         )),
         [{ name: "PC" }]
+    );
+    assert.equal(
+        payload.properties["Vinculada a Task Engine"].checkbox,
+        true
+    );
+
+});
+
+test("puede marcar una página como desvinculada", () => {
+
+    const calls = [];
+    const backend = loadBackend((url, options) => {
+        calls.push({ url, options });
+
+        if (url.includes("/data_sources/")) {
+            return {
+                getResponseCode: () => 200,
+                getContentText: () => JSON.stringify({
+                    object: "data_source",
+                    id: "data-source-1",
+                    title: [],
+                    properties: schema()
+                })
+            };
+        }
+
+        return {
+            getResponseCode: () => 200,
+            getContentText: () => JSON.stringify({
+                object: "page",
+                id: "page-1",
+                url: "https://www.notion.so/page-1"
+            })
+        };
+    });
+
+    const result = request(backend, {
+        action: "createNotionTaskPage",
+        token: "sync-token",
+        task: {
+            id: "task-1",
+            title: "Preparar clase",
+            status: "PENDING",
+            isProject: false,
+            areaName: "",
+            contextNames: [],
+            tagNames: [],
+            completedAt: null,
+            notionPageId: "page-1",
+            linked: false
+        }
+    });
+
+    assert.equal(result.ok, true);
+    const payload = JSON.parse(calls[1].options.payload);
+    assert.equal(
+        payload.properties["Vinculada a Task Engine"].checkbox,
+        false
     );
 
 });
