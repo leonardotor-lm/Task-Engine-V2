@@ -33,6 +33,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
         [
             "styles.css",
             "styles/themes/default.css",
+            "styles/theme-settings.css",
             "styles/attachments.css",
             "styles/waiting.css",
             "styles/task-interface.css",
