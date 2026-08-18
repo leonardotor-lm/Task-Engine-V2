@@ -13,6 +13,7 @@ Task Engine V2 cuenta con:
 - dominio y persistencia local de tareas, áreas, contextos, etiquetas, objetivos, recurrencias y actividad;
 - sincronización con Google Apps Script y Google Sheets, reconciliación automática, copias de seguridad y conservación de cambios locales ante fallos de red;
 - adjuntos en Google Drive;
+- notas externas vinculadas mediante Notion para tareas, proyectos y objetivos;
 - interfaz responsive y editores diferenciados para escritorio y celular;
 - Inbox, Hoy y atrasadas, Mañana, Próximas, Todas, En espera, Calendario, Actividad, Estadísticas, Completadas, Archivadas y Papelera;
 - fechas de inicio y vencimiento, hora y períodos para tareas no recurrentes;
@@ -154,9 +155,32 @@ La búsqueda avanzada admite `esProyecto:si/no` como alias semántico de `tieneS
 - la corrección mantiene los conflictos reales cuando existen cambios incompatibles de contenido;
 - el flujo quedó verificado manualmente: tras **Recuperar desde la nube**, los conflictos no reaparecen en sesiones posteriores si no hubo cambios independientes genuinos.
 
+### Notion como base externa de notas — PR #240 a #247
+
+- cada instalación conecta su propia integración de Notion mediante Apps Script y mantiene el token exclusivamente en Script Properties;
+- Configuración permite verificar de forma segura el acceso al `data_source_id` elegido;
+- tareas, proyectos y objetivos pueden crear, abrir y desvincular páginas de Notion;
+- Task Engine conserva únicamente el ID y la URL de la página; el contenido se edita en Notion;
+- las páginas reflejan tipo, estado, identificador de Task Engine, metadatos aplicables, fecha de finalización y última actualización;
+- finalizar, archivar, eliminar o desvincular una entidad nunca borra automáticamente su página de Notion;
+- las actualizaciones fallidas se guardan en una cola persistente y se reintentan al iniciar, recuperar conectividad, foco o visibilidad;
+- Configuración muestra el estado de sincronización de notas, pendientes y último error sin exponer credenciales;
+- las colas de reintento están aisladas por instalación/endpoint para impedir cruces entre usuarios;
+- la interfaz móvil de Notas quedó revisada y verificada para crear, abrir y desvincular páginas sin desbordes.
+
+Con este bloque se completa el alcance del issue #212: conexión/configuración, vinculación de páginas, actualización de estados y reintentos, aislamiento entre instalaciones y revisión móvil.
+
 ## Etapa operativa actual
 
-Los bloques de eficiencia avanzada sin ruido visual —atajos de acción, orden manual por arrastre y estabilización de recuperación de sync— están cerrados y verificados. La propiedad local conserva el nombre **Descripción** para distinguirla de las futuras notas vinculadas de Notion. La próxima prioridad aprobada es la integración de Notion como base externa de notas, según `PENDIENTES.md` y el issue #212.
+Los bloques funcionales aprobados registrados en el backlog quedaron cerrados y verificados. `docs/roadmap/PENDIENTES.md` no contiene actualmente una nueva prioridad funcional aprobada.
+
+Quedan separados del backlog activo:
+
+- una propuesta de diagnóstico más detallado para la sincronización general de Google Sheets;
+- temas visuales intercambiables, deliberadamente postergados;
+- ideas todavía no aprobadas, como notificaciones del sistema o una función multiusuario compartida.
+
+La propiedad local conserva el nombre **Descripción** para distinguirla de las páginas vinculadas de Notion.
 
 ## Fases históricas
 
