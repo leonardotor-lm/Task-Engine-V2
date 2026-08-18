@@ -32,8 +32,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
         hrefs,
         [
             "styles.css",
-            "attachments.css",
-            "waiting.css",
+            "styles/attachments.css",
+            "styles/waiting.css",
             "styles/task-interface.css",
             "styles/mobile-filter-selects.css",
             "styles/manual-task-order.css",
