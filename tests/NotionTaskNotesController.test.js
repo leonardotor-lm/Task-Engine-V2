@@ -54,7 +54,8 @@ test("prepara para Notion los metadatos visibles de la tarea", () => {
             "Literatura",
             "Planificación"
         ],
-        completedAt: null
+        completedAt: null,
+        linked: true
     });
 
 });
