@@ -3,6 +3,17 @@ import {
     isValidGoalStatus
 } from "./GoalStatus.js";
 
+function normalizeOptionalString(value) {
+
+    if (value === null || value === undefined) {
+        return null;
+    }
+
+    const normalized = String(value).trim();
+    return normalized || null;
+
+}
+
 export class Goal {
 
     constructor(data = {}) {
@@ -22,6 +33,10 @@ export class Goal {
         this.status = data.status ?? GoalStatus.ACTIVE;
         this.statusBeforeDelete =
             data.statusBeforeDelete ?? null;
+        this.notionPageId =
+            normalizeOptionalString(data.notionPageId);
+        this.notionPageUrl =
+            normalizeOptionalString(data.notionPageUrl);
 
         if (!isValidGoalStatus(this.status)) {
             throw new Error(
@@ -124,6 +139,16 @@ export class Goal {
             this.validateDueDate(data.dueDate);
             this.dueDate = data.dueDate;
 
+        }
+
+        if (data.notionPageId !== undefined) {
+            this.notionPageId =
+                normalizeOptionalString(data.notionPageId);
+        }
+
+        if (data.notionPageUrl !== undefined) {
+            this.notionPageUrl =
+                normalizeOptionalString(data.notionPageUrl);
         }
 
         this.touch();
@@ -234,6 +259,8 @@ export class Goal {
                 this.statusBeforeDelete,
             parentGoalId: this.parentGoalId,
             dueDate: this.dueDate,
+            notionPageId: this.notionPageId,
+            notionPageUrl: this.notionPageUrl,
             version: this.version,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
