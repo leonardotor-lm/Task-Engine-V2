@@ -77,21 +77,6 @@ export class SyncOptionalDataBridge {
             );
         }
 
-        const allowedKeys = new Set([
-            "sidebarTitle",
-            "theme"
-        ]);
-
-        for (const key of Object.keys(preferences)) {
-
-            if (!allowedKeys.has(key)) {
-                throw new Error(
-                    "La copia contiene una preferencia de visualización desconocida."
-                );
-            }
-
-        }
-
         if (
             hasOwn(preferences, "sidebarTitle") &&
             (
