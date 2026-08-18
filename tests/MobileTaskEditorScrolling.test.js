@@ -13,7 +13,7 @@ test("el editor móvil conserva scroll vertical, guardado sticky y En espera pla
         "utf8"
     );
     const waitingStyles = await readFile(
-        new URL("../waiting.css", import.meta.url),
+        new URL("../styles/waiting.css", import.meta.url),
         "utf8"
     );
     const controller = await readFile(
