@@ -283,6 +283,34 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
 
 });
 
+test("ignora preferencias visuales desconocidas de versiones futuras", () => {
+
+    const {
+        backupService,
+        taskDisplayPreferences
+    } = setup();
+
+    backupService.importBackup(
+        createBackupData({
+            displayPreferences: {
+                sidebarTitle: "Trabajo",
+                theme: "default",
+                futureVisualPreference: true
+            }
+        })
+    );
+
+    assert.equal(
+        taskDisplayPreferences.getSidebarTitle(),
+        "Trabajo"
+    );
+    assert.equal(
+        taskDisplayPreferences.getTheme(),
+        "default"
+    );
+
+});
+
 test("rechaza preferencias de orden remotas inválidas", () => {
 
     const { backupService } = setup();
