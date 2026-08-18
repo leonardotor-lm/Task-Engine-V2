@@ -64,6 +64,10 @@ test("el diagnóstico de esquema identifica propiedades faltantes y tipos incorr
                 error.publicMessage,
                 /Estado: falta la propiedad/
             );
+            assert.match(
+                error.publicMessage,
+                /Vinculada a Task Engine: falta la propiedad/
+            );
             return true;
         }
     );
@@ -98,6 +102,9 @@ test("detecta la propiedad de título aunque Notion use otro nombre visible", ()
                 },
                 "Última actualización desde Task Engine": {
                     type: "date"
+                },
+                "Vinculada a Task Engine": {
+                    type: "checkbox"
                 }
             }
         });
