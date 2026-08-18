@@ -162,9 +162,13 @@ export class ThemeController {
         select.addEventListener(
             "change",
             event => {
+
                 preferences.setTheme(
                     event.target.value
                 );
+
+                this.app?.render?.();
+
             }
         );
 
