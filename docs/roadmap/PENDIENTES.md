@@ -14,15 +14,24 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-No hay en este momento un bloque funcional aprobado y pendiente de implementación.
+### Temas visuales intercambiables
 
-La integración de Notion, que era la prioridad anterior, quedó completada en las PR #240 a #247 y se registra como cerrada en `ROADMAP.md`.
-
-Antes de iniciar una nueva función grande debe elegirse explícitamente una de las propuestas o ideas registradas más abajo, o incorporarse una necesidad nueva al backlog.
+- **Estado:** En desarrollo; seguimiento en issue #250.
+- Incorporar temas intercambiables sin alterar el dominio ni duplicar componentes.
+- Mantener diferencias visuales claras entre área, contexto, etiqueta, prioridad y recurrencia.
+- Preservar una interfaz compacta y sobria.
+- Usar variables CSS semánticas como contrato entre componentes y temas.
+- Migrar `styles.css` de manera gradual, sin reescrituras masivas.
+- Primera etapa: introducir una capa explícita para el tema predeterminado y un selector `data-theme` sin cambiar la apariencia actual.
+- Segunda etapa: persistir la preferencia de tema y exponerla en Configuración.
+- Los temas alternativos concretos se definirán antes de incorporarlos.
 
 ## Backlog aprobado
 
-No hay pendientes funcionales aprobados activos.
+### 1. Temas visuales intercambiables
+
+- **Estado:** En desarrollo; seguimiento en issue #250.
+- Completar la infraestructura de temas y luego incorporar las variantes visuales que se acuerden.
 
 Los bloques históricos que figuraron en este documento —adjuntos, tareas en espera, fecha de inicio, calendario, objetivos y proyectos, duplicación de jerarquías, filtros y orden, atajos, orden manual, recuperación de sincronización e integración de Notion— ya están implementados y no deben volver a tratarse como pendientes salvo que aparezca un defecto concreto.
 
@@ -38,16 +47,6 @@ Los bloques históricos que figuraron en este documento —adjuntos, tareas en e
 - No exponer el token ni la URL completa del backend.
 
 La aplicación ya conserva cambios locales, reanuda la sincronización al recuperar conectividad y dispone de diagnóstico específico para las actualizaciones pendientes de Notion. Esta propuesta sólo debe convertirse en pendiente aprobado si se decide que el diagnóstico general actual de Sheets necesita más detalle.
-
-## Trabajo postergado
-
-### Temas visuales
-
-- **Estado:** Postergado.
-- Incorporar temas intercambiables sin alterar el dominio ni duplicar componentes.
-- Mantener diferencias visuales claras entre área, contexto, etiqueta, prioridad y recurrencia.
-- Preservar una interfaz compacta y sobria.
-- Continuar usando variables CSS semánticas para no bloquear una implementación futura.
 
 ## Ideas que no integran el backlog
 
