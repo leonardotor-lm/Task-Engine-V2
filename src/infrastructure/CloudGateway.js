@@ -276,4 +276,31 @@ export class CloudGateway {
 
     }
 
+    updateNotionTaskPage({
+        url,
+        token,
+        pageId,
+        task
+    }) {
+
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "updateNotionTaskPage",
+                    token,
+                    pageId,
+                    task
+                })
+            }
+        );
+
+    }
+
 }
