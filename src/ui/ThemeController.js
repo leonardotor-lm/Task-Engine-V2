@@ -22,6 +22,7 @@ export class ThemeController {
             MutationObserverRef;
         this.observer = null;
         this.unsubscribe = null;
+        this.settingsNavigationHandler = null;
 
     }
 
@@ -47,6 +48,7 @@ export class ThemeController {
             );
 
         this.renderControl();
+        this.bindSettingsNavigation();
 
         const appRoot =
             this.document.getElementById?.("app");
@@ -68,6 +70,37 @@ export class ThemeController {
             });
 
         }
+
+    }
+
+    bindSettingsNavigation() {
+
+        if (
+            this.settingsNavigationHandler ||
+            typeof this.document.addEventListener !==
+                "function"
+        ) {
+            return;
+        }
+
+        this.settingsNavigationHandler = event => {
+
+            const button = event.target?.closest?.(
+                '.openSettingsSection[data-section="application"]'
+            );
+
+            if (!button) return;
+
+            queueMicrotask(() => {
+                this.renderControl();
+            });
+
+        };
+
+        this.document.addEventListener(
+            "click",
+            this.settingsNavigationHandler
+        );
 
     }
 
@@ -162,13 +195,10 @@ export class ThemeController {
         select.addEventListener(
             "change",
             event => {
-
                 preferences.setTheme(
                     event.target.value
                 );
-
                 this.app?.render?.();
-
             }
         );
 
