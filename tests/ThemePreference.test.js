@@ -48,10 +48,7 @@ test("el controlador aplica el tema persistido al documento", () => {
             taskDisplayPreferences:
                 preferences
         },
-        {
-            documentRef,
-            MutationObserverRef: null
-        }
+        { documentRef }
     );
 
     controller.start();
@@ -89,6 +86,14 @@ test("el selector de Configuración usa la preferencia de tema", async () => {
     assert.match(
         source,
         /\.applicationTools/
+    );
+    assert.match(
+        source,
+        /this\.app\.render = \(\.\.\.args\) =>/
+    );
+    assert.match(
+        source,
+        /this\.renderControl\(\);/
     );
 
 });
