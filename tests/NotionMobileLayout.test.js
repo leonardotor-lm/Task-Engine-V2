@@ -35,6 +35,24 @@ test("las notas de Notion conservan controles táctiles en móvil", async () => 
 
 });
 
+test("al abrir Notas en móvil se muestra su contenido", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/goal-workspace.css"),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /\.editorNotionSection\[open\]\s*>\s*\.editorSectionBody[\s\S]*?display:\s*block\s*!important/
+    );
+    assert.match(
+        styles,
+        /\.editorNotionGoalSection\[open\]\s*>\s*\.editorSectionBody[\s\S]*?display:\s*block\s*!important/
+    );
+
+});
+
 test("tareas y objetivos mantienen la sección Notas colapsable en móvil", async () => {
 
     const [taskController, goalController] = await Promise.all([
