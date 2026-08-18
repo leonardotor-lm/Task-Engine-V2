@@ -94,6 +94,35 @@ function request(context, body) {
     return JSON.parse(response.getContent());
 }
 
+function notionSchema() {
+
+    return {
+        "Nombre": { type: "title" },
+        "Tipo": { type: "select" },
+        "Estado": { type: "select" },
+        "Task Engine ID": {
+            type: "rich_text"
+        },
+        "Área": { type: "select" },
+        "Contextos": {
+            type: "multi_select"
+        },
+        "Etiquetas": {
+            type: "multi_select"
+        },
+        "Fecha de finalización": {
+            type: "date"
+        },
+        "Última actualización desde Task Engine": {
+            type: "date"
+        },
+        "Vinculada a Task Engine": {
+            type: "checkbox"
+        }
+    };
+
+}
+
 test("notionStatus informa configuración sin exponer el token", () => {
 
     const properties = new Map([
@@ -200,6 +229,276 @@ test("notionStatus conserva la autorización de Task Engine", () => {
     assert.equal(
         result.error.code,
         "UNAUTHORIZED"
+    );
+
+});
+
+test("createNotionTaskPage crea la página con el esquema acordado", () => {
+
+    const properties = new Map([
+        ["TASK_ENGINE_TOKEN", "sync-token"],
+        ["TASK_ENGINE_NOTION_TOKEN", "notion-secret"],
+        [
+            "TASK_ENGINE_NOTION_DATA_SOURCE_ID",
+            "data-source-1"
+        ]
+    ]);
+    const calls = [];
+
+    const backend = loadBackend({
+        properties,
+        fetchNotion: (url, options) => {
+            calls.push({ url, options });
+
+            if (url.endsWith(
+                "/data_sources/data-source-1"
+            )) {
+                return {
+                    getResponseCode: () => 200,
+                    getContentText: () =>
+                        JSON.stringify({
+                            object: "data_source",
+                            id: "data-source-1",
+                            title: [
+                                {
+                                    plain_text:
+                                        "Notas Task Engine"
+                                }
+                            ],
+                            properties:
+                                notionSchema()
+                        })
+                };
+            }
+
+            return {
+                getResponseCode: () => 200,
+                getContentText: () =>
+                    JSON.stringify({
+                        object: "page",
+                        id: "page-1",
+                        url:
+                            "https://www.notion.so/page-1"
+                    })
+            };
+        }
+    });
+
+    const result = request(backend, {
+        action: "createNotionTaskPage",
+        token: "sync-token",
+        task: {
+            id: "task-1",
+            title: "Preparar clase",
+            status: "PENDING",
+            isProject: false,
+            areaName: "Trabajo",
+            contextNames: ["PC"],
+            tagNames: [
+                "Literatura",
+                "Planificación"
+            ],
+            completedAt: null
+        }
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.pageId, "page-1");
+    assert.equal(calls.length, 2);
+
+    const createCall = calls[1];
+    const payload = JSON.parse(
+        createCall.options.payload
+    );
+
+    assert.match(
+        createCall.url,
+        /\/pages$/
+    );
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(payload.parent)),
+        {
+            type: "data_source_id",
+            data_source_id: "data-source-1"
+        }
+    );
+    assert.equal(
+        payload.properties.Nombre
+            .title[0].text.content,
+        "Preparar clase"
+    );
+    assert.equal(
+        payload.properties.Tipo.select.name,
+        "Tarea"
+    );
+    assert.equal(
+        payload.properties.Estado.select.name,
+        "Activa"
+    );
+    assert.equal(
+        payload.properties["Task Engine ID"]
+            .rich_text[0].text.content,
+        "task-1"
+    );
+    assert.equal(
+        payload.properties["Área"]
+            .select.name,
+        "Trabajo"
+    );
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(
+            payload.properties.Contextos
+                .multi_select
+        )),
+        [{ name: "PC" }]
+    );
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(
+            payload.properties.Etiquetas
+                .multi_select
+        )),
+        [
+            { name: "Literatura" },
+            { name: "Planificación" }
+        ]
+    );
+    assert.equal(
+        payload.properties["Vinculada a Task Engine"]
+            .checkbox,
+        true
+    );
+    assert.equal(
+        createCall.options.headers.Authorization,
+        "Bearer notion-secret"
+    );
+
+});
+
+test("createNotionTaskPage identifica proyectos y estados finales", () => {
+
+    const properties = new Map([
+        ["TASK_ENGINE_TOKEN", "sync-token"],
+        ["TASK_ENGINE_NOTION_TOKEN", "notion-secret"],
+        [
+            "TASK_ENGINE_NOTION_DATA_SOURCE_ID",
+            "data-source-1"
+        ]
+    ]);
+    let createdPayload = null;
+
+    const backend = loadBackend({
+        properties,
+        fetchNotion: (url, options) => {
+
+            if (url.includes("/data_sources/")) {
+                return {
+                    getResponseCode: () => 200,
+                    getContentText: () =>
+                        JSON.stringify({
+                            object: "data_source",
+                            id: "data-source-1",
+                            title: [],
+                            properties:
+                                notionSchema()
+                        })
+                };
+            }
+
+            createdPayload = JSON.parse(
+                options.payload
+            );
+
+            return {
+                getResponseCode: () => 200,
+                getContentText: () =>
+                    JSON.stringify({
+                        object: "page",
+                        id: "page-project",
+                        url:
+                            "https://www.notion.so/page-project"
+                    })
+            };
+        }
+    });
+
+    const result = request(backend, {
+        action: "createNotionTaskPage",
+        token: "sync-token",
+        task: {
+            id: "project-1",
+            title: "Proyecto escolar",
+            status: "COMPLETED",
+            isProject: true,
+            areaName: "Trabajo",
+            contextNames: [],
+            tagNames: [],
+            completedAt:
+                "2026-08-17T20:00:00.000Z"
+        }
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(
+        createdPayload.properties.Tipo
+            .select.name,
+        "Proyecto"
+    );
+    assert.equal(
+        createdPayload.properties.Estado
+            .select.name,
+        "Finalizada"
+    );
+    assert.equal(
+        createdPayload.properties[
+            "Fecha de finalización"
+        ].date.start,
+        "2026-08-17T20:00:00.000Z"
+    );
+
+});
+
+test("createNotionTaskPage rechaza una base con esquema distinto", () => {
+
+    const properties = new Map([
+        ["TASK_ENGINE_TOKEN", "sync-token"],
+        ["TASK_ENGINE_NOTION_TOKEN", "notion-secret"],
+        [
+            "TASK_ENGINE_NOTION_DATA_SOURCE_ID",
+            "data-source-1"
+        ]
+    ]);
+
+    const backend = loadBackend({
+        properties,
+        fetchNotion: () => ({
+            getResponseCode: () => 200,
+            getContentText: () =>
+                JSON.stringify({
+                    object: "data_source",
+                    id: "data-source-1",
+                    title: [],
+                    properties: {
+                        "Título": {
+                            type: "title"
+                        }
+                    }
+                })
+        })
+    });
+
+    const result = request(backend, {
+        action: "createNotionTaskPage",
+        token: "sync-token",
+        task: {
+            id: "task-1",
+            title: "Preparar clase"
+        }
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(
+        result.error.code,
+        "NOTION_SCHEMA_MISMATCH"
     );
 
 });
