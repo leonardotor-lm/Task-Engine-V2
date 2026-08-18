@@ -17,7 +17,7 @@ export class ThemeController {
         this.app = app;
         this.document = documentRef;
         this.unsubscribe = null;
-        this.originalRender = null;
+        this.originalMainViewRender = null;
 
     }
 
@@ -41,27 +41,29 @@ export class ThemeController {
                 }
             );
 
-        this.wrapAppRender();
+        this.wrapMainViewRender();
         this.renderControl();
 
     }
 
-    wrapAppRender() {
+    wrapMainViewRender() {
+
+        const mainView = this.app?.mainView;
 
         if (
-            this.originalRender ||
-            typeof this.app?.render !== "function"
+            this.originalMainViewRender ||
+            typeof mainView?.render !== "function"
         ) {
             return;
         }
 
-        this.originalRender =
-            this.app.render.bind(this.app);
+        this.originalMainViewRender =
+            mainView.render.bind(mainView);
 
-        this.app.render = (...args) => {
+        mainView.render = (...args) => {
 
             const result =
-                this.originalRender(...args);
+                this.originalMainViewRender(...args);
 
             this.renderControl();
 
