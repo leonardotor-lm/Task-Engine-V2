@@ -96,15 +96,11 @@ export class CloudGateway {
 
         if (!response.ok || payload?.ok === false) {
 
-            const code =
-                payload?.error?.code ??
-                payload?.code;
-
+            const code = payload?.error?.code ?? payload?.code;
             const message =
                 payload?.error?.message ??
                 payload?.message ??
                 "La sincronización fue rechazada.";
-
             const remoteRevision =
                 payload?.error?.remoteRevision ??
                 payload?.remoteRevision ??
@@ -126,39 +122,26 @@ export class CloudGateway {
     }
 
     load({ url, token }) {
-
         return this.request(
             this.buildUrl(url),
             {
                 method: "POST",
                 cache: "no-store",
                 headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
-                body: JSON.stringify({
-                    action: "load",
-                    token
-                })
+                body: JSON.stringify({ action: "load", token })
             }
         );
-
     }
 
-    save({
-        url,
-        token,
-        baseRevision,
-        data
-    }) {
-
+    save({ url, token, baseRevision, data }) {
         return this.request(
             this.buildUrl(url),
             {
                 method: "POST",
                 headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({
                     action: "save",
@@ -168,52 +151,32 @@ export class CloudGateway {
                 })
             }
         );
-
     }
 
-    uploadAttachment({
-        url,
-        token,
-        name,
-        mimeType,
-        base64Data
-    }) {
-
+    uploadAttachment({ url, token, name, mimeType, base64Data }) {
         return this.request(
             this.buildUrl(url),
             {
                 method: "POST",
                 headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({
                     action: "uploadAttachment",
                     token,
-                    attachment: {
-                        name,
-                        mimeType,
-                        base64Data
-                    }
+                    attachment: { name, mimeType, base64Data }
                 })
             }
         );
-
     }
 
-    trashAttachment({
-        url,
-        token,
-        driveFileId
-    }) {
-
+    trashAttachment({ url, token, driveFileId }) {
         return this.request(
             this.buildUrl(url),
             {
                 method: "POST",
                 headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({
                     action: "trashAttachment",
@@ -222,49 +185,34 @@ export class CloudGateway {
                 })
             }
         );
-
     }
 
-    notionStatus({
-        url,
-        token,
-        validateRemote = false
-    }) {
-
+    notionStatus({ url, token, validateRemote = false }) {
         return this.request(
             this.buildUrl(url),
             {
                 method: "POST",
                 cache: "no-store",
                 headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({
                     action: "notionStatus",
                     token,
-                    validateRemote:
-                        validateRemote === true
+                    validateRemote: validateRemote === true
                 })
             }
         );
-
     }
 
-    createNotionTaskPage({
-        url,
-        token,
-        task
-    }) {
-
+    createNotionTaskPage({ url, token, task }) {
         return this.request(
             this.buildUrl(url),
             {
                 method: "POST",
                 cache: "no-store",
                 headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({
                     action: "createNotionTaskPage",
@@ -273,7 +221,6 @@ export class CloudGateway {
                 })
             }
         );
-
     }
 
     updateNotionTaskPage({
@@ -282,25 +229,14 @@ export class CloudGateway {
         pageId,
         task
     }) {
-
-        return this.request(
-            this.buildUrl(url),
-            {
-                method: "POST",
-                cache: "no-store",
-                headers: {
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
-                },
-                body: JSON.stringify({
-                    action: "updateNotionTaskPage",
-                    token,
-                    pageId,
-                    task
-                })
+        return this.createNotionTaskPage({
+            url,
+            token,
+            task: {
+                ...task,
+                notionPageId: pageId
             }
-        );
-
+        });
     }
 
 }
