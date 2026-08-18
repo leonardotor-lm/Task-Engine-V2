@@ -34,12 +34,6 @@ test("el controlador aplica el tema persistido al documento", () => {
     const documentRef = {
         documentElement: {
             dataset: {}
-        },
-        getElementById() {
-            return null;
-        },
-        querySelector() {
-            return null;
         }
     };
 
@@ -61,26 +55,32 @@ test("el controlador aplica el tema persistido al documento", () => {
 
 });
 
-test("monta Apariencia inmediatamente después del render real de MainView", () => {
+test("Apariencia forma parte del HTML que devuelve Sidebar", () => {
 
     const preferences =
         new TaskDisplayPreferences(
             new MemoryStorage()
         );
-    let mainViewRendered = false;
-    let insertedControl = null;
+    let changeHandler = null;
 
-    const select = {
-        value: "",
-        addEventListener() {}
+    const sidebar = {
+        render() {
+            return `
+                <section class="applicationTools settingsToolPanel">
+                    <div class="applicationInstallTools">
+                        <h3>Instalación</h3>
+                    </div>
+                </section>
+            `;
+        }
     };
 
-    const applicationTools = {
-        querySelector() {
-            return null;
-        },
-        insertBefore(control) {
-            insertedControl = control;
+    const app = {
+        taskDisplayPreferences: preferences,
+        mainView: { sidebar },
+        renderCalls: 0,
+        render() {
+            this.renderCalls += 1;
         }
     };
 
@@ -88,72 +88,44 @@ test("monta Apariencia inmediatamente después del render real de MainView", () 
         documentElement: {
             dataset: {}
         },
-        getElementById() {
-            return null;
-        },
-        querySelector(selector) {
-            if (
-                selector === ".applicationTools" &&
-                mainViewRendered
-            ) {
-                return applicationTools;
+        addEventListener(type, handler) {
+            if (type === "change") {
+                changeHandler = handler;
             }
-
-            return null;
-        },
-        createElement() {
-            return {
-                id: "",
-                className: "",
-                innerHTML: "",
-                querySelector(selector) {
-                    return selector ===
-                        "#applicationTheme"
-                        ? select
-                        : null;
-                }
-            };
-        }
-    };
-
-    const mainView = {
-        render() {
-            mainViewRendered = true;
         }
     };
 
     const controller = new ThemeController(
-        {
-            taskDisplayPreferences:
-                preferences,
-            mainView
-        },
+        app,
         { documentRef }
     );
 
     controller.start();
 
-    assert.equal(insertedControl, null);
+    const html = sidebar.render();
 
-    mainView.render({});
+    assert.match(html, /themePreferenceControl/);
+    assert.match(html, /Apariencia/);
+    assert.match(html, /Tema visual/);
+    assert.match(html, /value="default"/);
+    assert.match(html, /selected/);
+    assert.ok(
+        html.indexOf("Apariencia") <
+        html.indexOf("Instalación")
+    );
+
+    changeHandler({
+        target: {
+            id: "applicationTheme",
+            value: "default"
+        }
+    });
 
     assert.equal(
-        insertedControl?.id,
-        "themePreferenceControl"
+        preferences.getTheme(),
+        "default"
     );
-    assert.equal(
-        insertedControl?.className,
-        "applicationThemeTools"
-    );
-    assert.match(
-        insertedControl?.innerHTML ?? "",
-        /Apariencia/
-    );
-    assert.match(
-        insertedControl?.innerHTML ?? "",
-        /Tema visual/
-    );
-    assert.equal(select.value, "default");
+    assert.equal(app.renderCalls, 1);
 
 });
 
