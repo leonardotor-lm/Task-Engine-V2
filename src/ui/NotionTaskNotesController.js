@@ -248,16 +248,6 @@ export class NotionTaskNotesController {
             return;
         }
 
-        const notionWindow =
-            this.window?.open?.(
-                "about:blank",
-                "_blank"
-            ) ?? null;
-
-        if (notionWindow) {
-            notionWindow.opener = null;
-        }
-
         this.creatingTaskId = taskId;
         this.clearError();
         this.app.render();
@@ -291,22 +281,13 @@ export class NotionTaskNotesController {
             this.app.selectedTask = updated;
             this.clearError();
 
-            if (notionWindow && !notionWindow.closed) {
-                notionWindow.location.href =
-                    result.pageUrl;
-            } else {
-                this.window?.open?.(
-                    result.pageUrl,
-                    "_blank",
-                    "noopener,noreferrer"
-                );
-            }
+            this.window?.open?.(
+                result.pageUrl,
+                "_blank",
+                "noopener,noreferrer"
+            );
 
         } catch (error) {
-
-            if (notionWindow && !notionWindow.closed) {
-                notionWindow.close?.();
-            }
 
             this.setError(
                 taskId,
