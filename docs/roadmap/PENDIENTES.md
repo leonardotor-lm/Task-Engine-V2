@@ -22,9 +22,11 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 - Preservar una interfaz compacta y sobria.
 - Usar variables CSS semánticas como contrato entre componentes y temas.
 - Migrar `styles.css` de manera gradual, sin reescrituras masivas.
-- Primera etapa: introducir una capa explícita para el tema predeterminado y un selector `data-theme` sin cambiar la apariencia actual.
-- Segunda etapa: persistir la preferencia de tema y exponerla en Configuración.
-- Los temas alternativos concretos se definirán antes de incorporarlos.
+- Primera etapa: **completada**; existe una capa explícita para el tema predeterminado y un selector `data-theme` sin cambiar la apariencia actual.
+- Segunda etapa: **en desarrollo**; persistir la preferencia de tema, sincronizarla con las preferencias opcionales y exponerla en Configuración.
+- Tercera etapa: definir e incorporar los temas alternativos concretos.
+- Cuarta etapa: migrar gradualmente los colores concretos restantes a tokens semánticos.
+- Quinta etapa: verificar escritorio, celular y PWA para cada tema.
 
 ## Backlog aprobado
 
