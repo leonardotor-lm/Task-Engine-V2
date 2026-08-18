@@ -141,7 +141,8 @@ test("incluye las preferencias de orden en las copias nuevas", () => {
     assert.deepEqual(
         backup.data.displayPreferences,
         {
-            sidebarTitle: "Tareas de Leo"
+            sidebarTitle: "Tareas de Leo",
+            theme: "default"
         }
     );
 
@@ -178,6 +179,10 @@ test("una copia antigua conserva filtros y órdenes locales", () => {
         taskDisplayPreferences.getSidebarTitle(),
         "Tareas de Leo"
     );
+    assert.equal(
+        taskDisplayPreferences.getTheme(),
+        "default"
+    );
 
 });
 
@@ -211,6 +216,10 @@ test("colecciones presentes y vacías eliminan datos de forma intencional", () =
         taskDisplayPreferences.getSidebarTitle(),
         ""
     );
+    assert.equal(
+        taskDisplayPreferences.getTheme(),
+        "default"
+    );
 
 });
 
@@ -239,7 +248,8 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
                     TaskSort.DUE_DATE
             },
             displayPreferences: {
-                sidebarTitle: "Trabajo"
+                sidebarTitle: "Trabajo",
+                theme: "default"
             }
         })
     );
@@ -265,6 +275,10 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
     assert.equal(
         taskDisplayPreferences.getSidebarTitle(),
         "Trabajo"
+    );
+    assert.equal(
+        taskDisplayPreferences.getTheme(),
+        "default"
     );
 
 });
@@ -300,6 +314,23 @@ test("rechaza títulos laterales remotos inválidos", () => {
             })
         ),
         /título lateral inválido/
+    );
+
+});
+
+test("rechaza temas visuales remotos inválidos", () => {
+
+    const { backupService } = setup();
+
+    assert.throws(
+        () => backupService.importBackup(
+            createBackupData({
+                displayPreferences: {
+                    theme: "unknown"
+                }
+            })
+        ),
+        /tema visual inválido/
     );
 
 });
