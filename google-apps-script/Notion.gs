@@ -14,7 +14,8 @@ var TASK_ENGINE_NOTION_PROPERTIES = Object.freeze({
     CONTEXTS: "Contextos",
     TAGS: "Etiquetas",
     COMPLETED_AT: "Fecha de finalización",
-    UPDATED_AT: "Última actualización desde Task Engine"
+    UPDATED_AT: "Última actualización desde Task Engine",
+    LINKED: "Vinculada a Task Engine"
 });
 
 function setupNotion() {
@@ -322,6 +323,9 @@ function buildNotionTaskProperties_(task, titleName) {
             start: new Date().toISOString()
         }
     };
+    properties[TASK_ENGINE_NOTION_PROPERTIES.LINKED] = {
+        checkbox: task.linked !== false
+    };
 
     return properties;
 
@@ -352,7 +356,8 @@ function normalizeNotionTaskData_(taskData) {
         tagNames: normalizeNotionNames_(task.tagNames),
         completedAt: task.completedAt
             ? String(task.completedAt)
-            : null
+            : null,
+        linked: task.linked !== false
     };
 
 }
@@ -429,6 +434,7 @@ function validateNotionDataSourceSchema_(dataSource) {
     expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.TAGS] = "multi_select";
     expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.COMPLETED_AT] = "date";
     expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.UPDATED_AT] = "date";
+    expectedTypes[TASK_ENGINE_NOTION_PROPERTIES.LINKED] = "checkbox";
 
     Object.keys(expectedTypes).forEach(function(name) {
 
@@ -474,7 +480,8 @@ function notionPropertyTypeLabel_(type) {
         select: "Selección",
         rich_text: "Texto",
         multi_select: "Selección múltiple",
-        date: "Fecha"
+        date: "Fecha",
+        checkbox: "Casilla"
     };
 
     return labels[type] || String(type || "desconocido");
