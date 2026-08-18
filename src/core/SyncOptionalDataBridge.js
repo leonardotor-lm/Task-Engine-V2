@@ -7,6 +7,10 @@ const VALID_SORTS = new Set(
     Object.values(TaskSort)
 );
 
+const VALID_THEMES = new Set([
+    "default"
+]);
+
 function hasOwn(object, property) {
 
     return Object.prototype.hasOwnProperty.call(
@@ -74,7 +78,8 @@ export class SyncOptionalDataBridge {
         }
 
         const allowedKeys = new Set([
-            "sidebarTitle"
+            "sidebarTitle",
+            "theme"
         ]);
 
         for (const key of Object.keys(preferences)) {
@@ -101,12 +106,28 @@ export class SyncOptionalDataBridge {
             );
         }
 
+        if (
+            hasOwn(preferences, "theme") &&
+            !VALID_THEMES.has(preferences.theme)
+        ) {
+            throw new Error(
+                "La copia contiene un tema visual inválido."
+            );
+        }
+
+        const normalized = {};
         const sidebarTitle =
             preferences.sidebarTitle?.trim() ?? "";
 
-        return sidebarTitle
-            ? { sidebarTitle }
-            : {};
+        if (sidebarTitle) {
+            normalized.sidebarTitle = sidebarTitle;
+        }
+
+        if (hasOwn(preferences, "theme")) {
+            normalized.theme = preferences.theme;
+        }
+
+        return normalized;
 
     }
 
@@ -159,6 +180,8 @@ export class SyncOptionalDataBridge {
         backupService.createBackup = () => {
 
             const backup = originalCreateBackup();
+            const sidebarTitle =
+                displayPreferences.getSidebarTitle();
 
             return {
                 ...backup,
@@ -166,15 +189,13 @@ export class SyncOptionalDataBridge {
                     ...backup.data,
                     taskSortPreferences:
                         sortPreferences.getAll(),
-                    displayPreferences:
-                        displayPreferences
-                            .getSidebarTitle()
-                            ? {
-                                sidebarTitle:
-                                    displayPreferences
-                                        .getSidebarTitle()
-                            }
-                            : {}
+                    displayPreferences: {
+                        ...(sidebarTitle
+                            ? { sidebarTitle }
+                            : {}),
+                        theme:
+                            displayPreferences.getTheme()
+                    }
                 }
             };
 
@@ -295,6 +316,17 @@ export class SyncOptionalDataBridge {
                     data.displayPreferences
                         .sidebarTitle ?? ""
                 );
+
+                if (
+                    hasOwn(
+                        data.displayPreferences,
+                        "theme"
+                    )
+                ) {
+                    displayPreferences.setTheme(
+                        data.displayPreferences.theme
+                    );
+                }
             }
 
         };
