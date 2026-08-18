@@ -65,6 +65,18 @@ export class NotionSyncRetryController {
 
     }
 
+    getCurrentScope() {
+
+        if (!this.app?.syncConfig?.isConfigured?.()) {
+            return "";
+        }
+
+        return String(
+            this.app.syncConfig.get?.().url || ""
+        ).trim();
+
+    }
+
     wrapGatewayMethod(methodName, kind) {
 
         const gateway = this.app?.syncEngine?.gateway;
@@ -81,11 +93,17 @@ export class NotionSyncRetryController {
                 kind,
                 args
             );
+            const scope = String(
+                args?.url || this.getCurrentScope()
+            ).trim();
 
             try {
                 const result = await bound(args);
                 if (operation) {
-                    this.repository.remove(operation.key);
+                    this.repository.remove(
+                        operation.key,
+                        scope
+                    );
                     this.clearEntityError(operation);
                     this.publishState();
                 }
@@ -95,13 +113,13 @@ export class NotionSyncRetryController {
                     this.repository.upsert({
                         ...operation,
                         attempts: (
-                            this.repository.list().find(
+                            this.repository.list(scope).find(
                                 item => item.key === operation.key
                             )?.attempts ?? 0
                         ) + 1,
                         lastError: error?.message ||
                             "Error desconocido."
-                    });
+                    }, scope);
                     this.publishState();
                 }
                 throw error;
@@ -142,14 +160,16 @@ export class NotionSyncRetryController {
             return;
         }
 
-        const pending = this.repository.list();
+        const connection = this.app.syncConfig.get();
+        const scope = String(connection?.url || "").trim();
+        const pending = this.repository.list(scope);
+
         if (pending.length === 0) {
             this.publishState();
             return;
         }
 
         this.retrying = true;
-        const connection = this.app.syncConfig.get();
 
         try {
 
@@ -173,7 +193,10 @@ export class NotionSyncRetryController {
 
                 try {
                     await original(args);
-                    this.repository.remove(operation.key);
+                    this.repository.remove(
+                        operation.key,
+                        scope
+                    );
                     this.clearEntityError(operation);
                 } catch (error) {
                     this.repository.upsert({
@@ -183,7 +206,7 @@ export class NotionSyncRetryController {
                         ) + 1,
                         lastError: error?.message ||
                             "Error desconocido."
-                    });
+                    }, scope);
                 }
 
             }
@@ -229,7 +252,9 @@ export class NotionSyncRetryController {
 
     publishState() {
 
-        const pending = this.repository.list();
+        const pending = this.repository.list(
+            this.getCurrentScope()
+        );
         const state = {
             pendingCount: pending.length,
             lastError: pending
