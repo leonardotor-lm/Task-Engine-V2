@@ -10,7 +10,9 @@ export class NotionSyncRetryController {
             repository = null,
             storage = globalThis.localStorage,
             windowRef = globalThis.window,
-            documentRef = globalThis.document
+            documentRef = globalThis.document,
+            taskNotesController = null,
+            goalNotesController = null
         } = {}
     ) {
         this.app = app;
@@ -18,6 +20,8 @@ export class NotionSyncRetryController {
             new NotionSyncRetryRepository(storage);
         this.window = windowRef;
         this.document = documentRef;
+        this.taskNotesController = taskNotesController;
+        this.goalNotesController = goalNotesController;
         this.started = false;
         this.retrying = false;
         this.originalMethods = new Map();
@@ -82,6 +86,7 @@ export class NotionSyncRetryController {
                 const result = await bound(args);
                 if (operation) {
                     this.repository.remove(operation.key);
+                    this.clearEntityError(operation);
                     this.publishState();
                 }
                 return result;
@@ -169,6 +174,7 @@ export class NotionSyncRetryController {
                 try {
                     await original(args);
                     this.repository.remove(operation.key);
+                    this.clearEntityError(operation);
                 } catch (error) {
                     this.repository.upsert({
                         ...operation,
@@ -185,6 +191,38 @@ export class NotionSyncRetryController {
         } finally {
             this.retrying = false;
             this.publishState();
+        }
+
+    }
+
+    clearEntityError(operation) {
+
+        const controller = operation.kind === "goal"
+            ? this.goalNotesController
+            : this.taskNotesController;
+        const errorId = operation.kind === "goal"
+            ? controller?.errorGoalId
+            : controller?.errorTaskId;
+
+        if (
+            !controller ||
+            errorId !== operation.entityId ||
+            typeof controller.clearError !== "function"
+        ) {
+            return;
+        }
+
+        controller.clearError();
+
+        const selectedId = operation.kind === "goal"
+            ? this.app?.selectedGoal?.id
+            : this.app?.selectedTask?.id;
+
+        if (
+            selectedId === operation.entityId &&
+            typeof this.app?.render === "function"
+        ) {
+            this.app.render();
         }
 
     }
