@@ -156,7 +156,15 @@ const notionGoalNotesEventBridge =
         notionGoalNotesController
     );
 const notionSyncRetryController =
-    new NotionSyncRetryController(app);
+    new NotionSyncRetryController(
+        app,
+        {
+            taskNotesController:
+                notionTaskNotesController,
+            goalNotesController:
+                notionGoalNotesController
+        }
+    );
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
