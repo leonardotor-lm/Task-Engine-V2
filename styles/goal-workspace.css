@@ -122,6 +122,14 @@
         min-width: 0;
     }
 
+    .editorNotionSection[open] > .editorSectionBody,
+    .editorNotionGoalSection[open] > .editorSectionBody {
+        display: block !important;
+        width: 100%;
+        min-width: 0;
+        padding: 10px 11px 12px;
+    }
+
     .editorNotionSection .fieldHelp,
     .editorNotionGoalSection .fieldHelp,
     .editorNotionSection .syncErrorHint,
