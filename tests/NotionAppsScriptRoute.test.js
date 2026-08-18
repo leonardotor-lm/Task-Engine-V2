@@ -115,6 +115,9 @@ function notionSchema() {
         },
         "Última actualización desde Task Engine": {
             type: "date"
+        },
+        "Vinculada a Task Engine": {
+            type: "checkbox"
         }
     };
 
@@ -358,6 +361,11 @@ test("createNotionTaskPage crea la página con el esquema acordado", () => {
             { name: "Literatura" },
             { name: "Planificación" }
         ]
+    );
+    assert.equal(
+        payload.properties["Vinculada a Task Engine"]
+            .checkbox,
+        true
     );
     assert.equal(
         createCall.options.headers.Authorization,
