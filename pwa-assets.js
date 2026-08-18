@@ -118,6 +118,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/TaskSwipeController.js",
     "./src/ui/TaskToolbarController.js",
     "./src/ui/TaskToolbarLayoutController.js",
+    "./src/ui/ThemeController.js",
     "./src/ui/ViewRouter.js",
     "./src/ui/WaitingController.js",
     "./src/ui/escapeHtml.js",
@@ -132,6 +133,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/task-editor-popovers.css",
     "./styles/task-interface.css",
     "./styles/task-quick-actions.css",
+    "./styles/theme-settings.css",
     "./styles/themes/default.css",
     "./styles/waiting.css"
 ]);

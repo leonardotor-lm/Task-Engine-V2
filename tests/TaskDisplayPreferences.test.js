@@ -108,3 +108,39 @@ test("migra el nombre lateral de la primera versión", () => {
     );
 
 });
+
+test("usa y persiste el tema predeterminado", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.getTheme(),
+        "default"
+    );
+    assert.equal(
+        preferences.setTheme("default"),
+        "default"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "default"
+    );
+
+});
+
+test("rechaza temas visuales desconocidos", () => {
+
+    const preferences =
+        new TaskDisplayPreferences(
+            new MemoryStorage()
+        );
+
+    assert.throws(
+        () => preferences.setTheme("unknown"),
+        /tema visual seleccionado no es válido/
+    );
+
+});

@@ -1,0 +1,37 @@
+.applicationThemeTools {
+    display: grid;
+    gap: 7px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+}
+
+.applicationThemeTools h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.applicationThemeTools label {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+}
+
+.applicationThemeTools select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 38px;
+    padding: 7px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+.applicationThemeTools .settingsHint {
+    margin: 0;
+}
+
+@media (max-width: 760px) {
+    .applicationThemeTools select {
+        min-height: 44px;
+    }
+}
