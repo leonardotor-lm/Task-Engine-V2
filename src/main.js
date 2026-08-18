@@ -83,6 +83,9 @@ import {
 import {
     NotionTaskNotesController
 } from "./ui/NotionTaskNotesController.js";
+import {
+    NotionGoalNotesController
+} from "./ui/NotionGoalNotesController.js";
 
 const app = new App();
 const attachmentController =
@@ -139,6 +142,8 @@ const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
     new NotionTaskNotesController(app);
+const notionGoalNotesController =
+    new NotionGoalNotesController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -163,6 +168,7 @@ ongoingSyncReconciliationController
 pwaController.start();
 notionSettingsController.start();
 notionTaskNotesController.start();
+notionGoalNotesController.start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorLayoutController.start();
 accessibilityStateController.start();
