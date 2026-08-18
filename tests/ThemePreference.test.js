@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import {
     TaskDisplayPreferences
@@ -153,5 +154,23 @@ test("monta Apariencia inmediatamente después del render real de MainView", () 
         /Tema visual/
     );
     assert.equal(select.value, "default");
+
+});
+
+test("inicia el controlador de tema después de App", async () => {
+
+    const source = await readFile(
+        new URL("../src/main.js", import.meta.url),
+        "utf8"
+    );
+
+    const appStart = source.lastIndexOf("app.start();");
+    const themeStart = source.lastIndexOf(
+        "themeController.start();"
+    );
+
+    assert.ok(appStart >= 0);
+    assert.ok(themeStart >= 0);
+    assert.ok(themeStart > appStart);
 
 });
