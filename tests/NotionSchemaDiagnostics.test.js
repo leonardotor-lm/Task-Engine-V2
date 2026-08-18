@@ -11,7 +11,7 @@ const notionSource = readFileSync(
     "utf8"
 );
 
-test("el diagnóstico de esquema identifica propiedades faltantes y tipos incorrectos", () => {
+function loadNotion() {
 
     const context = {
         console,
@@ -31,11 +31,19 @@ test("el diagnóstico de esquema identifica propiedades faltantes y tipos incorr
     vm.createContext(context);
     vm.runInContext(notionSource, context);
 
+    return context;
+}
+
+test("el diagnóstico de esquema identifica propiedades faltantes y tipos incorrectos", () => {
+
+    const context = loadNotion();
+
     assert.throws(
         () => context
             .validateNotionDataSourceSchema_({
                 properties: {
                     Nombre: {
+                        id: "title",
                         type: "title"
                     },
                     Tipo: {
@@ -59,5 +67,24 @@ test("el diagnóstico de esquema identifica propiedades faltantes y tipos incorr
             return true;
         }
     );
+
+});
+
+test("detecta la propiedad de título aunque Notion use otro nombre visible", () => {
+
+    const context = loadNotion();
+    const name = context
+        .resolveNotionTitlePropertyName_({
+            properties: {
+                Name: {
+                    id: "title",
+                    name: "Name",
+                    type: "title"
+                },
+                Tipo: { type: "select" }
+            }
+        });
+
+    assert.equal(name, "Name");
 
 });
