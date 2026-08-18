@@ -2,7 +2,7 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 17 de agosto de 2026.
+Última actualización: 18 de agosto de 2026.
 
 ## Estados
 
@@ -14,76 +14,30 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Integrar Notion como base externa de notas
+No hay en este momento un bloque funcional aprobado y pendiente de implementación.
 
-- **Estado:** Pendiente aprobado; seguimiento en issue #212.
-- **Dificultad prevista:** Media o alta, dividida en etapas independientes.
-- Mantener Google Sheets como base principal de Task Engine.
-- Cada usuario conecta su propia cuenta y espacio de trabajo de Notion mediante su instalación y Apps Script independientes.
-- El token de Notion debe permanecer fuera del frontend y del repositorio.
-- Permitir elegir una base contenedora específica de Notion para las notas de Task Engine.
-- Las tareas y los objetivos/proyectos podrán crear, abrir y desvincular una página de Notion.
-- Task Engine conservará solamente el identificador y la URL de la página vinculada; el contenido se editará exclusivamente en Notion.
-- El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
-- Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
-- Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
+La integración de Notion, que era la prioridad anterior, quedó completada en las PR #240 a #247 y se registra como cerrada en `ROADMAP.md`.
+
+Antes de iniciar una nueva función grande debe elegirse explícitamente una de las propuestas o ideas registradas más abajo, o incorporarse una necesidad nueva al backlog.
 
 ## Backlog aprobado
 
-El orden de esta sección combina gravedad, riesgo para los datos, frecuencia de uso y conveniencia para una interfaz minimalista. Dentro de cada etapa, los puntos deben abordarse en la secuencia indicada salvo que una investigación revele una dependencia nueva.
+No hay pendientes funcionales aprobados activos.
 
-### Etapa 2 — Notas externas vinculadas
-
-#### 1. Integrar Notion como base externa de notas
-
-- **Estado:** Pendiente aprobado; seguimiento en issue #212.
-- **Dificultad prevista:** Media o alta, dividida en etapas independientes.
-- Mantener Google Sheets como base principal de Task Engine.
-- Cada usuario conecta su propia cuenta y espacio de trabajo de Notion mediante su instalación y Apps Script independientes.
-- El token de Notion debe permanecer fuera del frontend y del repositorio.
-- Permitir elegir una base contenedora específica de Notion para las notas de Task Engine.
-- Las tareas y los objetivos/proyectos podrán crear, abrir y desvincular una página de Notion.
-- Task Engine conservará solamente el identificador y la URL de la página vinculada; el contenido se editará exclusivamente en Notion.
-- El campo local de la tarea conserva el nombre **Descripción**. El concepto **Notas** queda reservado para las páginas vinculadas de Notion.
-- Reflejar en Notion el estado de la entidad vinculada —activa, finalizada, archivada o eliminada— sin borrar automáticamente la página.
-- Dividir la implementación en conexión/configuración, vinculación de páginas, actualización de estados y pruebas de aislamiento entre usuarios.
-
-## Implementado recientemente
-
-### Orden manual mediante arrastre
-
-- Disponible cuando está seleccionado **Orden manual** y no hay búsqueda, búsqueda avanzada, filtros ni selección múltiple activos.
-- Persiste el resultado en `manualOrder` y nunca modifica `parentTaskId`.
-- En vistas donde el padre está visible, conserva la restricción jerárquica y reordena sólo dentro del grupo correspondiente.
-- Cuando el padre no aparece en la vista, sus hijas participan del nivel visible de esa lista para evitar barreras invisibles con tareas sueltas, sin alterar la jerarquía real.
-- En celular utiliza un tirador explícito y el flujo quedó verificado manualmente, incluyendo movimientos hacia las posiciones 1 y 2.
-- Los proyectos abiertos disponen también de **Filtros rápidos** y **Orden**.
-
-### Recuperación y conflictos de sincronización
-
-- La recuperación desde la nube registra como nueva base sincronizada el estado efectivamente importado.
-- Los conflictos asociados sólo a cambios de `manualOrder` se reconcilian de forma conservadora cuando el contenido real cambió únicamente en uno de los lados.
-- Una recuperación manual exitosa limpia diagnósticos de conflicto obsoletos y renueva la base de sincronización.
-- El flujo quedó verificado manualmente: después de **Recuperar desde la nube**, los conflictos no reaparecen al cerrar y reabrir la aplicación si no existen cambios independientes genuinos.
-
-### Atajos de teclado de acción
-
-- `Alt+N`: abrir **Nueva tarea** cuando la acción esté disponible.
-- `Alt+B`: enfocar y seleccionar la búsqueda simple.
-- `Alt+C`: completar la tarea cuya fila tiene el foco.
-- Los atajos se ignoran dentro de campos editables y no reemplazan la navegación existente por flechas, Home/End, Enter/Espacio y jerarquía.
+Los bloques históricos que figuraron en este documento —adjuntos, tareas en espera, fecha de inicio, calendario, objetivos y proyectos, duplicación de jerarquías, filtros y orden, atajos, orden manual, recuperación de sincronización e integración de Notion— ya están implementados y no deben volver a tratarse como pendientes salvo que aparezca un defecto concreto.
 
 ## Propuesta pendiente de decisión
 
-### Diagnóstico visible de errores de sincronización
+### Diagnóstico general de errores de sincronización
 
 - **Estado:** Propuesta.
-- Mostrar una causa resumida y segura cuando falla la sincronización.
+- **Alcance:** sincronización principal con Google Apps Script / Google Sheets; no se refiere al diagnóstico de Notion, que ya está implementado.
+- Mostrar una causa resumida y segura cuando falla la sincronización general.
 - Distinguir, cuando sea posible, problemas de red, HTTP, autorización y respuesta inválida.
 - Informar el último intento y ofrecer una acción explícita para reintentar.
 - No exponer el token ni la URL completa del backend.
 
-El incidente observado durante la validación de la PWA justificó registrar esta posibilidad, pero no está aprobado todavía como próximo bloque de desarrollo.
+La aplicación ya conserva cambios locales, reanuda la sincronización al recuperar conectividad y dispone de diagnóstico específico para las actualizaciones pendientes de Notion. Esta propuesta sólo debe convertirse en pendiente aprobado si se decide que el diagnóstico general actual de Sheets necesita más detalle.
 
 ## Trabajo postergado
 
@@ -108,9 +62,9 @@ Sólo deben incorporarse como pendientes después de definir su necesidad, alcan
 
 También quedan descartados por decisión de alcance:
 
-- renombrar **Descripción** como **Notas**: el campo local conserva su nombre para distinguirlo de las futuras notas vinculadas de Notion;
-- un sistema local de notas múltiples: las notas extensas se resolverán mediante la futura integración con Notion;
-- un botón general o permanente de deshacer: sólo se implementará una reversión contextual y temporal para acciones expresamente cubiertas.
+- renombrar **Descripción** como **Notas**: el campo local conserva su nombre para distinguirlo de las páginas de Notion;
+- un sistema local de notas múltiples: las notas extensas se resuelven mediante páginas vinculadas de Notion;
+- un botón general o permanente de deshacer: la aplicación usa reversión contextual y temporal en los flujos expresamente cubiertos.
 
 ## Principios de planificación
 
