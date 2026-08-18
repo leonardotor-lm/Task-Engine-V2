@@ -4,21 +4,13 @@ import {
     NotionTaskNotesController
 } from "../src/ui/NotionTaskNotesController.js";
 
-test("abre la nota recién creada en la pestaña iniciada por el usuario", async () => {
+test("abre la nota recién creada sólo después de recibir su URL", async () => {
 
-    const openedWindow = {
-        closed: false,
-        opener: {},
-        location: {
-            href: "about:blank"
-        },
-        close() {}
-    };
     const openedUrls = [];
     const windowRef = {
-        open: url => {
-            openedUrls.push(url);
-            return openedWindow;
+        open: (...args) => {
+            openedUrls.push(args);
+            return {};
         }
     };
     const task = {
@@ -84,18 +76,82 @@ test("abre la nota recién creada en la pestaña iniciada por el usuario", async
 
     await controller.create("task-1");
 
-    assert.deepEqual(openedUrls, [
-        "about:blank"
-    ]);
-    assert.equal(openedWindow.opener, null);
-    assert.equal(
-        openedWindow.location.href,
-        "https://www.notion.so/page-1"
-    );
+    assert.deepEqual(openedUrls, [[
+        "https://www.notion.so/page-1",
+        "_blank",
+        "noopener,noreferrer"
+    ]]);
     assert.deepEqual(updatedData, {
         notionPageId: "page-1",
         notionPageUrl:
             "https://www.notion.so/page-1"
     });
+
+});
+
+test("no abre ninguna pestaña cuando falla la creación", async () => {
+
+    const openedUrls = [];
+    const task = {
+        id: "task-1",
+        title: "Preparar clase",
+        status: "PENDING",
+        isProject: false,
+        areaId: null,
+        contextId: null,
+        tagIds: [],
+        completedAt: null,
+        notionPageId: null,
+        notionPageUrl: null,
+        isDeleted: () => false
+    };
+    const app = {
+        taskService: {
+            getTaskById: () => task,
+            updateTask: () => task
+        },
+        areaService: {
+            getAreaById: () => null
+        },
+        contextService: {
+            getContextById: () => null
+        },
+        tagService: {
+            getTagById: () => null
+        },
+        syncConfig: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.test",
+                token: "sync-token"
+            })
+        },
+        syncEngine: {
+            gateway: {
+                createNotionTaskPage: async () => {
+                    throw new Error("Esquema inválido");
+                }
+            }
+        },
+        render() {}
+    };
+
+    const controller =
+        new NotionTaskNotesController(app, {
+            documentRef: null,
+            windowRef: {
+                open: (...args) => {
+                    openedUrls.push(args);
+                }
+            }
+        });
+
+    await controller.create("task-1");
+
+    assert.deepEqual(openedUrls, []);
+    assert.equal(
+        controller.errorMessage,
+        "Esquema inválido"
+    );
 
 });
