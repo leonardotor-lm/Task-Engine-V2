@@ -73,18 +73,35 @@ test("el diagnóstico de esquema identifica propiedades faltantes y tipos incorr
 test("detecta la propiedad de título aunque Notion use otro nombre visible", () => {
 
     const context = loadNotion();
-    const name = context
-        .resolveNotionTitlePropertyName_({
+    const schema = context
+        .validateNotionDataSourceSchema_({
             properties: {
                 Name: {
                     id: "title",
                     name: "Name",
                     type: "title"
                 },
-                Tipo: { type: "select" }
+                Tipo: { type: "select" },
+                Estado: { type: "select" },
+                "Task Engine ID": {
+                    type: "rich_text"
+                },
+                "Área": { type: "select" },
+                Contextos: {
+                    type: "multi_select"
+                },
+                Etiquetas: {
+                    type: "multi_select"
+                },
+                "Fecha de finalización": {
+                    type: "date"
+                },
+                "Última actualización desde Task Engine": {
+                    type: "date"
+                }
             }
         });
 
-    assert.equal(name, "Name");
+    assert.equal(schema.titleName, "Name");
 
 });
