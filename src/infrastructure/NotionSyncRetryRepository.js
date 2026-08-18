@@ -1,4 +1,18 @@
-const STORAGE_KEY = "task-engine-v2-notion-sync-retry";
+const STORAGE_KEY_PREFIX = "task-engine-v2-notion-sync-retry";
+
+function hashScope(scope) {
+
+    const value = String(scope || "").trim();
+    let hash = 2166136261;
+
+    for (let index = 0; index < value.length; index += 1) {
+        hash ^= value.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+    }
+
+    return (hash >>> 0).toString(16).padStart(8, "0");
+
+}
 
 export class NotionSyncRetryRepository {
 
@@ -6,13 +20,24 @@ export class NotionSyncRetryRepository {
         this.storage = storage;
     }
 
-    list() {
+    getStorageKey(scope) {
 
-        if (!this.storage?.getItem) return [];
+        const normalized = String(scope || "").trim();
+        if (!normalized) return null;
+
+        return `${STORAGE_KEY_PREFIX}:${hashScope(normalized)}`;
+
+    }
+
+    list(scope) {
+
+        const storageKey = this.getStorageKey(scope);
+
+        if (!storageKey || !this.storage?.getItem) return [];
 
         try {
             const parsed = JSON.parse(
-                this.storage.getItem(STORAGE_KEY) || "[]"
+                this.storage.getItem(storageKey) || "[]"
             );
 
             return Array.isArray(parsed)
@@ -24,13 +49,19 @@ export class NotionSyncRetryRepository {
 
     }
 
-    upsert(operation) {
+    upsert(operation, scope) {
 
-        if (!operation?.key || !this.storage?.setItem) {
+        const storageKey = this.getStorageKey(scope);
+
+        if (
+            !storageKey ||
+            !operation?.key ||
+            !this.storage?.setItem
+        ) {
             return;
         }
 
-        const items = this.list();
+        const items = this.list(scope);
         const index = items.findIndex(
             item => item.key === operation.key
         );
@@ -50,17 +81,25 @@ export class NotionSyncRetryRepository {
         }
 
         this.storage.setItem(
-            STORAGE_KEY,
+            storageKey,
             JSON.stringify(items)
         );
 
     }
 
-    remove(key) {
+    remove(key, scope) {
 
-        if (!key || !this.storage?.setItem) return;
+        const storageKey = this.getStorageKey(scope);
 
-        const remaining = this.list().filter(
+        if (
+            !storageKey ||
+            !key ||
+            !this.storage?.setItem
+        ) {
+            return;
+        }
+
+        const remaining = this.list(scope).filter(
             item => item.key !== key
         );
 
@@ -68,12 +107,12 @@ export class NotionSyncRetryRepository {
             remaining.length === 0 &&
             this.storage.removeItem
         ) {
-            this.storage.removeItem(STORAGE_KEY);
+            this.storage.removeItem(storageKey);
             return;
         }
 
         this.storage.setItem(
-            STORAGE_KEY,
+            storageKey,
             JSON.stringify(remaining)
         );
 
