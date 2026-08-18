@@ -289,7 +289,7 @@ function buildNotionTaskProperties_(task, titleName) {
     };
     properties[TASK_ENGINE_NOTION_PROPERTIES.TYPE] = {
         select: {
-            name: task.isProject ? "Proyecto" : "Tarea"
+            name: task.entityType
         }
     };
     properties[TASK_ENGINE_NOTION_PROPERTIES.STATUS] = {
@@ -336,11 +336,26 @@ function normalizeNotionTaskData_(taskData) {
     var task = taskData || {};
     var id = String(task.id || "").trim();
     var title = String(task.title || "").trim();
+    var entityType = String(
+        task.entityType ||
+        (task.isProject === true ? "Proyecto" : "Tarea")
+    ).trim();
 
     if (!id || !title) {
         throw protocolError_(
             "INVALID_NOTION_TASK",
-            "La tarea no contiene los datos necesarios para sincronizar una nota."
+            "La entidad no contiene los datos necesarios para sincronizar una nota."
+        );
+    }
+
+    if (
+        entityType !== "Tarea" &&
+        entityType !== "Proyecto" &&
+        entityType !== "Objetivo"
+    ) {
+        throw protocolError_(
+            "INVALID_NOTION_TASK",
+            "El tipo de entidad no es válido para Notion."
         );
     }
 
@@ -348,6 +363,7 @@ function normalizeNotionTaskData_(taskData) {
         id: id,
         title: title.slice(0, 2000),
         status: String(task.status || "PENDING"),
+        entityType: entityType,
         isProject: task.isProject === true,
         areaName: String(task.areaName || "")
             .trim()
