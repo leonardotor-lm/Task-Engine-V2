@@ -1,5 +1,5 @@
 self.__PWA_ASSETS = Object.freeze([
-    "./attachments.css",
+    "./styles/attachments.css",
     "./icons/app-icon-180.png",
     "./icons/app-icon-192.png",
     "./icons/app-icon-512.png",
@@ -122,6 +122,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/WaitingController.js",
     "./src/ui/escapeHtml.js",
     "./styles.css",
+    "./styles/attachments.css",
     "./styles/goal-workspace.css",
     "./styles/manual-task-order.css",
     "./styles/mobile-filter-selects.css",
@@ -131,5 +132,5 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/task-editor-popovers.css",
     "./styles/task-interface.css",
     "./styles/task-quick-actions.css",
-    "./waiting.css"
+    "./styles/waiting.css"
 ]);
