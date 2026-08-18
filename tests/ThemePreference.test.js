@@ -1,6 +1,5 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 
 import {
     TaskDisplayPreferences
@@ -61,39 +60,98 @@ test("el controlador aplica el tema persistido al documento", () => {
 
 });
 
-test("el selector de Configuración usa la preferencia de tema", async () => {
+test("monta Apariencia inmediatamente después del render real de MainView", () => {
 
-    const source = await readFile(
-        new URL(
-            "../src/ui/ThemeController.js",
-            import.meta.url
-        ),
-        "utf8"
+    const preferences =
+        new TaskDisplayPreferences(
+            new MemoryStorage()
+        );
+    let mainViewRendered = false;
+    let insertedControl = null;
+
+    const select = {
+        value: "",
+        addEventListener() {}
+    };
+
+    const applicationTools = {
+        querySelector() {
+            return null;
+        },
+        insertBefore(control) {
+            insertedControl = control;
+        }
+    };
+
+    const documentRef = {
+        documentElement: {
+            dataset: {}
+        },
+        getElementById() {
+            return null;
+        },
+        querySelector(selector) {
+            if (
+                selector === ".applicationTools" &&
+                mainViewRendered
+            ) {
+                return applicationTools;
+            }
+
+            return null;
+        },
+        createElement() {
+            return {
+                id: "",
+                className: "",
+                innerHTML: "",
+                querySelector(selector) {
+                    return selector ===
+                        "#applicationTheme"
+                        ? select
+                        : null;
+                }
+            };
+        }
+    };
+
+    const mainView = {
+        render() {
+            mainViewRendered = true;
+        }
+    };
+
+    const controller = new ThemeController(
+        {
+            taskDisplayPreferences:
+                preferences,
+            mainView
+        },
+        { documentRef }
     );
 
-    assert.match(
-        source,
-        /id = "themePreferenceControl"/
+    controller.start();
+
+    assert.equal(insertedControl, null);
+
+    mainView.render({});
+
+    assert.equal(
+        insertedControl?.id,
+        "themePreferenceControl"
+    );
+    assert.equal(
+        insertedControl?.className,
+        "applicationThemeTools"
     );
     assert.match(
-        source,
-        /id="applicationTheme"/
+        insertedControl?.innerHTML ?? "",
+        /Apariencia/
     );
     assert.match(
-        source,
-        /preferences\.setTheme/
+        insertedControl?.innerHTML ?? "",
+        /Tema visual/
     );
-    assert.match(
-        source,
-        /\.applicationTools/
-    );
-    assert.match(
-        source,
-        /this\.app\.render = \(\.\.\.args\) =>/
-    );
-    assert.match(
-        source,
-        /this\.renderControl\(\);/
-    );
+    assert.equal(select.value, "default");
 
 });
