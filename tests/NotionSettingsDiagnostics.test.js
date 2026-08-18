@@ -48,7 +48,7 @@ test("muestra Notion al día cuando la cola está vacía", () => {
 
     const html = controller.getPanelHtml();
 
-    assert.match(html, />Al día</);
+    assert.match(html, />\s*Al día\s*</);
     assert.match(
         html,
         /No hay actualizaciones pendientes para Notion/
