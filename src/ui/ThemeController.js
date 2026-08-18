@@ -10,19 +10,14 @@ export class ThemeController {
     constructor(
         app,
         {
-            documentRef = globalThis.document,
-            MutationObserverRef =
-                globalThis.MutationObserver
+            documentRef = globalThis.document
         } = {}
     ) {
 
         this.app = app;
         this.document = documentRef;
-        this.MutationObserverRef =
-            MutationObserverRef;
-        this.observer = null;
         this.unsubscribe = null;
-        this.settingsNavigationHandler = null;
+        this.originalRender = null;
 
     }
 
@@ -43,64 +38,36 @@ export class ThemeController {
             preferences.subscribeToTheme(
                 theme => {
                     this.applyTheme(theme);
-                    this.renderControl();
                 }
             );
 
+        this.wrapAppRender();
         this.renderControl();
-        this.bindSettingsNavigation();
-
-        const appRoot =
-            this.document.getElementById?.("app");
-
-        if (
-            appRoot &&
-            typeof this.MutationObserverRef ===
-                "function"
-        ) {
-
-            this.observer =
-                new this.MutationObserverRef(() => {
-                    this.renderControl();
-                });
-
-            this.observer.observe(appRoot, {
-                childList: true,
-                subtree: true
-            });
-
-        }
 
     }
 
-    bindSettingsNavigation() {
+    wrapAppRender() {
 
         if (
-            this.settingsNavigationHandler ||
-            typeof this.document.addEventListener !==
-                "function"
+            this.originalRender ||
+            typeof this.app?.render !== "function"
         ) {
             return;
         }
 
-        this.settingsNavigationHandler = event => {
+        this.originalRender =
+            this.app.render.bind(this.app);
 
-            const button = event.target?.closest?.(
-                '.openSettingsSection[data-section="application"]'
-            );
+        this.app.render = (...args) => {
 
-            if (!button) return;
+            const result =
+                this.originalRender(...args);
 
-            queueMicrotask(() => {
-                this.renderControl();
-            });
+            this.renderControl();
+
+            return result;
 
         };
-
-        this.document.addEventListener(
-            "click",
-            this.settingsNavigationHandler
-        );
 
     }
 
