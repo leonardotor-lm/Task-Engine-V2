@@ -132,5 +132,6 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/task-editor-popovers.css",
     "./styles/task-interface.css",
     "./styles/task-quick-actions.css",
+    "./styles/themes/default.css",
     "./styles/waiting.css"
 ]);
