@@ -92,6 +92,9 @@ import {
 import {
     NotionSyncRetryController
 } from "./ui/NotionSyncRetryController.js";
+import {
+    ThemeController
+} from "./ui/ThemeController.js";
 
 const app = new App();
 const attachmentController =
@@ -165,6 +168,8 @@ const notionSyncRetryController =
                 notionGoalNotesController
         }
     );
+const themeController =
+    new ThemeController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -198,4 +203,5 @@ accessibilityStateController.start();
 keyboardNavigationController.start();
 keyboardActionShortcutsController.start();
 manualTaskOrderController.start();
+themeController.start();
 app.start();
