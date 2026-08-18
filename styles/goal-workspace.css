@@ -53,6 +53,37 @@
     font-weight: 600;
 }
 
+@media (min-width: 761px) {
+
+    .goalDrawer .editorNotionGoalSection {
+        margin: 10px 0;
+        padding: 0 0 10px;
+        border: 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .goalDrawer .editorNotionGoalSection > summary {
+        display: flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 4px 2px;
+        color: var(--color-text-subtle);
+        font-weight: 600;
+        cursor: default;
+        list-style: none;
+    }
+
+    .goalDrawer .editorNotionGoalSection > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .goalDrawer .editorNotionGoalSection > .editorSectionBody {
+        display: block !important;
+        padding: 0 2px;
+    }
+
+}
+
 @media (max-width: 760px) {
 
     .goalBreadcrumb,
