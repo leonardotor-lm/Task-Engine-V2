@@ -24,6 +24,17 @@ export class NotionSettingsController {
 
         this.started = true;
         this.wrapRender();
+        this.document?.addEventListener?.(
+            "notion-sync-retry-state-changed",
+            () => {
+                if (
+                    this.app?.settingsDialogOpen &&
+                    this.app?.settingsSection === "notion"
+                ) {
+                    this.renderPanel();
+                }
+            }
+        );
 
     }
 
@@ -147,6 +158,15 @@ export class NotionSettingsController {
     getPanelHtml() {
 
         const status = this.status;
+        const retryState =
+            this.app?.notionSyncRetryState ?? {};
+        const pendingCount = Math.max(
+            0,
+            Number(retryState.pendingCount ?? 0)
+        );
+        const retryError = String(
+            retryState.lastError ?? ""
+        ).trim();
 
         let statusClass = "disconnected";
         let statusText = "Sin comprobar";
@@ -166,6 +186,15 @@ export class NotionSettingsController {
         } else if (status) {
             statusText = "Sin configurar";
         }
+
+        const retryStatusClass = pendingCount > 0
+            ? retryError
+                ? "error"
+                : "pending"
+            : "configured";
+        const retryStatusText = pendingCount > 0
+            ? `${pendingCount} pendiente${pendingCount === 1 ? "" : "s"}`
+            : "Al día";
 
         return `
             <section class="settingsToolPanel notionTools">
@@ -231,6 +260,39 @@ export class NotionSettingsController {
                             </p>
                         </div>
                     `}
+
+                <div class="notionSyncDiagnostics">
+                    <header class="settingsToolHeader">
+                        <h3>Sincronización de notas</h3>
+                        <span
+                            class="syncStatus ${retryStatusClass}"
+                            role="status">
+                            ${retryStatusText}
+                        </span>
+                    </header>
+
+                    ${pendingCount > 0
+                        ? `
+                            <p class="settingsHint">
+                                ${pendingCount === 1
+                                    ? "Hay una actualización de Notion esperando reintento automático."
+                                    : `Hay ${pendingCount} actualizaciones de Notion esperando reintento automático.`}
+                            </p>
+                        `
+                        : `
+                            <p class="settingsHint">
+                                No hay actualizaciones pendientes para Notion.
+                            </p>
+                        `}
+
+                    ${retryError
+                        ? `
+                            <p class="syncErrorHint" role="alert">
+                                Último error: ${escapeHtml(retryError)}
+                            </p>
+                        `
+                        : ""}
+                </div>
 
                 <button
                     id="verifyNotionConnection"

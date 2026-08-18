@@ -190,3 +190,66 @@ test("un reintento exitoso limpia el error visible de la tarea", async () => {
     assert.equal(repository.list().length, 0);
 
 });
+
+test("publica cambios de estado de la cola para la interfaz", () => {
+
+    const repository = createRepository();
+    repository.upsert({
+        key: "task:task-1",
+        kind: "task",
+        entityId: "task-1",
+        pageId: "page-1",
+        payload: { id: "task-1" },
+        lastError: "sin red"
+    });
+
+    const events = [];
+    class FakeCustomEvent {
+        constructor(type, options = {}) {
+            this.type = type;
+            this.detail = options.detail;
+        }
+    }
+    const documentRef = {
+        addEventListener() {},
+        dispatchEvent(event) {
+            events.push(event);
+        }
+    };
+    const windowRef = {
+        CustomEvent: FakeCustomEvent,
+        addEventListener() {}
+    };
+    const app = {
+        syncEngine: {
+            gateway: {
+                async updateNotionTaskPage() {},
+                async updateNotionGoalPage() {}
+            }
+        },
+        syncConfig: {
+            isConfigured: () => false
+        }
+    };
+    const controller = new NotionSyncRetryController(
+        app,
+        {
+            repository,
+            windowRef,
+            documentRef
+        }
+    );
+
+    controller.start();
+
+    assert.ok(events.length >= 1);
+    assert.equal(
+        events[0].type,
+        "notion-sync-retry-state-changed"
+    );
+    assert.deepEqual(events[0].detail, {
+        pendingCount: 1,
+        lastError: "sin red"
+    });
+
+});

@@ -230,14 +230,34 @@ export class NotionSyncRetryController {
     publishState() {
 
         const pending = this.repository.list();
-
-        this.app.notionSyncRetryState = {
+        const state = {
             pendingCount: pending.length,
             lastError: pending
                 .map(item => item.lastError)
                 .filter(Boolean)
                 .at(-1) ?? null
         };
+
+        this.app.notionSyncRetryState = state;
+
+        if (!this.document?.dispatchEvent) {
+            return;
+        }
+
+        const CustomEventCtor =
+            this.window?.CustomEvent ??
+            globalThis.CustomEvent;
+
+        if (typeof CustomEventCtor !== "function") {
+            return;
+        }
+
+        this.document.dispatchEvent(
+            new CustomEventCtor(
+                "notion-sync-retry-state-changed",
+                { detail: state }
+            )
+        );
 
     }
 
