@@ -157,6 +157,54 @@ export class GoalEditor {
 
                 </form>
 
+                <details
+                    id="notionGoalNotesSection"
+                    class="editorSection editorNotionGoalSection"
+                    data-mobile-collapsed="true">
+                    <summary>Notas</summary>
+                    <div
+                        id="notionGoalNotesBody"
+                        class="editorSectionBody"
+                        data-goal-id="${escapeHtml(goal.id)}">
+                        <p class="fieldHelp">
+                            La nota se edita en Notion. Task Engine guarda solamente el vínculo.
+                        </p>
+                        ${goal.notionPageId && goal.notionPageUrl
+                            ? `
+                                <div class="taskEditorActions">
+                                    <a
+                                        id="openNotionGoalNote"
+                                        class="secondaryAction"
+                                        href="${escapeHtml(goal.notionPageUrl)}"
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                        Abrir nota
+                                    </a>
+                                    <button
+                                        id="unlinkNotionGoalNote"
+                                        type="button"
+                                        class="tertiaryAction">
+                                        Desvincular
+                                    </button>
+                                </div>
+                            `
+                            : goal.status === "DELETED"
+                                ? `
+                                    <p class="fieldHelp">
+                                        No se puede crear una nota nueva para un objetivo en Papelera.
+                                    </p>
+                                `
+                                : `
+                                    <button
+                                        id="createNotionGoalNote"
+                                        type="button"
+                                        class="secondaryAction">
+                                        Crear nota
+                                    </button>
+                                `}
+                    </div>
+                </details>
+
                 <section class="goalTasksSection">
 
                     <details class="goalAssociationManager">

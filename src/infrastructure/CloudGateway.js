@@ -239,4 +239,31 @@ export class CloudGateway {
         });
     }
 
+    createNotionGoalPage({ url, token, goal }) {
+        return this.createNotionTaskPage({
+            url,
+            token,
+            task: {
+                ...goal,
+                entityType: "Objetivo"
+            }
+        });
+    }
+
+    updateNotionGoalPage({
+        url,
+        token,
+        pageId,
+        goal
+    }) {
+        return this.createNotionGoalPage({
+            url,
+            token,
+            goal: {
+                ...goal,
+                notionPageId: pageId
+            }
+        });
+    }
+
 }
