@@ -123,7 +123,7 @@ function setup() {
 
 }
 
-test("incluye las preferencias de orden en las copias nuevas", () => {
+test("incluye las preferencias sincronizables en las copias nuevas", () => {
 
     const {
         backupService
@@ -141,9 +141,15 @@ test("incluye las preferencias de orden en las copias nuevas", () => {
     assert.deepEqual(
         backup.data.displayPreferences,
         {
-            sidebarTitle: "Tareas de Leo",
-            theme: "default"
+            sidebarTitle: "Tareas de Leo"
         }
+    );
+    assert.equal(
+        Object.hasOwn(
+            backup.data.displayPreferences,
+            "theme"
+        ),
+        false
     );
 
 });
@@ -248,8 +254,7 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
                     TaskSort.DUE_DATE
             },
             displayPreferences: {
-                sidebarTitle: "Trabajo",
-                theme: "default"
+                sidebarTitle: "Trabajo"
             }
         })
     );
@@ -283,6 +288,35 @@ test("importa filtros y órdenes enviados por otro dispositivo", () => {
 
 });
 
+test("ignora temas remotos y conserva el tema local", () => {
+
+    const {
+        backupService,
+        taskDisplayPreferences
+    } = setup();
+
+    taskDisplayPreferences.setTheme("dark");
+
+    backupService.importBackup(
+        createBackupData({
+            displayPreferences: {
+                sidebarTitle: "Trabajo",
+                theme: "retro-dark"
+            }
+        })
+    );
+
+    assert.equal(
+        taskDisplayPreferences.getSidebarTitle(),
+        "Trabajo"
+    );
+    assert.equal(
+        taskDisplayPreferences.getTheme(),
+        "dark"
+    );
+
+});
+
 test("ignora preferencias visuales desconocidas de versiones futuras", () => {
 
     const {
@@ -290,11 +324,13 @@ test("ignora preferencias visuales desconocidas de versiones futuras", () => {
         taskDisplayPreferences
     } = setup();
 
+    taskDisplayPreferences.setTheme("dark");
+
     backupService.importBackup(
         createBackupData({
             displayPreferences: {
                 sidebarTitle: "Trabajo",
-                theme: "default",
+                theme: "future-theme",
                 futureVisualPreference: true
             }
         })
@@ -306,7 +342,7 @@ test("ignora preferencias visuales desconocidas de versiones futuras", () => {
     );
     assert.equal(
         taskDisplayPreferences.getTheme(),
-        "default"
+        "dark"
     );
 
 });
@@ -342,23 +378,6 @@ test("rechaza títulos laterales remotos inválidos", () => {
             })
         ),
         /título lateral inválido/
-    );
-
-});
-
-test("rechaza temas visuales remotos inválidos", () => {
-
-    const { backupService } = setup();
-
-    assert.throws(
-        () => backupService.importBackup(
-            createBackupData({
-                displayPreferences: {
-                    theme: "unknown"
-                }
-            })
-        ),
-        /tema visual inválido/
     );
 
 });
