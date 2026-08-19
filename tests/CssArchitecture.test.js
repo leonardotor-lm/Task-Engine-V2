@@ -45,7 +45,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-editor-mobile.css",
             "styles/goal-workspace.css",
             "styles/statistics.css",
-            "styles/themes/retro-dark.css"
+            "styles/themes/retro-dark.css",
+            "styles/themes/muestrario.css"
         ]
     );
 
@@ -88,6 +89,22 @@ test("Retro Dark define una paleta propia y tipografía monoespaciada", async ()
     assert.match(theme, /--color-surface:\s*#073642/);
     assert.match(theme, /--color-accent:\s*#2aa198/);
     assert.match(theme, /--ui-font:[\s\S]*ui-monospace/);
+
+});
+
+test("Muestrario define la paleta vintage y tipografía geométrica", async () => {
+
+    const theme = await readFile(
+        resolve(ROOT, "styles/themes/muestrario.css"),
+        "utf8"
+    );
+
+    assert.match(theme, /:root\[data-theme="muestrario"\]/);
+    assert.match(theme, /--color-surface:\s*#91a795/);
+    assert.match(theme, /--color-accent:\s*#a84c26/);
+    assert.match(theme, /--color-on-accent:\s*#e7c67d/);
+    assert.match(theme, /--ui-font:[\s\S]*"Montserrat"/);
+    assert.match(theme, /text-transform:\s*uppercase/);
 
 });
 

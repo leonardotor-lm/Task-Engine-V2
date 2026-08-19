@@ -10,7 +10,8 @@ const VALID_SORTS = new Set(
 const VALID_THEMES = new Set([
     "default",
     "dark",
-    "retro-dark"
+    "retro-dark",
+    "muestrario"
 ]);
 
 function hasOwn(object, property) {

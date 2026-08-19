@@ -136,5 +136,6 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/theme-settings.css",
     "./styles/themes/default.css",
     "./styles/themes/retro-dark.css",
+    "./styles/themes/muestrario.css",
     "./styles/waiting.css"
 ]);

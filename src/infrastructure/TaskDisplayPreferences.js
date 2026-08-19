@@ -18,7 +18,8 @@ const DEFAULT_THEME = "default";
 const VALID_THEMES = new Set([
     DEFAULT_THEME,
     "dark",
-    "retro-dark"
+    "retro-dark",
+    "muestrario"
 ]);
 
 export class TaskDisplayPreferences {

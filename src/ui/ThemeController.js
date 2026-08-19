@@ -10,6 +10,10 @@ const AVAILABLE_THEMES = Object.freeze([
     {
         id: "retro-dark",
         label: "Retro Dark"
+    },
+    {
+        id: "muestrario",
+        label: "Muestrario"
     }
 ]);
 
