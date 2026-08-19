@@ -8,7 +8,8 @@ const VALID_SORTS = new Set(
 );
 
 const VALID_THEMES = new Set([
-    "default"
+    "default",
+    "retro-dark"
 ]);
 
 function hasOwn(object, property) {
