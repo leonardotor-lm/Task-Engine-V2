@@ -4,6 +4,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Predeterminado"
     },
     {
+        id: "dark",
+        label: "Oscuro"
+    },
+    {
         id: "retro-dark",
         label: "Retro Dark"
     }
