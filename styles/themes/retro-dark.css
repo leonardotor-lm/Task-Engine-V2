@@ -125,6 +125,8 @@
 :root[data-theme="retro-dark"] .task {
     border-bottom-color: var(--color-border);
     color: var(--color-text);
+    font-size: 13px;
+    line-height: 1.35;
 }
 
 :root[data-theme="retro-dark"] .task.bulkSelectedTask {
@@ -185,4 +187,11 @@
 
 :root[data-theme="retro-dark"] * {
     scrollbar-color: #52727a #002b36;
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="retro-dark"] .task {
+        font-size: 12.5px;
+        line-height: 1.32;
+    }
 }
