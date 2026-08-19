@@ -149,6 +149,24 @@ test("persiste el tema Retro Dark", () => {
 
 });
 
+test("persiste el tema Muestrario", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("muestrario"),
+        "muestrario"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "muestrario"
+    );
+
+});
+
 test("rechaza temas visuales desconocidos", () => {
 
     const preferences =
