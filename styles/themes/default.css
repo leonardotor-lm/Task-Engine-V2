@@ -101,3 +101,113 @@
     --transient-body-padding: 14px;
     --transient-actions-padding: 10px 14px;
 }
+
+:root[data-theme="dark"],
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] #app,
+:root[data-theme="dark"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .sidebar,
+:root[data-theme="dark"] .content,
+:root[data-theme="dark"] .details,
+:root[data-theme="dark"] .mobileHeader {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .sidebar {
+    border-right-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .details {
+    border-left-color: var(--color-border);
+}
+
+:root[data-theme="dark"] button,
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] dialog {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+:root[data-theme="dark"] .sidebarButton {
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .sidebarButton:hover,
+:root[data-theme="dark"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="dark"] .sidebarButton.active {
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="dark"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .task.bulkSelectedTask,
+:root[data-theme="dark"] .advancedSearchActiveNotice,
+:root[data-theme="dark"] .bulkToolbar {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="dark"] .settingsToolPanel,
+:root[data-theme="dark"] dialog,
+:root[data-theme="dark"] .taskDrawer,
+:root[data-theme="dark"] .searchableSelectMenu,
+:root[data-theme="dark"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="dark"] .secondaryAction,
+:root[data-theme="dark"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="dark"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="dark"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="dark"] ::selection {
+    background: var(--color-accent-muted);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] * {
+    scrollbar-color: var(--color-border-strong) var(--color-surface-subtle);
+}
