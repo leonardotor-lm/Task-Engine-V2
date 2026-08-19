@@ -44,7 +44,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-editor-popovers.css",
             "styles/task-editor-mobile.css",
             "styles/goal-workspace.css",
-            "styles/statistics.css"
+            "styles/statistics.css",
+            "styles/themes/retro-dark.css"
         ]
     );
 
@@ -72,6 +73,21 @@ test("el documento declara explícitamente el tema predeterminado", async () => 
     assert.match(theme, /--color-accent:\s*#2563eb/);
     assert.match(theme, /--interface-radius:\s*0/);
     assert.match(theme, /--transient-surface-shadow:/);
+
+});
+
+test("Retro Dark define una paleta propia y tipografía monoespaciada", async () => {
+
+    const theme = await readFile(
+        resolve(ROOT, "styles/themes/retro-dark.css"),
+        "utf8"
+    );
+
+    assert.match(theme, /:root\[data-theme="retro-dark"\]/);
+    assert.match(theme, /--color-surface-subtle:\s*#002b36/);
+    assert.match(theme, /--color-surface:\s*#073642/);
+    assert.match(theme, /--color-accent:\s*#2aa198/);
+    assert.match(theme, /--ui-font:[\s\S]*ui-monospace/);
 
 });
 

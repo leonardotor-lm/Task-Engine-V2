@@ -131,6 +131,24 @@ test("usa y persiste el tema predeterminado", () => {
 
 });
 
+test("persiste el tema Retro Dark", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("retro-dark"),
+        "retro-dark"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "retro-dark"
+    );
+
+});
+
 test("rechaza temas visuales desconocidos", () => {
 
     const preferences =
