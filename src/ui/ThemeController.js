@@ -2,6 +2,10 @@ const AVAILABLE_THEMES = Object.freeze([
     {
         id: "default",
         label: "Predeterminado"
+    },
+    {
+        id: "retro-dark",
+        label: "Retro Dark"
     }
 ]);
 
@@ -112,7 +116,7 @@ export class ThemeController {
                 </select>
 
                 <p class="settingsHint">
-                    Los próximos temas usarán esta misma preferencia sin cambiar la estructura de la aplicación.
+                    El tema cambia la apariencia sin alterar la estructura ni los datos de la aplicación.
                 </p>
 
             </div>
