@@ -108,6 +108,8 @@ test("Apariencia forma parte del HTML que devuelve Sidebar", () => {
     assert.match(html, /Apariencia/);
     assert.match(html, /Tema visual/);
     assert.match(html, /value="default"/);
+    assert.match(html, /value="paper"/);
+    assert.match(html, /Papel/);
     assert.match(html, /value="dark"/);
     assert.match(html, /Oscuro/);
     assert.match(html, /value="retro-dark"/);
@@ -121,17 +123,17 @@ test("Apariencia forma parte del HTML que devuelve Sidebar", () => {
     changeHandler({
         target: {
             id: "applicationTheme",
-            value: "dark"
+            value: "paper"
         }
     });
 
     assert.equal(
         preferences.getTheme(),
-        "dark"
+        "paper"
     );
     assert.equal(
         documentRef.documentElement.dataset.theme,
-        "dark"
+        "paper"
     );
     assert.equal(app.renderCalls, 1);
 

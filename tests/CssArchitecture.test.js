@@ -45,7 +45,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-editor-mobile.css",
             "styles/goal-workspace.css",
             "styles/statistics.css",
-            "styles/themes/retro-dark.css"
+            "styles/themes/retro-dark.css",
+            "styles/themes/paper.css"
         ]
     );
 
@@ -88,6 +89,28 @@ test("Retro Dark define una paleta propia y tipografía monoespaciada", async ()
     assert.match(theme, /--color-surface:\s*#073642/);
     assert.match(theme, /--color-accent:\s*#2aa198/);
     assert.match(theme, /--ui-font:[\s\S]*ui-monospace/);
+
+});
+
+test("Papel usa una paleta clara cálida sin redefinir tipografía ni geometría", async () => {
+
+    const theme = await readFile(
+        resolve(ROOT, "styles/themes/paper.css"),
+        "utf8"
+    );
+
+    assert.match(theme, /:root\[data-theme="paper"\]/);
+    assert.match(theme, /--color-surface:\s*#f3efe4/);
+    assert.match(theme, /--color-surface-subtle:\s*#e9e2d3/);
+    assert.match(theme, /--color-text:\s*#2f312f/);
+    assert.match(theme, /--color-accent:\s*#456b67/);
+
+    assert.doesNotMatch(theme, /(^|[;{]\s*)font-family\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)font-size\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)line-height\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)border-radius\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)padding\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)margin\s*:/m);
 
 });
 
