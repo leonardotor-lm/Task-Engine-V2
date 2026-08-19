@@ -1,11 +1,15 @@
 importScripts("./pwa-assets.js");
 
 const CACHE_PREFIX = "mis-tareas-static";
-const CACHE_NAME = `${CACHE_PREFIX}-v2`;
+const CACHE_NAME = `${CACHE_PREFIX}-v3`;
 const INDEX_URL = new URL(
     "./index.html",
     self.registration.scope
 ).href;
+const CACHEABLE_EXTERNAL_ORIGINS = new Set([
+    "https://fonts.googleapis.com",
+    "https://fonts.gstatic.com"
+]);
 const APP_SHELL = [
     "./",
     ...self.__PWA_ASSETS
@@ -47,10 +51,13 @@ self.addEventListener("fetch", event => {
 
     const { request } = event;
     const url = new URL(request.url);
+    const cacheableOrigin =
+        url.origin === self.location.origin ||
+        CACHEABLE_EXTERNAL_ORIGINS.has(url.origin);
 
     if (
         request.method !== "GET" ||
-        url.origin !== self.location.origin
+        !cacheableOrigin
     ) {
         return;
     }
@@ -89,5 +96,4 @@ async function networkFirst(request) {
         throw error;
 
     }
-
 }
