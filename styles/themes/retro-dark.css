@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap");
+
 :root[data-theme="retro-dark"] {
     --color-text: #eee8d5;
     --color-text-subtle: #d7d1bf;
@@ -21,6 +23,7 @@
     --interface-radius: 2px;
 
     --ui-font:
+        "IBM Plex Mono",
         ui-monospace,
         "Cascadia Mono",
         "Segoe UI Mono",
