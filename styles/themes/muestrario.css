@@ -5,9 +5,9 @@
     --color-text-subtle: #62453a;
     --color-text-secondary: #715548;
     --color-text-muted: #80695d;
-    --color-surface: #91a795;
-    --color-surface-subtle: #7f927f;
-    --color-surface-hover: #a1b19e;
+    --color-surface: #aebcac;
+    --color-surface-subtle: #9eae9d;
+    --color-surface-hover: #bbc7b8;
     --color-border: #8f7859;
     --color-border-strong: #705b47;
     --color-accent: #a84c26;
@@ -190,7 +190,7 @@
 }
 
 :root[data-theme="muestrario"] * {
-    scrollbar-color: #705b47 #7f927f;
+    scrollbar-color: #705b47 #9eae9d;
 }
 
 @media (max-width: 760px) {
