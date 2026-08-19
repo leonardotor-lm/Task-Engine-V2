@@ -9,6 +9,7 @@ const VALID_SORTS = new Set(
 
 const VALID_THEMES = new Set([
     "default",
+    "dark",
     "retro-dark"
 ]);
 
