@@ -131,6 +131,24 @@ test("usa y persiste el tema predeterminado", () => {
 
 });
 
+test("persiste el tema Papel", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("paper"),
+        "paper"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "paper"
+    );
+
+});
+
 test("persiste el tema Retro Dark", () => {
 
     const storage = new MemoryStorage();
