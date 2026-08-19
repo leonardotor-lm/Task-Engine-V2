@@ -7,12 +7,6 @@ const VALID_SORTS = new Set(
     Object.values(TaskSort)
 );
 
-const VALID_THEMES = new Set([
-    "default",
-    "dark",
-    "retro-dark"
-]);
-
 function hasOwn(object, property) {
 
     return Object.prototype.hasOwnProperty.call(
@@ -93,25 +87,12 @@ export class SyncOptionalDataBridge {
             );
         }
 
-        if (
-            hasOwn(preferences, "theme") &&
-            !VALID_THEMES.has(preferences.theme)
-        ) {
-            throw new Error(
-                "La copia contiene un tema visual inválido."
-            );
-        }
-
         const normalized = {};
         const sidebarTitle =
             preferences.sidebarTitle?.trim() ?? "";
 
         if (sidebarTitle) {
             normalized.sidebarTitle = sidebarTitle;
-        }
-
-        if (hasOwn(preferences, "theme")) {
-            normalized.theme = preferences.theme;
         }
 
         return normalized;
@@ -179,9 +160,7 @@ export class SyncOptionalDataBridge {
                     displayPreferences: {
                         ...(sidebarTitle
                             ? { sidebarTitle }
-                            : {}),
-                        theme:
-                            displayPreferences.getTheme()
+                            : {})
                     }
                 }
             };
@@ -303,17 +282,6 @@ export class SyncOptionalDataBridge {
                     data.displayPreferences
                         .sidebarTitle ?? ""
                 );
-
-                if (
-                    hasOwn(
-                        data.displayPreferences,
-                        "theme"
-                    )
-                ) {
-                    displayPreferences.setTheme(
-                        data.displayPreferences.theme
-                    );
-                }
             }
 
         };

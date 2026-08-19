@@ -1477,19 +1477,6 @@ function validateDisplayPreferences_(
         );
     }
 
-    var keys = Object.keys(preferences);
-
-    keys.forEach(function(key) {
-
-        if (key !== "sidebarTitle") {
-            throw protocolError_(
-                "INVALID_SNAPSHOT",
-                "La copia contiene una preferencia de visualización desconocida."
-            );
-        }
-
-    });
-
     if (
         hasOwn_(preferences, "sidebarTitle") &&
         (
@@ -1502,6 +1489,20 @@ function validateDisplayPreferences_(
         throw protocolError_(
             "INVALID_SNAPSHOT",
             "La copia contiene un título lateral inválido."
+        );
+    }
+
+    if (
+        hasOwn_(preferences, "theme") &&
+        (
+            typeof preferences.theme !== "string" ||
+            !preferences.theme.trim() ||
+            preferences.theme.trim().length > 64
+        )
+    ) {
+        throw protocolError_(
+            "INVALID_SNAPSHOT",
+            "La copia contiene un tema visual inválido."
         );
     }
 
