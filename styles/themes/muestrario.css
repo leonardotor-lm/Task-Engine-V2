@@ -1,0 +1,194 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+:root[data-theme="muestrario"] {
+    --color-text: #4f342b;
+    --color-text-subtle: #62453a;
+    --color-text-secondary: #715548;
+    --color-text-muted: #80695d;
+    --color-surface: #91a795;
+    --color-surface-subtle: #7f927f;
+    --color-surface-hover: #a1b19e;
+    --color-border: #8f7859;
+    --color-border-strong: #705b47;
+    --color-accent: #a84c26;
+    --color-accent-strong: #8f3f21;
+    --color-accent-soft: #c69a60;
+    --color-accent-muted: #b77a49;
+    --color-on-accent: #e7c67d;
+    --color-on-dark: #ead09a;
+    --color-focus-ring: #b56c3f;
+    --color-danger: #8f3826;
+    --color-danger-soft: #bf7958;
+    --disabled-opacity: 0.5;
+    --interface-radius: 0;
+
+    --ui-font:
+        "Montserrat",
+        "Avenir Next",
+        Avenir,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.35;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 7px;
+    --task-padding-x: 8px;
+    --compact-gap: 6px;
+    --transient-surface-border:
+        1px solid var(--color-border-strong);
+    --transient-surface-radius: 0;
+    --transient-surface-shadow:
+        0 10px 24px rgb(70 48 37 / 20%);
+    --transient-dialog-shadow:
+        0 18px 42px rgb(70 48 37 / 26%);
+    --transient-backdrop:
+        rgb(67 47 38 / 34%);
+    --transient-surface-gap: 6px;
+    --transient-surface-padding: 10px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
+}
+
+:root[data-theme="muestrario"],
+:root[data-theme="muestrario"] body,
+:root[data-theme="muestrario"] #app,
+:root[data-theme="muestrario"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="muestrario"] body,
+:root[data-theme="muestrario"] button,
+:root[data-theme="muestrario"] input,
+:root[data-theme="muestrario"] select,
+:root[data-theme="muestrario"] textarea,
+:root[data-theme="muestrario"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="muestrario"] body {
+    letter-spacing: 0.01em;
+}
+
+:root[data-theme="muestrario"] .sidebar,
+:root[data-theme="muestrario"] .content,
+:root[data-theme="muestrario"] .details,
+:root[data-theme="muestrario"] .mobileHeader {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="muestrario"] .sidebar {
+    border-right-color: var(--color-border-strong);
+}
+
+:root[data-theme="muestrario"] .details {
+    border-left-color: var(--color-border-strong);
+}
+
+:root[data-theme="muestrario"] h1,
+:root[data-theme="muestrario"] h2,
+:root[data-theme="muestrario"] h3,
+:root[data-theme="muestrario"] legend {
+    color: var(--color-accent-strong);
+    font-weight: 700;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+:root[data-theme="muestrario"] button,
+:root[data-theme="muestrario"] input,
+:root[data-theme="muestrario"] select,
+:root[data-theme="muestrario"] textarea {
+    border-color: var(--color-border-strong);
+    border-radius: 0;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="muestrario"] input::placeholder,
+:root[data-theme="muestrario"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="muestrario"] .sidebarButton {
+    color: var(--color-text);
+    border-radius: 0;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+:root[data-theme="muestrario"] .sidebarButton:hover,
+:root[data-theme="muestrario"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="muestrario"] .sidebarButton.active {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="muestrario"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+}
+
+:root[data-theme="muestrario"] .task.bulkSelectedTask,
+:root[data-theme="muestrario"] .advancedSearchActiveNotice,
+:root[data-theme="muestrario"] .bulkToolbar {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="muestrario"] .settingsToolPanel,
+:root[data-theme="muestrario"] dialog,
+:root[data-theme="muestrario"] .taskDrawer,
+:root[data-theme="muestrario"] .searchableSelectMenu,
+:root[data-theme="muestrario"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border-strong);
+    background: #a07747;
+    color: #4f342b;
+}
+
+:root[data-theme="muestrario"] .primaryAction {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="muestrario"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+}
+
+:root[data-theme="muestrario"] .secondaryAction,
+:root[data-theme="muestrario"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: #a08351;
+    color: #4f342b;
+}
+
+:root[data-theme="muestrario"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="muestrario"] a {
+    color: #8f3f21;
+}
+
+:root[data-theme="muestrario"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="muestrario"] ::selection {
+    background: #a84c26;
+    color: #e7c67d;
+}
+
+:root[data-theme="muestrario"] * {
+    scrollbar-color: #705b47 #7f927f;
+}
