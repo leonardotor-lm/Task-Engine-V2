@@ -55,11 +55,11 @@
     --color-text-subtle: #cbd5e1;
     --color-text-secondary: #a7b0bf;
     --color-text-muted: #7f8a9b;
-    --color-surface: #111827;
-    --color-surface-subtle: #0b1220;
-    --color-surface-hover: #1f2937;
-    --color-border: #334155;
-    --color-border-strong: #64748b;
+    --color-surface: #2c2c2c;
+    --color-surface-subtle: #2c2c2c;
+    --color-surface-hover: #353535;
+    --color-border: #474747;
+    --color-border-strong: #5f5f5f;
     --color-accent: #3b82f6;
     --color-accent-strong: #60a5fa;
     --color-accent-soft: #172554;
