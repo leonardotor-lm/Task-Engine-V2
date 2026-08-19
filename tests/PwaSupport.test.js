@@ -60,7 +60,11 @@ test("el service worker precarga la aplicación y responde sin conexión", async
 
     assert.match(worker, /cache\.addAll\(/);
     assert.match(worker, /cache: "reload"/);
-    assert.match(worker, /url\.origin !== self\.location\.origin/);
+    assert.match(worker, /CACHEABLE_EXTERNAL_ORIGINS/);
+    assert.match(worker, /https:\/\/fonts\.googleapis\.com/);
+    assert.match(worker, /https:\/\/fonts\.gstatic\.com/);
+    assert.match(worker, /url\.origin === self\.location\.origin/);
+    assert.match(worker, /!cacheableOrigin/);
     assert.match(worker, /networkFirst\(request\)/);
     assert.match(worker, /cache: "no-store"/);
     assert.match(worker, /cache\.match\(INDEX_URL\)/);
