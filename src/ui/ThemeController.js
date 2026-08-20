@@ -8,6 +8,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Papel"
     },
     {
+        id: "olive-natural",
+        label: "Oliva"
+    },
+    {
         id: "dark",
         label: "Oscuro"
     },
