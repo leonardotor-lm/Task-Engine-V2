@@ -99,6 +99,9 @@ import {
     RecurrenceLifecycleController
 } from "./ui/RecurrenceLifecycleController.js";
 import {
+    BusinessDayRecurrenceController
+} from "./ui/BusinessDayRecurrenceController.js";
+import {
     ThemeController
 } from "./ui/ThemeController.js";
 
@@ -178,6 +181,8 @@ const bulkDueDateController =
     new BulkDueDateController(app);
 const recurrenceLifecycleController =
     new RecurrenceLifecycleController(app);
+const businessDayRecurrenceController =
+    new BusinessDayRecurrenceController(app);
 const themeController =
     new ThemeController(app);
 
@@ -215,5 +220,6 @@ keyboardActionShortcutsController.start();
 manualTaskOrderController.start();
 bulkDueDateController.start();
 recurrenceLifecycleController.start();
+businessDayRecurrenceController.start();
 app.start();
 themeController.start();
