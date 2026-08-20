@@ -2,7 +2,7 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última auditoría integral: 19 de agosto de 2026.
+Última actualización: 20 de agosto de 2026.
 
 ## Regla de lectura
 
@@ -33,43 +33,15 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 
 ## Backlog aprobado
 
-### 2. Selección múltiple: limpiar fecha
-
-- **Estado:** En desarrollo; PR #266.
-- Incorporar una acción explícita para quitar la fecha de vencimiento de las tareas seleccionadas sin modificar sus demás propiedades.
-- El alcance acordado es **vencimiento**: limpiar `dueDate` y la hora asociada `dueTime`; la fecha de inicio `startDate` no se modifica.
-- La acción se integra al control de fecha de la selección múltiple y conserva el comportamiento actual para asignar una fecha y una hora nuevas.
-- Una tarea recurrente no puede quedar sin vencimiento bajo el modelo actual. Si la selección contiene recurrencias, la acción debe impedir el cambio e informar el motivo en lugar de finalizar la recurrencia implícitamente.
-- Mantener el mismo comportamiento seguro de las demás operaciones masivas y preservar jerarquía, asociaciones y demás propiedades.
-
-### 3. Recurrencias: ciclo de vida único y reglas avanzadas
-
-- **Estado:** Pendiente.
-- Una recurrencia debe mantener **una sola ocurrencia activa por serie**: mientras la ocurrencia actual continúe pendiente no deben generarse nuevas tareas futuras de la misma serie.
-- Al completar la ocurrencia activa, se calcula y habilita recién entonces la próxima ocurrencia según la regla configurada.
-- Revisar el modelo y la generación actual para evitar acumulación de ocurrencias independientes y conservar historial, sincronización y compatibilidad con datos existentes.
-- Exponer y completar las capacidades de intervalo ya compatibles con el dominio: **cada N días**, **cada N semanas** y **cada N meses**; por ejemplo, cada 3 días o cada 2 semanas.
-- Permitir elegir **uno o varios días de la semana** para una recurrencia semanal, por ejemplo lunes y jueves.
-- Incorporar reglas mensuales calendáricas avanzadas, al menos:
-  - primer día hábil del mes;
-  - N.º día hábil del mes, por ejemplo quinto día hábil;
-  - evaluar también último día hábil y reglas equivalentes por día de semana si resultan coherentes con el editor final.
-- Para la primera versión, **día hábil** significa lunes a viernes; los feriados no forman parte del alcance salvo decisión posterior.
-- Diseñar el editor de recurrencia para ampliar opciones sin saturar la interfaz y mantener una representación comprensible de la regla elegida.
-
-### 4. Búsqueda avanzada: resultados jerárquicos estrictos
-
-- **Estado:** Pendiente.
-- Una búsqueda avanzada debe mostrar como resultado únicamente las tareas que cumplen realmente los criterios.
-- Un padre o proyecto que no cumple el criterio no debe aparecer sólo porque uno de sus descendientes sí coincide.
-- Cuando una subtarea coincidente aparezca aislada, debe conservar una referencia visible a su padre o ruta jerárquica para ubicarla en contexto sin convertir a los ancestros en resultados falsos.
-- Ejemplo: `contexto:calle` debe devolver tareas raíz y subtareas con ese contexto; una subtarea debe mostrar su referencia jerárquica aunque su padre no tenga `@calle`.
-- Reutilizar, cuando sea posible, el mecanismo ya existente para mostrar la ruta de subtareas aisladas.
+No quedan actualmente mejoras funcionales aprobadas sin implementar fuera del bloque de **Temas visuales intercambiables**.
 
 ## Capacidades auditadas y cerradas
 
-La auditoría del 19 de agosto de 2026 contrastó `PENDIENTES.md`, `ROADMAP.md`, documentos específicos y PRs fusionadas. Los siguientes bloques **no son pendientes**:
+La auditoría iniciada el 19 de agosto de 2026 y actualizada el 20 de agosto contrastó `PENDIENTES.md`, `ROADMAP.md`, documentos específicos y PRs fusionadas. Los siguientes bloques **no son pendientes**:
 
+- **Selección múltiple: limpiar fecha:** resuelta en PR #266. La acción limpia `dueDate` y `dueTime`, conserva `startDate` y bloquea de forma segura selecciones que incluyan recurrencias.
+- **Recurrencias: ciclo de vida único y reglas avanzadas:** resueltas en PR #267. Cada serie mantiene una sola ocurrencia activa; la siguiente se genera al completar la actual. Se conservan intervalos cada N días/semanas/meses y selección de varios días semanales, y se agregan reglas de primer a quinto y último día hábil mensual. Para esta versión, día hábil significa lunes a viernes sin feriados.
+- **Búsqueda avanzada: resultados jerárquicos estrictos:** resuelta en PR #268. Sólo se muestran las tareas que cumplen directamente la expresión; una subtarea coincidente puede aparecer aislada manteniendo visible su ruta jerárquica sin convertir a sus ancestros en resultados.
 - **Adjuntos en Google Drive:** terminado; PR #156–#157 y consolidación en editores #166–#167. `docs/roadmap/ADJUNTOS.md` lo registra como terminado.
 - **Tareas En espera:** implementadas mediante `isWaiting`, con vista propia, reglas de visibilidad, edición y búsqueda avanzada. `docs/roadmap/EN_ESPERA.md` describe el comportamiento vigente.
 - **Fecha de inicio y períodos:** PR #183–#186 y búsqueda `activaEn` en #193.
