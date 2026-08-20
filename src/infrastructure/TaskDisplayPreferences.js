@@ -21,7 +21,8 @@ const VALID_THEMES = new Set([
     "high-contrast",
     "ink-blue",
     "dark",
-    "retro-dark"
+    "retro-dark",
+    "terminal-80"
 ]);
 
 export class TaskDisplayPreferences {
