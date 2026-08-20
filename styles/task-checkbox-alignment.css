@@ -1,0 +1,43 @@
+/* Alineación óptica de los controles principales en las filas de tareas. */
+
+.taskHeader > .taskCompleteCheckbox {
+    margin-top: 4px;
+    transform: translateY(4px);
+}
+
+.taskHeader > .toggleSubtasks,
+.taskHeader > .toggleSubtasksSpacer {
+    transform: translateY(4px);
+}
+
+.taskHeader:has(.taskHierarchyPath)
+    > .taskCompleteCheckbox,
+.taskHeader:has(.taskHierarchyPath)
+    > .toggleSubtasks,
+.taskHeader:has(.taskHierarchyPath)
+    > .toggleSubtasksSpacer {
+    transform: translateY(20px);
+}
+
+@media (max-width: 760px) {
+
+    .taskHeader > .taskCompleteCheckbox {
+        margin-top: 4px;
+        transform: translateY(3px);
+    }
+
+    .taskHeader > .toggleSubtasks,
+    .taskHeader > .toggleSubtasksSpacer {
+        transform: translateY(3px);
+    }
+
+    .taskHeader:has(.taskHierarchyPath)
+        > .taskCompleteCheckbox,
+    .taskHeader:has(.taskHierarchyPath)
+        > .toggleSubtasks,
+    .taskHeader:has(.taskHierarchyPath)
+        > .toggleSubtasksSpacer {
+        transform: translateY(19px);
+    }
+
+}

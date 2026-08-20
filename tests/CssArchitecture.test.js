@@ -45,6 +45,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-editor-mobile.css",
             "styles/goal-workspace.css",
             "styles/statistics.css",
+            "styles/task-checkbox-alignment.css",
             "styles/themes/retro-dark.css",
             "styles/themes/paper.css"
         ]
@@ -111,6 +112,24 @@ test("Papel usa una paleta clara cálida sin redefinir tipografía ni geometría
     assert.doesNotMatch(theme, /(^|[;{]\s*)border-radius\s*:/m);
     assert.doesNotMatch(theme, /(^|[;{]\s*)padding\s*:/m);
     assert.doesNotMatch(theme, /(^|[;{]\s*)margin\s*:/m);
+
+});
+
+test("la casilla de completar usa una alineación óptica común a todos los temas", async () => {
+
+    const styles = await readFile(
+        resolve(ROOT, "styles/task-checkbox-alignment.css"),
+        "utf8"
+    );
+
+    assert.match(
+        styles,
+        /\.taskHeader\s*>\s*\.taskCompleteCheckbox\s*\{[\s\S]*?margin-top:\s*4px;/
+    );
+    assert.match(
+        styles,
+        /@media\s*\(max-width:\s*760px\)/
+    );
 
 });
 
