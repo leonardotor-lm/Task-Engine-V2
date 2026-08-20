@@ -2,7 +2,11 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 18 de agosto de 2026.
+Última auditoría integral: 19 de agosto de 2026.
+
+## Regla de lectura
+
+Antes de reconstruir una lista de pendientes desde conversaciones, notas históricas o memoria, debe consultarse primero este documento y contrastarse con `docs/roadmap/ROADMAP.md` y las PR fusionadas. Una capacidad incluida en **Capacidades auditadas y cerradas** no vuelve al backlog salvo que exista un defecto concreto, una regresión reproducible o una nueva mejora expresamente aprobada.
 
 ## Estados
 
@@ -14,28 +18,50 @@ Este documento es la fuente de verdad del trabajo todavía no implementado, no v
 
 ## Prioridad actual
 
-### Temas visuales intercambiables
-
-- **Estado:** En desarrollo; seguimiento en issue #250.
-- Incorporar temas intercambiables sin alterar el dominio ni duplicar componentes.
-- Mantener diferencias visuales claras entre área, contexto, etiqueta, prioridad y recurrencia.
-- Preservar una interfaz compacta y sobria.
-- Usar variables CSS semánticas como contrato entre componentes y temas.
-- Migrar `styles.css` de manera gradual, sin reescrituras masivas.
-- Primera etapa: **completada**; existe una capa explícita para el tema predeterminado y un selector `data-theme` sin cambiar la apariencia actual.
-- Segunda etapa: **en desarrollo**; persistir la preferencia de tema, sincronizarla con las preferencias opcionales y exponerla en Configuración.
-- Tercera etapa: definir e incorporar los temas alternativos concretos.
-- Cuarta etapa: migrar gradualmente los colores concretos restantes a tokens semánticos.
-- Quinta etapa: verificar escritorio, celular y PWA para cada tema.
-
-## Backlog aprobado
-
 ### 1. Temas visuales intercambiables
 
 - **Estado:** En desarrollo; seguimiento en issue #250.
-- Completar la infraestructura de temas y luego incorporar las variantes visuales que se acuerden.
+- Es el primer trabajo pendiente y debe mantenerse por encima de cualquier mejora funcional nueva hasta cerrar o redefinir este bloque.
+- La infraestructura de temas está implementada desde PR #251.
+- La selección y persistencia de la preferencia están implementadas desde PR #252.
+- Desde PR #257, el tema es deliberadamente **local por dispositivo** y no se sincroniza entre instalaciones; `sidebarTitle` sí continúa sincronizándose.
+- Temas alternativos ya fusionados y disponibles: **Retro Dark** (#253–#254), **Oscuro** (#255), **Papel** (#258), **Alto contraste** (#260) y **Azul tinta** (#261).
+- La PR #256 **Muestrario** continúa abierta en borrador y no debe considerarse una capacidad aprobada o terminada hasta que se revise expresamente.
+- La PR #262 **Oliva** fue cerrada sin fusionar y queda descartada como variante actual.
+- **Trabajo real restante:** migrar gradualmente los colores concretos que todavía no usan tokens semánticos y realizar una verificación final del conjunto de temas en escritorio, celular y PWA.
+- No reabrir infraestructura, selector ni persistencia salvo que aparezca una regresión concreta.
 
-Los bloques históricos que figuraron en este documento —adjuntos, tareas en espera, fecha de inicio, calendario, objetivos y proyectos, duplicación de jerarquías, filtros y orden, atajos, orden manual, recuperación de sincronización e integración de Notion— ya están implementados y no deben volver a tratarse como pendientes salvo que aparezca un defecto concreto.
+## Backlog aprobado
+
+Actualmente no hay otro bloque funcional aprobado detrás de Temas.
+
+Las mejoras nuevas de comportamiento que se propongan después de esta auditoría deben incorporarse aquí únicamente cuando se acuerden su necesidad y alcance.
+
+## Capacidades auditadas y cerradas
+
+La auditoría del 19 de agosto de 2026 contrastó `PENDIENTES.md`, `ROADMAP.md`, documentos específicos y PRs fusionadas. Los siguientes bloques **no son pendientes**:
+
+- **Adjuntos en Google Drive:** terminado; PR #156–#157 y consolidación en editores #166–#167. `docs/roadmap/ADJUNTOS.md` lo registra como terminado.
+- **Tareas En espera:** implementadas mediante `isWaiting`, con vista propia, reglas de visibilidad, edición y búsqueda avanzada. `docs/roadmap/EN_ESPERA.md` describe el comportamiento vigente.
+- **Fecha de inicio y períodos:** PR #183–#186 y búsqueda `activaEn` en #193.
+- **Calendario:** vista y detalle diario implementados; además representa períodos entre inicio y vencimiento (#186).
+- **Objetivos y subobjetivos:** dominio, navegación, creación de tareas desde objetivos, breadcrumbs, visibilidad de completadas, herencia, filtros y orden están implementados (#171, #207, #214, #222–#224).
+- **Proyectos:** vista global, identidad persistente, navegación jerárquica, progreso, alta desde proyecto y búsqueda avanzada están implementados (#172–#173, #188, #209, #215–#216, #225).
+- **Duplicación de subtareas conservando jerarquía:** resuelta en PR #211.
+- **Filtros rápidos y orden en Objetivos:** resueltos en PR #224.
+- **Búsqueda avanzada por proyectos:** resuelta en PR #225.
+- **Atajos de teclado de acción:** `Alt+N`, `Alt+B` y `Alt+C`, PR #227; la navegación por teclado general ya existía desde #177.
+- **Orden manual por arrastre en escritorio y celular:** implementado y estabilizado en #228 y #231–#238.
+- **Aviso de completar + deshacer contextual en escritorio y celular:** PR #217. No existe ni se desea un sistema general de deshacer.
+- **Homogeneidad visual de diálogos, popovers y superficies transitorias:** consolidada en PR #220 y refinamientos posteriores.
+- **Cierre automático de la barra lateral móvil al navegar:** corregido y verificado en PR #206.
+- **Persistencia cross-device del título lateral personalizado:** implementada en PR #205; el tema visual, en cambio, es local por dispositivo por decisión de #257.
+- **Sincronización y recuperación de conflictos:** reconciliación automática, continuidad de interacción, recuperación manual y estabilización del orden están implementadas (#165, #170, #178, #199, #202–#203, #213, #235).
+- **PWA instalable y funcionamiento sin conexión:** implementados y verificados (#194, #200–#204).
+- **Historial de actividad y estadísticas:** implementados (#189 y #191), incluidos períodos de 6 y 12 meses.
+- **Integración con Notion:** conexión, tareas/proyectos, objetivos, actualización de metadatos, cola de reintentos, diagnóstico, aislamiento por instalación y revisión móvil están cerrados en #240–#248.
+
+Estos bloques sólo deben volver a aparecer si se describe una regresión o una mejora nueva y concreta sobre la capacidad ya existente.
 
 ## Propuesta pendiente de decisión
 
@@ -57,7 +83,8 @@ Las siguientes cuestiones fueron exploradas, pero no constituyen trabajo comprom
 - notificaciones o recordatorios del sistema;
 - múltiples usuarios o una segunda instancia de la aplicación como función multiusuario compartida;
 - criterio avanzado `tieneContexto`;
-- una nueva reorganización general de la barra lateral.
+- una nueva reorganización general de la barra lateral;
+- personalización adicional del encabezado móvil, salvo que se acuerde expresamente como mejora nueva.
 
 Sólo deben incorporarse como pendientes después de definir su necesidad, alcance y prioridad.
 
@@ -79,9 +106,10 @@ También quedan descartados por decisión de alcance:
 Antes de iniciar un bloque:
 
 1. revisar este documento;
-2. acordar un único objetivo principal;
-3. crear una rama específica desde `main` actualizado;
-4. implementar y probar;
-5. actualizar este registro en la misma PR si cambia el estado del trabajo;
-6. trasladar los puntos terminados al roadmap o al documento de referencia correspondiente;
-7. fusionar sólo después de la validación y la aprobación explícita.
+2. contrastar cualquier supuesto pendiente con `ROADMAP.md` y las PR fusionadas;
+3. acordar un único objetivo principal;
+4. crear una rama específica desde `main` actualizado;
+5. implementar y probar;
+6. actualizar este registro en la misma PR si cambia el estado del trabajo;
+7. trasladar los puntos terminados al roadmap o al documento de referencia correspondiente;
+8. fusionar sólo después de la validación y la aprobación explícita.
