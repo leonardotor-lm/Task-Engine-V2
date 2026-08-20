@@ -33,9 +33,36 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 
 ## Backlog aprobado
 
-Actualmente no hay otro bloque funcional aprobado detrás de Temas.
+### 2. Selección múltiple: limpiar fecha
 
-Las mejoras nuevas de comportamiento que se propongan después de esta auditoría deben incorporarse aquí únicamente cuando se acuerden su necesidad y alcance.
+- **Estado:** Pendiente.
+- Incorporar una acción explícita para quitar la fecha de las tareas seleccionadas sin modificar sus demás propiedades.
+- Antes de implementar, definir con precisión si la acción limpia sólo el vencimiento o también fecha de inicio y hora asociada cuando existan.
+- Mantener el mismo comportamiento seguro de las demás operaciones masivas y preservar jerarquía, recurrencia y asociaciones.
+
+### 3. Recurrencias: ciclo de vida único y reglas avanzadas
+
+- **Estado:** Pendiente.
+- Una recurrencia debe mantener **una sola ocurrencia activa por serie**: mientras la ocurrencia actual continúe pendiente no deben generarse nuevas tareas futuras de la misma serie.
+- Al completar la ocurrencia activa, se calcula y habilita recién entonces la próxima ocurrencia según la regla configurada.
+- Revisar el modelo y la generación actual para evitar acumulación de ocurrencias independientes y conservar historial, sincronización y compatibilidad con datos existentes.
+- Exponer y completar las capacidades de intervalo ya compatibles con el dominio: **cada N días**, **cada N semanas** y **cada N meses**; por ejemplo, cada 3 días o cada 2 semanas.
+- Permitir elegir **uno o varios días de la semana** para una recurrencia semanal, por ejemplo lunes y jueves.
+- Incorporar reglas mensuales calendáricas avanzadas, al menos:
+  - primer día hábil del mes;
+  - N.º día hábil del mes, por ejemplo quinto día hábil;
+  - evaluar también último día hábil y reglas equivalentes por día de semana si resultan coherentes con el editor final.
+- Para la primera versión, **día hábil** significa lunes a viernes; los feriados no forman parte del alcance salvo decisión posterior.
+- Diseñar el editor de recurrencia para ampliar opciones sin saturar la interfaz y mantener una representación comprensible de la regla elegida.
+
+### 4. Búsqueda avanzada: resultados jerárquicos estrictos
+
+- **Estado:** Pendiente.
+- Una búsqueda avanzada debe mostrar como resultado únicamente las tareas que cumplen realmente los criterios.
+- Un padre o proyecto que no cumple el criterio no debe aparecer sólo porque uno de sus descendientes sí coincide.
+- Cuando una subtarea coincidente aparezca aislada, debe conservar una referencia visible a su padre o ruta jerárquica para ubicarla en contexto sin convertir a los ancestros en resultados falsos.
+- Ejemplo: `contexto:calle` debe devolver tareas raíz y subtareas con ese contexto; una subtarea debe mostrar su referencia jerárquica aunque su padre no tenga `@calle`.
+- Reutilizar, cuando sea posible, el mecanismo ya existente para mostrar la ruta de subtareas aisladas.
 
 ## Capacidades auditadas y cerradas
 
