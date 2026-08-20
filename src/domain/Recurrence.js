@@ -4,7 +4,25 @@ export const RecurrenceFrequency = Object.freeze({
 
     WEEKLY: "WEEKLY",
 
-    MONTHLY: "MONTHLY"
+    MONTHLY: "MONTHLY",
+
+    MONTHLY_BUSINESS_FIRST:
+        "MONTHLY_BUSINESS_FIRST",
+
+    MONTHLY_BUSINESS_SECOND:
+        "MONTHLY_BUSINESS_SECOND",
+
+    MONTHLY_BUSINESS_THIRD:
+        "MONTHLY_BUSINESS_THIRD",
+
+    MONTHLY_BUSINESS_FOURTH:
+        "MONTHLY_BUSINESS_FOURTH",
+
+    MONTHLY_BUSINESS_FIFTH:
+        "MONTHLY_BUSINESS_FIFTH",
+
+    MONTHLY_BUSINESS_LAST:
+        "MONTHLY_BUSINESS_LAST"
 
 });
 
@@ -20,11 +38,32 @@ export const RecurrenceWeekday = Object.freeze({
 
 });
 
+const BUSINESS_DAY_ORDINALS = Object.freeze({
+    [RecurrenceFrequency.MONTHLY_BUSINESS_FIRST]: 1,
+    [RecurrenceFrequency.MONTHLY_BUSINESS_SECOND]: 2,
+    [RecurrenceFrequency.MONTHLY_BUSINESS_THIRD]: 3,
+    [RecurrenceFrequency.MONTHLY_BUSINESS_FOURTH]: 4,
+    [RecurrenceFrequency.MONTHLY_BUSINESS_FIFTH]: 5
+});
+
 export function isValidRecurrenceFrequency(value) {
 
     return Object
         .values(RecurrenceFrequency)
         .includes(value);
+
+}
+
+export function isBusinessMonthlyRecurrenceFrequency(
+    value
+) {
+
+    return value ===
+        RecurrenceFrequency.MONTHLY_BUSINESS_LAST ||
+        Object.prototype.hasOwnProperty.call(
+            BUSINESS_DAY_ORDINALS,
+            value
+        );
 
 }
 
@@ -176,47 +215,168 @@ export function getNextRecurrenceDate(
 
     }
 
-    const currentYear =
-        date.getUTCFullYear();
+    const {
+        year: targetYear,
+        month: targetMonth
+    } = getTargetMonth(
+        date,
+        interval
+    );
 
-    const currentMonth =
-        date.getUTCMonth();
+    if (
+        isBusinessMonthlyRecurrenceFrequency(
+            frequency
+        )
+    ) {
+
+        const day =
+            frequency ===
+                RecurrenceFrequency
+                    .MONTHLY_BUSINESS_LAST
+                ? getLastBusinessDay(
+                    targetYear,
+                    targetMonth
+                )
+                : getNthBusinessDay(
+                    targetYear,
+                    targetMonth,
+                    BUSINESS_DAY_ORDINALS[
+                        frequency
+                    ]
+                );
+
+        return formatDateParts(
+            targetYear,
+            targetMonth,
+            day
+        );
+
+    }
 
     const currentDay =
         date.getUTCDate();
-
-    const targetMonthIndex =
-        currentMonth + interval;
-
-    const targetYear =
-        currentYear +
-        Math.floor(
-            targetMonthIndex / 12
-        );
-
-    const targetMonth =
-        (
-            targetMonthIndex % 12 +
-            12
-        ) % 12;
 
     const lastTargetDay =
         new Date(
             Date.UTC(
                 targetYear,
-                targetMonth + 1,
+                targetMonth,
                 0
             )
         ).getUTCDate();
 
     return formatDateParts(
         targetYear,
-        targetMonth + 1,
+        targetMonth,
         Math.min(
             currentDay,
             lastTargetDay
         )
     );
+
+}
+
+function getTargetMonth(date, interval) {
+
+    const currentYear =
+        date.getUTCFullYear();
+
+    const currentMonthIndex =
+        date.getUTCMonth();
+
+    const targetMonthIndex =
+        currentMonthIndex + interval;
+
+    const year =
+        currentYear +
+        Math.floor(
+            targetMonthIndex / 12
+        );
+
+    const monthIndex =
+        (
+            targetMonthIndex % 12 +
+            12
+        ) % 12;
+
+    return {
+        year,
+        month: monthIndex + 1
+    };
+
+}
+
+function getNthBusinessDay(
+    year,
+    month,
+    ordinal
+) {
+
+    let businessDayCount = 0;
+    const lastDay = new Date(
+        Date.UTC(year, month, 0)
+    ).getUTCDate();
+
+    for (
+        let day = 1;
+        day <= lastDay;
+        day += 1
+    ) {
+
+        if (!isBusinessDay(year, month, day)) {
+            continue;
+        }
+
+        businessDayCount += 1;
+
+        if (businessDayCount === ordinal) {
+            return day;
+        }
+
+    }
+
+    throw new Error(
+        "El día hábil solicitado no existe en el mes."
+    );
+
+}
+
+function getLastBusinessDay(year, month) {
+
+    const lastDay = new Date(
+        Date.UTC(year, month, 0)
+    ).getUTCDate();
+
+    for (
+        let day = lastDay;
+        day >= 1;
+        day -= 1
+    ) {
+
+        if (isBusinessDay(year, month, day)) {
+            return day;
+        }
+
+    }
+
+    throw new Error(
+        "No se encontró un día hábil en el mes."
+    );
+
+}
+
+function isBusinessDay(year, month, day) {
+
+    const weekday = new Date(
+        Date.UTC(
+            year,
+            month - 1,
+            day
+        )
+    ).getUTCDay();
+
+    return weekday !== RecurrenceWeekday.SUNDAY &&
+        weekday !== RecurrenceWeekday.SATURDAY;
 
 }
 
