@@ -3,8 +3,8 @@
 :root[data-theme="terminal-80"] {
     --color-text: #7cff6b;
     --color-text-subtle: #68d85d;
-    --color-text-secondary: #4ea947;
-    --color-text-muted: #356f32;
+    --color-text-secondary: #5fcf55;
+    --color-text-muted: #438f3e;
     --color-surface: #0a160d;
     --color-surface-subtle: #07110a;
     --color-surface-hover: #0d1d10;
@@ -75,6 +75,7 @@
 :root[data-theme="terminal-80"] body {
     color-scheme: dark;
     letter-spacing: 0.004em;
+    word-spacing: -0.08em;
     text-shadow: 0 0 3px rgb(124 255 107 / 16%);
 }
 
