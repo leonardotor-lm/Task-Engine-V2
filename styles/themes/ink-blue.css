@@ -1,0 +1,135 @@
+:root[data-theme="ink-blue"] {
+    --color-text: #16263a;
+    --color-text-subtle: #32465f;
+    --color-text-secondary: #4b6078;
+    --color-text-muted: #687b90;
+    --color-surface: #f7f9fc;
+    --color-surface-subtle: #edf2f7;
+    --color-surface-hover: #e3ebf3;
+    --color-border: #b9c7d6;
+    --color-border-strong: #879bb0;
+    --color-accent: #315f8c;
+    --color-accent-strong: #234867;
+    --color-accent-soft: #d7e5f1;
+    --color-accent-muted: #9cb6cc;
+    --color-on-accent: #ffffff;
+    --color-on-dark: #ffffff;
+    --color-focus-ring: #3b78ad;
+    --color-danger: #a33f48;
+    --color-danger-soft: #f2d9dc;
+    --disabled-opacity: 0.5;
+}
+
+:root[data-theme="ink-blue"],
+:root[data-theme="ink-blue"] body,
+:root[data-theme="ink-blue"] #app,
+:root[data-theme="ink-blue"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="ink-blue"] .sidebar,
+:root[data-theme="ink-blue"] .content,
+:root[data-theme="ink-blue"] .details,
+:root[data-theme="ink-blue"] .mobileHeader {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="ink-blue"] .sidebar {
+    border-right-color: var(--color-border-strong);
+}
+
+:root[data-theme="ink-blue"] .details {
+    border-left-color: var(--color-border-strong);
+}
+
+:root[data-theme="ink-blue"] .sidebarButton {
+    color: var(--color-text);
+}
+
+:root[data-theme="ink-blue"] .sidebarButton:hover,
+:root[data-theme="ink-blue"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="ink-blue"] .sidebarButton.active {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="ink-blue"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+}
+
+:root[data-theme="ink-blue"] .task.bulkSelectedTask,
+:root[data-theme="ink-blue"] .advancedSearchActiveNotice,
+:root[data-theme="ink-blue"] .bulkToolbar {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="ink-blue"] .settingsToolPanel,
+:root[data-theme="ink-blue"] dialog,
+:root[data-theme="ink-blue"] .taskDrawer,
+:root[data-theme="ink-blue"] .searchableSelectMenu,
+:root[data-theme="ink-blue"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="ink-blue"] button,
+:root[data-theme="ink-blue"] input,
+:root[data-theme="ink-blue"] select,
+:root[data-theme="ink-blue"] textarea {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="ink-blue"] input::placeholder,
+:root[data-theme="ink-blue"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="ink-blue"] .primaryAction {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="ink-blue"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+}
+
+:root[data-theme="ink-blue"] .secondaryAction,
+:root[data-theme="ink-blue"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: #eef3f8;
+    color: var(--color-text);
+}
+
+:root[data-theme="ink-blue"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="ink-blue"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="ink-blue"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="ink-blue"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="ink-blue"] * {
+    scrollbar-color: var(--color-border-strong) var(--color-surface-subtle);
+}

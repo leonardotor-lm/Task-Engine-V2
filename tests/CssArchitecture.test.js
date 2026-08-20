@@ -48,7 +48,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-checkbox-alignment.css",
             "styles/themes/retro-dark.css",
             "styles/themes/paper.css",
-            "styles/themes/high-contrast.css"
+            "styles/themes/high-contrast.css",
+            "styles/themes/ink-blue.css"
         ]
     );
 
@@ -106,6 +107,28 @@ test("Papel usa una paleta clara cálida sin redefinir tipografía ni geometría
     assert.match(theme, /--color-surface-subtle:\s*#e9e2d3/);
     assert.match(theme, /--color-text:\s*#2f312f/);
     assert.match(theme, /--color-accent:\s*#456b67/);
+
+    assert.doesNotMatch(theme, /(^|[;{]\s*)font-family\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)font-size\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)line-height\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)border-radius\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)padding\s*:/m);
+    assert.doesNotMatch(theme, /(^|[;{]\s*)margin\s*:/m);
+
+});
+
+test("Azul tinta usa una paleta fría sobria sin redefinir tipografía ni geometría", async () => {
+
+    const theme = await readFile(
+        resolve(ROOT, "styles/themes/ink-blue.css"),
+        "utf8"
+    );
+
+    assert.match(theme, /:root\[data-theme="ink-blue"\]/);
+    assert.match(theme, /--color-surface:\s*#f7f9fc/);
+    assert.match(theme, /--color-surface-subtle:\s*#edf2f7/);
+    assert.match(theme, /--color-text:\s*#16263a/);
+    assert.match(theme, /--color-accent:\s*#315f8c/);
 
     assert.doesNotMatch(theme, /(^|[;{]\s*)font-family\s*:/m);
     assert.doesNotMatch(theme, /(^|[;{]\s*)font-size\s*:/m);
