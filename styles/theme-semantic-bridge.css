@@ -68,6 +68,10 @@
     border-color: var(--color-border);
 }
 
+.priority-3 {
+    color: var(--color-warning);
+}
+
 .priority-4,
 .quickMoreMenu .destructiveAction {
     color: var(--color-danger);
@@ -98,4 +102,13 @@
     border-color: var(--color-on-accent);
     background-color: transparent;
     color: var(--color-on-accent);
+}
+
+.task.swipingRight {
+    box-shadow: -96px 0 var(--color-success-soft);
+}
+
+.task.swipingRight::before {
+    background: var(--color-success-soft);
+    color: var(--color-success);
 }
