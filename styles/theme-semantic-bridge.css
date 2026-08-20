@@ -27,6 +27,7 @@
 
 .bulkToolbar {
     border-color: var(--color-accent-muted);
+    background: var(--color-accent-soft);
 }
 
 .taskMeta {
@@ -82,6 +83,35 @@
     color: var(--color-accent-strong);
 }
 
+.syncStatus.configured,
+.sidebarSyncStatus.configured,
+.applicationTools .settingsSaveStatus {
+    color: var(--color-success);
+}
+
+.syncStatus.pending,
+.sidebarSyncStatus.pending {
+    color: var(--color-warning);
+}
+
+.taskCompleteCheckbox {
+    border-color: var(--color-border-strong);
+}
+
+.taskCompleteCheckbox:hover {
+    border-color: var(--color-success);
+}
+
+.backupActions button,
+.importBackupButton,
+.iconButton:hover,
+#closeTaskEditor:hover,
+.openGoal {
+    color: var(--color-text);
+}
+
+.iconButton:focus-visible,
+.createActionButton:focus-visible,
 .recurrenceWeekdayOption
     input:focus-visible + span,
 .taskContextToolbarButton:focus-visible,
@@ -89,6 +119,15 @@
 .taskContextToolbarSummary:focus-visible,
 .sidebar .sidebarUnifiedGroup > summary:focus-visible {
     outline-color: var(--color-focus-ring);
+}
+
+.createActionButton:active {
+    background: var(--color-accent-strong);
+}
+
+.colorSelectorPreview,
+.colorSwatch {
+    border-color: var(--color-border-strong);
 }
 
 .advancedSearchError {
@@ -100,6 +139,7 @@
 .taskCompletionNotice {
     background: var(--color-accent-strong);
     color: var(--color-on-accent);
+    box-shadow: var(--transient-surface-shadow);
 }
 
 :root[data-theme] .taskCompletionNotice button {
@@ -117,7 +157,14 @@
     color: var(--color-success);
 }
 
+.taskDrawer,
+.mobileMenuOpen .sidebar,
+.quickMoreMenu,
 #openTaskCreation,
 .mobileFloatingTaskButton {
     box-shadow: var(--transient-surface-shadow);
+}
+
+.mobileMenuBackdrop {
+    background: var(--transient-backdrop);
 }
