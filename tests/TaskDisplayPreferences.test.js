@@ -149,6 +149,24 @@ test("persiste el tema Papel", () => {
 
 });
 
+test("persiste el tema Alto contraste", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("high-contrast"),
+        "high-contrast"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "high-contrast"
+    );
+
+});
+
 test("persiste el tema Retro Dark", () => {
 
     const storage = new MemoryStorage();
