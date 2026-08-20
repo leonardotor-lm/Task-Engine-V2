@@ -18,6 +18,7 @@ const DEFAULT_THEME = "default";
 const VALID_THEMES = new Set([
     DEFAULT_THEME,
     "paper",
+    "high-contrast",
     "ink-blue",
     "dark",
     "retro-dark"
