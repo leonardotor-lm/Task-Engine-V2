@@ -25,7 +25,7 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 - La infraestructura de temas está implementada desde PR #251.
 - La selección y persistencia de la preferencia están implementadas desde PR #252.
 - Desde PR #257, el tema es deliberadamente **local por dispositivo** y no se sincroniza entre instalaciones; `sidebarTitle` sí continúa sincronizándose.
-- Temas alternativos ya fusionados y disponibles: **Retro Dark** (#253–#254), **Oscuro** (#255), **Papel** (#258), **Alto contraste** (#260) y **Azul tinta** (#261).
+- Temas alternativos ya fusionados y disponibles: **Retro Dark** (#253–#254), **Oscuro** (#255), **Papel** (#258), **Alto contraste** (#260), **Azul tinta** (#261) y **Terminal 80** (#265).
 - La PR #256 **Muestrario** continúa abierta en borrador y no debe considerarse una capacidad aprobada o terminada hasta que se revise expresamente.
 - La PR #262 **Oliva** fue cerrada sin fusionar y queda descartada como variante actual.
 - **Trabajo real restante:** migrar gradualmente los colores concretos que todavía no usan tokens semánticos y realizar una verificación final del conjunto de temas en escritorio, celular y PWA.
@@ -35,10 +35,12 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 
 ### 2. Selección múltiple: limpiar fecha
 
-- **Estado:** Pendiente.
-- Incorporar una acción explícita para quitar la fecha de las tareas seleccionadas sin modificar sus demás propiedades.
-- Antes de implementar, definir con precisión si la acción limpia sólo el vencimiento o también fecha de inicio y hora asociada cuando existan.
-- Mantener el mismo comportamiento seguro de las demás operaciones masivas y preservar jerarquía, recurrencia y asociaciones.
+- **Estado:** En desarrollo; PR #266.
+- Incorporar una acción explícita para quitar la fecha de vencimiento de las tareas seleccionadas sin modificar sus demás propiedades.
+- El alcance acordado es **vencimiento**: limpiar `dueDate` y la hora asociada `dueTime`; la fecha de inicio `startDate` no se modifica.
+- La acción se integra al control de fecha de la selección múltiple y conserva el comportamiento actual para asignar una fecha y una hora nuevas.
+- Una tarea recurrente no puede quedar sin vencimiento bajo el modelo actual. Si la selección contiene recurrencias, la acción debe impedir el cambio e informar el motivo en lugar de finalizar la recurrencia implícitamente.
+- Mantener el mismo comportamiento seguro de las demás operaciones masivas y preservar jerarquía, asociaciones y demás propiedades.
 
 ### 3. Recurrencias: ciclo de vida único y reglas avanzadas
 

@@ -93,6 +93,9 @@ import {
     NotionSyncRetryController
 } from "./ui/NotionSyncRetryController.js";
 import {
+    BulkDueDateController
+} from "./ui/BulkDueDateController.js";
+import {
     ThemeController
 } from "./ui/ThemeController.js";
 
@@ -168,6 +171,8 @@ const notionSyncRetryController =
                 notionGoalNotesController
         }
     );
+const bulkDueDateController =
+    new BulkDueDateController(app);
 const themeController =
     new ThemeController(app);
 
@@ -203,5 +208,6 @@ accessibilityStateController.start();
 keyboardNavigationController.start();
 keyboardActionShortcutsController.start();
 manualTaskOrderController.start();
+bulkDueDateController.start();
 app.start();
 themeController.start();
