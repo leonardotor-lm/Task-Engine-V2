@@ -1,30 +1,30 @@
 :root[data-theme="olive-natural"] {
     --color-text: #30352d;
-    --color-text-subtle: #4e5649;
-    --color-text-secondary: #626a5c;
-    --color-text-muted: #7d8577;
-    --color-surface: #f5f1e6;
-    --color-surface-subtle: #e9e4d6;
-    --color-surface-hover: #ddd8c8;
-    --color-border: #c7c0ad;
-    --color-border-strong: #9f9784;
-    --color-accent: #69784d;
-    --color-accent-strong: #4f5e39;
-    --color-accent-soft: #dce3cc;
-    --color-accent-muted: #9aa884;
-    --color-on-accent: #fffdf7;
-    --color-on-dark: #fffdf7;
-    --color-focus-ring: #687f4d;
-    --color-danger: #a6533f;
-    --color-danger-soft: #ead4ca;
+    --color-text-subtle: #485044;
+    --color-text-secondary: #596252;
+    --color-text-muted: #747d6d;
+    --color-surface: #f1f0e6;
+    --color-surface-subtle: #dde0d2;
+    --color-surface-hover: #d1d5c2;
+    --color-border: #9da38a;
+    --color-border-strong: #737a60;
+    --color-accent: #59633f;
+    --color-accent-strong: #3f4930;
+    --color-accent-soft: #c5ceb6;
+    --color-accent-muted: #aab59a;
+    --color-on-accent: #fffdf4;
+    --color-on-dark: #fffdf4;
+    --color-focus-ring: #59633f;
+    --color-danger: #a65f49;
+    --color-danger-soft: #ead3c9;
     --transient-surface-border:
         1px solid var(--color-border-strong);
     --transient-surface-shadow:
-        0 10px 24px rgb(70 68 53 / 14%);
+        0 10px 24px rgb(63 73 48 / 16%);
     --transient-dialog-shadow:
-        0 18px 42px rgb(70 68 53 / 18%);
+        0 18px 42px rgb(63 73 48 / 20%);
     --transient-backdrop:
-        rgb(56 55 45 / 22%);
+        rgb(48 53 45 / 24%);
 }
 
 :root[data-theme="olive-natural"],
@@ -35,13 +35,36 @@
     color: var(--color-text);
 }
 
-:root[data-theme="olive-natural"] .sidebar,
 :root[data-theme="olive-natural"] .content,
 :root[data-theme="olive-natural"] .details,
 :root[data-theme="olive-natural"] .mobileHeader {
     background: var(--color-surface);
     color: var(--color-text);
     border-color: var(--color-border);
+}
+
+:root[data-theme="olive-natural"] .sidebar {
+    background: #72785b;
+    color: var(--color-on-dark);
+    border-color: #59633f;
+}
+
+:root[data-theme="olive-natural"] .sidebar h1,
+:root[data-theme="olive-natural"] .sidebar h2,
+:root[data-theme="olive-natural"] .sidebar h3,
+:root[data-theme="olive-natural"] .sidebar label,
+:root[data-theme="olive-natural"] .sidebar .settingsHint,
+:root[data-theme="olive-natural"] .sidebar .sidebarButton {
+    color: var(--color-on-dark);
+}
+
+:root[data-theme="olive-natural"] .sidebar .sidebarButton:hover {
+    background: rgb(241 240 230 / 14%);
+}
+
+:root[data-theme="olive-natural"] .sidebar .sidebarButton.active {
+    background: var(--color-accent-strong);
+    color: var(--color-on-accent);
 }
 
 :root[data-theme="olive-natural"] button,
@@ -59,18 +82,8 @@
     opacity: 1;
 }
 
-:root[data-theme="olive-natural"] .sidebarButton {
-    color: var(--color-text);
-}
-
-:root[data-theme="olive-natural"] .sidebarButton:hover,
 :root[data-theme="olive-natural"] .task:hover {
     background: var(--color-surface-hover);
-}
-
-:root[data-theme="olive-natural"] .sidebarButton.active {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
 }
 
 :root[data-theme="olive-natural"] .task {
@@ -89,7 +102,7 @@
 :root[data-theme="olive-natural"] .taskDrawer,
 :root[data-theme="olive-natural"] .searchableSelectMenu,
 :root[data-theme="olive-natural"] .searchableMultiSelectManagerBody {
-    background: #faf7ef;
+    background: #f7f5eb;
     border-color: var(--color-border-strong);
     color: var(--color-text);
 }
@@ -106,7 +119,7 @@
 
 :root[data-theme="olive-natural"] .secondaryAction,
 :root[data-theme="olive-natural"] .tertiaryAction {
-    background: #eee9dc;
+    background: #e2e4d5;
     border-color: var(--color-border-strong);
     color: var(--color-text);
 }
@@ -114,6 +127,12 @@
 :root[data-theme="olive-natural"] .dangerAction {
     border-color: var(--color-danger);
     color: var(--color-danger);
+}
+
+:root[data-theme="olive-natural"] .taskCompleteCheckbox,
+:root[data-theme="olive-natural"] .bulkTaskCheckbox {
+    border-color: var(--color-accent-strong);
+    background: #f7f5eb;
 }
 
 :root[data-theme="olive-natural"] a {
