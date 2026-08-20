@@ -52,7 +52,7 @@ test("Oliva aparece en el selector de apariencia", async () => {
 
 });
 
-test("Oliva define una paleta natural sin cambiar tipografía ni geometría", async () => {
+test("Oliva define una identidad vegetal diferenciada sin cambiar tipografía ni geometría", async () => {
 
     const theme = await readFile(
         new URL(
@@ -63,10 +63,16 @@ test("Oliva define una paleta natural sin cambiar tipografía ni geometría", as
     );
 
     assert.match(theme, /:root\[data-theme="olive-natural"\]/);
-    assert.match(theme, /--color-surface:\s*#f5f1e6/);
+    assert.match(theme, /--color-surface:\s*#f1f0e6/);
+    assert.match(theme, /--color-surface-subtle:\s*#dde0d2/);
     assert.match(theme, /--color-text:\s*#30352d/);
-    assert.match(theme, /--color-accent:\s*#69784d/);
-    assert.match(theme, /--color-danger:\s*#a6533f/);
+    assert.match(theme, /--color-accent:\s*#59633f/);
+    assert.match(theme, /--color-accent-muted:\s*#aab59a/);
+    assert.match(theme, /--color-danger:\s*#a65f49/);
+    assert.match(
+        theme,
+        /\.sidebar\s*\{[\s\S]*?background:\s*#72785b;/
+    );
 
     assert.doesNotMatch(theme, /(^|[;{]\s*)font-family\s*:/m);
     assert.doesNotMatch(theme, /(^|[;{]\s*)font-size\s*:/m);
