@@ -86,7 +86,7 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
-        /outline-color:\s*var\(--color-focus-ring\)/
+        /\.taskContextToolbarButton:focus-visible,[\s\S]*\.sidebar \.sidebarUnifiedGroup > summary:focus-visible[\s\S]*outline-color:\s*var\(--color-focus-ring\)/
     );
     assert.match(
         bridge,

@@ -83,7 +83,11 @@
 }
 
 .recurrenceWeekdayOption
-    input:focus-visible + span {
+    input:focus-visible + span,
+.taskContextToolbarButton:focus-visible,
+.taskContextToolbarSort select:focus-visible,
+.taskContextToolbarSummary:focus-visible,
+.sidebar .sidebarUnifiedGroup > summary:focus-visible {
     outline-color: var(--color-focus-ring);
 }
 
