@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap");
 
 :root[data-theme="terminal-80"] {
     --color-text: #7cff6b;
@@ -32,7 +32,7 @@
         Menlo,
         monospace;
     --ui-font-size: 14px;
-    --ui-line-height: 1.4;
+    --ui-line-height: 1.34;
     --panel-padding: 12px;
     --content-padding: 16px;
     --task-padding-y: 7px;
@@ -69,12 +69,29 @@
 :root[data-theme="terminal-80"] textarea,
 :root[data-theme="terminal-80"] dialog {
     font-family: var(--ui-font);
+    font-weight: 500;
 }
 
 :root[data-theme="terminal-80"] body {
     color-scheme: dark;
-    letter-spacing: 0.015em;
+    letter-spacing: 0.008em;
     text-shadow: 0 0 3px rgb(124 255 107 / 16%);
+}
+
+:root[data-theme="terminal-80"] h1,
+:root[data-theme="terminal-80"] h2,
+:root[data-theme="terminal-80"] h3,
+:root[data-theme="terminal-80"] .primaryAction,
+:root[data-theme="terminal-80"] .secondaryAction,
+:root[data-theme="terminal-80"] .tertiaryAction {
+    text-transform: uppercase;
+    letter-spacing: 0.018em;
+}
+
+:root[data-theme="terminal-80"] h1,
+:root[data-theme="terminal-80"] h2,
+:root[data-theme="terminal-80"] h3 {
+    font-weight: 600;
 }
 
 :root[data-theme="terminal-80"] .sidebar,
@@ -133,7 +150,7 @@
     border-bottom-color: var(--color-border);
     color: var(--color-text);
     font-size: 13px;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 :root[data-theme="terminal-80"] .task.bulkSelectedTask {
@@ -203,6 +220,6 @@
 @media (max-width: 760px) {
     :root[data-theme="terminal-80"] .task {
         font-size: 12.5px;
-        line-height: 1.32;
+        line-height: 1.28;
     }
 }
