@@ -1,9 +1,9 @@
 .waitingTaskEditorField {
     margin-top: 14px;
     padding: 12px;
-    border: 1px solid rgba(100, 116, 139, 0.35);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    background: rgba(148, 163, 184, 0.08);
+    background: var(--color-surface-subtle);
 }
 
 .waitingTaskControl {
@@ -23,13 +23,13 @@
 
 .waitingTaskHint {
     margin: 7px 0 0;
+    color: var(--color-text-secondary);
     font-size: 0.86rem;
     line-height: 1.4;
-    opacity: 0.72;
 }
 
 .waitingTaskRow {
-    border-left: 3px solid rgba(100, 116, 139, 0.65);
+    border-left: 3px solid var(--color-text-muted);
 }
 
 .waitingTaskBadge {
@@ -38,11 +38,11 @@
     width: fit-content;
     margin-top: 3px;
     padding: 2px 6px;
-    border: 1px solid rgba(100, 116, 139, 0.38);
+    border: 1px solid var(--color-border);
     border-radius: 999px;
+    color: var(--color-text-secondary);
     font-size: 0.72rem;
     line-height: 1.2;
-    opacity: 0.78;
 }
 
 @media (max-width: 760px) {
