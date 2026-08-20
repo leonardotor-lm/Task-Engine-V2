@@ -1,0 +1,53 @@
+/*
+ * Transitional semantic bridge for legacy rules still living in styles.css.
+ * Keep this file small and remove selectors as their source rules are migrated.
+ */
+
+.sidebar {
+    border-right-color: var(--color-border);
+}
+
+.details {
+    border-left-color: var(--color-border);
+}
+
+.task {
+    border-bottom-color: var(--color-border);
+}
+
+.task:hover {
+    background: var(--color-surface-hover);
+}
+
+.bulkToolbar {
+    border-color: var(--color-accent-muted);
+}
+
+.taskMeta {
+    color: var(--color-text-secondary);
+}
+
+.taskMetaText:not(:last-child)::after {
+    color: var(--color-text-muted);
+}
+
+.tagField,
+.searchableMultiSelect,
+.taskMoveField {
+    border-color: var(--color-border);
+}
+
+.quickMoreMenu .destructiveAction {
+    color: var(--color-danger);
+}
+
+.recurrenceWeekdayOption
+    input:focus-visible + span {
+    outline-color: var(--color-focus-ring);
+}
+
+.advancedSearchError {
+    border-left-color: var(--color-danger);
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+}
