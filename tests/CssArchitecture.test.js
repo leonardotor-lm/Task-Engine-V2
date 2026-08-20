@@ -49,7 +49,8 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/themes/retro-dark.css",
             "styles/themes/paper.css",
             "styles/themes/high-contrast.css",
-            "styles/themes/ink-blue.css"
+            "styles/themes/ink-blue.css",
+            "styles/themes/terminal-80.css"
         ]
     );
 
@@ -92,6 +93,22 @@ test("Retro Dark define una paleta propia y tipografía monoespaciada", async ()
     assert.match(theme, /--color-surface:\s*#073642/);
     assert.match(theme, /--color-accent:\s*#2aa198/);
     assert.match(theme, /--ui-font:[\s\S]*ui-monospace/);
+
+});
+
+test("Terminal 80 usa fósforo verde e IBM Plex Mono", async () => {
+
+    const theme = await readFile(
+        resolve(ROOT, "styles/themes/terminal-80.css"),
+        "utf8"
+    );
+
+    assert.match(theme, /:root\[data-theme="terminal-80"\]/);
+    assert.match(theme, /--color-surface-subtle:\s*#07110a/);
+    assert.match(theme, /--color-text:\s*#7cff6b/);
+    assert.match(theme, /--color-accent:\s*#7cff6b/);
+    assert.match(theme, /"IBM Plex Mono"/);
+    assert.match(theme, /text-shadow:\s*0 0 3px/);
 
 });
 
