@@ -37,16 +37,28 @@
     color: var(--color-text-muted);
 }
 
-.taskHeader .toggleSubtasks {
+:root[data-theme] .task .toggleSubtasks,
+:root[data-theme] .task .manualOrderHandle {
     border-color: transparent;
-    background: transparent;
+    background-color: transparent;
+}
+
+:root[data-theme] .task .toggleSubtasks {
     color: var(--color-text-secondary);
 }
 
-.taskHeader .toggleSubtasks:hover,
-.taskHeader .toggleSubtasks:focus-visible {
+:root[data-theme] .task .manualOrderHandle {
+    color: var(--color-text-muted);
+}
+
+:root[data-theme] .task .toggleSubtasks:hover,
+:root[data-theme] .task .toggleSubtasks:focus-visible,
+:root[data-theme] .task .toggleSubtasks:active,
+:root[data-theme] .task .manualOrderHandle:hover,
+:root[data-theme] .task .manualOrderHandle:focus-visible,
+:root[data-theme] .task .manualOrderHandle:active {
     border-color: transparent;
-    background: var(--color-surface-hover);
+    background-color: transparent;
     color: var(--color-text);
 }
 
