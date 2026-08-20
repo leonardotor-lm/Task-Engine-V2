@@ -19,11 +19,11 @@ test("la casilla se desplaza ópticamente hacia la línea del título", () => {
 
 });
 
-test("la casilla compensa la ruta jerárquica anterior al título", () => {
+test("la casilla y el desplegable compensan la ruta jerárquica anterior al título", () => {
 
     assert.match(
         source,
-        /\.taskHeader:has\(\.taskHierarchyPath\)[\s\S]*?>\s*\.taskCompleteCheckbox\s*\{[\s\S]*?transform:\s*translateY\(20px\);/
+        /\.taskHeader:has\(\.taskHierarchyPath\)[\s\S]*?>\s*\.taskCompleteCheckbox,[\s\S]*?>\s*\.toggleSubtasks,[\s\S]*?>\s*\.toggleSubtasksSpacer\s*\{[\s\S]*?transform:\s*translateY\(20px\);/
     );
 
 });
