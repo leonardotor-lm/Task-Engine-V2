@@ -139,6 +139,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/task-interface.css",
     "./styles/task-quick-actions.css",
     "./styles/theme-settings.css",
+    "./styles/theme-semantic-bridge.css",
     "./styles/themes/default.css",
     "./styles/themes/retro-dark.css",
     "./styles/themes/paper.css",
