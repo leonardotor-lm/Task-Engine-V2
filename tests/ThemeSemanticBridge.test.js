@@ -11,7 +11,7 @@ const ROOT = resolve(
 
 test("la hoja puente reemplaza colores heredados por tokens semanticos", async () => {
 
-    const [settings, bridge, pwaAssets] = await Promise.all([
+    const [settings, bridge, statusTokens, pwaAssets] = await Promise.all([
         readFile(
             resolve(ROOT, "styles/theme-settings.css"),
             "utf8"
@@ -20,9 +20,17 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
             resolve(ROOT, "styles/theme-semantic-bridge.css"),
             "utf8"
         ),
+        readFile(
+            resolve(ROOT, "styles/theme-status-tokens.css"),
+            "utf8"
+        ),
         readFile(resolve(ROOT, "pwa-assets.js"), "utf8")
     ]);
 
+    assert.match(
+        settings,
+        /@import url\("\.\/theme-status-tokens\.css"\);/
+    );
     assert.match(
         settings,
         /@import url\("\.\/theme-semantic-bridge\.css"\);/
@@ -50,6 +58,10 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
+        /\.priority-3\s*\{[\s\S]*color:\s*var\(--color-warning\)/
+    );
+    assert.match(
+        bridge,
         /\.priority-4,[\s\S]*\.destructiveAction[\s\S]*color:\s*var\(--color-danger\)/
     );
     assert.match(
@@ -62,7 +74,11 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
-        /:root\[data-theme\] \.taskCompletionNotice button\s*\{[\s\S]*border-color:\s*var\(--color-on-accent\)[\s\S]*background-color:\s*transparent[\s\S]*color:\s*var\(--color-on-accent\)/
+        /\.task\.swipingRight\s*\{[\s\S]*var\(--color-success-soft\)/
+    );
+    assert.match(
+        bridge,
+        /\.task\.swipingRight::before\s*\{[\s\S]*background:\s*var\(--color-success-soft\)[\s\S]*color:\s*var\(--color-success\)/
     );
     assert.match(
         bridge,
@@ -75,6 +91,30 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     assert.doesNotMatch(
         bridge,
         /#[0-9a-f]{3,8}\b/i
+    );
+
+    for (const theme of [
+        "default",
+        "dark",
+        "retro-dark",
+        "paper",
+        "high-contrast",
+        "ink-blue",
+        "terminal-80"
+    ]) {
+        assert.match(
+            statusTokens,
+            new RegExp(`:root\\[data-theme=\\"${theme}\\"\\][\\s\\S]*?--color-warning:`)
+        );
+    }
+
+    assert.match(
+        statusTokens,
+        /--color-success:/
+    );
+    assert.match(
+        statusTokens,
+        /--color-success-soft:/
     );
 
     assert.match(
