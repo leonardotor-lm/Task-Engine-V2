@@ -112,3 +112,8 @@
     background: var(--color-success-soft);
     color: var(--color-success);
 }
+
+#openTaskCreation,
+.mobileFloatingTaskButton {
+    box-shadow: var(--transient-surface-shadow);
+}
