@@ -96,7 +96,7 @@ test("Retro Dark define una paleta propia y tipografía monoespaciada", async ()
 
 });
 
-test("Terminal 80 usa fósforo verde e IBM Plex Mono", async () => {
+test("Terminal 80 usa fósforo verde y Source Code Pro", async () => {
 
     const theme = await readFile(
         resolve(ROOT, "styles/themes/terminal-80.css"),
@@ -107,7 +107,7 @@ test("Terminal 80 usa fósforo verde e IBM Plex Mono", async () => {
     assert.match(theme, /--color-surface-subtle:\s*#07110a/);
     assert.match(theme, /--color-text:\s*#7cff6b/);
     assert.match(theme, /--color-accent:\s*#7cff6b/);
-    assert.match(theme, /"IBM Plex Mono"/);
+    assert.match(theme, /"Source Code Pro"/);
     assert.match(theme, /text-shadow:\s*0 0 3px/);
 
 });
