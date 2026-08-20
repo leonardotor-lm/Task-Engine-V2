@@ -34,6 +34,14 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
+        /\.bulkModeNotice\s*\{[\s\S]*background:\s*var\(--color-accent-soft\)[\s\S]*color:\s*var\(--color-text\)/
+    );
+    assert.match(
+        bridge,
+        /\.taskHeader \.toggleSubtasks\s*\{[\s\S]*background:\s*transparent[\s\S]*color:\s*var\(--color-text-secondary\)/
+    );
+    assert.match(
+        bridge,
         /\.taskMeta\s*\{[\s\S]*var\(--color-text-secondary\)/
     );
     assert.match(
