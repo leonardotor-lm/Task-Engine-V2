@@ -96,6 +96,9 @@ import {
     BulkDueDateController
 } from "./ui/BulkDueDateController.js";
 import {
+    RecurrenceLifecycleController
+} from "./ui/RecurrenceLifecycleController.js";
+import {
     ThemeController
 } from "./ui/ThemeController.js";
 
@@ -173,6 +176,8 @@ const notionSyncRetryController =
     );
 const bulkDueDateController =
     new BulkDueDateController(app);
+const recurrenceLifecycleController =
+    new RecurrenceLifecycleController(app);
 const themeController =
     new ThemeController(app);
 
@@ -209,5 +214,6 @@ keyboardNavigationController.start();
 keyboardActionShortcutsController.start();
 manualTaskOrderController.start();
 bulkDueDateController.start();
+recurrenceLifecycleController.start();
 app.start();
 themeController.start();
