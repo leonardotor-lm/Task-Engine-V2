@@ -1,0 +1,208 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap");
+
+:root[data-theme="terminal-80"] {
+    --color-text: #7cff6b;
+    --color-text-subtle: #68d85d;
+    --color-text-secondary: #4ea947;
+    --color-text-muted: #356f32;
+    --color-surface: #0a160d;
+    --color-surface-subtle: #07110a;
+    --color-surface-hover: #0d1d10;
+    --color-border: #24572a;
+    --color-border-strong: #3b7f40;
+    --color-accent: #7cff6b;
+    --color-accent-strong: #a3ff8f;
+    --color-accent-soft: #103819;
+    --color-accent-muted: #184d22;
+    --color-on-accent: #07110a;
+    --color-on-dark: #a3ff8f;
+    --color-focus-ring: #a3ff8f;
+    --color-danger: #ff765f;
+    --color-danger-soft: #3b1713;
+    --disabled-opacity: 0.5;
+    --interface-radius: 0;
+
+    --ui-font:
+        "IBM Plex Mono",
+        ui-monospace,
+        "Cascadia Mono",
+        "Segoe UI Mono",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.4;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 7px;
+    --task-padding-x: 8px;
+    --compact-gap: 6px;
+    --transient-surface-border:
+        1px solid var(--color-border-strong);
+    --transient-surface-radius: 0;
+    --transient-surface-shadow:
+        0 0 18px rgb(76 190 80 / 12%);
+    --transient-dialog-shadow:
+        0 0 32px rgb(76 190 80 / 16%);
+    --transient-backdrop:
+        rgb(1 7 3 / 72%);
+    --transient-surface-gap: 6px;
+    --transient-surface-padding: 10px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
+}
+
+:root[data-theme="terminal-80"],
+:root[data-theme="terminal-80"] body,
+:root[data-theme="terminal-80"] #app,
+:root[data-theme="terminal-80"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="terminal-80"] body,
+:root[data-theme="terminal-80"] button,
+:root[data-theme="terminal-80"] input,
+:root[data-theme="terminal-80"] select,
+:root[data-theme="terminal-80"] textarea,
+:root[data-theme="terminal-80"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="terminal-80"] body {
+    color-scheme: dark;
+    letter-spacing: 0.015em;
+    text-shadow: 0 0 3px rgb(124 255 107 / 16%);
+}
+
+:root[data-theme="terminal-80"] .sidebar,
+:root[data-theme="terminal-80"] .content,
+:root[data-theme="terminal-80"] .details,
+:root[data-theme="terminal-80"] .mobileHeader {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="terminal-80"] .sidebar {
+    border-right-color: var(--color-border-strong);
+}
+
+:root[data-theme="terminal-80"] .details {
+    border-left-color: var(--color-border-strong);
+}
+
+:root[data-theme="terminal-80"] button,
+:root[data-theme="terminal-80"] input,
+:root[data-theme="terminal-80"] select,
+:root[data-theme="terminal-80"] textarea {
+    border-color: var(--color-border-strong);
+    border-radius: 0;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: none;
+}
+
+:root[data-theme="terminal-80"] input::placeholder,
+:root[data-theme="terminal-80"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="terminal-80"] button:not(:disabled):hover,
+:root[data-theme="terminal-80"] .sidebarButton:hover,
+:root[data-theme="terminal-80"] .task:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="terminal-80"] .sidebarButton {
+    color: var(--color-text-secondary);
+    border-radius: 0;
+}
+
+:root[data-theme="terminal-80"] .sidebarButton.active {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+:root[data-theme="terminal-80"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+:root[data-theme="terminal-80"] .task.bulkSelectedTask {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="terminal-80"] .advancedSearchActiveNotice,
+:root[data-theme="terminal-80"] .bulkToolbar,
+:root[data-theme="terminal-80"] .settingsToolPanel {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="terminal-80"] dialog,
+:root[data-theme="terminal-80"] .taskDrawer,
+:root[data-theme="terminal-80"] .searchableSelectMenu,
+:root[data-theme="terminal-80"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="terminal-80"] .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    text-shadow: none;
+}
+
+:root[data-theme="terminal-80"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+}
+
+:root[data-theme="terminal-80"] .secondaryAction,
+:root[data-theme="terminal-80"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="terminal-80"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+    text-shadow: 0 0 3px rgb(255 118 95 / 18%);
+}
+
+:root[data-theme="terminal-80"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="terminal-80"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+    box-shadow: 0 0 0 1px var(--color-focus-ring), 0 0 8px rgb(163 255 143 / 24%);
+}
+
+:root[data-theme="terminal-80"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    text-shadow: none;
+}
+
+:root[data-theme="terminal-80"] * {
+    scrollbar-color: var(--color-border-strong) var(--color-surface-subtle);
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="terminal-80"] .task {
+        font-size: 12.5px;
+        line-height: 1.32;
+    }
+}
