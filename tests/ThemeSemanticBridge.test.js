@@ -88,6 +88,10 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
         bridge,
         /outline-color:\s*var\(--color-focus-ring\)/
     );
+    assert.match(
+        bridge,
+        /#openTaskCreation,[\s\S]*\.mobileFloatingTaskButton\s*\{[\s\S]*box-shadow:\s*var\(--transient-surface-shadow\)/
+    );
     assert.doesNotMatch(
         bridge,
         /#[0-9a-f]{3,8}\b/i
