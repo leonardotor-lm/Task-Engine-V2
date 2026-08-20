@@ -53,13 +53,22 @@
 :root[data-theme="olive-natural"] .sidebar h2,
 :root[data-theme="olive-natural"] .sidebar h3,
 :root[data-theme="olive-natural"] .sidebar label,
-:root[data-theme="olive-natural"] .sidebar .settingsHint,
-:root[data-theme="olive-natural"] .sidebar .sidebarButton {
+:root[data-theme="olive-natural"] .sidebar .settingsHint {
     color: var(--color-on-dark);
 }
 
+:root[data-theme="olive-natural"] .sidebar .sidebarUnifiedGroup > summary {
+    color: var(--color-on-dark);
+}
+
+:root[data-theme="olive-natural"] .sidebar .sidebarButton {
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
 :root[data-theme="olive-natural"] .sidebar .sidebarButton:hover {
-    background: rgb(241 240 230 / 14%);
+    background: var(--color-surface-hover);
+    color: var(--color-text);
 }
 
 :root[data-theme="olive-natural"] .sidebar .sidebarButton.active {
