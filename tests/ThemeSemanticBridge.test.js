@@ -46,6 +46,10 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
+        /\.bulkToolbar\s*\{[\s\S]*border-color:\s*var\(--color-accent-muted\)[\s\S]*background:\s*var\(--color-accent-soft\)/
+    );
+    assert.match(
+        bridge,
         /:root\[data-theme\] \.task \.toggleSubtasks,[\s\S]*:root\[data-theme\] \.task \.manualOrderHandle[\s\S]*background-color:\s*transparent/
     );
     assert.match(
@@ -70,7 +74,39 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
-        /\.taskCompletionNotice\s*\{[\s\S]*background:\s*var\(--color-accent-strong\)[\s\S]*color:\s*var\(--color-on-accent\)/
+        /\.syncStatus\.configured,[\s\S]*\.settingsSaveStatus[\s\S]*color:\s*var\(--color-success\)/
+    );
+    assert.match(
+        bridge,
+        /\.syncStatus\.pending,[\s\S]*\.sidebarSyncStatus\.pending[\s\S]*color:\s*var\(--color-warning\)/
+    );
+    assert.match(
+        bridge,
+        /\.taskCompleteCheckbox\s*\{[\s\S]*border-color:\s*var\(--color-border-strong\)/
+    );
+    assert.match(
+        bridge,
+        /\.taskCompleteCheckbox:hover\s*\{[\s\S]*border-color:\s*var\(--color-success\)/
+    );
+    assert.match(
+        bridge,
+        /\.backupActions button,[\s\S]*#closeTaskEditor:hover,[\s\S]*\.openGoal[\s\S]*color:\s*var\(--color-text\)/
+    );
+    assert.match(
+        bridge,
+        /\.iconButton:focus-visible,[\s\S]*\.sidebar \.sidebarUnifiedGroup > summary:focus-visible[\s\S]*outline-color:\s*var\(--color-focus-ring\)/
+    );
+    assert.match(
+        bridge,
+        /\.createActionButton:active\s*\{[\s\S]*background:\s*var\(--color-accent-strong\)/
+    );
+    assert.match(
+        bridge,
+        /\.colorSelectorPreview,[\s\S]*\.colorSwatch[\s\S]*border-color:\s*var\(--color-border-strong\)/
+    );
+    assert.match(
+        bridge,
+        /\.taskCompletionNotice\s*\{[\s\S]*background:\s*var\(--color-accent-strong\)[\s\S]*color:\s*var\(--color-on-accent\)[\s\S]*box-shadow:\s*var\(--transient-surface-shadow\)/
     );
     assert.match(
         bridge,
@@ -86,15 +122,19 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
-        /\.taskContextToolbarButton:focus-visible,[\s\S]*\.sidebar \.sidebarUnifiedGroup > summary:focus-visible[\s\S]*outline-color:\s*var\(--color-focus-ring\)/
+        /\.taskDrawer,[\s\S]*\.mobileFloatingTaskButton[\s\S]*box-shadow:\s*var\(--transient-surface-shadow\)/
     );
     assert.match(
         bridge,
-        /#openTaskCreation,[\s\S]*\.mobileFloatingTaskButton\s*\{[\s\S]*box-shadow:\s*var\(--transient-surface-shadow\)/
+        /\.mobileMenuBackdrop\s*\{[\s\S]*background:\s*var\(--transient-backdrop\)/
     );
     assert.doesNotMatch(
         bridge,
         /#[0-9a-f]{3,8}\b/i
+    );
+    assert.doesNotMatch(
+        bridge,
+        /rgb\(/i
     );
 
     for (const theme of [
