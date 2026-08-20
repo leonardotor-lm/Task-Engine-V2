@@ -89,7 +89,13 @@
     color: var(--color-danger);
 }
 
-.taskCompletionNotice button {
-    border-color: var(--color-accent);
-    color: var(--color-on-dark);
+.taskCompletionNotice {
+    background: var(--color-accent-strong);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme] .taskCompletionNotice button {
+    border-color: var(--color-on-accent);
+    background-color: transparent;
+    color: var(--color-on-accent);
 }
