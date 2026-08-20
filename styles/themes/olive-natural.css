@@ -1,0 +1,134 @@
+:root[data-theme="olive-natural"] {
+    --color-text: #30352d;
+    --color-text-subtle: #4e5649;
+    --color-text-secondary: #626a5c;
+    --color-text-muted: #7d8577;
+    --color-surface: #f5f1e6;
+    --color-surface-subtle: #e9e4d6;
+    --color-surface-hover: #ddd8c8;
+    --color-border: #c7c0ad;
+    --color-border-strong: #9f9784;
+    --color-accent: #69784d;
+    --color-accent-strong: #4f5e39;
+    --color-accent-soft: #dce3cc;
+    --color-accent-muted: #9aa884;
+    --color-on-accent: #fffdf7;
+    --color-on-dark: #fffdf7;
+    --color-focus-ring: #687f4d;
+    --color-danger: #a6533f;
+    --color-danger-soft: #ead4ca;
+    --transient-surface-border:
+        1px solid var(--color-border-strong);
+    --transient-surface-shadow:
+        0 10px 24px rgb(70 68 53 / 14%);
+    --transient-dialog-shadow:
+        0 18px 42px rgb(70 68 53 / 18%);
+    --transient-backdrop:
+        rgb(56 55 45 / 22%);
+}
+
+:root[data-theme="olive-natural"],
+:root[data-theme="olive-natural"] body,
+:root[data-theme="olive-natural"] #app,
+:root[data-theme="olive-natural"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="olive-natural"] .sidebar,
+:root[data-theme="olive-natural"] .content,
+:root[data-theme="olive-natural"] .details,
+:root[data-theme="olive-natural"] .mobileHeader {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="olive-natural"] button,
+:root[data-theme="olive-natural"] input,
+:root[data-theme="olive-natural"] select,
+:root[data-theme="olive-natural"] textarea {
+    background-color: var(--color-surface);
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+}
+
+:root[data-theme="olive-natural"] input::placeholder,
+:root[data-theme="olive-natural"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="olive-natural"] .sidebarButton {
+    color: var(--color-text);
+}
+
+:root[data-theme="olive-natural"] .sidebarButton:hover,
+:root[data-theme="olive-natural"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="olive-natural"] .sidebarButton.active {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="olive-natural"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+}
+
+:root[data-theme="olive-natural"] .task.bulkSelectedTask,
+:root[data-theme="olive-natural"] .advancedSearchActiveNotice,
+:root[data-theme="olive-natural"] .bulkToolbar {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="olive-natural"] .settingsToolPanel,
+:root[data-theme="olive-natural"] dialog,
+:root[data-theme="olive-natural"] .taskDrawer,
+:root[data-theme="olive-natural"] .searchableSelectMenu,
+:root[data-theme="olive-natural"] .searchableMultiSelectManagerBody {
+    background: #faf7ef;
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+}
+
+:root[data-theme="olive-natural"] .primaryAction {
+    background: var(--color-accent);
+    border-color: var(--color-accent-strong);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="olive-natural"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+}
+
+:root[data-theme="olive-natural"] .secondaryAction,
+:root[data-theme="olive-natural"] .tertiaryAction {
+    background: #eee9dc;
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+}
+
+:root[data-theme="olive-natural"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="olive-natural"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="olive-natural"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="olive-natural"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="olive-natural"] * {
+    scrollbar-color: var(--color-border-strong) var(--color-surface-subtle);
+}
