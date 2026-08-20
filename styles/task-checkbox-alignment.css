@@ -2,12 +2,24 @@
 
 .taskHeader > .taskCompleteCheckbox {
     margin-top: 4px;
+    transform: translateY(4px);
+}
+
+.taskHeader:has(.taskHierarchyPath)
+    > .taskCompleteCheckbox {
+    transform: translateY(20px);
 }
 
 @media (max-width: 760px) {
 
     .taskHeader > .taskCompleteCheckbox {
         margin-top: 4px;
+        transform: translateY(3px);
+    }
+
+    .taskHeader:has(.taskHierarchyPath)
+        > .taskCompleteCheckbox {
+        transform: translateY(19px);
     }
 
 }
