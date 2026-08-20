@@ -78,7 +78,7 @@
     min-width: 0;
     padding: 14px;
     border-radius: 6px;
-    background: var(--color-surface-soft);
+    background: var(--color-surface-subtle);
 }
 
 .statisticsIndicators strong {
@@ -104,7 +104,7 @@
     min-width: 28px;
     padding: 3px 8px;
     border-radius: 999px;
-    background: var(--color-surface-soft);
+    background: var(--color-surface-subtle);
     color: var(--color-text-muted);
     text-align: center;
 }
