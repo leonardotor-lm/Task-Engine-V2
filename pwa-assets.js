@@ -111,6 +111,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/SidebarLayoutController.js",
     "./src/ui/SmartSyncReconnectionController.js",
     "./src/ui/StatisticsView.js",
+    "./src/ui/StrictAdvancedSearchResultsController.js",
     "./src/ui/SyncNavigationPreservationController.js",
     "./src/ui/TaskEditor.js",
     "./src/ui/TaskEditorDraft.js",
