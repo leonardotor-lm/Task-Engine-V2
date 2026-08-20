@@ -68,8 +68,14 @@
     border-color: var(--color-border);
 }
 
+.priority-4,
 .quickMoreMenu .destructiveAction {
     color: var(--color-danger);
+}
+
+.recurrenceIndicator,
+.recurrenceIcon {
+    color: var(--color-accent-strong);
 }
 
 .recurrenceWeekdayOption
@@ -81,4 +87,15 @@
     border-left-color: var(--color-danger);
     background: var(--color-danger-soft);
     color: var(--color-danger);
+}
+
+.taskCompletionNotice {
+    background: var(--color-accent-strong);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme] .taskCompletionNotice button {
+    border-color: var(--color-on-accent);
+    background-color: transparent;
+    color: var(--color-on-accent);
 }

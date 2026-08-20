@@ -50,6 +50,22 @@ test("la hoja puente reemplaza colores heredados por tokens semanticos", async (
     );
     assert.match(
         bridge,
+        /\.priority-4,[\s\S]*\.destructiveAction[\s\S]*color:\s*var\(--color-danger\)/
+    );
+    assert.match(
+        bridge,
+        /\.recurrenceIndicator,[\s\S]*\.recurrenceIcon[\s\S]*color:\s*var\(--color-accent-strong\)/
+    );
+    assert.match(
+        bridge,
+        /\.taskCompletionNotice\s*\{[\s\S]*background:\s*var\(--color-accent-strong\)[\s\S]*color:\s*var\(--color-on-accent\)/
+    );
+    assert.match(
+        bridge,
+        /:root\[data-theme\] \.taskCompletionNotice button\s*\{[\s\S]*border-color:\s*var\(--color-on-accent\)[\s\S]*background-color:\s*transparent[\s\S]*color:\s*var\(--color-on-accent\)/
+    );
+    assert.match(
+        bridge,
         /\.advancedSearchError\s*\{[\s\S]*var\(--color-danger-soft\)/
     );
     assert.match(
