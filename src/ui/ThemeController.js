@@ -8,6 +8,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Papel"
     },
     {
+        id: "high-contrast",
+        label: "Alto contraste"
+    },
+    {
         id: "dark",
         label: "Oscuro"
     },
