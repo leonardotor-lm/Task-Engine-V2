@@ -74,6 +74,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/AttachmentController.js",
     "./src/ui/AttachmentSearchReference.js",
     "./src/ui/BulkDueDateController.js",
+    "./src/ui/BusinessDayRecurrenceController.js",
     "./src/ui/CalendarView.js",
     "./src/ui/ColorSelector.js",
     "./src/ui/CompactTaskToolbarController.js",
