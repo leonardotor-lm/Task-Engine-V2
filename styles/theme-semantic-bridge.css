@@ -19,6 +19,12 @@
     background: var(--color-surface-hover);
 }
 
+.bulkModeNotice {
+    border-left-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-text);
+}
+
 .bulkToolbar {
     border-color: var(--color-accent-muted);
 }
@@ -29,6 +35,19 @@
 
 .taskMetaText:not(:last-child)::after {
     color: var(--color-text-muted);
+}
+
+.taskHeader .toggleSubtasks {
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-text-secondary);
+}
+
+.taskHeader .toggleSubtasks:hover,
+.taskHeader .toggleSubtasks:focus-visible {
+    border-color: transparent;
+    background: var(--color-surface-hover);
+    color: var(--color-text);
 }
 
 .tagField,
