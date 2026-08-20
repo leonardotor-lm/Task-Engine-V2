@@ -1,5 +1,5 @@
 .editorAttachmentsSection {
-    border-left: 3px solid var(--color-border-strong, #64748b);
+    border-left: 3px solid var(--color-border-strong);
 }
 
 .attachmentSectionBody {
@@ -20,7 +20,7 @@
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.55rem 0;
-    border-bottom: 1px solid var(--color-border, #d7dde5);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .attachmentIdentity {
@@ -31,7 +31,7 @@
 
 .attachmentIdentity a {
     overflow: hidden;
-    color: var(--color-text, #1f2937);
+    color: var(--color-text);
     font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -41,7 +41,7 @@
 .attachmentLimits,
 .attachmentEmptyMessage,
 .attachmentOperationStatus {
-    color: var(--color-text-muted, #64748b);
+    color: var(--color-text-muted);
     font-size: 0.85rem;
 }
 
@@ -57,15 +57,15 @@
     width: fit-content;
     min-height: 2.35rem;
     padding: 0.45rem 0.8rem;
-    border: 1px solid var(--color-border-strong, #64748b);
-    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
     cursor: pointer;
     font-weight: 600;
 }
 
 .attachmentUploadControl:hover,
 .attachmentUploadControl:focus-within {
-    background: var(--color-surface-hover, #f1f5f9);
+    background: var(--color-surface-hover);
 }
 
 .attachmentFileInput {
@@ -82,9 +82,9 @@
 .attachmentConnectionNotice {
     margin: 0;
     padding: 0.65rem 0.75rem;
-    border: 1px solid var(--color-border, #d7dde5);
-    background: var(--color-surface-muted, #f8fafc);
-    color: var(--color-text-muted, #475569);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-subtle);
+    color: var(--color-text-muted);
     line-height: 1.4;
 }
 
