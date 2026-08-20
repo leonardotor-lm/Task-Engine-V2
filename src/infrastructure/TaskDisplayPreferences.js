@@ -18,6 +18,7 @@ const DEFAULT_THEME = "default";
 const VALID_THEMES = new Set([
     DEFAULT_THEME,
     "paper",
+    "olive-natural",
     "dark",
     "retro-dark"
 ]);
