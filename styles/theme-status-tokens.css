@@ -1,0 +1,41 @@
+:root[data-theme="default"] {
+    --color-warning: #d97706;
+    --color-success: #15803d;
+    --color-success-soft: #dcfce7;
+}
+
+:root[data-theme="dark"] {
+    --color-warning: #f59e0b;
+    --color-success: #4ade80;
+    --color-success-soft: #153d2a;
+}
+
+:root[data-theme="retro-dark"] {
+    --color-warning: #b58900;
+    --color-success: #8bbf6a;
+    --color-success-soft: #153f32;
+}
+
+:root[data-theme="paper"] {
+    --color-warning: #9a6b2f;
+    --color-success: #4f765c;
+    --color-success-soft: #d9e4d8;
+}
+
+:root[data-theme="high-contrast"] {
+    --color-warning: #7a4b00;
+    --color-success: #006b3c;
+    --color-success-soft: #dff5e7;
+}
+
+:root[data-theme="ink-blue"] {
+    --color-warning: #9a6a2f;
+    --color-success: #47765b;
+    --color-success-soft: #dcebe2;
+}
+
+:root[data-theme="terminal-80"] {
+    --color-warning: #ffd166;
+    --color-success: #7cff6b;
+    --color-success-soft: #103819;
+}
