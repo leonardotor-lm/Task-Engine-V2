@@ -1,0 +1,13 @@
+/* Alineación óptica del control de completar en las filas de tareas. */
+
+.taskHeader > .taskCompleteCheckbox {
+    margin-top: 4px;
+}
+
+@media (max-width: 760px) {
+
+    .taskHeader > .taskCompleteCheckbox {
+        margin-top: 4px;
+    }
+
+}
