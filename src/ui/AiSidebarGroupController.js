@@ -20,6 +20,16 @@ function extractButton(html, id) {
         : { html: "", rest: html };
 }
 
+function insertAfterPlanningLabel(html, group) {
+    const pattern = /(<span\b[^>]*class=["'][^"']*\bsidebarSectionLabel\b[^"']*["'][^>]*>\s*Planificación\s*<\/span>)/i;
+
+    if (!pattern.test(html)) {
+        return null;
+    }
+
+    return html.replace(pattern, `$1${group}`);
+}
+
 export class AiSidebarGroupController {
 
     constructor(app, { documentRef = globalThis.document } = {}) {
@@ -111,19 +121,11 @@ export class AiSidebarGroupController {
                 return html;
             }
 
-            const marker = `
-                    <span class="sidebarSectionLabel">
-                        Planificación
-                    </span>`;
-
-            if (!html.includes(marker)) return html;
-
             const group = `
 
                     <details
                         id="aiSidebarTools"
-                        class="aiSidebarTools"
-                        ${this.expanded ? "open" : ""}>
+                        class="aiSidebarTools"${this.expanded ? " open" : ""}>
                         <summary class="aiSidebarToolsSummary">
                             <span>Asistencia con IA</span>
                             <span
@@ -135,7 +137,12 @@ export class AiSidebarGroupController {
                         </div>
                     </details>`;
 
-            return html.replace(marker, `${marker}${group}`);
+            const groupedHtml = insertAfterPlanningLabel(
+                html,
+                group
+            );
+
+            return groupedHtml ?? html;
         };
     }
 
