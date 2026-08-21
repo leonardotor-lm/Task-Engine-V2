@@ -11,6 +11,7 @@ import {
 test("el contexto de IA excluye datos sensibles y estados fuera de alcance", () => {
     const context = buildAiTaskContext({
         today: "2026-08-21",
+        question: "¿Qué tareas pendientes tengo?",
         areas: [{ id: "area-1", name: "Trabajo" }],
         contexts: [{ id: "ctx-1", name: "PC" }],
         tags: [{ id: "tag-1", name: "Urgente" }],
@@ -55,15 +56,16 @@ test("el contexto de IA excluye datos sensibles y estados fuera de alcance", () 
     );
 
     const task = context.tasks.find(
-        item => item.id === "task-1"
+        item => item.title === "Preparar informe"
     );
 
     assert.equal(task.project, "Proyecto");
     assert.equal(task.area, "Trabajo");
     assert.equal(task.context, "PC");
     assert.deepEqual(task.tags, ["Urgente"]);
-    assert.equal(task.priorityLabel, "Alta");
+    assert.equal(task.priority, "Alta");
     assert.equal(task.isWaiting, true);
+    assert.equal("id" in task, false);
     assert.equal("description" in task, false);
     assert.equal("attachments" in task, false);
     assert.equal("notionPageUrl" in task, false);
@@ -87,7 +89,7 @@ test("el gateway envía la consulta y el contexto a Apps Script", async () => {
 
     const context = {
         today: "2026-08-21",
-        tasks: [{ id: "task-1", title: "Tarea" }]
+        tasks: [{ title: "Tarea" }]
     };
 
     const response = await gateway.aiQuery({
