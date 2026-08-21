@@ -111,37 +111,28 @@ function getAiProviderStatus_(provider, validateRemote) {
         };
     }
 
-    var response;
-
     if (providerId === "groq") {
-        response = UrlFetchApp.fetch(
-            settings.API_BASE +
-                "/models/" +
-                encodeURIComponent(model),
-            {
-                method: "get",
-                headers: {
-                    Authorization: "Bearer " + apiKey
-                },
-                muteHttpExceptions: true
-            }
-        );
-    } else {
-        response = UrlFetchApp.fetch(
-            settings.API_BASE +
-                "/models/" +
-                encodeURIComponent(model),
-            {
-                method: "get",
-                headers: {
-                    "x-goog-api-key": apiKey
-                },
-                muteHttpExceptions: true
-            }
+        return verifyGroqProvider_(
+            apiKey,
+            model,
+            settings
         );
     }
 
+    var response = UrlFetchApp.fetch(
+        settings.API_BASE +
+            "/models/" +
+            encodeURIComponent(model),
+        {
+            method: "get",
+            headers: {
+                "x-goog-api-key": apiKey
+            },
+            muteHttpExceptions: true
+        }
+    );
     var payload = parseAiResponse_(response);
+
     assertAiResponseOk_(
         response,
         payload,
@@ -153,12 +144,55 @@ function getAiProviderStatus_(provider, validateRemote) {
         connected: true,
         provider: settings.LABEL,
         providerId: providerId,
-        model: providerId === "groq"
-            ? String(payload.id || model)
-            : String(payload.name || "")
+        model:
+            String(payload.name || "")
                 .replace(/^models\//, "") || model,
         modelDisplayName:
-            payload.displayName || payload.owned_by || ""
+            payload.displayName || ""
+    };
+}
+
+function verifyGroqProvider_(apiKey, model, settings) {
+    var response = UrlFetchApp.fetch(
+        settings.API_BASE + "/models",
+        {
+            method: "get",
+            headers: {
+                Authorization: "Bearer " + apiKey
+            },
+            muteHttpExceptions: true
+        }
+    );
+    var payload = parseAiResponse_(response);
+
+    assertAiResponseOk_(
+        response,
+        payload,
+        settings.LABEL
+    );
+
+    var models = Array.isArray(payload.data)
+        ? payload.data
+        : [];
+    var selectedModel = models.find(function(item) {
+        return String(item && item.id || "") === model;
+    });
+
+    if (!selectedModel) {
+        throw protocolError_(
+            "AI_MODEL_UNAVAILABLE",
+            "El modelo seleccionado de Groq no está disponible para esta cuenta."
+        );
+    }
+
+    return {
+        configured: true,
+        connected: true,
+        provider: settings.LABEL,
+        providerId: "groq",
+        model: model,
+        modelDisplayName:
+            selectedModel.owned_by || ""
     };
 }
 
