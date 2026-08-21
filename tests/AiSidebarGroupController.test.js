@@ -74,6 +74,10 @@ test("convierte Planificación en grupo real, muestra flecha y ordena sus vistas
     const html = sidebar.render();
 
     assert.match(html, /id="sidebarPlanningGroup"/);
+    assert.match(
+        html,
+        /id="sidebarPlanningGroup"[\s\S]*?class="sidebarPlanningGroup sidebarNavigationGroup"/
+    );
     assert.match(html, /sidebarGroupLabel">Planificación<\/span>/);
     assert.match(
         html,
@@ -195,6 +199,7 @@ test("normaliza encabezados y deja un solo separador antes de Planificación", (
         /\.customFiltersSection\[open\] > summary \.sidebarGroupChevron,[\s\S]*\.sidebarPlanningGroup\[open\] > summary \.sidebarGroupChevron[\s\S]*rotate\(90deg\)/
     );
     assert.match(source, /summary::after \{[\s\S]*content: none !important/);
+    assert.match(source, /\.sidebarGroupChevron \{[\s\S]*display: inline-block !important/);
 });
 
 test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
