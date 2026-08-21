@@ -17,11 +17,15 @@ export function normalizeAiQueryError(error) {
         /high demand|try again later|resource exhausted|overloaded|temporarily unavailable/i
             .test(message)
     ) {
-        return "Gemini está saturado en este momento. Intentá nuevamente en unos minutos.";
+        return "El proveedor de IA está saturado en este momento. Intentá nuevamente en unos minutos o elegí otro proveedor.";
+    }
+
+    if (/rate limit|too many requests/i.test(message)) {
+        return "Se alcanzó temporalmente el límite del proveedor de IA. Intentá nuevamente más tarde o elegí otro proveedor.";
     }
 
     return message ||
-        "No se pudo completar la consulta a Gemini.";
+        "No se pudo completar la consulta a la IA.";
 }
 
 export class AiAssistantController {
@@ -168,7 +172,7 @@ export class AiAssistantController {
             return `
                 <section class="settingsToolPanel">
                     <p>La asistencia con IA está desactivada.</p>
-                    <p class="settingsHint">Podés activarla desde Configuración → IA. Mientras esté desactivada no se envían datos a Gemini.</p>
+                    <p class="settingsHint">Podés activarla desde Configuración → IA. Mientras esté desactivada no se envían datos a ningún proveedor de IA.</p>
                     <button id="openAiConfiguration" type="button" class="primaryAction">Abrir configuración de IA</button>
                 </section>`;
         }
@@ -194,7 +198,12 @@ export class AiAssistantController {
                 contexts: this.app.contextService?.getAllContexts?.() || [],
                 tags: this.app.tagService?.getAllTags?.() || []
             }),
-            aiModel: this.app?.aiPreferences?.getModel?.() || "gemini-3.5-flash-lite"
+            aiProvider:
+                this.app?.aiPreferences?.getProvider?.() ||
+                "groq",
+            aiModel:
+                this.app?.aiPreferences?.getModel?.() ||
+                "openai/gpt-oss-20b"
         };
     }
 
