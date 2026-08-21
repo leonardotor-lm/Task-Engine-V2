@@ -1,6 +1,6 @@
 import { escapeHtml } from "./escapeHtml.js";
 import {
-    AI_MODELS
+    AI_PROVIDERS
 } from "../infrastructure/AiPreferences.js";
 
 export class AiSettingsController {
@@ -77,6 +77,20 @@ export class AiSettingsController {
         return Boolean(this.app?.aiPreferences?.isEnabled?.());
     }
 
+    getSelectedProvider() {
+        const providerId =
+            this.app?.aiPreferences?.getProvider?.() || "groq";
+
+        return AI_PROVIDERS.find(
+            provider => provider.id === providerId
+        ) || AI_PROVIDERS[0];
+    }
+
+    getSelectedStatus() {
+        const provider = this.getSelectedProvider();
+        return this.status?.providers?.[provider.id] || null;
+    }
+
     renderPanel() {
         const title = this.document?.getElementById?.("settingsTitle");
         const body = this.document?.querySelector?.(".settingsDialogBody");
@@ -93,6 +107,12 @@ export class AiSettingsController {
             else this.renderPanel();
         });
 
+        this.document.getElementById("aiProvider")?.addEventListener("change", event => {
+            this.app.aiPreferences.setProvider(event.target.value);
+            this.error = "";
+            this.renderPanel();
+        });
+
         this.document.getElementById("aiModel")?.addEventListener("change", event => {
             this.app.aiPreferences.setModel(event.target.value);
             this.renderPanel();
@@ -103,7 +123,7 @@ export class AiSettingsController {
 
     getPanelHtml() {
         const enabled = this.isEnabled();
-        const status = this.status;
+        const selectedStatus = this.getSelectedStatus();
         let statusClass = "disconnected";
         let statusText = "Desactivada";
 
@@ -115,13 +135,13 @@ export class AiSettingsController {
             } else if (this.error) {
                 statusClass = "error";
                 statusText = "Error";
-            } else if (status?.connected === true) {
+            } else if (selectedStatus?.connected === true) {
                 statusClass = "configured";
                 statusText = "Conectada";
-            } else if (status?.configured) {
+            } else if (selectedStatus?.configured) {
                 statusClass = "pending";
                 statusText = "Configurada";
-            } else if (status) {
+            } else if (this.status) {
                 statusText = "Sin configurar";
             }
         }
@@ -140,35 +160,47 @@ export class AiSettingsController {
 
                 <p class="settingsHint">La IA es opcional. Si está desactivada, Task Engine no envía datos a ningún proveedor de inteligencia artificial.</p>
 
-                ${enabled ? this.getEnabledPanelHtml(status) : `<p class="settingsHint">Task Engine continúa funcionando normalmente sin IA.</p>`}
+                ${enabled ? this.getEnabledPanelHtml(selectedStatus) : `<p class="settingsHint">Task Engine continúa funcionando normalmente sin IA.</p>`}
             </section>`;
     }
 
     getEnabledPanelHtml(status) {
-        const selectedModel = this.app?.aiPreferences?.getModel?.() || "gemini-3.5-flash-lite";
-        const options = AI_MODELS.map(model => `
+        const provider = this.getSelectedProvider();
+        const selectedModel =
+            this.app?.aiPreferences?.getModel?.() ||
+            provider.defaultModel;
+
+        const providerOptions = AI_PROVIDERS.map(item => `
+            <option value="${escapeHtml(item.id)}" ${item.id === provider.id ? "selected" : ""}>
+                ${escapeHtml(item.label)}
+            </option>`).join("");
+
+        const modelOptions = provider.models.map(model => `
             <option value="${escapeHtml(model.id)}" ${model.id === selectedModel ? "selected" : ""}>
                 ${escapeHtml(model.label)} — ${escapeHtml(model.id)}
             </option>`).join("");
-        const selected = AI_MODELS.find(model => model.id === selectedModel);
+        const selected = provider.models.find(model => model.id === selectedModel);
+        const propertyName = provider.id === "groq"
+            ? "TASK_ENGINE_GROQ_API_KEY"
+            : "TASK_ENGINE_GEMINI_API_KEY";
 
         return `
-            <div class="aiConnectionDetails">
-                <p><strong>Proveedor:</strong> Gemini</p>
-            </div>
+            <label for="aiProvider">Proveedor</label>
+            <select id="aiProvider">${providerOptions}</select>
+            <p class="settingsHint">${escapeHtml(provider.description)}</p>
 
             <label for="aiModel">Modelo para consultas</label>
-            <select id="aiModel">${options}</select>
+            <select id="aiModel">${modelOptions}</select>
             <p class="settingsHint">${escapeHtml(selected?.description || "")}</p>
 
-            <p class="settingsHint">La selección se guarda en este dispositivo y se envía a Apps Script sólo cuando hacés una consulta. La clave de Gemini permanece en Apps Script y nunca se envía al navegador.</p>
+            <p class="settingsHint">La selección se guarda en este dispositivo. Las claves permanecen en Apps Script y nunca se envían al navegador.</p>
 
             ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
 
             ${status && !status.configured ? `
                 <div class="notionSetupGuide">
-                    <p>Configurá esta propiedad del proyecto de Apps Script:</p>
-                    <ul><li><code>TASK_ENGINE_GEMINI_API_KEY</code></li></ul>
+                    <p>Para usar ${escapeHtml(provider.label)}, configurá esta propiedad del proyecto de Apps Script:</p>
+                    <ul><li><code>${propertyName}</code></li></ul>
                 </div>` : ""}
 
             <button id="verifyAiConnection" type="button" class="primaryAction" ${this.loading ? "disabled" : ""}>
@@ -199,11 +231,14 @@ export class AiSettingsController {
         this.renderPanel();
 
         try {
-            this.status = await gateway.aiStatus({ ...connection, validateRemote });
+            this.status = await gateway.aiStatus({
+                ...connection,
+                validateRemote
+            });
             return this.status;
         } catch (error) {
             this.status = null;
-            this.error = error?.message || "No se pudo comprobar la conexión con Gemini.";
+            this.error = error?.message || "No se pudo comprobar la conexión con el proveedor de IA.";
             return null;
         } finally {
             this.loading = false;
