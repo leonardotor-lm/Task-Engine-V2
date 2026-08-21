@@ -29,6 +29,9 @@ function sidebarHtml() {
             <button id="showCalendar" class="sidebarButton">Calendario</button>
             <button id="showGoals" class="sidebarButton">Objetivos</button>
             <button id="showStatistics" class="sidebarButton">Estadísticas</button>
+            <details class="sidebarNavigationGroup sidebarAreaGroup">
+                <summary>Áreas</summary>
+            </details>
             <details class="sidebarNavigationGroup">
                 <summary>Historial</summary>
             </details>
@@ -46,7 +49,7 @@ test("agrupa todas las herramientas de IA y queda colapsado por defecto", () => 
     const html = sidebar.render();
 
     assert.match(html, /id="aiSidebarTools"/);
-    assert.match(html, />Asistencia con IA<\/summary>/);
+    assert.match(html, /Asistencia con IA/);
     assert.doesNotMatch(
         html,
         /id="aiSidebarTools"[^>]*\sopen(?:\s|>)/
@@ -71,10 +74,10 @@ test("convierte Planificación en grupo real, muestra flecha y ordena sus vistas
     const html = sidebar.render();
 
     assert.match(html, /id="sidebarPlanningGroup"/);
-    assert.match(html, /<span>Planificación<\/span>/);
+    assert.match(html, /sidebarGroupLabel">Planificación<\/span>/);
     assert.match(
         html,
-        /class="sidebarGroupChevron"[\s\S]*?aria-hidden="true">›<\/span>/
+        /sidebarGroupChevron" aria-hidden="true">›<\/span>/
     );
     assert.match(
         html,
@@ -103,7 +106,39 @@ test("convierte Planificación en grupo real, muestra flecha y ordena sus vistas
     );
     assert.ok(
         html.indexOf('id="aiSidebarTools"') <
-        html.indexOf('>Historial</summary>')
+        html.indexOf('sidebarGroupLabel">Historial</span>')
+    );
+});
+
+test("usa flechas explícitas en todos los títulos colapsables de la barra", () => {
+    const sidebar = { render: () => sidebarHtml() };
+    const controller = new AiSidebarGroupController(
+        { mainView: { sidebar }, render() {} },
+        { documentRef: null }
+    );
+
+    controller.start();
+    const html = sidebar.render();
+
+    for (const label of [
+        "Filtros personalizados",
+        "Áreas",
+        "Planificación",
+        "Asistencia con IA",
+        "Historial"
+    ]) {
+        const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        assert.match(
+            html,
+            new RegExp(
+                `sidebarGroupLabel">${escaped}<\\/span>[\\s\\S]*?sidebarGroupChevron" aria-hidden="true">›<\\/span>`
+            )
+        );
+    }
+
+    assert.doesNotMatch(
+        html,
+        /<summary>\s*(Filtros personalizados|Áreas|Historial)\s*<\/summary>/
     );
 });
 
@@ -157,8 +192,9 @@ test("normaliza encabezados y deja un solo separador antes de Planificación", (
     );
     assert.match(
         source,
-        /\.sidebarPlanningGroup\[open\] > summary \.sidebarGroupChevron[\s\S]*rotate\(90deg\)/
+        /\.customFiltersSection\[open\] > summary \.sidebarGroupChevron,[\s\S]*\.sidebarPlanningGroup\[open\] > summary \.sidebarGroupChevron[\s\S]*rotate\(90deg\)/
     );
+    assert.match(source, /summary::after \{[\s\S]*content: none !important/);
 });
 
 test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
