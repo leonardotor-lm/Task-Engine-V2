@@ -46,21 +46,20 @@ export class AiAssistantController {
         if (this.started) return;
 
         this.started = true;
-        this.wrapRender();
+        this.wrapAppRender();
         this.apply();
     }
 
-    wrapRender() {
-        const mainView = this.app?.mainView;
-
-        if (!mainView?.render) return;
+    wrapAppRender() {
+        if (!this.app?.render) return;
 
         const originalRender =
-            mainView.render.bind(mainView);
+            this.app.render.bind(this.app);
 
-        mainView.render = state => {
-            originalRender(state);
+        this.app.render = (...args) => {
+            const result = originalRender(...args);
             this.apply();
+            return result;
         };
     }
 
@@ -70,12 +69,21 @@ export class AiAssistantController {
     }
 
     addSidebarEntry() {
-        if (
-            !this.document?.querySelectorAll ||
-            this.document.getElementById(
-                "openAiAssistant"
-            )
-        ) {
+        const existing = this.document
+            ?.getElementById?.("openAiAssistant");
+
+        if (existing) {
+            if (!existing.dataset.aiBound) {
+                existing.dataset.aiBound = "true";
+                existing.addEventListener(
+                    "click",
+                    () => this.open()
+                );
+            }
+            return;
+        }
+
+        if (!this.document?.querySelectorAll) {
             return;
         }
 
@@ -97,6 +105,7 @@ export class AiAssistantController {
         button.type = "button";
         button.className = "sidebarButton";
         button.textContent = "Asistente IA";
+        button.dataset.aiBound = "true";
         button.setAttribute(
             "aria-haspopup",
             "dialog"
@@ -107,10 +116,20 @@ export class AiAssistantController {
             () => this.open()
         );
 
-        planningLabel.insertAdjacentElement(
-            "afterend",
-            button
-        );
+        const firstPlanningButton =
+            planningLabel.nextElementSibling;
+
+        if (firstPlanningButton) {
+            firstPlanningButton.insertAdjacentElement(
+                "beforebegin",
+                button
+            );
+        } else {
+            planningLabel.insertAdjacentElement(
+                "afterend",
+                button
+            );
+        }
     }
 
     ensureDialog() {
@@ -127,7 +146,8 @@ export class AiAssistantController {
             this.document.createElement("dialog");
 
         dialog.id = "aiAssistantDialog";
-        dialog.className = "settingsDialog aiAssistantDialog";
+        dialog.className =
+            "settingsDialog aiAssistantDialog";
         dialog.setAttribute(
             "aria-labelledby",
             "aiAssistantTitle"
@@ -314,7 +334,9 @@ export class AiAssistantController {
 
                 ${this.answer
                     ? `
-                        <div class="settingsToolPanel aiReadonlyAnswer" role="status">
+                        <div
+                            class="settingsToolPanel aiReadonlyAnswer"
+                            role="status">
                             <h3>Respuesta</h3>
                             <p>${formatAnswer(this.answer)}</p>
                             <p class="settingsHint">
