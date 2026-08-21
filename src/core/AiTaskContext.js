@@ -100,11 +100,11 @@ function referencedIds(question, items = []) {
 }
 
 function priorityFromQuestion(question) {
-    if (/\bcritic/.test(question)) return 4;
-    if (/\balta\b|\bimportante/.test(question)) return 3;
-    if (/\bmedia\b/.test(question)) return 2;
-    if (/\bbaja\b/.test(question)) return 1;
     if (/sin prioridad/.test(question)) return 0;
+    if (/prioridad\s+(critic|critica)/.test(question)) return 4;
+    if (/prioridad\s+alta/.test(question)) return 3;
+    if (/prioridad\s+media/.test(question)) return 2;
+    if (/prioridad\s+baja/.test(question)) return 1;
     return null;
 }
 
@@ -149,9 +149,22 @@ function selectTasksForQuestion({
         );
     }
 
-    const areaIds = referencedIds(normalized, areas);
-    const contextIds = referencedIds(normalized, contexts);
-    const tagIds = referencedIds(normalized, tags);
+    const asksArea = /\barea\b|\bareas\b/.test(normalized);
+    const asksContext = /\bcontexto\b|\bcontextos\b/.test(normalized);
+    const asksTag = /\betiqueta\b|\betiquetas\b|\btag\b|\btags\b/.test(
+        normalized
+    );
+    const asksProject = /\bproyecto\b|\bproyectos\b/.test(normalized);
+
+    const areaIds = asksArea
+        ? referencedIds(normalized, areas)
+        : new Set();
+    const contextIds = asksContext
+        ? referencedIds(normalized, contexts)
+        : new Set();
+    const tagIds = asksTag
+        ? referencedIds(normalized, tags)
+        : new Set();
 
     if (areaIds.size) {
         selected = selected.filter(
@@ -173,10 +186,12 @@ function selectTasksForQuestion({
         );
     }
 
-    const namedProjects = tasks.filter(task =>
-        task.isProject === true &&
-        includesWholePhrase(normalized, task.title)
-    );
+    const namedProjects = asksProject
+        ? tasks.filter(task =>
+            task.isProject === true &&
+            includesWholePhrase(normalized, task.title)
+        )
+        : [];
 
     if (namedProjects.length) {
         const projectNames = new Set(
@@ -188,7 +203,7 @@ function selectTasksForQuestion({
                 nearestProjectTitle(task, tasksById)
             )
         );
-    } else if (/\bproyectos?\b/.test(normalized)) {
+    } else if (asksProject) {
         selected = selected.filter(
             task => task.isProject === true
         );
@@ -228,6 +243,8 @@ function selectTasksForQuestion({
     const asksMonth = /este mes|mes actual/.test(normalized);
     const asksStart = /empiez|inicio|inician|comien/.test(normalized);
     const asksDue = /vence|vencim|vencid/.test(normalized);
+    const hasStructuredDateIntent =
+        asksCompleted || asksStart || asksDue;
 
     if (asksOverdue) {
         selected = selected.filter(task =>
@@ -235,7 +252,7 @@ function selectTasksForQuestion({
             Boolean(task.dueDate) &&
             dateOnly(task.dueDate) < today
         );
-    } else if (asksToday) {
+    } else if (hasStructuredDateIntent && asksToday) {
         selected = selected.filter(task => {
             if (asksCompleted) {
                 return dateOnly(task.completedAt) === today;
@@ -245,14 +262,14 @@ function selectTasksForQuestion({
             }
             return dateOnly(task.dueDate) === today;
         });
-    } else if (asksTomorrow) {
+    } else if (hasStructuredDateIntent && asksTomorrow) {
         selected = selected.filter(task => {
             if (asksStart && !asksDue) {
                 return dateOnly(task.startDate) === tomorrow;
             }
             return dateOnly(task.dueDate) === tomorrow;
         });
-    } else if (asksWeek) {
+    } else if (hasStructuredDateIntent && asksWeek) {
         selected = selected.filter(task => {
             const value = asksCompleted
                 ? task.completedAt
@@ -261,7 +278,7 @@ function selectTasksForQuestion({
                     : task.dueDate;
             return isWithin(value, weekStart, weekEnd);
         });
-    } else if (asksMonth) {
+    } else if (hasStructuredDateIntent && asksMonth) {
         selected = selected.filter(task => {
             const value = asksCompleted
                 ? task.completedAt
