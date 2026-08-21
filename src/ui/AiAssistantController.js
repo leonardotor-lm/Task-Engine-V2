@@ -46,8 +46,54 @@ export class AiAssistantController {
         if (this.started) return;
 
         this.started = true;
+        this.wrapSidebarRender();
         this.wrapAppRender();
         this.apply();
+    }
+
+    wrapSidebarRender() {
+        const sidebar = this.app?.mainView?.sidebar;
+
+        if (!sidebar?.render) return;
+
+        const originalRender =
+            sidebar.render.bind(sidebar);
+
+        sidebar.render = (...args) => {
+            const html = originalRender(...args);
+
+            if (
+                html.includes(
+                    'id="openAiAssistant"'
+                )
+            ) {
+                return html;
+            }
+
+            const marker = `
+                    <span class="sidebarSectionLabel">
+                        Planificación
+                    </span>`;
+
+            if (!html.includes(marker)) {
+                return html;
+            }
+
+            const entry = `
+
+                    <button
+                        id="openAiAssistant"
+                        type="button"
+                        class="sidebarButton"
+                        aria-haspopup="dialog">
+                        Asistente IA
+                    </button>`;
+
+            return html.replace(
+                marker,
+                `${marker}${entry}`
+            );
+        };
     }
 
     wrapAppRender() {
@@ -64,72 +110,23 @@ export class AiAssistantController {
     }
 
     apply() {
-        this.addSidebarEntry();
+        this.bindSidebarEntry();
         this.ensureDialog();
     }
 
-    addSidebarEntry() {
-        const existing = this.document
+    bindSidebarEntry() {
+        const entry = this.document
             ?.getElementById?.("openAiAssistant");
 
-        if (existing) {
-            if (!existing.dataset.aiBound) {
-                existing.dataset.aiBound = "true";
-                existing.addEventListener(
-                    "click",
-                    () => this.open()
-                );
-            }
+        if (!entry || entry.dataset.aiBound) {
             return;
         }
 
-        if (!this.document?.querySelectorAll) {
-            return;
-        }
-
-        const planningLabel = [
-            ...this.document.querySelectorAll(
-                ".sidebarSectionLabel"
-            )
-        ].find(element =>
-            element.textContent?.trim() ===
-                "Planificación"
-        );
-
-        if (!planningLabel) return;
-
-        const button =
-            this.document.createElement("button");
-
-        button.id = "openAiAssistant";
-        button.type = "button";
-        button.className = "sidebarButton";
-        button.textContent = "Asistente IA";
-        button.dataset.aiBound = "true";
-        button.setAttribute(
-            "aria-haspopup",
-            "dialog"
-        );
-
-        button.addEventListener(
+        entry.dataset.aiBound = "true";
+        entry.addEventListener(
             "click",
             () => this.open()
         );
-
-        const firstPlanningButton =
-            planningLabel.nextElementSibling;
-
-        if (firstPlanningButton) {
-            firstPlanningButton.insertAdjacentElement(
-                "beforebegin",
-                button
-            );
-        } else {
-            planningLabel.insertAdjacentElement(
-                "afterend",
-                button
-            );
-        }
     }
 
     ensureDialog() {
