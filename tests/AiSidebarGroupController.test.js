@@ -233,6 +233,25 @@ test("repara chevrons faltantes después del render final", () => {
     assert.match(source, /apply\(\) \{\s*this\.ensureDomChevrons\(\)/);
 });
 
+test("usa tokens del tema para mantener contraste en mensajes del chat de IA", () => {
+    const source = fs.readFileSync(
+        new URL(
+            "../src/ui/AiSidebarGroupController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(
+        source,
+        /\.aiAssistantDialog \.aiChatMessage \{[\s\S]*background: var\(--color-surface\) !important;[\s\S]*border-color: var\(--color-border\) !important;[\s\S]*color: var\(--color-text\) !important;/
+    );
+    assert.match(
+        source,
+        /\.aiAssistantDialog \.aiChatMessageLabel,[\s\S]*\.aiAssistantDialog \.aiChatMessage \.settingsHint \{[\s\S]*color: var\(--color-text-secondary\) !important;/
+    );
+});
+
 test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
     const source = fs.readFileSync(
         new URL(
