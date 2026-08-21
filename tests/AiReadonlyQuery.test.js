@@ -132,7 +132,7 @@ test("Apps Script enruta aiQuery y la operación se declara de solo lectura", as
 
     assert.match(
         code,
-        /action === "aiQuery"[\s\S]*queryAi_\(/[\s\S]*body\.question[\s\S]*body\.context/
+        /action === "aiQuery"[\s\S]*queryAi_\([\s\S]*body\.question[\s\S]*body\.context/
     );
     assert.match(
         ai,
