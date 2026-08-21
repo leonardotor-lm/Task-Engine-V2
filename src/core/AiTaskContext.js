@@ -73,13 +73,28 @@ function nearestProjectTitle(task, tasksById) {
     return "";
 }
 
+function escapeRegExp(value) {
+    return String(value || "")
+        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function includesWholePhrase(question, value) {
+    const normalizedValue = normalizeText(value);
+    if (!normalizedValue) return false;
+
+    const pattern = new RegExp(
+        `(^|[^a-z0-9])${escapeRegExp(normalizedValue)}(?=$|[^a-z0-9])`
+    );
+
+    return pattern.test(question);
+}
+
 function referencedIds(question, items = []) {
     return new Set(
         items
-            .filter(item => {
-                const name = normalizeText(item?.name);
-                return name && question.includes(name);
-            })
+            .filter(item =>
+                includesWholePhrase(question, item?.name)
+            )
             .map(item => item.id)
     );
 }
@@ -160,8 +175,7 @@ function selectTasksForQuestion({
 
     const namedProjects = tasks.filter(task =>
         task.isProject === true &&
-        normalizeText(task.title) &&
-        normalized.includes(normalizeText(task.title))
+        includesWholePhrase(normalized, task.title)
     );
 
     if (namedProjects.length) {
