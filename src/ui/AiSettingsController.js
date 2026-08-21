@@ -1,4 +1,12 @@
+import {
+    buildAiTaskContext
+} from "../core/AiTaskContext.js";
 import { escapeHtml } from "./escapeHtml.js";
+
+function formatAnswer(answer) {
+    return escapeHtml(answer || "")
+        .replace(/\n/g, "<br>");
+}
 
 export class AiSettingsController {
 
@@ -13,6 +21,11 @@ export class AiSettingsController {
         this.status = null;
         this.loading = false;
         this.error = "";
+        this.queryLoading = false;
+        this.queryError = "";
+        this.question = "";
+        this.answer = "";
+        this.lastTaskCount = null;
         this.started = false;
     }
 
@@ -140,6 +153,8 @@ export class AiSettingsController {
 
                 this.status = null;
                 this.error = "";
+                this.queryError = "";
+                this.answer = "";
 
                 if (enabled) {
                     this.refresh(false);
@@ -154,6 +169,20 @@ export class AiSettingsController {
         )?.addEventListener(
             "click",
             () => this.refresh(true)
+        );
+
+        this.document.getElementById(
+            "aiQueryForm"
+        )?.addEventListener(
+            "submit",
+            event => {
+                event.preventDefault();
+                const input =
+                    this.document.getElementById(
+                        "aiQuestion"
+                    );
+                this.ask(input?.value || "");
+            }
         );
     }
 
@@ -221,6 +250,9 @@ export class AiSettingsController {
     }
 
     getEnabledPanelHtml(status) {
+        const queryAvailable =
+            status?.configured === true;
+
         return `
             <div class="aiConnectionDetails">
                 <p>
@@ -275,7 +307,146 @@ export class AiSettingsController {
                     ? "Comprobando…"
                     : "Verificar conexión"}
             </button>
+
+            ${queryAvailable
+                ? this.getQueryPanelHtml()
+                : ""}
         `;
+    }
+
+    getQueryPanelHtml() {
+        return `
+            <div class="aiReadonlyQuery">
+                <h3>Consultar tareas</h3>
+
+                <p class="settingsHint">
+                    Esta primera versión es de sólo lectura. Se envían títulos y datos operativos; no se envían descripciones, adjuntos ni notas de Notion.
+                </p>
+
+                <form id="aiQueryForm">
+                    <label for="aiQuestion">
+                        Pregunta
+                    </label>
+                    <textarea
+                        id="aiQuestion"
+                        rows="3"
+                        maxlength="1000"
+                        placeholder="Por ejemplo: ¿qué tareas vencidas tengo?"
+                        ${this.queryLoading ? "disabled" : ""}>${escapeHtml(this.question)}</textarea>
+
+                    <button
+                        type="submit"
+                        class="primaryAction"
+                        ${this.queryLoading ? "disabled" : ""}>
+                        ${this.queryLoading
+                            ? "Analizando…"
+                            : "Preguntar"}
+                    </button>
+                </form>
+
+                ${this.queryError
+                    ? `
+                        <p class="syncErrorHint" role="alert">
+                            ${escapeHtml(this.queryError)}
+                        </p>
+                    `
+                    : ""}
+
+                ${this.answer
+                    ? `
+                        <div class="settingsToolPanel aiReadonlyAnswer" role="status">
+                            <h3>Respuesta</h3>
+                            <p>${formatAnswer(this.answer)}</p>
+                            <p class="settingsHint">
+                                Analizadas: ${Number(this.lastTaskCount ?? 0)} tareas.
+                            </p>
+                        </div>
+                    `
+                    : ""}
+            </div>
+        `;
+    }
+
+    buildContext() {
+        return buildAiTaskContext({
+            tasks:
+                this.app.taskService
+                    ?.repository?.getAll?.() || [],
+            areas:
+                this.app.areaService
+                    ?.getAllAreas?.() || [],
+            contexts:
+                this.app.contextService
+                    ?.getAllContexts?.() || [],
+            tags:
+                this.app.tagService
+                    ?.getAllTags?.() || []
+        });
+    }
+
+    async ask(question) {
+        if (
+            this.queryLoading ||
+            !this.isEnabled()
+        ) {
+            return null;
+        }
+
+        const normalizedQuestion =
+            String(question || "").trim();
+
+        if (!normalizedQuestion) {
+            this.queryError =
+                "Escribí una pregunta antes de consultar.";
+            this.renderPanel();
+            return null;
+        }
+
+        if (!this.app?.syncConfig?.isConfigured?.()) {
+            this.queryError =
+                "Configurá primero la conexión con Apps Script.";
+            this.renderPanel();
+            return null;
+        }
+
+        const gateway =
+            this.app.syncEngine?.gateway;
+
+        if (!gateway?.aiQuery) {
+            this.queryError =
+                "La instalación actual de Apps Script todavía no admite consultas de IA.";
+            this.renderPanel();
+            return null;
+        }
+
+        this.question = normalizedQuestion;
+        this.answer = "";
+        this.queryError = "";
+        this.queryLoading = true;
+        this.renderPanel();
+
+        try {
+            const response = await gateway.aiQuery({
+                ...this.app.syncConfig.get(),
+                question: normalizedQuestion,
+                context: this.buildContext()
+            });
+
+            this.answer = response.answer || "";
+            this.lastTaskCount =
+                response.taskCount ?? null;
+
+            return response;
+        } catch (error) {
+            this.queryError =
+                error?.message ||
+                "No se pudo completar la consulta a Gemini.";
+
+            return null;
+        } finally {
+            this.queryLoading = false;
+            this.renderPanel();
+        }
     }
 
     async refresh(validateRemote) {
