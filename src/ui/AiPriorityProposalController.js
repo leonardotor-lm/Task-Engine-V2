@@ -125,6 +125,7 @@ export class AiPriorityProposalController {
 
         return {
             ...base,
+            requestType: "priorityProposal",
             tasks: base.tasks.map((task, index) => ({
                 ...task,
                 taskId: pendingTasks[index]?.id || "",
@@ -178,7 +179,7 @@ export class AiPriorityProposalController {
 
         return `
             <section class="settingsToolPanel">
-                <p>Gemini puede sugerir cambios de prioridad sobre tus tareas pendientes. La propuesta es sólo para revisión: <strong>esta etapa no modifica ninguna tarea</strong>.</p>
+                <p>La IA puede sugerir cambios de prioridad sobre tus tareas pendientes. La propuesta es sólo para revisión: <strong>esta etapa no modifica ninguna tarea</strong>.</p>
                 <p class="settingsHint">Tareas pendientes disponibles para analizar: ${pendingCount}.</p>
                 ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
                 ${proposalHtml}
@@ -252,7 +253,7 @@ export class AiPriorityProposalController {
         }
 
         const gateway = this.app.syncEngine?.gateway;
-        if (!gateway?.aiPriorityProposal) {
+        if (!gateway?.aiQuery) {
             this.error = "La instalación actual de Apps Script todavía no admite propuestas de prioridad.";
             this.renderDialog();
             return null;
@@ -270,8 +271,9 @@ export class AiPriorityProposalController {
         this.renderDialog();
 
         try {
-            const response = await gateway.aiPriorityProposal({
+            const response = await gateway.aiQuery({
                 ...this.app.syncConfig.get(),
+                question: "Proponé cambios de prioridad para mis tareas pendientes.",
                 context
             });
             this.proposal = {
