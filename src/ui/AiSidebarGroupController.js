@@ -119,8 +119,7 @@ export class AiSidebarGroupController {
             }
             .customFiltersSection > summary::after,
             .sidebarNavigationGroup > summary::after,
-            .aiSidebarTools > summary::after,
-            .sidebarPlanningGroup > summary::after {
+            .aiSidebarTools > summary::after {
                 content: "›";
                 margin-left: auto;
                 font-size: 14px;
@@ -130,8 +129,17 @@ export class AiSidebarGroupController {
             }
             .customFiltersSection[open] > summary::after,
             .sidebarNavigationGroup[open] > summary::after,
-            .aiSidebarTools[open] > summary::after,
-            .sidebarPlanningGroup[open] > summary::after {
+            .aiSidebarTools[open] > summary::after {
+                transform: rotate(90deg);
+            }
+            .sidebarGroupChevron {
+                margin-left: auto;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 1;
+                transition: transform 120ms ease;
+            }
+            .sidebarPlanningGroup[open] > summary .sidebarGroupChevron {
                 transform: rotate(90deg);
             }
             .customFiltersSection > summary:hover,
@@ -202,7 +210,12 @@ export class AiSidebarGroupController {
                     <details
                         id="sidebarPlanningGroup"
                         class="sidebarPlanningGroup"${this.planningExpanded ? " open" : ""}>
-                        <summary>Planificación</summary>
+                        <summary>
+                            <span>Planificación</span>
+                            <span
+                                class="sidebarGroupChevron"
+                                aria-hidden="true">›</span>
+                        </summary>
                         <div class="sidebarPlanningGroupBody">
                             ${planningTools.join("\n                            ")}
                         </div>
