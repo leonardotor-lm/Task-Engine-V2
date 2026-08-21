@@ -6,9 +6,85 @@ import { escapeHtml } from "./escapeHtml.js";
 const MAX_CHAT_HISTORY_MESSAGES = 6;
 const MAX_CHAT_MESSAGE_CHARS = 1200;
 
-function formatAnswer(answer) {
-    return escapeHtml(answer || "")
-        .replace(/\n/g, "<br>");
+function formatInlineMarkdown(text) {
+    return escapeHtml(text || "")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+}
+
+export function formatAiAnswer(answer) {
+    const lines = String(answer || "")
+        .replace(/\r\n/g, "\n")
+        .split("\n");
+    const blocks = [];
+    let paragraph = [];
+    let listType = "";
+    let listItems = [];
+
+    const flushParagraph = () => {
+        if (!paragraph.length) return;
+        blocks.push(
+            `<p>${formatInlineMarkdown(paragraph.join(" "))}</p>`
+        );
+        paragraph = [];
+    };
+
+    const flushList = () => {
+        if (!listItems.length || !listType) return;
+        const items = listItems
+            .map(item => `<li>${formatInlineMarkdown(item)}</li>`)
+            .join("");
+        blocks.push(`<${listType}>${items}</${listType}>`);
+        listType = "";
+        listItems = [];
+    };
+
+    lines.forEach(rawLine => {
+        const line = rawLine.trim();
+
+        if (!line) {
+            flushParagraph();
+            flushList();
+            return;
+        }
+
+        const heading = line.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+            flushParagraph();
+            flushList();
+            const level = Math.min(4, heading[1].length + 2);
+            blocks.push(
+                `<h${level}>${formatInlineMarkdown(heading[2])}</h${level}>`
+            );
+            return;
+        }
+
+        const unordered = line.match(/^[-*]\s+(.+)$/);
+        if (unordered) {
+            flushParagraph();
+            if (listType && listType !== "ul") flushList();
+            listType = "ul";
+            listItems.push(unordered[1]);
+            return;
+        }
+
+        const ordered = line.match(/^\d+[.)]\s+(.+)$/);
+        if (ordered) {
+            flushParagraph();
+            if (listType && listType !== "ol") flushList();
+            listType = "ol";
+            listItems.push(ordered[1]);
+            return;
+        }
+
+        flushList();
+        paragraph.push(line);
+    });
+
+    flushParagraph();
+    flushList();
+
+    return blocks.join("");
 }
 
 function normalizeHistoryMessage(message) {
@@ -167,6 +243,14 @@ export class AiAssistantController {
                 .aiChatMessage.user { align-self:flex-end; }
                 .aiChatMessage.assistant { align-self:flex-start; }
                 .aiChatMessageLabel { display:block; font-size:.78rem; margin-bottom:4px; opacity:.7; }
+                .aiFormattedAnswer p { margin:0 0 10px; line-height:1.45; }
+                .aiFormattedAnswer p:last-child { margin-bottom:0; }
+                .aiFormattedAnswer ul, .aiFormattedAnswer ol { margin:4px 0 10px; padding-left:1.35rem; }
+                .aiFormattedAnswer li { margin:0 0 7px; line-height:1.45; }
+                .aiFormattedAnswer li:last-child { margin-bottom:0; }
+                .aiFormattedAnswer h3, .aiFormattedAnswer h4 { margin:12px 0 6px; line-height:1.25; }
+                .aiFormattedAnswer h3:first-child, .aiFormattedAnswer h4:first-child { margin-top:0; }
+                .aiFormattedAnswer strong { font-weight:650; }
                 .aiAssistantQueryForm { display:flex; flex-direction:column; align-items:stretch; gap:10px; margin-top:12px; }
                 .aiAssistantQueryForm label { display:block; margin:0; }
                 .aiAssistantQueryForm textarea { display:block; width:100%; box-sizing:border-box; margin:0; resize:vertical; }
@@ -249,8 +333,11 @@ export class AiAssistantController {
             const taskHint = message.role === "assistant" && Number.isInteger(message.taskCount)
                 ? `<span class="settingsHint">Analizadas: ${message.taskCount} tareas relevantes.</span>`
                 : "";
+            const content = message.role === "assistant"
+                ? `<div class="aiFormattedAnswer">${formatAiAnswer(message.content)}</div>`
+                : `<div>${escapeHtml(message.content)}</div>`;
 
-            return `<div class="aiChatMessage ${roleClass}"><span class="aiChatMessageLabel">${label}</span><div>${formatAnswer(message.content)}</div>${taskHint}</div>`;
+            return `<div class="aiChatMessage ${roleClass}"><span class="aiChatMessageLabel">${label}</span>${content}${taskHint}</div>`;
         }).join("");
 
         return `<div id="aiChatTranscript" class="aiChatTranscript" role="log" aria-live="polite">${html}</div>`;
