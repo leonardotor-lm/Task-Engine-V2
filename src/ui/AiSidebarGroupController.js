@@ -8,6 +8,14 @@ export const AI_SIDEBAR_TOOL_IDS = Object.freeze([
     "openAiTaskQuality"
 ]);
 
+export const PLANNING_TOOL_IDS = Object.freeze([
+    "showAll",
+    "showProjects",
+    "showGoals",
+    "showCalendar",
+    "showStatistics"
+]);
+
 function extractButton(html, id) {
     const pattern = new RegExp(
         `\\n\\s*<button\\b(?=[^>]*id=["']${id}["'])[^>]*>[\\s\\S]*?<\\/button>`,
@@ -20,18 +28,11 @@ function extractButton(html, id) {
         : { html: "", rest: html };
 }
 
-function insertAfterStatistics(html, group) {
-    const pattern = /(<button\b(?=[^>]*id=["']showStatistics["'])[^>]*>[\s\S]*?<\/button>)/i;
+function replacePlanningLabel(html, replacement) {
+    const pattern = /<span\b[^>]*class=["'][^"']*\bsidebarSectionLabel\b[^"']*["'][^>]*>\s*Planificación\s*<\/span>/i;
 
-    if (pattern.test(html)) {
-        return html.replace(pattern, `$1${group}`);
-    }
-
-    const planningPattern = /(<span\b[^>]*class=["'][^"']*\bsidebarSectionLabel\b[^"']*["'][^>]*>\s*Planificación\s*<\/span>)/i;
-
-    return planningPattern.test(html)
-        ? html.replace(planningPattern, `$1${group}`)
-        : null;
+    if (!pattern.test(html)) return null;
+    return html.replace(pattern, replacement);
 }
 
 export class AiSidebarGroupController {
@@ -41,6 +42,7 @@ export class AiSidebarGroupController {
         this.document = documentRef;
         this.started = false;
         this.expanded = false;
+        this.planningExpanded = true;
     }
 
     start() {
@@ -66,26 +68,41 @@ export class AiSidebarGroupController {
             .sidebarSectionLabel,
             .customFiltersSection > summary,
             .sidebarNavigationGroup > summary,
-            .aiSidebarTools > summary {
+            .aiSidebarTools > summary,
+            .sidebarPlanningGroup > summary {
                 box-sizing: border-box;
                 min-height: 30px;
                 padding: 6px 8px 4px;
-                color: var(--color-text-muted);
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
+                color: var(--color-text-muted) !important;
+                font-family: inherit !important;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                line-height: 1.3 !important;
+                letter-spacing: 0.06em !important;
+                text-transform: uppercase !important;
             }
             .customFiltersSection,
             .sidebarNavigationGroup,
-            .aiSidebarTools {
+            .aiSidebarTools,
+            .sidebarPlanningGroup {
                 margin: 4px 0 0;
                 padding: 0;
-                border: 0;
+            }
+            .customFiltersSection,
+            .sidebarListControls,
+            .aiSidebarTools,
+            .sidebarNavigationGroup {
+                border: 0 !important;
+            }
+            .sidebarPlanningGroup {
+                margin-top: 8px;
+                border: 0 !important;
+                border-top: 1px solid var(--color-border) !important;
             }
             .customFiltersSection > summary,
             .sidebarNavigationGroup > summary,
-            .aiSidebarTools > summary {
+            .aiSidebarTools > summary,
+            .sidebarPlanningGroup > summary {
                 display: flex;
                 align-items: center;
                 gap: 8px;
@@ -96,12 +113,14 @@ export class AiSidebarGroupController {
             }
             .customFiltersSection > summary::-webkit-details-marker,
             .sidebarNavigationGroup > summary::-webkit-details-marker,
-            .aiSidebarTools > summary::-webkit-details-marker {
+            .aiSidebarTools > summary::-webkit-details-marker,
+            .sidebarPlanningGroup > summary::-webkit-details-marker {
                 display: none;
             }
             .customFiltersSection > summary::after,
             .sidebarNavigationGroup > summary::after,
-            .aiSidebarTools > summary::after {
+            .aiSidebarTools > summary::after,
+            .sidebarPlanningGroup > summary::after {
                 content: "›";
                 margin-left: auto;
                 font-size: 14px;
@@ -111,29 +130,33 @@ export class AiSidebarGroupController {
             }
             .customFiltersSection[open] > summary::after,
             .sidebarNavigationGroup[open] > summary::after,
-            .aiSidebarTools[open] > summary::after {
+            .aiSidebarTools[open] > summary::after,
+            .sidebarPlanningGroup[open] > summary::after {
                 transform: rotate(90deg);
             }
             .customFiltersSection > summary:hover,
             .sidebarNavigationGroup > summary:hover,
-            .aiSidebarTools > summary:hover {
+            .aiSidebarTools > summary:hover,
+            .sidebarPlanningGroup > summary:hover {
                 background: var(--color-surface-hover);
             }
             .customFiltersSection {
-                padding-bottom: 0;
-                border-bottom: 0;
+                padding-bottom: 0 !important;
+                border-bottom: 0 !important;
             }
             .sidebarListControls {
                 margin: 0;
-                padding-bottom: 0;
-                border-bottom: 0;
+                padding-bottom: 0 !important;
+                border-bottom: 0 !important;
             }
+            .sidebarPlanningGroupBody,
             .aiSidebarToolsBody {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
                 padding: 2px 0 2px 10px;
             }
+            .sidebarPlanningGroupBody .sidebarButton,
             .aiSidebarToolsBody .sidebarButton {
                 width: 100%;
             }
@@ -141,9 +164,10 @@ export class AiSidebarGroupController {
                 .sidebarSectionLabel,
                 .customFiltersSection > summary,
                 .sidebarNavigationGroup > summary,
-                .aiSidebarTools > summary {
-                    font-size: 13px;
-                    letter-spacing: 0.03em;
+                .aiSidebarTools > summary,
+                .sidebarPlanningGroup > summary {
+                    font-size: 13px !important;
+                    letter-spacing: 0.03em !important;
                 }
             }
         `;
@@ -157,32 +181,49 @@ export class AiSidebarGroupController {
 
         sidebar.render = (...args) => {
             let html = originalRender(...args);
-            const tools = [];
+            const aiTools = [];
+            const planningTools = [];
 
             for (const id of AI_SIDEBAR_TOOL_IDS) {
                 const extracted = extractButton(html, id);
                 html = extracted.rest;
-                if (extracted.html) tools.push(extracted.html.trim());
+                if (extracted.html) aiTools.push(extracted.html.trim());
             }
 
-            if (!tools.length || html.includes('id="aiSidebarTools"')) {
-                return html;
+            for (const id of PLANNING_TOOL_IDS) {
+                const extracted = extractButton(html, id);
+                html = extracted.rest;
+                if (extracted.html) planningTools.push(extracted.html.trim());
             }
 
-            const group = `
+            if (!planningTools.length) return html;
+
+            const planningGroup = `
+                    <details
+                        id="sidebarPlanningGroup"
+                        class="sidebarPlanningGroup"${this.planningExpanded ? " open" : ""}>
+                        <summary>Planificación</summary>
+                        <div class="sidebarPlanningGroupBody">
+                            ${planningTools.join("\n                            ")}
+                        </div>
+                    </details>`;
+
+            const aiGroup = aiTools.length
+                ? `
 
                     <details
                         id="aiSidebarTools"
                         class="aiSidebarTools sidebarNavigationGroup"${this.expanded ? " open" : ""}>
                         <summary>Asistencia con IA</summary>
                         <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
-                            ${tools.join("\n                            ")}
+                            ${aiTools.join("\n                            ")}
                         </div>
-                    </details>`;
+                    </details>`
+                : "";
 
-            const groupedHtml = insertAfterStatistics(
+            const groupedHtml = replacePlanningLabel(
                 html,
-                group
+                `${planningGroup}${aiGroup}`
             );
 
             return groupedHtml ?? html;
@@ -201,8 +242,11 @@ export class AiSidebarGroupController {
     }
 
     apply() {
-        const group = this.document?.getElementById?.(
+        const aiGroup = this.document?.getElementById?.(
             "aiSidebarTools"
+        );
+        const planningGroup = this.document?.getElementById?.(
+            "sidebarPlanningGroup"
         );
 
         this.document?.querySelectorAll?.(
@@ -216,11 +260,37 @@ export class AiSidebarGroupController {
             section.hidden = !hasContent;
         });
 
-        if (!group || group.dataset.aiSidebarBound) return;
+        const waiting = this.document?.getElementById?.(
+            "showWaiting"
+        );
+        const statistics = this.document?.getElementById?.(
+            "showStatistics"
+        );
+        if (
+            waiting &&
+            statistics &&
+            waiting.parentElement === statistics.parentElement
+        ) {
+            statistics.before(waiting);
+        }
 
-        group.dataset.aiSidebarBound = "true";
-        group.addEventListener("toggle", () => {
-            this.expanded = Boolean(group.open);
+        if (
+            planningGroup &&
+            !planningGroup.dataset.aiPlanningBound
+        ) {
+            planningGroup.dataset.aiPlanningBound = "true";
+            planningGroup.addEventListener("toggle", () => {
+                this.planningExpanded = Boolean(
+                    planningGroup.open
+                );
+            });
+        }
+
+        if (!aiGroup || aiGroup.dataset.aiSidebarBound) return;
+
+        aiGroup.dataset.aiSidebarBound = "true";
+        aiGroup.addEventListener("toggle", () => {
+            this.expanded = Boolean(aiGroup.open);
         });
     }
 }
