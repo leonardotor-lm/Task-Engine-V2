@@ -233,7 +233,7 @@ syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
-goingSyncReconciliationController
+ongoingSyncReconciliationController
     .start();
 pwaController.start();
 aiSettingsController.start();
