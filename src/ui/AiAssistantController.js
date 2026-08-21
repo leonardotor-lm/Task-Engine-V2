@@ -204,6 +204,46 @@ export class AiAssistantController {
         if (!dialog) return;
 
         dialog.innerHTML = `
+            <style>
+                .aiAssistantQueryForm {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 10px;
+                }
+
+                .aiAssistantQueryForm label {
+                    display: block;
+                    margin: 0;
+                }
+
+                .aiAssistantQueryForm textarea {
+                    display: block;
+                    width: 100%;
+                    box-sizing: border-box;
+                    margin: 0;
+                    resize: vertical;
+                }
+
+                .aiAssistantQuerySubmit {
+                    align-self: flex-start;
+                    width: auto;
+                    min-width: 0;
+                    padding: 7px 14px;
+                    margin: 0;
+                }
+
+                @media (min-width: 761px) {
+                    .aiAssistantDialog {
+                        width: min(680px, calc(100vw - 48px));
+                    }
+
+                    .aiAssistantQueryForm textarea {
+                        min-height: 180px;
+                    }
+                }
+            </style>
+
             <div class="settingsDialogHeader">
                 <h2 id="aiAssistantTitle">
                     Asistente IA
@@ -300,9 +340,11 @@ export class AiAssistantController {
                     Consulta de sólo lectura. Se envían títulos y datos operativos; no se envían descripciones, adjuntos ni notas de Notion.
                 </p>
 
-                <form id="aiAssistantQueryForm">
+                <form
+                    id="aiAssistantQueryForm"
+                    class="aiAssistantQueryForm">
                     <label for="aiAssistantQuestion">
-                        Pregunta
+                        Consulta
                     </label>
                     <textarea
                         id="aiAssistantQuestion"
@@ -313,11 +355,11 @@ export class AiAssistantController {
 
                     <button
                         type="submit"
-                        class="primaryAction"
+                        class="secondaryAction aiAssistantQuerySubmit"
                         ${this.queryLoading ? "disabled" : ""}>
                         ${this.queryLoading
                             ? "Analizando…"
-                            : "Preguntar"}
+                            : "Consultar"}
                     </button>
                 </form>
 
@@ -376,7 +418,7 @@ export class AiAssistantController {
 
         if (!normalizedQuestion) {
             this.queryError =
-                "Escribí una pregunta antes de consultar.";
+                "Escribí una consulta antes de continuar.";
             this.renderDialog();
             return null;
         }
