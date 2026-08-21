@@ -119,3 +119,37 @@ test("reconoce área, espera y ausencia de fecha en la consulta", () => {
         ["Comprar repuesto"]
     );
 });
+
+test("una consulta abierta no activa filtros por coincidencias parciales de nombres", () => {
+    const context = buildAiTaskContext({
+        question:
+            "Analizá mis tareas pendientes y decime cuáles requieren atención primero y por qué",
+        today: "2026-08-21",
+        areas: [{ id: "short-area", name: "IA" }],
+        contexts: [{ id: "short-context", name: "Mis" }],
+        tags: [{ id: "short-tag", name: "At" }],
+        tasks: [
+            {
+                id: "pending-1",
+                title: "Preparar clase",
+                status: "PENDING",
+                priority: 2,
+                tagIds: []
+            },
+            {
+                id: "pending-2",
+                title: "IA",
+                status: "PENDING",
+                isProject: true,
+                priority: 1,
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.equal(context.taskCount, 2);
+    assert.deepEqual(
+        context.tasks.map(task => task.title),
+        ["Preparar clase", "IA"]
+    );
+});
