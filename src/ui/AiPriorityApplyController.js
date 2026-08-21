@@ -57,7 +57,42 @@ export class AiPriorityApplyController {
         );
     }
 
+    updateReviewCopy() {
+        const intro = this.document?.querySelector?.(
+            ".aiPriorityProposalDialog .settingsToolPanel > p"
+        );
+
+        if (
+            intro &&
+            /esta etapa no modifica ninguna tarea/i.test(
+                intro.textContent || ""
+            )
+        ) {
+            intro.textContent =
+                "La IA puede sugerir cambios de prioridad sobre tus tareas pendientes. Gemini sólo propone: Task Engine aplica únicamente las sugerencias seleccionadas y después de una confirmación explícita.";
+        }
+
+        this.document?.querySelectorAll?.(
+            ".aiPriorityProposalDialog .settingsHint"
+        ).forEach(hint => {
+            if (
+                /todavía no se aplica/i.test(
+                    hint.textContent || ""
+                )
+            ) {
+                hint.textContent = (
+                    hint.textContent || ""
+                ).replace(
+                    /La selección se conserva sólo en esta revisión y todavía no se aplica\.?/i,
+                    "Podés revisar la selección antes de aplicar los cambios."
+                );
+            }
+        });
+    }
+
     decorateReview() {
+        this.updateReviewCopy();
+
         const proposal = this.proposalController?.proposal;
         if (!proposal?.items?.length) return;
 
