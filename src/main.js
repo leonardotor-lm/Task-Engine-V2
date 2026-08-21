@@ -108,6 +108,9 @@ import {
     AiTaskQualityController
 } from "./ui/AiTaskQualityController.js";
 import {
+    AiSidebarGroupController
+} from "./ui/AiSidebarGroupController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -214,6 +217,8 @@ const aiProjectProposalController =
     new AiProjectProposalController(app);
 const aiTaskQualityController =
     new AiTaskQualityController(app);
+const aiSidebarGroupController =
+    new AiSidebarGroupController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -278,6 +283,7 @@ aiWaitingProposalController.start();
 aiOrganizationProposalController.start();
 aiProjectProposalController.start();
 aiTaskQualityController.start();
+aiSidebarGroupController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
