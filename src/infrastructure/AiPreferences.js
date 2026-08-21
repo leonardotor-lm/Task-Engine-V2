@@ -4,45 +4,45 @@ const AI_MODEL_STORAGE_KEY = "task-engine-v2-ai-model";
 
 export const AI_PROVIDERS = Object.freeze([
     {
+        id: "gemini",
+        label: "Gemini",
+        description: "Recomendado para análisis, priorización y asesoramiento sobre tus tareas.",
+        defaultModel: "gemini-3.7-flash",
+        models: [
+            {
+                id: "gemini-3.7-flash",
+                label: "Recomendado",
+                description: "Mayor capacidad para análisis semántico y decisiones complejas."
+            },
+            {
+                id: "gemini-3.5-flash-lite",
+                label: "Rápido",
+                description: "Modelo ligero para consultas más simples."
+            }
+        ]
+    },
+    {
         id: "groq",
         label: "Groq",
-        description: "Muy rápido y con plan gratuito para uso personal.",
+        description: "Alternativa rápida con plan gratuito; útil para consultas simples.",
         defaultModel: "openai/gpt-oss-20b",
         models: [
             {
                 id: "openai/gpt-oss-20b",
                 label: "Rápido",
-                description: "Menor latencia; recomendado para consultas cotidianas."
+                description: "Menor latencia para consultas sencillas."
             },
             {
                 id: "openai/gpt-oss-120b",
                 label: "Potente",
-                description: "Más capacidad para análisis complejos."
-            }
-        ]
-    },
-    {
-        id: "gemini",
-        label: "Gemini",
-        description: "Proveedor de Google; queda disponible como alternativa.",
-        defaultModel: "gemini-3.5-flash-lite",
-        models: [
-            {
-                id: "gemini-3.5-flash-lite",
-                label: "Rápido",
-                description: "Modelo ligero para consultas cotidianas."
-            },
-            {
-                id: "gemini-3.7-flash",
-                label: "Potente",
-                description: "Más capacidad para análisis complejos."
+                description: "Más capacidad que 20B para análisis complejos."
             }
         ]
     }
 ]);
 
-export const DEFAULT_AI_PROVIDER = "groq";
-export const DEFAULT_AI_MODEL = "openai/gpt-oss-20b";
+export const DEFAULT_AI_PROVIDER = "gemini";
+export const DEFAULT_AI_MODEL = "gemini-3.7-flash";
 
 function getProviderDefinition(providerId) {
     return AI_PROVIDERS.find(provider => provider.id === providerId) ||
