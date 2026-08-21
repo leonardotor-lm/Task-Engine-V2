@@ -32,9 +32,64 @@ export class AiSidebarGroupController {
     start() {
         if (this.started) return;
         this.started = true;
+        this.ensureStyles();
         this.wrapSidebarRender();
         this.wrapAppRender();
         this.apply();
+    }
+
+    ensureStyles() {
+        if (
+            !this.document?.head ||
+            this.document.getElementById?.("aiSidebarGroupStyles")
+        ) {
+            return;
+        }
+
+        const style = this.document.createElement("style");
+        style.id = "aiSidebarGroupStyles";
+        style.textContent = `
+            .aiSidebarTools {
+                margin: 0;
+            }
+            .aiSidebarToolsSummary {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 8px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                list-style: none;
+                color: var(--color-text-secondary);
+                font-size: 13px;
+                font-weight: 600;
+                user-select: none;
+            }
+            .aiSidebarToolsSummary::-webkit-details-marker {
+                display: none;
+            }
+            .aiSidebarToolsSummary:hover {
+                background: var(--color-surface-hover);
+            }
+            .aiSidebarToolsChevron {
+                flex: 0 0 auto;
+                transition: transform 120ms ease;
+            }
+            .aiSidebarTools[open] .aiSidebarToolsChevron {
+                transform: rotate(90deg);
+            }
+            .aiSidebarToolsBody {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                padding: 4px 0 0 10px;
+            }
+            .aiSidebarToolsBody .sidebarButton {
+                width: 100%;
+            }
+        `;
+        this.document.head.appendChild(style);
     }
 
     wrapSidebarRender() {
