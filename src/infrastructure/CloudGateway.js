@@ -187,6 +187,24 @@ export class CloudGateway {
         );
     }
 
+    aiStatus({ url, token, validateRemote = false }) {
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "aiStatus",
+                    token,
+                    validateRemote: validateRemote === true
+                })
+            }
+        );
+    }
+
     notionStatus({ url, token, validateRemote = false }) {
         return this.request(
             this.buildUrl(url),
