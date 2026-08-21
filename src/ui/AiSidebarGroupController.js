@@ -20,14 +20,18 @@ function extractButton(html, id) {
         : { html: "", rest: html };
 }
 
-function insertAfterPlanningLabel(html, group) {
-    const pattern = /(<span\b[^>]*class=["'][^"']*\bsidebarSectionLabel\b[^"']*["'][^>]*>\s*Planificación\s*<\/span>)/i;
+function insertAfterStatistics(html, group) {
+    const pattern = /(<button\b(?=[^>]*id=["']showStatistics["'])[^>]*>[\s\S]*?<\/button>)/i;
 
-    if (!pattern.test(html)) {
-        return null;
+    if (pattern.test(html)) {
+        return html.replace(pattern, `$1${group}`);
     }
 
-    return html.replace(pattern, `$1${group}`);
+    const planningPattern = /(<span\b[^>]*class=["'][^"']*\bsidebarSectionLabel\b[^"']*["'][^>]*>\s*Planificación\s*<\/span>)/i;
+
+    return planningPattern.test(html)
+        ? html.replace(planningPattern, `$1${group}`)
+        : null;
 }
 
 export class AiSidebarGroupController {
@@ -59,44 +63,88 @@ export class AiSidebarGroupController {
         const style = this.document.createElement("style");
         style.id = "aiSidebarGroupStyles";
         style.textContent = `
-            .aiSidebarTools {
-                margin: 0;
+            .sidebarSectionLabel,
+            .customFiltersSection > summary,
+            .sidebarNavigationGroup > summary,
+            .aiSidebarTools > summary {
+                box-sizing: border-box;
+                min-height: 30px;
+                padding: 6px 8px 4px;
+                color: var(--color-text-muted);
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
             }
-            .aiSidebarToolsSummary {
+            .customFiltersSection,
+            .sidebarNavigationGroup,
+            .aiSidebarTools {
+                margin: 4px 0 0;
+                padding: 0;
+                border: 0;
+            }
+            .customFiltersSection > summary,
+            .sidebarNavigationGroup > summary,
+            .aiSidebarTools > summary {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
                 gap: 8px;
-                padding: 8px 10px;
                 border-radius: 6px;
                 cursor: pointer;
                 list-style: none;
-                color: var(--color-text-secondary);
-                font-size: 13px;
-                font-weight: 600;
                 user-select: none;
             }
-            .aiSidebarToolsSummary::-webkit-details-marker {
+            .customFiltersSection > summary::-webkit-details-marker,
+            .sidebarNavigationGroup > summary::-webkit-details-marker,
+            .aiSidebarTools > summary::-webkit-details-marker {
                 display: none;
             }
-            .aiSidebarToolsSummary:hover {
-                background: var(--color-surface-hover);
-            }
-            .aiSidebarToolsChevron {
-                flex: 0 0 auto;
+            .customFiltersSection > summary::after,
+            .sidebarNavigationGroup > summary::after,
+            .aiSidebarTools > summary::after {
+                content: "›";
+                margin-left: auto;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 1;
                 transition: transform 120ms ease;
             }
-            .aiSidebarTools[open] .aiSidebarToolsChevron {
+            .customFiltersSection[open] > summary::after,
+            .sidebarNavigationGroup[open] > summary::after,
+            .aiSidebarTools[open] > summary::after {
                 transform: rotate(90deg);
+            }
+            .customFiltersSection > summary:hover,
+            .sidebarNavigationGroup > summary:hover,
+            .aiSidebarTools > summary:hover {
+                background: var(--color-surface-hover);
+            }
+            .customFiltersSection {
+                padding-bottom: 0;
+                border-bottom: 0;
+            }
+            .sidebarListControls {
+                margin: 0;
+                padding-bottom: 0;
+                border-bottom: 0;
             }
             .aiSidebarToolsBody {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
-                padding: 4px 0 0 10px;
+                padding: 2px 0 2px 10px;
             }
             .aiSidebarToolsBody .sidebarButton {
                 width: 100%;
+            }
+            @media (max-width: 760px) {
+                .sidebarSectionLabel,
+                .customFiltersSection > summary,
+                .sidebarNavigationGroup > summary,
+                .aiSidebarTools > summary {
+                    font-size: 13px;
+                    letter-spacing: 0.03em;
+                }
             }
         `;
         this.document.head.appendChild(style);
@@ -125,19 +173,14 @@ export class AiSidebarGroupController {
 
                     <details
                         id="aiSidebarTools"
-                        class="aiSidebarTools"${this.expanded ? " open" : ""}>
-                        <summary class="aiSidebarToolsSummary">
-                            <span>Asistencia con IA</span>
-                            <span
-                                class="aiSidebarToolsChevron"
-                                aria-hidden="true">›</span>
-                        </summary>
-                        <div class="aiSidebarToolsBody">
+                        class="aiSidebarTools sidebarNavigationGroup"${this.expanded ? " open" : ""}>
+                        <summary>Asistencia con IA</summary>
+                        <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
                             ${tools.join("\n                            ")}
                         </div>
                     </details>`;
 
-            const groupedHtml = insertAfterPlanningLabel(
+            const groupedHtml = insertAfterStatistics(
                 html,
                 group
             );
@@ -161,6 +204,18 @@ export class AiSidebarGroupController {
         const group = this.document?.getElementById?.(
             "aiSidebarTools"
         );
+
+        this.document?.querySelectorAll?.(
+            ".sidebarListControls"
+        )?.forEach(section => {
+            const hasContent = Boolean(
+                section.querySelector?.(
+                    "button, input, select, details, form, a"
+                )
+            );
+            section.hidden = !hasContent;
+        });
+
         if (!group || group.dataset.aiSidebarBound) return;
 
         group.dataset.aiSidebarBound = "true";
