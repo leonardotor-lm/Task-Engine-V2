@@ -5,14 +5,23 @@ import {
     normalizeAiQueryError
 } from "../src/ui/AiAssistantController.js";
 
-test("traduce la saturación temporal de Gemini a un mensaje claro", () => {
+test("traduce la saturación temporal del proveedor a un mensaje claro", () => {
     assert.equal(
         normalizeAiQueryError(
             new Error(
                 "This model is currently experiencing high demand. Please try again later."
             )
         ),
-        "Gemini está saturado en este momento. Intentá nuevamente en unos minutos."
+        "El proveedor de IA está saturado en este momento. Intentá nuevamente en unos minutos o elegí otro proveedor."
+    );
+});
+
+test("traduce límites temporales del proveedor", () => {
+    assert.equal(
+        normalizeAiQueryError(
+            new Error("Too many requests: rate limit reached")
+        ),
+        "Se alcanzó temporalmente el límite del proveedor de IA. Intentá nuevamente más tarde o elegí otro proveedor."
     );
 });
 
@@ -40,6 +49,7 @@ test("el asistente se integra en Planificación y usa un diálogo propio", async
     assert.match(source, /showModal/);
     assert.match(source, /buildAiTaskContext/);
     assert.match(source, /gateway\.aiQuery/);
+    assert.match(source, /aiProvider/);
 });
 
 test("Configuración IA queda dedicada a configuración y conexión", async () => {
@@ -52,6 +62,7 @@ test("Configuración IA queda dedicada a configuración y conexión", async () =
     );
 
     assert.match(source, /Verificar conexión/);
+    assert.match(source, /aiProvider/);
     assert.doesNotMatch(source, /Consultar tareas/);
     assert.doesNotMatch(source, /aiQueryForm/);
 });
