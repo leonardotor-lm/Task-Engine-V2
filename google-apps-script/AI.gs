@@ -7,35 +7,35 @@ var TASK_ENGINE_AI_SETTINGS = Object.freeze({
     MAX_TASKS: 300
 });
 
-function getAiConfiguration_() {
+function getAiApiKey_() {
 
-    var properties =
-        PropertiesService.getScriptProperties();
-    var apiKey = String(
-        properties.getProperty(
-            TASK_ENGINE_AI_SETTINGS.API_KEY_PROPERTY
-        ) || ""
+    return String(
+        PropertiesService
+            .getScriptProperties()
+            .getProperty(
+                TASK_ENGINE_AI_SETTINGS.API_KEY_PROPERTY
+            ) || ""
     ).trim();
-    var model = String(
-        properties.getProperty(
-            TASK_ENGINE_AI_SETTINGS.MODEL_PROPERTY
-        ) ||
+
+}
+
+function getAiModel_() {
+
+    return String(
+        PropertiesService
+            .getScriptProperties()
+            .getProperty(
+                TASK_ENGINE_AI_SETTINGS.MODEL_PROPERTY
+            ) ||
         TASK_ENGINE_AI_SETTINGS.DEFAULT_MODEL
     ).trim();
-
-    return {
-        apiKey: apiKey,
-        model: model
-    };
 
 }
 
 function getAiStatus_(validateRemote) {
 
-    var configuration =
-        getAiConfiguration_();
-    var apiKey = configuration.apiKey;
-    var model = configuration.model;
+    var apiKey = getAiApiKey_();
+    var model = getAiModel_();
 
     if (!apiKey) {
         return {
@@ -117,10 +117,10 @@ function queryAi_(question, context) {
         );
     }
 
-    var configuration =
-        getAiConfiguration_();
+    var apiKey = getAiApiKey_();
+    var model = getAiModel_();
 
-    if (!configuration.apiKey) {
+    if (!apiKey) {
         throw protocolError_(
             "AI_NOT_CONFIGURED",
             "La asistencia con IA no está configurada."
@@ -143,13 +143,13 @@ function queryAi_(question, context) {
     var response = UrlFetchApp.fetch(
         TASK_ENGINE_AI_SETTINGS.API_BASE +
             "/models/" +
-            encodeURIComponent(configuration.model) +
+            encodeURIComponent(model) +
             ":generateContent",
         {
             method: "post",
             contentType: "application/json",
             headers: {
-                "x-goog-api-key": configuration.apiKey
+                "x-goog-api-key": apiKey
             },
             payload: JSON.stringify({
                 contents: [{
@@ -190,7 +190,7 @@ function queryAi_(question, context) {
     return {
         ok: true,
         provider: "Gemini",
-        model: configuration.model,
+        model: model,
         taskCount: context.tasks.length,
         answer: answer
     };
