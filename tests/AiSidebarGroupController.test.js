@@ -224,7 +224,7 @@ test("repara chevrons faltantes después del render final", () => {
     assert.match(source, /ensureDomChevrons\(\)/);
     assert.match(
         source,
-        /#sidebarPlanningGroup > summary/[\s\S]*?\.sidebarNavigationGroup > summary/
+        /#sidebarPlanningGroup > summary[\s\S]*?\.sidebarNavigationGroup > summary/
     );
     assert.match(
         source,
