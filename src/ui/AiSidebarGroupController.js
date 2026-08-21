@@ -1,12 +1,37 @@
-export const AI_SIDEBAR_TOOL_IDS = Object.freeze([
-    "openAiAssistant",
-    "openAiPriorityProposal",
-    "openAiDueDateProposal",
-    "openAiWaitingProposal",
-    "openAiOrganizationProposal",
-    "openAiProjectProposal",
-    "openAiTaskQuality"
+export const AI_SIDEBAR_TOOLS = Object.freeze([
+    {
+        id: "openAiAssistant",
+        label: "Asistente IA"
+    },
+    {
+        id: "openAiPriorityProposal",
+        label: "Proponer prioridades"
+    },
+    {
+        id: "openAiDueDateProposal",
+        label: "Proponer fechas"
+    },
+    {
+        id: "openAiWaitingProposal",
+        label: "Proponer En espera"
+    },
+    {
+        id: "openAiOrganizationProposal",
+        label: "Proponer organización"
+    },
+    {
+        id: "openAiProjectProposal",
+        label: "Proponer proyectos"
+    },
+    {
+        id: "openAiTaskQuality",
+        label: "Revisar calidad"
+    }
 ]);
+
+export const AI_SIDEBAR_TOOL_IDS = Object.freeze(
+    AI_SIDEBAR_TOOLS.map(tool => tool.id)
+);
 
 export const PLANNING_TOOL_IDS = Object.freeze([
     "showAll",
@@ -33,6 +58,16 @@ function replacePlanningLabel(html, replacement) {
 
     if (!pattern.test(html)) return null;
     return html.replace(pattern, replacement);
+}
+
+function renderAiSidebarButton(tool) {
+    return `<button
+        id="${tool.id}"
+        type="button"
+        class="sidebarButton"
+        aria-haspopup="dialog">
+        ${tool.label}
+    </button>`;
 }
 
 function renderChevron() {
@@ -249,13 +284,14 @@ export class AiSidebarGroupController {
             let html = addExplicitChevrons(
                 originalRender(...args)
             );
-            const aiTools = [];
+            const aiTools = AI_SIDEBAR_TOOLS.map(
+                renderAiSidebarButton
+            );
             const planningTools = [];
 
             for (const id of AI_SIDEBAR_TOOL_IDS) {
                 const extracted = extractButton(html, id);
                 html = extracted.rest;
-                if (extracted.html) aiTools.push(extracted.html.trim());
             }
 
             for (const id of PLANNING_TOOL_IDS) {
@@ -279,8 +315,7 @@ export class AiSidebarGroupController {
                         </div>
                     </details>`;
 
-            const aiGroup = aiTools.length
-                ? `
+            const aiGroup = `
 
                     <details
                         id="aiSidebarTools"
@@ -292,8 +327,7 @@ export class AiSidebarGroupController {
                         <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
                             ${aiTools.join("\n                            ")}
                         </div>
-                    </details>`
-                : "";
+                    </details>`;
 
             const groupedHtml = replacePlanningLabel(
                 html,
