@@ -268,6 +268,15 @@ function queryAi_(question, context) {
         );
     }
 
+    if (context.requestType === "priorityProposal") {
+        return queryPriorityProposal_(
+            providerId,
+            apiKey,
+            model,
+            context
+        );
+    }
+
     var taskContext = Object.assign({}, context);
     delete taskContext.chatHistory;
     delete taskContext.aiProvider;
@@ -297,6 +306,113 @@ function queryAi_(question, context) {
     return providerId === "groq"
         ? queryGroq_(apiKey, model, prompt, history, context.tasks.length)
         : queryGemini_(apiKey, model, prompt, history, context.tasks.length);
+}
+
+function queryPriorityProposal_(providerId, apiKey, model, context) {
+    var proposalContext = {
+        today: context.today || "",
+        tasks: context.tasks
+    };
+    var prompt = [
+        "Sos el asistente de Task Engine y vas a proponer prioridades para tareas pendientes.",
+        "Esta operación es estrictamente de sólo lectura: no modifiques ninguna tarea.",
+        "Analizá semánticamente título, proyecto, área, contexto, etiquetas, fechas, espera, antigüedad y prioridad actual.",
+        "Usá daysUntilDue y daysSinceCreated cuando estén disponibles. No inventes hechos ni dependencias.",
+        "Proponé sólo cambios de prioridad que estén suficientemente justificados; no hace falta cambiar todas las tareas.",
+        "La prioridad debe ser un entero: 0 Sin prioridad, 1 Baja, 2 Media, 3 Alta, 4 Crítica.",
+        "Devolvé exclusivamente JSON válido, sin Markdown ni texto adicional, con esta forma exacta:",
+        '{"proposals":[{"taskId":"id exacto recibido","priority":3,"reason":"motivo breve en español"}]}',
+        "Cada taskId debe copiar exactamente un taskId recibido. No inventes IDs.",
+        "Si no sugerís cambios, devolvé {\"proposals\":[]}.",
+        "Contexto JSON:",
+        JSON.stringify(proposalContext)
+    ].join("\n\n");
+
+    var result = providerId === "groq"
+        ? queryGroq_(apiKey, model, prompt, [], context.tasks.length)
+        : queryGemini_(apiKey, model, prompt, [], context.tasks.length);
+
+    if (result.truncated) {
+        throw protocolError_(
+            "AI_PROPOSAL_TRUNCATED",
+            "La propuesta de prioridades quedó incompleta. Intentá nuevamente."
+        );
+    }
+
+    return {
+        ok: true,
+        provider: result.provider,
+        model: result.model,
+        taskCount: context.tasks.length,
+        proposals: parsePriorityProposals_(
+            result.answer,
+            context.tasks
+        )
+    };
+}
+
+function parsePriorityProposals_(answer, tasks) {
+    var text = String(answer || "").trim();
+    var firstBrace = text.indexOf("{");
+    var lastBrace = text.lastIndexOf("}");
+
+    if (firstBrace === -1 || lastBrace < firstBrace) {
+        throw protocolError_(
+            "AI_INVALID_PROPOSAL",
+            "La IA devolvió una propuesta con formato inválido. Intentá nuevamente."
+        );
+    }
+
+    var parsed;
+    try {
+        parsed = JSON.parse(text.slice(firstBrace, lastBrace + 1));
+    } catch (error) {
+        throw protocolError_(
+            "AI_INVALID_PROPOSAL",
+            "La IA devolvió una propuesta con formato inválido. Intentá nuevamente."
+        );
+    }
+
+    var allowedTasks = {};
+    (tasks || []).forEach(function(task) {
+        var taskId = String(task && task.taskId || "");
+        if (taskId) {
+            allowedTasks[taskId] = Number(task.currentPriority || 0);
+        }
+    });
+
+    var seen = {};
+    var proposals = Array.isArray(parsed.proposals)
+        ? parsed.proposals
+        : [];
+
+    return proposals
+        .map(function(item) {
+            var taskId = String(item && item.taskId || "").trim();
+            var priority = Number(item && item.priority);
+            var reason = String(item && item.reason || "").trim().slice(0, 320);
+
+            if (
+                !taskId ||
+                !Object.prototype.hasOwnProperty.call(allowedTasks, taskId) ||
+                seen[taskId] ||
+                !Number.isInteger(priority) ||
+                priority < 0 ||
+                priority > 4 ||
+                priority === allowedTasks[taskId]
+            ) {
+                return null;
+            }
+
+            seen[taskId] = true;
+            return {
+                taskId: taskId,
+                currentPriority: allowedTasks[taskId],
+                priority: priority,
+                reason: reason || "Cambio sugerido por el análisis de la IA."
+            };
+        })
+        .filter(Boolean);
 }
 
 function queryGroq_(apiKey, model, prompt, history, taskCount) {
