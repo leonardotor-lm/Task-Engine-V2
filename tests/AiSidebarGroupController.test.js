@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {
     AiSidebarGroupController,
+    AI_SIDEBAR_TOOLS,
     AI_SIDEBAR_TOOL_IDS,
     PLANNING_TOOL_IDS
 } from "../src/ui/AiSidebarGroupController.js";
@@ -18,13 +19,6 @@ function sidebarHtml() {
                         Planificación
                     </span>
             <button id="showAll" class="sidebarButton">Todas</button>
-            <button id="openAiAssistant" class="sidebarButton">Asistente IA</button>
-            <button id="openAiPriorityProposal" class="sidebarButton">Proponer prioridades</button>
-            <button id="openAiDueDateProposal" class="sidebarButton">Proponer fechas</button>
-            <button id="openAiWaitingProposal" class="sidebarButton">Proponer En espera</button>
-            <button id="openAiOrganizationProposal" class="sidebarButton">Proponer organización</button>
-            <button id="openAiProjectProposal" class="sidebarButton">Proponer proyectos</button>
-            <button id="openAiTaskQuality" class="sidebarButton">Revisar calidad</button>
             <button id="showProjects" class="sidebarButton">Proyectos</button>
             <button id="showCalendar" class="sidebarButton">Calendario</button>
             <button id="showGoals" class="sidebarButton">Objetivos</button>
@@ -38,7 +32,7 @@ function sidebarHtml() {
         </nav>`;
 }
 
-test("agrupa todas las herramientas de IA y queda colapsado por defecto", () => {
+test("el agrupador central genera todas las herramientas de IA y queda colapsado por defecto", () => {
     const sidebar = { render: () => sidebarHtml() };
     const controller = new AiSidebarGroupController(
         { mainView: { sidebar }, render() {} },
@@ -55,12 +49,18 @@ test("agrupa todas las herramientas de IA y queda colapsado por defecto", () => 
         /id="aiSidebarTools"[^>]*\sopen(?:\s|>)/
     );
 
-    for (const id of AI_SIDEBAR_TOOL_IDS) {
+    for (const tool of AI_SIDEBAR_TOOLS) {
         assert.equal(
-            html.match(new RegExp(`id="${id}"`, "g"))?.length,
+            html.match(new RegExp(`id="${tool.id}"`, "g"))?.length,
             1
         );
+        assert.match(html, new RegExp(tool.label));
     }
+
+    assert.deepEqual(
+        AI_SIDEBAR_TOOL_IDS,
+        AI_SIDEBAR_TOOLS.map(tool => tool.id)
+    );
 });
 
 test("convierte Planificación en grupo real, muestra chevron SVG y ordena sus vistas", () => {
@@ -264,6 +264,30 @@ test("reubica En espera antes de Estadísticas cuando WaitingController lo inyec
     assert.match(source, /getElementById\?\.\(\s*"showWaiting"/);
     assert.match(source, /getElementById\?\.\(\s*"showStatistics"/);
     assert.match(source, /statistics\.before\(waiting\)/);
+});
+
+test("el agrupador se inicia antes que las herramientas de IA para neutralizar wrappers heredados", () => {
+    const main = fs.readFileSync(
+        new URL("../src/main.js", import.meta.url),
+        "utf8"
+    );
+    const groupStart = main.indexOf(
+        "aiSidebarGroupController.start();"
+    );
+
+    assert.ok(groupStart >= 0);
+
+    for (const marker of [
+        "aiAssistantController.start();",
+        "aiPriorityProposalController.start();",
+        "aiDueDateProposalController.start();",
+        "aiWaitingProposalController.start();",
+        "aiOrganizationProposalController.start();",
+        "aiProjectProposalController.start();",
+        "aiTaskQualityController.start();"
+    ]) {
+        assert.ok(groupStart < main.indexOf(marker));
+    }
 });
 
 test("el agrupador queda cableado en main y en la PWA", () => {
