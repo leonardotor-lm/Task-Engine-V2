@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import {
-    formatAiAnswer,
+    formatAnswer,
     normalizeAiQueryError
 } from "../src/ui/AiAssistantController.js";
 
@@ -36,7 +36,7 @@ test("conserva otros errores de IA para diagnóstico", () => {
 });
 
 test("renderiza respuestas con estructura legible sin aceptar HTML arbitrario", () => {
-    const html = formatAiAnswer([
+    const html = formatAnswer([
         "## Próximos vencimientos",
         "",
         "* **Hoy:** Resolver esto",
