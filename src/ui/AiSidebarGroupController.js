@@ -142,11 +142,15 @@ export class AiSidebarGroupController {
                 min-width: 0;
             }
             .sidebarGroupChevron {
+                display: inline-block !important;
                 flex: 0 0 auto;
                 margin-left: auto;
+                color: inherit;
                 font-size: 14px;
                 font-weight: 400;
                 line-height: 1;
+                opacity: 1 !important;
+                visibility: visible !important;
                 transition: transform 120ms ease;
             }
             .customFiltersSection[open] > summary .sidebarGroupChevron,
@@ -224,12 +228,12 @@ export class AiSidebarGroupController {
             const planningGroup = `
                     <details
                         id="sidebarPlanningGroup"
-                        class="sidebarPlanningGroup"${this.planningExpanded ? " open" : ""}>
+                        class="sidebarPlanningGroup sidebarNavigationGroup"${this.planningExpanded ? " open" : ""}>
                         <summary>
                             <span class="sidebarGroupLabel">Planificación</span>
                             <span class="sidebarGroupChevron" aria-hidden="true">›</span>
                         </summary>
-                        <div class="sidebarPlanningGroupBody">
+                        <div class="sidebarPlanningGroupBody sidebarNavigationGroupBody">
                             ${planningTools.join("\n                            ")}
                         </div>
                     </details>`;
