@@ -95,6 +95,17 @@ function handleRequest_(event, method) {
 
         if (
             method === "POST" &&
+            action === "aiStatus"
+        ) {
+            return jsonResponse_(
+                getAiStatus_(
+                    body.validateRemote === true
+                )
+            );
+        }
+
+        if (
+            method === "POST" &&
             action === "notionStatus"
         ) {
             return jsonResponse_(
@@ -997,7 +1008,6 @@ function saveSnapshot_(
     } finally {
 
         lock.releaseLock();
-
     }
 
 }
