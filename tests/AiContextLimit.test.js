@@ -4,24 +4,118 @@ import {
     buildAiTaskContext
 } from "../src/core/AiTaskContext.js";
 
-test("limita el contexto de IA para respetar cuotas gratuitas", () => {
-    const tasks = Array.from(
-        { length: 120 },
+test("selecciona todas las tareas que vencen hoy sin un límite arbitrario", () => {
+    const todayTasks = Array.from(
+        { length: 90 },
         (_, index) => ({
-            id: `task-${index}`,
-            title: `Tarea ${index}`,
+            id: `today-${index}`,
+            title: `Hoy ${index}`,
             status: "PENDING",
+            dueDate: "2026-08-21",
+            priority: 0,
+            tagIds: []
+        })
+    );
+    const otherTasks = Array.from(
+        { length: 50 },
+        (_, index) => ({
+            id: `other-${index}`,
+            title: `Otro ${index}`,
+            status: "PENDING",
+            dueDate: "2026-08-22",
             priority: 0,
             tagIds: []
         })
     );
 
     const context = buildAiTaskContext({
-        tasks,
+        tasks: [...todayTasks, ...otherTasks],
+        question: "¿Qué tareas vencen hoy?",
         today: "2026-08-21"
     });
 
-    assert.equal(context.taskCount, 70);
-    assert.equal(context.tasks.length, 70);
-    assert.equal(context.omittedCount, 50);
+    assert.equal(context.taskCount, 90);
+    assert.equal(context.tasks.length, 90);
+    assert.equal(context.omittedCount, 0);
+    assert.equal(
+        context.tasks.every(
+            task => task.dueDate === "2026-08-21"
+        ),
+        true
+    );
+});
+
+test("una consulta de completadas esta semana excluye tareas ajenas", () => {
+    const context = buildAiTaskContext({
+        question: "¿Qué tareas completé esta semana?",
+        today: "2026-08-21",
+        tasks: [
+            {
+                id: "done-week",
+                title: "Hecha esta semana",
+                status: "COMPLETED",
+                completedAt: "2026-08-19T10:00:00.000Z",
+                tagIds: []
+            },
+            {
+                id: "done-old",
+                title: "Hecha antes",
+                status: "COMPLETED",
+                completedAt: "2026-08-10T10:00:00.000Z",
+                tagIds: []
+            },
+            {
+                id: "pending",
+                title: "Pendiente",
+                status: "PENDING",
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.deepEqual(
+        context.tasks.map(task => task.title),
+        ["Hecha esta semana"]
+    );
+});
+
+test("reconoce área, espera y ausencia de fecha en la consulta", () => {
+    const context = buildAiTaskContext({
+        question:
+            "¿Qué tareas sin fecha del área Casa están en espera?",
+        today: "2026-08-21",
+        areas: [{ id: "home", name: "Casa" }],
+        tasks: [
+            {
+                id: "match",
+                title: "Comprar repuesto",
+                status: "PENDING",
+                areaId: "home",
+                isWaiting: true,
+                tagIds: []
+            },
+            {
+                id: "dated",
+                title: "Pagar factura",
+                status: "PENDING",
+                areaId: "home",
+                isWaiting: true,
+                dueDate: "2026-08-25",
+                tagIds: []
+            },
+            {
+                id: "other-area",
+                title: "Esperar respuesta",
+                status: "PENDING",
+                areaId: "work",
+                isWaiting: true,
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.deepEqual(
+        context.tasks.map(task => task.title),
+        ["Comprar repuesto"]
+    );
 });
