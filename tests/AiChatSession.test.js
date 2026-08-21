@@ -21,6 +21,26 @@ test("el asistente mantiene un chat de sesión con reinicio explícito", async (
     assert.match(source, /buildSelectionQuestion/);
 });
 
+test("una consulta nueva no hereda filtros previos pero un seguimiento referencial sí", async () => {
+    const source = await fs.readFile(
+        new URL(
+            "../src/ui/AiAssistantController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(source, /isReferentialFollowUp/);
+    assert.match(
+        source,
+        /if \(!isReferentialFollowUp\(question\)\)[\s\S]*return String\(question \|\| ""\)\.trim\(\)/
+    );
+    assert.match(
+        source,
+        /recentUserMessages[\s\S]*slice\(-2\)[\s\S]*join\("\\n"\)/
+    );
+});
+
 test("Apps Script limita y normaliza el historial antes de enviarlo al proveedor", async () => {
     const ai = await fs.readFile(
         new URL(
