@@ -1,7 +1,7 @@
 importScripts("./pwa-assets.js");
 
 const CACHE_PREFIX = "mis-tareas-static";
-const CACHE_NAME = `${CACHE_PREFIX}-v3`;
+const CACHE_NAME = `${CACHE_PREFIX}-v4`;
 const INDEX_URL = new URL(
     "./index.html",
     self.registration.scope
