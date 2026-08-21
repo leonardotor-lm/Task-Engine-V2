@@ -22,8 +22,7 @@ var TASK_ENGINE_AI_SETTINGS = Object.freeze({
             API_BASE: "https://generativelanguage.googleapis.com/v1beta"
         }
     },
-    MAX_QUESTION_LENGTH: 1000,
-    MAX_TASKS: 300
+    MAX_QUESTION_LENGTH: 1000
 });
 
 function normalizeAiProvider_(provider) {
@@ -214,9 +213,7 @@ function queryAi_(question, context) {
 
     if (
         !context ||
-        !Array.isArray(context.tasks) ||
-        context.tasks.length >
-            TASK_ENGINE_AI_SETTINGS.MAX_TASKS
+        !Array.isArray(context.tasks)
     ) {
         throw protocolError_(
             "INVALID_AI_CONTEXT",
@@ -246,7 +243,8 @@ function queryAi_(question, context) {
     var prompt = [
         "Sos el asistente de Task Engine.",
         "Respondé en español claro y conciso.",
-        "Trabajá exclusivamente con el contexto de tareas que se incluye abajo.",
+        "Task Engine seleccionó localmente las tareas relevantes según la consulta del usuario.",
+        "Trabajá exclusivamente con ese contexto de tareas.",
         "No inventes tareas ni datos que no estén presentes.",
         "Esta operación es de sólo lectura: no afirmes que modificaste, completaste, eliminaste ni reordenaste tareas.",
         "Si el contexto no alcanza para responder, decilo explícitamente.",
