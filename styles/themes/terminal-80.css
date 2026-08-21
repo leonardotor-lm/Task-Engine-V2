@@ -124,6 +124,41 @@
     box-shadow: none;
 }
 
+:root[data-theme="terminal-80"] input[type="checkbox"]:not(.bulkTaskCheckbox) {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    box-sizing: border-box;
+    width: 1.2em;
+    height: 1.2em;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-subtle);
+    color: var(--color-on-accent);
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+:root[data-theme="terminal-80"] input[type="checkbox"]:not(.bulkTaskCheckbox)::before {
+    content: "";
+    width: 0.66em;
+    height: 0.66em;
+    background: currentColor;
+    clip-path: polygon(14% 44%, 0 58%, 39% 100%, 100% 18%, 84% 5%, 38% 72%);
+    transform: scale(0);
+    transform-origin: center;
+}
+
+:root[data-theme="terminal-80"] input[type="checkbox"]:not(.bulkTaskCheckbox):checked {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+}
+
+:root[data-theme="terminal-80"] input[type="checkbox"]:not(.bulkTaskCheckbox):checked::before {
+    transform: scale(1);
+}
+
 :root[data-theme="terminal-80"] input::placeholder,
 :root[data-theme="terminal-80"] textarea::placeholder {
     color: var(--color-text-muted);
