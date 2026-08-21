@@ -83,6 +83,39 @@ function getProjectDescendants(
     return descendants;
 }
 
+function getVisibleProjectRoots(state) {
+    return (state.tasks ?? []).filter(
+        task =>
+            isActiveTask(task) &&
+            task.isProject === true &&
+            !task.parentTaskId
+    );
+}
+
+function getCompletedProjectTasks(state) {
+    const allTasks = state.allTasks ?? [];
+    const completedById = new Map();
+
+    for (const project of getVisibleProjectRoots(state)) {
+        for (
+            const task of
+            getProjectDescendants(
+                project.id,
+                allTasks
+            )
+        ) {
+            if (
+                task.isCompleted() &&
+                task.isProject !== true
+            ) {
+                completedById.set(task.id, task);
+            }
+        }
+    }
+
+    return [...completedById.values()];
+}
+
 function getCompletedScope(state) {
     const completedTasks =
         (state.allTasks ?? [])
@@ -104,9 +137,7 @@ function getCompletedScope(state) {
             );
 
         case View.PROJECTS:
-            return completedTasks.filter(
-                task => task.isProject === true
-            );
+            return getCompletedProjectTasks(state);
 
         case View.PROJECT:
             return getProjectDescendants(
@@ -153,6 +184,43 @@ function applyCurrentCriteria(
             today: state.today ?? ""
         }
     );
+}
+
+function buildStandardItems(
+    activeTasks,
+    completedTasks,
+    today
+) {
+    return [
+        {
+            kind: "total",
+            value: activeTasks.length,
+            label: "tareas"
+        },
+        {
+            kind: "today",
+            value: activeTasks.filter(
+                task => task.dueDate === today
+            ).length,
+            label: "vencen hoy"
+        },
+        {
+            kind: "overdue",
+            value: activeTasks.filter(
+                task =>
+                    Boolean(
+                        task.dueDate &&
+                        task.dueDate < today
+                    )
+            ).length,
+            label: "vencidas"
+        },
+        {
+            kind: "completed",
+            value: completedTasks.length,
+            label: "completadas"
+        }
+    ];
 }
 
 export function buildViewTaskSummary(state) {
@@ -209,38 +277,38 @@ export function buildViewTaskSummary(state) {
         state
     );
 
+    if (state.view === View.PROJECTS) {
+        const projects = getVisibleProjectRoots(state);
+        const projectTasks = activeTasks.filter(
+            task => task.isProject !== true
+        );
+
+        return {
+            advancedResultCount: null,
+            items: [
+                {
+                    kind: "projects",
+                    value: projects.length,
+                    label: projects.length === 1
+                        ? "proyecto"
+                        : "proyectos"
+                },
+                ...buildStandardItems(
+                    projectTasks,
+                    completedTasks,
+                    today
+                )
+            ]
+        };
+    }
+
     return {
         advancedResultCount: null,
-        items: [
-            {
-                kind: "total",
-                value: activeTasks.length,
-                label: "tareas"
-            },
-            {
-                kind: "today",
-                value: activeTasks.filter(
-                    task => task.dueDate === today
-                ).length,
-                label: "vencen hoy"
-            },
-            {
-                kind: "overdue",
-                value: activeTasks.filter(
-                    task =>
-                        Boolean(
-                            task.dueDate &&
-                            task.dueDate < today
-                        )
-                ).length,
-                label: "vencidas"
-            },
-            {
-                kind: "completed",
-                value: completedTasks.length,
-                label: "completadas"
-            }
-        ]
+        items: buildStandardItems(
+            activeTasks,
+            completedTasks,
+            today
+        )
     };
 }
 
