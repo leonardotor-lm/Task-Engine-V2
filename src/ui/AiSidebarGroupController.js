@@ -35,6 +35,10 @@ function replacePlanningLabel(html, replacement) {
     return html.replace(pattern, replacement);
 }
 
+function chevronForExpanded(expanded) {
+    return expanded ? "⌄" : "›";
+}
+
 function addExplicitChevrons(html) {
     const pattern = /(<details\b[^>]*class=["'][^"']*(?:customFiltersSection|sidebarNavigationGroup)[^"']*["'][^>]*>\s*<summary\b[^>]*>)([\s\S]*?)(<\/summary>)/gi;
 
@@ -45,8 +49,22 @@ function addExplicitChevrons(html) {
                 return match;
             }
 
-            return `${start}<span class="sidebarGroupLabel">${content.trim()}</span><span class="sidebarGroupChevron" aria-hidden="true">›</span>${end}`;
+            const expanded = /\sopen(?:\s|>)/i.test(start);
+            const chevron = chevronForExpanded(expanded);
+
+            return `${start}<span class="sidebarGroupLabel">${content.trim()}</span><span class="sidebarGroupChevron" aria-hidden="true">${chevron}</span>${end}`;
         }
+    );
+}
+
+function syncChevron(group) {
+    const chevron = group?.querySelector?.(
+        ":scope > summary .sidebarGroupChevron"
+    );
+    if (!chevron) return;
+
+    chevron.textContent = chevronForExpanded(
+        Boolean(group.open)
     );
 }
 
@@ -146,18 +164,11 @@ export class AiSidebarGroupController {
                 flex: 0 0 auto;
                 margin-left: auto;
                 color: inherit;
-                font-size: 14px;
+                font-size: 16px;
                 font-weight: 400;
                 line-height: 1;
                 opacity: 1 !important;
                 visibility: visible !important;
-                transition: transform 120ms ease;
-            }
-            .customFiltersSection[open] > summary .sidebarGroupChevron,
-            .sidebarNavigationGroup[open] > summary .sidebarGroupChevron,
-            .aiSidebarTools[open] > summary .sidebarGroupChevron,
-            .sidebarPlanningGroup[open] > summary .sidebarGroupChevron {
-                transform: rotate(90deg);
             }
             .customFiltersSection > summary:hover,
             .sidebarNavigationGroup > summary:hover,
@@ -231,7 +242,7 @@ export class AiSidebarGroupController {
                         class="sidebarPlanningGroup sidebarNavigationGroup"${this.planningExpanded ? " open" : ""}>
                         <summary>
                             <span class="sidebarGroupLabel">Planificación</span>
-                            <span class="sidebarGroupChevron" aria-hidden="true">›</span>
+                            <span class="sidebarGroupChevron" aria-hidden="true">${chevronForExpanded(this.planningExpanded)}</span>
                         </summary>
                         <div class="sidebarPlanningGroupBody sidebarNavigationGroupBody">
                             ${planningTools.join("\n                            ")}
@@ -246,7 +257,7 @@ export class AiSidebarGroupController {
                         class="aiSidebarTools sidebarNavigationGroup"${this.expanded ? " open" : ""}>
                         <summary>
                             <span class="sidebarGroupLabel">Asistencia con IA</span>
-                            <span class="sidebarGroupChevron" aria-hidden="true">›</span>
+                            <span class="sidebarGroupChevron" aria-hidden="true">${chevronForExpanded(this.expanded)}</span>
                         </summary>
                         <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
                             ${aiTools.join("\n                            ")}
@@ -306,6 +317,18 @@ export class AiSidebarGroupController {
         ) {
             statistics.before(waiting);
         }
+
+        this.document?.querySelectorAll?.(
+            "details.customFiltersSection, details.sidebarNavigationGroup"
+        )?.forEach(group => {
+            syncChevron(group);
+            if (group.dataset.sidebarChevronBound) return;
+
+            group.dataset.sidebarChevronBound = "true";
+            group.addEventListener("toggle", () => {
+                syncChevron(group);
+            });
+        });
 
         if (
             planningGroup &&
