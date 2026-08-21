@@ -396,7 +396,7 @@ function queryGemini_(apiKey, model, prompt, history, taskCount) {
                 contents: contents,
                 generationConfig: {
                     temperature: 0.2,
-                    maxOutputTokens: 1200
+                    maxOutputTokens: 2400
                 }
             }),
             muteHttpExceptions: true
@@ -407,16 +407,17 @@ function queryGemini_(apiKey, model, prompt, history, taskCount) {
     assertAiResponseOk_(response, payload, "Gemini");
 
     var candidates = payload.candidates || [];
+    var candidate = candidates[0] || {};
     var parts =
-        candidates[0] &&
-        candidates[0].content &&
-        candidates[0].content.parts || [];
+        candidate.content &&
+        candidate.content.parts || [];
     var answer = parts
         .map(function(part) {
             return String(part.text || "");
         })
         .join("\n")
         .trim();
+    var truncated = candidate.finishReason === "MAX_TOKENS";
 
     if (!answer) {
         throw protocolError_(
@@ -425,11 +426,16 @@ function queryGemini_(apiKey, model, prompt, history, taskCount) {
         );
     }
 
+    if (truncated) {
+        answer += "\n\nLa respuesta alcanzó el límite de longitud. Podés pedirme que continúe desde donde quedó.";
+    }
+
     return {
         ok: true,
         provider: "Gemini",
         model: model,
         taskCount: taskCount,
+        truncated: truncated,
         answer: answer
     };
 }
