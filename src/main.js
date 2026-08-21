@@ -275,6 +275,7 @@ ongoingSyncReconciliationController
     .start();
 pwaController.start();
 aiSettingsController.start();
+aiSidebarGroupController.start();
 aiAssistantController.start();
 aiPriorityProposalController.start();
 aiPriorityApplyController.start();
@@ -283,7 +284,6 @@ aiWaitingProposalController.start();
 aiOrganizationProposalController.start();
 aiProjectProposalController.start();
 aiTaskQualityController.start();
-aiSidebarGroupController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
