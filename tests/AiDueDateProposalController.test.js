@@ -148,7 +148,13 @@ test("aplica sólo fechas seleccionadas mediante TaskService después de confirm
     };
     const controller = new AiDueDateProposalController(
         app,
-        { documentRef: null }
+        {
+            documentRef: {
+                getElementById() {
+                    return null;
+                }
+            }
+        }
     );
     controller.proposal = {
         items: [
