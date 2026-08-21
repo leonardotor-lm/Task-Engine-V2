@@ -84,6 +84,9 @@ import {
     AiSettingsController
 } from "./ui/AiSettingsController.js";
 import {
+    AiAssistantController
+} from "./ui/AiAssistantController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -171,6 +174,8 @@ const pwaController =
     new PwaController(app);
 const aiSettingsController =
     new AiSettingsController(app);
+const aiAssistantController =
+    new AiAssistantController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -227,6 +232,7 @@ ongoingSyncReconciliationController
     .start();
 pwaController.start();
 aiSettingsController.start();
+aiAssistantController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
