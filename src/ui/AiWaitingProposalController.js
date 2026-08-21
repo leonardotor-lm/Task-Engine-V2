@@ -248,7 +248,7 @@ export class AiWaitingProposalController {
     }
 
     renderDialog() {
-        const dialog = this.document.getElementById(
+        const dialog = this.document?.getElementById?.(
             "aiWaitingProposalDialog"
         );
         if (!dialog) return;
