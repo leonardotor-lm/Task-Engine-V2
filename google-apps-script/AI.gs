@@ -10,8 +10,7 @@ var TASK_ENGINE_AI_SETTINGS = Object.freeze({
 function getAiApiKey_() {
 
     return String(
-        PropertiesService
-            .getScriptProperties()
+        PropertiesService.getScriptProperties()
             .getProperty(
                 TASK_ENGINE_AI_SETTINGS.API_KEY_PROPERTY
             ) || ""
@@ -22,8 +21,7 @@ function getAiApiKey_() {
 function getAiModel_() {
 
     return String(
-        PropertiesService
-            .getScriptProperties()
+        PropertiesService.getScriptProperties()
             .getProperty(
                 TASK_ENGINE_AI_SETTINGS.MODEL_PROPERTY
             ) ||
