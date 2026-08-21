@@ -6,37 +6,36 @@ import { escapeHtml } from "./escapeHtml.js";
 const MAX_CHAT_HISTORY_MESSAGES = 6;
 const MAX_CHAT_MESSAGE_CHARS = 1200;
 
-function formatInlineMarkdown(text) {
-    return escapeHtml(text || "")
+function formatInlineMarkdown(value) {
+    return escapeHtml(value || "")
         .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+        .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+        .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+        .replace(/(^|[^_])_([^_\n]+)_/g, "$1<em>$2</em>")
+        .replace(/`([^`\n]+)`/g, "<code>$1</code>");
 }
 
-export function formatAiAnswer(answer) {
+export function formatAnswer(answer) {
     const lines = String(answer || "")
         .replace(/\r\n/g, "\n")
         .split("\n");
     const blocks = [];
     let paragraph = [];
-    let listType = "";
     let listItems = [];
+    let listType = "";
 
     const flushParagraph = () => {
         if (!paragraph.length) return;
-        blocks.push(
-            `<p>${formatInlineMarkdown(paragraph.join(" "))}</p>`
-        );
+        blocks.push(`<p>${formatInlineMarkdown(paragraph.join(" "))}</p>`);
         paragraph = [];
     };
 
     const flushList = () => {
-        if (!listItems.length || !listType) return;
-        const items = listItems
-            .map(item => `<li>${formatInlineMarkdown(item)}</li>`)
-            .join("");
-        blocks.push(`<${listType}>${items}</${listType}>`);
-        listType = "";
+        if (!listItems.length) return;
+        const tag = listType === "ol" ? "ol" : "ul";
+        blocks.push(`<${tag}>${listItems.map(item => `<li>${formatInlineMarkdown(item)}</li>`).join("")}</${tag}>`);
         listItems = [];
+        listType = "";
     };
 
     lines.forEach(rawLine => {
@@ -52,10 +51,8 @@ export function formatAiAnswer(answer) {
         if (heading) {
             flushParagraph();
             flushList();
-            const level = Math.min(4, heading[1].length + 2);
-            blocks.push(
-                `<h${level}>${formatInlineMarkdown(heading[2])}</h${level}>`
-            );
+            const level = Math.min(heading[1].length + 2, 5);
+            blocks.push(`<h${level}>${formatInlineMarkdown(heading[2])}</h${level}>`);
             return;
         }
 
@@ -96,6 +93,16 @@ function normalizeHistoryMessage(message) {
         .slice(0, MAX_CHAT_MESSAGE_CHARS);
 
     return content ? { role, content } : null;
+}
+
+function isReferentialFollowUp(question) {
+    const normalized = String(question || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+
+    return /\b(esa|esas|ese|esos|aquella|aquellas|aquel|aquellos|anterior|anteriores|primera|primero|segunda|segundo|tercera|tercero|ultima|ultimo)\b|\b(cual|cuales)\s+de\b|^\s*y\b|\bde (esa|esas|ese|esos)\b/.test(normalized);
 }
 
 export function normalizeAiQueryError(error) {
@@ -243,14 +250,13 @@ export class AiAssistantController {
                 .aiChatMessage.user { align-self:flex-end; }
                 .aiChatMessage.assistant { align-self:flex-start; }
                 .aiChatMessageLabel { display:block; font-size:.78rem; margin-bottom:4px; opacity:.7; }
-                .aiFormattedAnswer p { margin:0 0 10px; line-height:1.45; }
-                .aiFormattedAnswer p:last-child { margin-bottom:0; }
-                .aiFormattedAnswer ul, .aiFormattedAnswer ol { margin:4px 0 10px; padding-left:1.35rem; }
-                .aiFormattedAnswer li { margin:0 0 7px; line-height:1.45; }
-                .aiFormattedAnswer li:last-child { margin-bottom:0; }
-                .aiFormattedAnswer h3, .aiFormattedAnswer h4 { margin:12px 0 6px; line-height:1.25; }
-                .aiFormattedAnswer h3:first-child, .aiFormattedAnswer h4:first-child { margin-top:0; }
-                .aiFormattedAnswer strong { font-weight:650; }
+                .aiChatMessageContent p { margin:0 0 8px; line-height:1.45; }
+                .aiChatMessageContent p:last-child { margin-bottom:0; }
+                .aiChatMessageContent ul, .aiChatMessageContent ol { margin:6px 0 8px; padding-left:22px; }
+                .aiChatMessageContent li { margin:4px 0; line-height:1.4; }
+                .aiChatMessageContent h3, .aiChatMessageContent h4, .aiChatMessageContent h5 { margin:10px 0 6px; line-height:1.25; }
+                .aiChatMessageContent h3:first-child, .aiChatMessageContent h4:first-child, .aiChatMessageContent h5:first-child { margin-top:0; }
+                .aiChatMessageContent code { font-family:monospace; font-size:.92em; }
                 .aiAssistantQueryForm { display:flex; flex-direction:column; align-items:stretch; gap:10px; margin-top:12px; }
                 .aiAssistantQueryForm label { display:block; margin:0; }
                 .aiAssistantQueryForm textarea { display:block; width:100%; box-sizing:border-box; margin:0; resize:vertical; }
@@ -334,10 +340,10 @@ export class AiAssistantController {
                 ? `<span class="settingsHint">Analizadas: ${message.taskCount} tareas relevantes.</span>`
                 : "";
             const content = message.role === "assistant"
-                ? `<div class="aiFormattedAnswer">${formatAiAnswer(message.content)}</div>`
-                : `<div>${escapeHtml(message.content)}</div>`;
+                ? formatAnswer(message.content)
+                : `<p>${escapeHtml(message.content)}</p>`;
 
-            return `<div class="aiChatMessage ${roleClass}"><span class="aiChatMessageLabel">${label}</span>${content}${taskHint}</div>`;
+            return `<div class="aiChatMessage ${roleClass}"><span class="aiChatMessageLabel">${label}</span><div class="aiChatMessageContent">${content}</div>${taskHint}</div>`;
         }).join("");
 
         return `<div id="aiChatTranscript" class="aiChatTranscript" role="log" aria-live="polite">${html}</div>`;
@@ -351,6 +357,10 @@ export class AiAssistantController {
     }
 
     buildSelectionQuestion(question) {
+        if (!isReferentialFollowUp(question)) {
+            return String(question || "").trim();
+        }
+
         const recentUserMessages = this.messages
             .filter(message => message.role === "user")
             .slice(-2)
