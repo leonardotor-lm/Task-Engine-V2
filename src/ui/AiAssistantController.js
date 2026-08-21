@@ -179,24 +179,25 @@ export class AiAssistantController {
 
         return `
             <section class="settingsToolPanel aiReadonlyQuery">
-                <p class="settingsHint">Consulta de sólo lectura. Se envían títulos y datos operativos; no se envían descripciones, adjuntos ni notas de Notion.</p>
+                <p class="settingsHint">Consulta de sólo lectura. Task Engine selecciona localmente las tareas relevantes y sólo después envía títulos y datos operativos; no se envían descripciones, adjuntos ni notas de Notion.</p>
                 <form id="aiAssistantQueryForm" class="aiAssistantQueryForm">
                     <label for="aiAssistantQuestion">Consulta</label>
                     <textarea id="aiAssistantQuestion" rows="4" maxlength="1000" placeholder="Por ejemplo: ¿qué tareas vencidas tengo?" ${this.queryLoading ? "disabled" : ""}>${escapeHtml(this.question)}</textarea>
                     <button type="submit" class="secondaryAction aiAssistantQuerySubmit" ${this.queryLoading ? "disabled" : ""}>${this.queryLoading ? "Analizando…" : "Consultar"}</button>
                 </form>
                 ${this.queryError ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.queryError)}</p>` : ""}
-                ${this.answer ? `<div class="settingsToolPanel aiReadonlyAnswer" role="status"><h3>Respuesta</h3><p>${formatAnswer(this.answer)}</p><p class="settingsHint">Analizadas: ${Number(this.lastTaskCount ?? 0)} tareas.</p></div>` : ""}
+                ${this.answer ? `<div class="settingsToolPanel aiReadonlyAnswer" role="status"><h3>Respuesta</h3><p>${formatAnswer(this.answer)}</p><p class="settingsHint">Analizadas: ${Number(this.lastTaskCount ?? 0)} tareas relevantes.</p></div>` : ""}
             </section>`;
     }
 
-    buildContext() {
+    buildContext(question = "") {
         return {
             ...buildAiTaskContext({
                 tasks: this.app.taskService?.repository?.getAll?.() || [],
                 areas: this.app.areaService?.getAllAreas?.() || [],
                 contexts: this.app.contextService?.getAllContexts?.() || [],
-                tags: this.app.tagService?.getAllTags?.() || []
+                tags: this.app.tagService?.getAllTags?.() || [],
+                question
             }),
             aiProvider:
                 this.app?.aiPreferences?.getProvider?.() ||
@@ -240,7 +241,7 @@ export class AiAssistantController {
             const response = await gateway.aiQuery({
                 ...this.app.syncConfig.get(),
                 question: normalizedQuestion,
-                context: this.buildContext()
+                context: this.buildContext(normalizedQuestion)
             });
             this.answer = response.answer || "";
             this.lastTaskCount = response.taskCount ?? null;
