@@ -96,6 +96,9 @@ import {
     AiDueDateProposalController
 } from "./ui/AiDueDateProposalController.js";
 import {
+    AiWaitingProposalController
+} from "./ui/AiWaitingProposalController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -194,6 +197,8 @@ const aiPriorityApplyController =
     );
 const aiDueDateProposalController =
     new AiDueDateProposalController(app);
+const aiWaitingProposalController =
+    new AiWaitingProposalController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -254,6 +259,7 @@ aiAssistantController.start();
 aiPriorityProposalController.start();
 aiPriorityApplyController.start();
 aiDueDateProposalController.start();
+aiWaitingProposalController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();

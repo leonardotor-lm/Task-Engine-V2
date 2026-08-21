@@ -1,0 +1,213 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { Dialog } from "../src/components/Dialog.js";
+import {
+    AiWaitingProposalController,
+    parseWaitingProposals
+} from "../src/ui/AiWaitingProposalController.js";
+
+test("parsea sólo propuestas válidas para tareas pendientes que no están En espera", () => {
+    const tasks = [
+        {
+            id: "a",
+            title: "Tarea A",
+            status: "PENDING",
+            isWaiting: false
+        },
+        {
+            id: "b",
+            title: "Tarea B",
+            status: "PENDING",
+            isWaiting: true
+        },
+        {
+            id: "c",
+            title: "Tarea C",
+            status: "COMPLETED",
+            isWaiting: false
+        }
+    ];
+    const answer = JSON.stringify({
+        proposals: [
+            {
+                taskId: "a",
+                reason: "Depende de una condición externa."
+            },
+            {
+                taskId: "b",
+                reason: "Ya está En espera."
+            },
+            {
+                taskId: "a",
+                reason: "Duplicada."
+            },
+            {
+                taskId: "inexistente",
+                reason: "ID inválido."
+            },
+            {
+                taskId: "c",
+                reason: "No está pendiente."
+            }
+        ]
+    });
+
+    assert.deepEqual(
+        parseWaitingProposals(answer, tasks),
+        [
+            {
+                taskId: "a",
+                currentIsWaiting: false,
+                isWaiting: true,
+                reason: "Depende de una condición externa."
+            }
+        ]
+    );
+});
+
+test("aplica sólo propuestas seleccionadas mediante TaskService después de confirmar", async () => {
+    const tasks = new Map([
+        ["a", {
+            id: "a",
+            title: "Tarea A",
+            status: "PENDING",
+            isWaiting: false
+        }],
+        ["b", {
+            id: "b",
+            title: "Tarea B",
+            status: "PENDING",
+            isWaiting: false
+        }]
+    ]);
+    const updates = [];
+    let renders = 0;
+    const app = {
+        taskService: {
+            getTaskById(id) {
+                return tasks.get(id) || null;
+            },
+            updateTask(id, changes) {
+                const task = tasks.get(id);
+                Object.assign(task, changes);
+                updates.push({ id, changes });
+                return task;
+            }
+        },
+        render() {
+            renders += 1;
+        }
+    };
+    const controller = new AiWaitingProposalController(
+        app,
+        { documentRef: null }
+    );
+    controller.proposal = {
+        items: [
+            {
+                taskId: "a",
+                currentIsWaiting: false,
+                isWaiting: true,
+                selected: true
+            },
+            {
+                taskId: "b",
+                currentIsWaiting: false,
+                isWaiting: true,
+                selected: false
+            }
+        ]
+    };
+
+    const originalConfirm = Dialog.confirmAsync;
+    const originalAlert = Dialog.alert;
+    Dialog.confirmAsync = async () => true;
+    Dialog.alert = async () => true;
+
+    try {
+        const count = await controller.confirmAndApply();
+
+        assert.equal(count, 1);
+        assert.deepEqual(updates, [
+            {
+                id: "a",
+                changes: { isWaiting: true }
+            }
+        ]);
+        assert.equal(tasks.get("a").isWaiting, true);
+        assert.equal(tasks.get("b").isWaiting, false);
+        assert.equal(controller.proposal, null);
+        assert.equal(renders, 1);
+    } finally {
+        Dialog.confirmAsync = originalConfirm;
+        Dialog.alert = originalAlert;
+    }
+});
+
+test("rechaza una propuesta obsoleta si la tarea ya pasó a En espera", () => {
+    const app = {
+        taskService: {
+            getTaskById() {
+                return {
+                    id: "a",
+                    title: "Tarea A",
+                    status: "PENDING",
+                    isWaiting: true
+                };
+            }
+        }
+    };
+    const controller = new AiWaitingProposalController(
+        app,
+        { documentRef: null }
+    );
+    controller.proposal = {
+        items: [
+            {
+                taskId: "a",
+                currentIsWaiting: false,
+                isWaiting: true,
+                selected: true
+            }
+        ]
+    };
+
+    assert.throws(
+        () => controller.validateSelectedItems(),
+        /ya está En espera/
+    );
+});
+
+test("rechaza una propuesta obsoleta si la tarea dejó de estar pendiente", () => {
+    const app = {
+        taskService: {
+            getTaskById() {
+                return {
+                    id: "a",
+                    title: "Tarea A",
+                    status: "COMPLETED",
+                    isWaiting: false
+                };
+            }
+        }
+    };
+    const controller = new AiWaitingProposalController(
+        app,
+        { documentRef: null }
+    );
+    controller.proposal = {
+        items: [
+            {
+                taskId: "a",
+                currentIsWaiting: false,
+                isWaiting: true,
+                selected: true
+            }
+        ]
+    };
+
+    assert.throws(
+        () => controller.validateSelectedItems(),
+        /ya no está pendiente/
+    );
+});
