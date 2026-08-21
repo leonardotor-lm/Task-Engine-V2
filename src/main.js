@@ -90,6 +90,9 @@ import {
     AiPriorityProposalController
 } from "./ui/AiPriorityProposalController.js";
 import {
+    AiPriorityApplyController
+} from "./ui/AiPriorityApplyController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -181,6 +184,11 @@ const aiAssistantController =
     new AiAssistantController(app);
 const aiPriorityProposalController =
     new AiPriorityProposalController(app);
+const aiPriorityApplyController =
+    new AiPriorityApplyController(
+        app,
+        aiPriorityProposalController
+    );
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -239,6 +247,7 @@ pwaController.start();
 aiSettingsController.start();
 aiAssistantController.start();
 aiPriorityProposalController.start();
+aiPriorityApplyController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
