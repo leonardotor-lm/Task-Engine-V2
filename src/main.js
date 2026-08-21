@@ -87,6 +87,9 @@ import {
     AiAssistantController
 } from "./ui/AiAssistantController.js";
 import {
+    AiPriorityProposalController
+} from "./ui/AiPriorityProposalController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -176,6 +179,8 @@ const aiSettingsController =
     new AiSettingsController(app);
 const aiAssistantController =
     new AiAssistantController(app);
+const aiPriorityProposalController =
+    new AiPriorityProposalController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -228,11 +233,12 @@ syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
-ongoingSyncReconciliationController
+goingSyncReconciliationController
     .start();
 pwaController.start();
 aiSettingsController.start();
 aiAssistantController.start();
+aiPriorityProposalController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
