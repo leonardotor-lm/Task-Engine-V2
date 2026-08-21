@@ -10,7 +10,7 @@ export const AI_SIDEBAR_TOOL_IDS = Object.freeze([
 
 function extractButton(html, id) {
     const pattern = new RegExp(
-        `\\n\\s*<button\\s+[\\s\\S]*?id=["']${id}["'][\\s\\S]*?<\\/button>`,
+        `\\n\\s*<button\\b(?=[^>]*id=["']${id}["'])[^>]*>[\\s\\S]*?<\\/button>`,
         "i"
     );
     const match = html.match(pattern);
