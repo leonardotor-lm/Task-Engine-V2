@@ -1,37 +1,49 @@
 var TASK_ENGINE_AI_SETTINGS = Object.freeze({
     API_KEY_PROPERTY: "TASK_ENGINE_GEMINI_API_KEY",
     MODEL_PROPERTY: "TASK_ENGINE_GEMINI_MODEL",
-    DEFAULT_MODEL: "gemini-3.7-flash",
+    DEFAULT_MODEL: "gemini-3.5-flash-lite",
+    ALLOWED_MODELS: [
+        "gemini-3.5-flash-lite",
+        "gemini-3.7-flash"
+    ],
     API_BASE: "https://generativelanguage.googleapis.com/v1beta",
     MAX_QUESTION_LENGTH: 1000,
     MAX_TASKS: 300
 });
 
 function getAiApiKey_() {
-
     return String(
         PropertiesService.getScriptProperties()
             .getProperty(
                 TASK_ENGINE_AI_SETTINGS.API_KEY_PROPERTY
             ) || ""
     ).trim();
+}
 
+function normalizeAiModel_(model) {
+    var normalized = String(model || "").trim();
+
+    if (
+        TASK_ENGINE_AI_SETTINGS.ALLOWED_MODELS
+            .indexOf(normalized) !== -1
+    ) {
+        return normalized;
+    }
+
+    return TASK_ENGINE_AI_SETTINGS.DEFAULT_MODEL;
 }
 
 function getAiModel_() {
-
-    return String(
+    return normalizeAiModel_(
         PropertiesService.getScriptProperties()
             .getProperty(
                 TASK_ENGINE_AI_SETTINGS.MODEL_PROPERTY
             ) ||
         TASK_ENGINE_AI_SETTINGS.DEFAULT_MODEL
-    ).trim();
-
+    );
 }
 
 function getAiStatus_(validateRemote) {
-
     var apiKey = getAiApiKey_();
     var model = getAiModel_();
 
@@ -83,11 +95,9 @@ function getAiStatus_(validateRemote) {
         modelDisplayName:
             payload.displayName || ""
     };
-
 }
 
 function queryAi_(question, context) {
-
     var normalizedQuestion = String(
         question || ""
     ).trim();
@@ -116,7 +126,9 @@ function queryAi_(question, context) {
     }
 
     var apiKey = getAiApiKey_();
-    var model = getAiModel_();
+    var model = normalizeAiModel_(
+        context.aiModel || getAiModel_()
+    );
 
     if (!apiKey) {
         throw protocolError_(
@@ -192,11 +204,9 @@ function queryAi_(question, context) {
         taskCount: context.tasks.length,
         answer: answer
     };
-
 }
 
 function parseAiResponse_(response) {
-
     var payload = {};
 
     try {
@@ -208,11 +218,9 @@ function parseAiResponse_(response) {
     }
 
     return payload;
-
 }
 
 function assertAiResponseOk_(response, payload) {
-
     var statusCode = response.getResponseCode();
 
     if (
@@ -232,5 +240,4 @@ function assertAiResponseOk_(response, payload) {
         providerMessage ||
             "No se pudo completar la solicitud a Gemini."
     );
-
 }
