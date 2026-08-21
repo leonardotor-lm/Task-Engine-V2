@@ -150,6 +150,85 @@ test("Mañana y Próximas muestran sólo el total pendiente", () => {
     }
 });
 
+test("Proyectos distingue proyectos de tareas y resume sólo las tareas de sus árboles", () => {
+    const projectOne = task({
+        id: "project-one",
+        isProject: true
+    });
+    const projectTwo = task({
+        id: "project-two",
+        isProject: true
+    });
+    const dueToday = task({
+        id: "due-today",
+        parentTaskId: "project-one",
+        dueDate: "2026-08-20"
+    });
+    const overdue = task({
+        id: "overdue",
+        parentTaskId: "project-two",
+        dueDate: "2026-08-19"
+    });
+    const nestedProject = task({
+        id: "nested-project",
+        parentTaskId: "project-one",
+        isProject: true
+    });
+    const nestedTask = task({
+        id: "nested-task",
+        parentTaskId: "nested-project"
+    });
+    const completed = task({
+        id: "completed",
+        parentTaskId: "project-one",
+        status: "COMPLETED",
+        completedAt: "2026-08-18T12:00:00.000Z"
+    });
+    const unrelatedCompleted = task({
+        id: "outside",
+        status: "COMPLETED",
+        completedAt: "2026-08-18T12:00:00.000Z"
+    });
+
+    const summary = buildViewTaskSummary(
+        baseState({
+            view: View.PROJECTS,
+            tasks: [
+                projectOne,
+                projectTwo,
+                dueToday,
+                overdue,
+                nestedProject,
+                nestedTask
+            ],
+            allTasks: [
+                projectOne,
+                projectTwo,
+                dueToday,
+                overdue,
+                nestedProject,
+                nestedTask,
+                completed,
+                unrelatedCompleted
+            ]
+        })
+    );
+
+    assert.deepEqual(
+        summary.items.map(item => [
+            item.label,
+            item.value
+        ]),
+        [
+            ["proyectos", 2],
+            ["tareas", 3],
+            ["vencen hoy", 1],
+            ["vencidas", 1],
+            ["completadas", 1]
+        ]
+    );
+});
+
 test("el contador de área limita también las completadas al área y filtros activos", () => {
     const active = task({
         id: "active",
