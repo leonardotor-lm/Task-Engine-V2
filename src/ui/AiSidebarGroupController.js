@@ -216,6 +216,16 @@ export class AiSidebarGroupController {
             .aiSidebarToolsBody .sidebarButton {
                 width: 100%;
             }
+            .aiAssistantDialog .aiChatMessage {
+                background: var(--color-surface) !important;
+                border-color: var(--color-border) !important;
+                color: var(--color-text) !important;
+            }
+            .aiAssistantDialog .aiChatMessageLabel,
+            .aiAssistantDialog .aiChatMessage .settingsHint {
+                color: var(--color-text-secondary) !important;
+                opacity: 1 !important;
+            }
             @media (max-width: 760px) {
                 .sidebarSectionLabel,
                 .customFiltersSection > summary,
