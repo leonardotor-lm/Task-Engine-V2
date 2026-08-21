@@ -35,6 +35,21 @@ function replacePlanningLabel(html, replacement) {
     return html.replace(pattern, replacement);
 }
 
+function addExplicitChevrons(html) {
+    const pattern = /(<details\b[^>]*class=["'][^"']*(?:customFiltersSection|sidebarNavigationGroup)[^"']*["'][^>]*>\s*<summary\b[^>]*>)([\s\S]*?)(<\/summary>)/gi;
+
+    return html.replace(
+        pattern,
+        (match, start, content, end) => {
+            if (/sidebarGroupChevron/.test(content)) {
+                return match;
+            }
+
+            return `${start}<span class="sidebarGroupLabel">${content.trim()}</span><span class="sidebarGroupChevron" aria-hidden="true">›</span>${end}`;
+        }
+    );
+}
+
 export class AiSidebarGroupController {
 
     constructor(app, { documentRef = globalThis.document } = {}) {
@@ -119,26 +134,24 @@ export class AiSidebarGroupController {
             }
             .customFiltersSection > summary::after,
             .sidebarNavigationGroup > summary::after,
-            .aiSidebarTools > summary::after {
-                content: "›";
-                margin-left: auto;
-                font-size: 14px;
-                font-weight: 400;
-                line-height: 1;
-                transition: transform 120ms ease;
+            .aiSidebarTools > summary::after,
+            .sidebarPlanningGroup > summary::after {
+                content: none !important;
             }
-            .customFiltersSection[open] > summary::after,
-            .sidebarNavigationGroup[open] > summary::after,
-            .aiSidebarTools[open] > summary::after {
-                transform: rotate(90deg);
+            .sidebarGroupLabel {
+                min-width: 0;
             }
             .sidebarGroupChevron {
+                flex: 0 0 auto;
                 margin-left: auto;
                 font-size: 14px;
                 font-weight: 400;
                 line-height: 1;
                 transition: transform 120ms ease;
             }
+            .customFiltersSection[open] > summary .sidebarGroupChevron,
+            .sidebarNavigationGroup[open] > summary .sidebarGroupChevron,
+            .aiSidebarTools[open] > summary .sidebarGroupChevron,
             .sidebarPlanningGroup[open] > summary .sidebarGroupChevron {
                 transform: rotate(90deg);
             }
@@ -188,7 +201,9 @@ export class AiSidebarGroupController {
         const originalRender = sidebar.render.bind(sidebar);
 
         sidebar.render = (...args) => {
-            let html = originalRender(...args);
+            let html = addExplicitChevrons(
+                originalRender(...args)
+            );
             const aiTools = [];
             const planningTools = [];
 
@@ -211,10 +226,8 @@ export class AiSidebarGroupController {
                         id="sidebarPlanningGroup"
                         class="sidebarPlanningGroup"${this.planningExpanded ? " open" : ""}>
                         <summary>
-                            <span>Planificación</span>
-                            <span
-                                class="sidebarGroupChevron"
-                                aria-hidden="true">›</span>
+                            <span class="sidebarGroupLabel">Planificación</span>
+                            <span class="sidebarGroupChevron" aria-hidden="true">›</span>
                         </summary>
                         <div class="sidebarPlanningGroupBody">
                             ${planningTools.join("\n                            ")}
@@ -227,7 +240,10 @@ export class AiSidebarGroupController {
                     <details
                         id="aiSidebarTools"
                         class="aiSidebarTools sidebarNavigationGroup"${this.expanded ? " open" : ""}>
-                        <summary>Asistencia con IA</summary>
+                        <summary>
+                            <span class="sidebarGroupLabel">Asistencia con IA</span>
+                            <span class="sidebarGroupChevron" aria-hidden="true">›</span>
+                        </summary>
                         <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
                             ${aiTools.join("\n                            ")}
                         </div>
