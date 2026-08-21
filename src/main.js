@@ -1,5 +1,8 @@
 import { App } from "./core/App.js";
 import {
+    AiPreferences
+} from "./infrastructure/AiPreferences.js";
+import {
     AttachmentController
 } from "./ui/AttachmentController.js";
 import {
@@ -78,6 +81,9 @@ import {
     PwaController
 } from "./ui/PwaController.js";
 import {
+    AiSettingsController
+} from "./ui/AiSettingsController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -112,6 +118,7 @@ import {
 } from "./ui/ThemeController.js";
 
 const app = new App();
+app.aiPreferences = new AiPreferences();
 const attachmentController =
     new AttachmentController(app);
 const waitingController =
@@ -162,6 +169,8 @@ const ongoingSyncReconciliationController =
     new OngoingSyncReconciliationController(app);
 const pwaController =
     new PwaController(app);
+const aiSettingsController =
+    new AiSettingsController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -217,6 +226,7 @@ smartSyncReconnectionController.start();
 ongoingSyncReconciliationController
     .start();
 pwaController.start();
+aiSettingsController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
