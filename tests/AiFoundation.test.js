@@ -37,7 +37,7 @@ test("la asistencia con IA queda desactivada por defecto", () => {
     assert.equal(preferences.isEnabled(), false);
 });
 
-test("el panel explica que Gemini es opcional y que la clave queda en Apps Script", () => {
+test("el panel explica que la IA es opcional y muestra la clave del proveedor seleccionado", () => {
     const storage = createStorage();
     const app = {
         aiPreferences: new AiPreferences(storage)
@@ -54,24 +54,29 @@ test("el panel explica que Gemini es opcional y que la clave queda en Apps Scrip
     assert.match(html, /no envía datos/);
     assert.doesNotMatch(
         html,
-        /TASK_ENGINE_GEMINI_API_KEY/
+        /TASK_ENGINE_(?:GEMINI|GROQ)_API_KEY/
     );
 
     app.aiPreferences.setEnabled(true);
     controller.status = {
         configured: false,
         connected: false,
-        model: "gemini-3.7-flash"
+        provider: "Groq",
+        model: "openai/gpt-oss-20b"
     };
     html = controller.getPanelHtml();
 
     assert.match(
         html,
+        /TASK_ENGINE_GROQ_API_KEY/
+    );
+    assert.doesNotMatch(
+        html,
         /TASK_ENGINE_GEMINI_API_KEY/
     );
     assert.match(
         html,
-        /nunca se envía al navegador/
+        /nunca se envían al navegador/
     );
 });
 
@@ -108,7 +113,7 @@ test("no consulta el servidor cuando la IA está desactivada", async () => {
     assert.equal(calls, 0);
 });
 
-test("verifica Gemini mediante Apps Script sin exponer la clave", async () => {
+test("verifica la IA mediante Apps Script sin exponer ninguna clave", async () => {
     const requests = [];
     const gateway = new CloudGateway({
         fetchFn: async (url, options) => {
@@ -119,8 +124,8 @@ test("verifica Gemini mediante Apps Script sin exponer la clave", async () => {
                     ok: true,
                     configured: true,
                     connected: true,
-                    provider: "Gemini",
-                    model: "gemini-3.7-flash"
+                    provider: "Groq",
+                    model: "openai/gpt-oss-20b"
                 })
             };
         }
@@ -143,18 +148,16 @@ test("verifica Gemini mediante Apps Script sin exponer la clave", async () => {
         requests[0].options.body
     );
 
-    assert.deepEqual(body, {
-        action: "aiStatus",
-        token: "task-engine-token",
-        validateRemote: true
-    });
+    assert.equal(body.action, "aiStatus");
+    assert.equal(body.token, "task-engine-token");
+    assert.equal(body.validateRemote, true);
     assert.equal(
         "apiKey" in body,
         false
     );
 });
 
-test("Apps Script conserva la clave de Gemini en propiedades y enruta aiStatus", () => {
+test("Apps Script conserva las claves de IA en propiedades y enruta aiStatus", () => {
     const code = fs.readFileSync(
         new URL(
             "../google-apps-script/Code.gs",
@@ -186,11 +189,19 @@ test("Apps Script conserva la clave de Gemini en propiedades y enruta aiStatus",
     );
     assert.match(
         ai,
+        /TASK_ENGINE_GROQ_API_KEY/
+    );
+    assert.match(
+        ai,
         /PropertiesService\.getScriptProperties/
     );
     assert.match(
         ai,
         /x-goog-api-key/
+    );
+    assert.match(
+        ai,
+        /Authorization/
     );
     assert.doesNotMatch(
         ai,
