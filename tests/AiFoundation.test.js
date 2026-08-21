@@ -61,6 +61,28 @@ test("el panel explica que la IA es opcional y muestra la clave del proveedor se
     controller.status = {
         configured: false,
         connected: false,
+        provider: "Gemini",
+        model: "gemini-3.7-flash"
+    };
+    html = controller.getPanelHtml();
+
+    assert.match(
+        html,
+        /TASK_ENGINE_GEMINI_API_KEY/
+    );
+    assert.doesNotMatch(
+        html,
+        /TASK_ENGINE_GROQ_API_KEY/
+    );
+    assert.match(
+        html,
+        /nunca se envían al navegador/
+    );
+
+    app.aiPreferences.setProvider("groq");
+    controller.status = {
+        configured: false,
+        connected: false,
         provider: "Groq",
         model: "openai/gpt-oss-20b"
     };
@@ -73,10 +95,6 @@ test("el panel explica que la IA es opcional y muestra la clave del proveedor se
     assert.doesNotMatch(
         html,
         /TASK_ENGINE_GEMINI_API_KEY/
-    );
-    assert.match(
-        html,
-        /nunca se envían al navegador/
     );
 });
 
