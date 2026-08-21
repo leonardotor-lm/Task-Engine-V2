@@ -173,7 +173,7 @@ test("conserva los estados de Planificación e IA durante nuevos renders", () =>
     );
 });
 
-test("normaliza encabezados y deja un solo separador antes de Planificación", () => {
+test("normaliza encabezados, fija chevrons y deja un solo separador antes de Planificación", () => {
     const source = fs.readFileSync(
         new URL(
             "../src/ui/AiSidebarGroupController.js",
@@ -201,7 +201,36 @@ test("normaliza encabezados y deja un solo separador antes de Planificación", (
     assert.match(source, /summary::after \{[\s\S]*content: none !important/);
     assert.match(source, /function renderChevron\(\)/);
     assert.match(source, /<svg[\s\S]*class="sidebarGroupChevron"/);
-    assert.match(source, /transform: rotate\(90deg\)/);
+    assert.match(source, /position: relative !important/);
+    assert.match(
+        source,
+        /\.sidebarGroupChevron \{[\s\S]*position: absolute !important;[\s\S]*right: 8px !important;[\s\S]*z-index: 2/
+    );
+    assert.match(
+        source,
+        /transform: translateY\(-50%\) rotate\(90deg\)/
+    );
+});
+
+test("repara chevrons faltantes después del render final", () => {
+    const source = fs.readFileSync(
+        new URL(
+            "../src/ui/AiSidebarGroupController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(source, /ensureDomChevrons\(\)/);
+    assert.match(
+        source,
+        /#sidebarPlanningGroup > summary/[\s\S]*?\.sidebarNavigationGroup > summary/
+    );
+    assert.match(
+        source,
+        /summary\.insertAdjacentHTML\?\.\([\s\S]*"beforeend"[\s\S]*renderChevron\(\)/
+    );
+    assert.match(source, /apply\(\) \{\s*this\.ensureDomChevrons\(\)/);
 });
 
 test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
