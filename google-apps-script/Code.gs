@@ -106,6 +106,18 @@ function handleRequest_(event, method) {
 
         if (
             method === "POST" &&
+            action === "aiQuery"
+        ) {
+            return jsonResponse_(
+                queryAi_(
+                    body.question,
+                    body.context
+                )
+            );
+        }
+
+        if (
+            method === "POST" &&
             action === "notionStatus"
         ) {
             return jsonResponse_(
