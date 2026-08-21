@@ -205,6 +205,25 @@ export class CloudGateway {
         );
     }
 
+    aiQuery({ url, token, question, context }) {
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "aiQuery",
+                    token,
+                    question,
+                    context
+                })
+            }
+        );
+    }
+
     notionStatus({ url, token, validateRemote = false }) {
         return this.request(
             this.buildUrl(url),
