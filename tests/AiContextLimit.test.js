@@ -120,7 +120,7 @@ test("reconoce área, espera y ausencia de fecha en la consulta", () => {
     );
 });
 
-test("una consulta abierta no activa filtros por coincidencias parciales de nombres", () => {
+test("una consulta abierta no activa filtros por nombres sin categoría explícita", () => {
     const context = buildAiTaskContext({
         question:
             "Analizá mis tareas pendientes y decime cuáles requieren atención primero y por qué",
@@ -151,5 +151,36 @@ test("una consulta abierta no activa filtros por coincidencias parciales de nomb
     assert.deepEqual(
         context.tasks.map(task => task.title),
         ["Preparar clase", "IA"]
+    );
+});
+
+test("una consulta de asesoramiento para hoy conserva todas las tareas activas", () => {
+    const context = buildAiTaskContext({
+        question: "¿Qué debería hacer hoy y qué parece más importante?",
+        today: "2026-08-21",
+        tasks: [
+            {
+                id: "today",
+                title: "Vence hoy",
+                status: "PENDING",
+                dueDate: "2026-08-21",
+                priority: 1,
+                tagIds: []
+            },
+            {
+                id: "later",
+                title: "Puede desbloquear otra cosa",
+                status: "PENDING",
+                dueDate: "2026-08-25",
+                priority: 3,
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.equal(context.taskCount, 2);
+    assert.deepEqual(
+        context.tasks.map(task => task.title),
+        ["Vence hoy", "Puede desbloquear otra cosa"]
     );
 });
