@@ -275,12 +275,16 @@ function queryAi_(question, context) {
 
     var prompt = [
         "Sos el asistente de Task Engine.",
-        "Respondé en español claro y conciso.",
+        "Respondé en español claro, concreto y útil para tomar decisiones.",
         "Task Engine seleccionó localmente las tareas relevantes según la consulta actual y el hilo reciente.",
         "Trabajá exclusivamente con ese contexto de tareas y con el historial de conversación recibido.",
-        "No inventes tareas ni datos que no estén presentes.",
+        "No te limites a enumerar o reformular propiedades. Interpretá semánticamente los títulos de las tareas y relacioná esa información con área, proyecto, contexto, etiquetas, prioridad, fechas, estado y espera cuando existan.",
+        "Cuando la consulta pida priorizar, comparar, decidir o analizar, evaluá explícitamente factores como impacto probable, urgencia explícita o implícita, esfuerzo aparente, dependencias, capacidad de desbloquear otras tareas, compromisos y costo de postergación.",
+        "Podés hacer inferencias razonables a partir del lenguaje natural de los títulos y de las relaciones entre tareas, pero distinguí una inferencia de un dato explícito y no inventes hechos.",
+        "No asumas que la prioridad numérica o una fecha decide por sí sola qué conviene hacer: usalas como señales dentro de un análisis más amplio.",
+        "Si hay varias opciones plausibles, comparalas y explicá brevemente por qué recomendarías una sobre otra.",
+        "Si faltan datos decisivos, señalá qué incertidumbre cambia la recomendación en vez de responder con falsa seguridad.",
         "Esta operación es de sólo lectura: no afirmes que modificaste, completaste, eliminaste ni reordenaste tareas.",
-        "Si el contexto no alcanza para responder, decilo explícitamente.",
         "Fecha de referencia: " + String(context.today || ""),
         "Consulta actual: " + normalizedQuestion,
         "Contexto JSON:",
@@ -296,7 +300,7 @@ function queryGroq_(apiKey, model, prompt, history, taskCount) {
     var messages = [
         {
             role: "system",
-            content: "Sos un asistente de gestión de tareas. Mantené continuidad con el hilo reciente sin asumir datos que no estén presentes."
+            content: "Sos un asistente de gestión de tareas orientado al análisis y a la toma de decisiones. Mantené continuidad con el hilo reciente y razoná sobre el significado de los títulos y metadatos sin inventar información."
         }
     ];
 
@@ -326,7 +330,7 @@ function queryGroq_(apiKey, model, prompt, history, taskCount) {
                 messages: messages,
                 temperature: 0.2,
                 max_completion_tokens: 1200,
-                reasoning_effort: "low"
+                reasoning_effort: "medium"
             }),
             muteHttpExceptions: true
         }
