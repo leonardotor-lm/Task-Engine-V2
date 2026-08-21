@@ -88,7 +88,31 @@ export class AiSettingsController {
 
     getSelectedStatus() {
         const provider = this.getSelectedProvider();
-        return this.status?.providers?.[provider.id] || null;
+        const providerStatus =
+            this.status?.providers?.[provider.id];
+
+        if (providerStatus) {
+            return providerStatus;
+        }
+
+        if (
+            this.status &&
+            !this.status.providers &&
+            (
+                Object.prototype.hasOwnProperty.call(
+                    this.status,
+                    "configured"
+                ) ||
+                Object.prototype.hasOwnProperty.call(
+                    this.status,
+                    "connected"
+                )
+            )
+        ) {
+            return this.status;
+        }
+
+        return null;
     }
 
     renderPanel() {
