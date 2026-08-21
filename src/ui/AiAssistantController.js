@@ -3,9 +3,106 @@ import {
 } from "../core/AiTaskContext.js";
 import { escapeHtml } from "./escapeHtml.js";
 
-function formatAnswer(answer) {
-    return escapeHtml(answer || "")
-        .replace(/\n/g, "<br>");
+const MAX_CHAT_HISTORY_MESSAGES = 6;
+const MAX_CHAT_MESSAGE_CHARS = 1200;
+
+function formatInlineMarkdown(value) {
+    return escapeHtml(value || "")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+        .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+        .replace(/(^|[^_])_([^_\n]+)_/g, "$1<em>$2</em>")
+        .replace(/`([^`\n]+)`/g, "<code>$1</code>");
+}
+
+export function formatAnswer(answer) {
+    const lines = String(answer || "")
+        .replace(/\r\n/g, "\n")
+        .split("\n");
+    const blocks = [];
+    let paragraph = [];
+    let listItems = [];
+    let listType = "";
+
+    const flushParagraph = () => {
+        if (!paragraph.length) return;
+        blocks.push(`<p>${formatInlineMarkdown(paragraph.join(" "))}</p>`);
+        paragraph = [];
+    };
+
+    const flushList = () => {
+        if (!listItems.length) return;
+        const tag = listType === "ol" ? "ol" : "ul";
+        blocks.push(`<${tag}>${listItems.map(item => `<li>${formatInlineMarkdown(item)}</li>`).join("")}</${tag}>`);
+        listItems = [];
+        listType = "";
+    };
+
+    lines.forEach(rawLine => {
+        const line = rawLine.trim();
+
+        if (!line) {
+            flushParagraph();
+            flushList();
+            return;
+        }
+
+        const heading = line.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+            flushParagraph();
+            flushList();
+            const level = Math.min(heading[1].length + 2, 5);
+            blocks.push(`<h${level}>${formatInlineMarkdown(heading[2])}</h${level}>`);
+            return;
+        }
+
+        const unordered = line.match(/^[-*]\s+(.+)$/);
+        if (unordered) {
+            flushParagraph();
+            if (listType && listType !== "ul") flushList();
+            listType = "ul";
+            listItems.push(unordered[1]);
+            return;
+        }
+
+        const ordered = line.match(/^\d+[.)]\s+(.+)$/);
+        if (ordered) {
+            flushParagraph();
+            if (listType && listType !== "ol") flushList();
+            listType = "ol";
+            listItems.push(ordered[1]);
+            return;
+        }
+
+        flushList();
+        paragraph.push(line);
+    });
+
+    flushParagraph();
+    flushList();
+
+    return blocks.join("");
+}
+
+function normalizeHistoryMessage(message) {
+    const role = message?.role === "assistant"
+        ? "assistant"
+        : "user";
+    const content = String(message?.content || "")
+        .trim()
+        .slice(0, MAX_CHAT_MESSAGE_CHARS);
+
+    return content ? { role, content } : null;
+}
+
+function isReferentialFollowUp(question) {
+    const normalized = String(question || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+
+    return /\b(esa|esas|ese|esos|aquella|aquellas|aquel|aquellos|anterior|anteriores|primera|primero|segunda|segundo|tercera|tercero|ultima|ultimo)\b|\b(cual|cuales)\s+de\b|^\s*y\b|\bde (esa|esas|ese|esos)\b/.test(normalized);
 }
 
 export function normalizeAiQueryError(error) {
@@ -35,8 +132,8 @@ export class AiAssistantController {
         this.document = documentRef;
         this.queryLoading = false;
         this.queryError = "";
-        this.question = "";
-        this.answer = "";
+        this.messages = [];
+        this.draft = "";
         this.lastTaskCount = null;
         this.started = false;
     }
@@ -120,12 +217,26 @@ export class AiAssistantController {
         this.renderDialog();
         const dialog = this.document.getElementById("aiAssistantDialog");
         if (dialog && !dialog.open && typeof dialog.showModal === "function") dialog.showModal();
-        this.document.getElementById("aiAssistantQuestion")?.focus?.();
+        this.focusComposer();
     }
 
     close() {
         const dialog = this.document.getElementById("aiAssistantDialog");
         if (dialog?.open && typeof dialog.close === "function") dialog.close();
+    }
+
+    resetConversation() {
+        if (this.queryLoading) return;
+        this.messages = [];
+        this.draft = "";
+        this.queryError = "";
+        this.lastTaskCount = null;
+        this.renderDialog();
+        this.focusComposer();
+    }
+
+    focusComposer() {
+        this.document.getElementById("aiAssistantQuestion")?.focus?.();
     }
 
     renderDialog() {
@@ -134,13 +245,26 @@ export class AiAssistantController {
 
         dialog.innerHTML = `
             <style>
-                .aiAssistantQueryForm { display:flex; flex-direction:column; align-items:stretch; gap:10px; }
+                .aiChatTranscript { display:flex; flex-direction:column; gap:10px; max-height:45vh; overflow:auto; padding:2px 2px 8px; }
+                .aiChatMessage { max-width:88%; padding:10px 12px; border:1px solid var(--border-color, #d8d8d8); border-radius:8px; background:var(--surface-color, #fff); }
+                .aiChatMessage.user { align-self:flex-end; }
+                .aiChatMessage.assistant { align-self:flex-start; }
+                .aiChatMessageLabel { display:block; font-size:.78rem; margin-bottom:4px; opacity:.7; }
+                .aiChatMessageContent p { margin:0 0 8px; line-height:1.45; }
+                .aiChatMessageContent p:last-child { margin-bottom:0; }
+                .aiChatMessageContent ul, .aiChatMessageContent ol { margin:6px 0 8px; padding-left:22px; }
+                .aiChatMessageContent li { margin:4px 0; line-height:1.4; }
+                .aiChatMessageContent h3, .aiChatMessageContent h4, .aiChatMessageContent h5 { margin:10px 0 6px; line-height:1.25; }
+                .aiChatMessageContent h3:first-child, .aiChatMessageContent h4:first-child, .aiChatMessageContent h5:first-child { margin-top:0; }
+                .aiChatMessageContent code { font-family:monospace; font-size:.92em; }
+                .aiAssistantQueryForm { display:flex; flex-direction:column; align-items:stretch; gap:10px; margin-top:12px; }
                 .aiAssistantQueryForm label { display:block; margin:0; }
                 .aiAssistantQueryForm textarea { display:block; width:100%; box-sizing:border-box; margin:0; resize:vertical; }
                 .aiAssistantQuerySubmit { align-self:flex-start; width:auto; min-width:0; padding:7px 14px; margin:0; }
+                .aiChatFooterActions { display:flex; gap:8px; justify-content:space-between; width:100%; }
                 @media (min-width: 761px) {
-                    .aiAssistantDialog { width:min(680px, calc(100vw - 48px)); }
-                    .aiAssistantQueryForm textarea { min-height:180px; }
+                    .aiAssistantDialog { width:min(720px, calc(100vw - 48px)); }
+                    .aiAssistantQueryForm textarea { min-height:96px; }
                 }
             </style>
             <div class="settingsDialogHeader">
@@ -149,11 +273,25 @@ export class AiAssistantController {
             </div>
             <div class="settingsDialogBody">${this.getBodyHtml()}</div>
             <div class="settingsDialogFooter">
-                <button id="cancelAiAssistant" type="button" class="tertiaryAction">Cerrar</button>
+                <div class="aiChatFooterActions">
+                    <button id="newAiConversation" type="button" class="tertiaryAction" ${this.queryLoading ? "disabled" : ""}>Nueva conversación</button>
+                    <button id="cancelAiAssistant" type="button" class="tertiaryAction">Cerrar</button>
+                </div>
             </div>`;
 
+        this.bindDialogEvents();
+
+        const transcript = this.document.getElementById("aiChatTranscript");
+        if (transcript) transcript.scrollTop = transcript.scrollHeight;
+    }
+
+    bindDialogEvents() {
         this.document.getElementById("closeAiAssistant")?.addEventListener("click", () => this.close());
         this.document.getElementById("cancelAiAssistant")?.addEventListener("click", () => this.close());
+        this.document.getElementById("newAiConversation")?.addEventListener("click", () => this.resetConversation());
+        this.document.getElementById("aiAssistantQuestion")?.addEventListener("input", event => {
+            this.draft = event.target.value;
+        });
         this.document.getElementById("aiAssistantQueryForm")?.addEventListener("submit", event => {
             event.preventDefault();
             const input = this.document.getElementById("aiAssistantQuestion");
@@ -179,15 +317,58 @@ export class AiAssistantController {
 
         return `
             <section class="settingsToolPanel aiReadonlyQuery">
-                <p class="settingsHint">Consulta de sólo lectura. Task Engine selecciona localmente las tareas relevantes y sólo después envía títulos y datos operativos; no se envían descripciones, adjuntos ni notas de Notion.</p>
+                <p class="settingsHint">Chat de sólo lectura. Task Engine selecciona localmente las tareas relevantes; no se envían descripciones, adjuntos ni notas de Notion.</p>
+                ${this.getTranscriptHtml()}
+                ${this.queryError ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.queryError)}</p>` : ""}
                 <form id="aiAssistantQueryForm" class="aiAssistantQueryForm">
                     <label for="aiAssistantQuestion">Consulta</label>
-                    <textarea id="aiAssistantQuestion" rows="4" maxlength="1000" placeholder="Por ejemplo: ¿qué tareas vencidas tengo?" ${this.queryLoading ? "disabled" : ""}>${escapeHtml(this.question)}</textarea>
-                    <button type="submit" class="secondaryAction aiAssistantQuerySubmit" ${this.queryLoading ? "disabled" : ""}>${this.queryLoading ? "Analizando…" : "Consultar"}</button>
+                    <textarea id="aiAssistantQuestion" rows="3" maxlength="1000" placeholder="Escribí un mensaje…" ${this.queryLoading ? "disabled" : ""}>${escapeHtml(this.draft)}</textarea>
+                    <button type="submit" class="secondaryAction aiAssistantQuerySubmit" ${this.queryLoading ? "disabled" : ""}>${this.queryLoading ? "Analizando…" : "Enviar"}</button>
                 </form>
-                ${this.queryError ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.queryError)}</p>` : ""}
-                ${this.answer ? `<div class="settingsToolPanel aiReadonlyAnswer" role="status"><h3>Respuesta</h3><p>${formatAnswer(this.answer)}</p><p class="settingsHint">Analizadas: ${Number(this.lastTaskCount ?? 0)} tareas relevantes.</p></div>` : ""}
             </section>`;
+    }
+
+    getTranscriptHtml() {
+        if (!this.messages.length) {
+            return `<div id="aiChatTranscript" class="aiChatTranscript"><p class="settingsHint">Podés hacer una consulta y después continuar con preguntas de seguimiento.</p></div>`;
+        }
+
+        const html = this.messages.map(message => {
+            const roleClass = message.role === "assistant" ? "assistant" : "user";
+            const label = message.role === "assistant" ? "Asistente" : "Vos";
+            const taskHint = message.role === "assistant" && Number.isInteger(message.taskCount)
+                ? `<span class="settingsHint">Analizadas: ${message.taskCount} tareas relevantes.</span>`
+                : "";
+            const content = message.role === "assistant"
+                ? formatAnswer(message.content)
+                : `<p>${escapeHtml(message.content)}</p>`;
+
+            return `<div class="aiChatMessage ${roleClass}"><span class="aiChatMessageLabel">${label}</span><div class="aiChatMessageContent">${content}</div>${taskHint}</div>`;
+        }).join("");
+
+        return `<div id="aiChatTranscript" class="aiChatTranscript" role="log" aria-live="polite">${html}</div>`;
+    }
+
+    getChatHistory() {
+        return this.messages
+            .slice(-MAX_CHAT_HISTORY_MESSAGES)
+            .map(normalizeHistoryMessage)
+            .filter(Boolean);
+    }
+
+    buildSelectionQuestion(question) {
+        if (!isReferentialFollowUp(question)) {
+            return String(question || "").trim();
+        }
+
+        const recentUserMessages = this.messages
+            .filter(message => message.role === "user")
+            .slice(-2)
+            .map(message => message.content);
+
+        return [...recentUserMessages, question]
+            .filter(Boolean)
+            .join("\n");
     }
 
     buildContext(question = "") {
@@ -197,8 +378,9 @@ export class AiAssistantController {
                 areas: this.app.areaService?.getAllAreas?.() || [],
                 contexts: this.app.contextService?.getAllContexts?.() || [],
                 tags: this.app.tagService?.getAllTags?.() || [],
-                question
+                question: this.buildSelectionQuestion(question)
             }),
+            chatHistory: this.getChatHistory(),
             aiProvider:
                 this.app?.aiPreferences?.getProvider?.() ||
                 "groq",
@@ -231,8 +413,12 @@ export class AiAssistantController {
             return null;
         }
 
-        this.question = normalizedQuestion;
-        this.answer = "";
+        const context = this.buildContext(normalizedQuestion);
+        this.messages.push({
+            role: "user",
+            content: normalizedQuestion
+        });
+        this.draft = "";
         this.queryError = "";
         this.queryLoading = true;
         this.renderDialog();
@@ -241,10 +427,15 @@ export class AiAssistantController {
             const response = await gateway.aiQuery({
                 ...this.app.syncConfig.get(),
                 question: normalizedQuestion,
-                context: this.buildContext(normalizedQuestion)
+                context
             });
-            this.answer = response.answer || "";
+            const answer = response.answer || "";
             this.lastTaskCount = response.taskCount ?? null;
+            this.messages.push({
+                role: "assistant",
+                content: answer,
+                taskCount: this.lastTaskCount
+            });
             return response;
         } catch (error) {
             this.queryError = normalizeAiQueryError(error);
@@ -252,6 +443,7 @@ export class AiAssistantController {
         } finally {
             this.queryLoading = false;
             this.renderDialog();
+            this.focusComposer();
         }
     }
 }

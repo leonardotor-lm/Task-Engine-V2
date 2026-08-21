@@ -119,3 +119,98 @@ test("reconoce área, espera y ausencia de fecha en la consulta", () => {
         ["Comprar repuesto"]
     );
 });
+
+test("una consulta abierta no activa filtros por nombres sin categoría explícita", () => {
+    const context = buildAiTaskContext({
+        question:
+            "Analizá mis tareas pendientes y decime cuáles requieren atención primero y por qué",
+        today: "2026-08-21",
+        areas: [{ id: "short-area", name: "IA" }],
+        contexts: [{ id: "short-context", name: "Mis" }],
+        tags: [{ id: "short-tag", name: "At" }],
+        tasks: [
+            {
+                id: "pending-1",
+                title: "Preparar clase",
+                status: "PENDING",
+                priority: 2,
+                tagIds: []
+            },
+            {
+                id: "pending-2",
+                title: "IA",
+                status: "PENDING",
+                isProject: true,
+                priority: 1,
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.equal(context.taskCount, 2);
+    assert.deepEqual(
+        context.tasks.map(task => task.title),
+        ["Preparar clase", "IA"]
+    );
+});
+
+test("una consulta de asesoramiento para hoy conserva todas las tareas activas", () => {
+    const context = buildAiTaskContext({
+        question: "¿Qué debería hacer hoy y qué parece más importante?",
+        today: "2026-08-21",
+        tasks: [
+            {
+                id: "today",
+                title: "Vence hoy",
+                status: "PENDING",
+                dueDate: "2026-08-21",
+                priority: 1,
+                tagIds: []
+            },
+            {
+                id: "later",
+                title: "Puede desbloquear otra cosa",
+                status: "PENDING",
+                dueDate: "2026-08-25",
+                priority: 3,
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.equal(context.taskCount, 2);
+    assert.deepEqual(
+        context.tasks.map(task => task.title),
+        ["Vence hoy", "Puede desbloquear otra cosa"]
+    );
+});
+
+test("agrega distancias temporales objetivas para evitar cálculos del modelo", () => {
+    const context = buildAiTaskContext({
+        question: "Analizá mis tareas pendientes",
+        today: "2026-08-21",
+        tasks: [
+            {
+                id: "future",
+                title: "Vence la semana próxima",
+                status: "PENDING",
+                dueDate: "2026-08-27",
+                createdAt: "2026-08-11T12:00:00.000Z",
+                tagIds: []
+            },
+            {
+                id: "overdue",
+                title: "Ya venció",
+                status: "PENDING",
+                dueDate: "2026-08-19",
+                createdAt: "2026-08-20T12:00:00.000Z",
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.equal(context.tasks[0].daysUntilDue, 6);
+    assert.equal(context.tasks[0].daysSinceCreated, 10);
+    assert.equal(context.tasks[1].daysUntilDue, -2);
+    assert.equal(context.tasks[1].daysSinceCreated, 1);
+});

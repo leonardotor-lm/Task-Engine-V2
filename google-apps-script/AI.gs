@@ -22,7 +22,9 @@ var TASK_ENGINE_AI_SETTINGS = Object.freeze({
             API_BASE: "https://generativelanguage.googleapis.com/v1beta"
         }
     },
-    MAX_QUESTION_LENGTH: 1000
+    MAX_QUESTION_LENGTH: 1000,
+    MAX_CHAT_HISTORY_MESSAGES: 6,
+    MAX_CHAT_MESSAGE_LENGTH: 1200
 });
 
 function normalizeAiProvider_(provider) {
@@ -55,6 +57,31 @@ function normalizeAiModel_(provider, model) {
     return settings.ALLOWED_MODELS.indexOf(normalized) !== -1
         ? normalized
         : settings.DEFAULT_MODEL;
+}
+
+function normalizeAiHistory_(history) {
+    if (!Array.isArray(history)) {
+        return [];
+    }
+
+    return history
+        .slice(-TASK_ENGINE_AI_SETTINGS.MAX_CHAT_HISTORY_MESSAGES)
+        .map(function(message) {
+            var role = message && message.role === "assistant"
+                ? "assistant"
+                : "user";
+            var content = String(
+                message && message.content || ""
+            ).trim().slice(
+                0,
+                TASK_ENGINE_AI_SETTINGS.MAX_CHAT_MESSAGE_LENGTH
+            );
+
+            return content
+                ? { role: role, content: content }
+                : null;
+        })
+        .filter(Boolean);
 }
 
 function getAiStatus_(validateRemote) {
@@ -230,6 +257,7 @@ function queryAi_(question, context) {
         context.aiModel
     );
     var apiKey = getAiApiKey_(providerId);
+    var history = normalizeAiHistory_(context.chatHistory);
 
     if (!apiKey) {
         throw protocolError_(
@@ -240,26 +268,57 @@ function queryAi_(question, context) {
         );
     }
 
+    var taskContext = Object.assign({}, context);
+    delete taskContext.chatHistory;
+    delete taskContext.aiProvider;
+    delete taskContext.aiModel;
+
     var prompt = [
         "Sos el asistente de Task Engine.",
-        "Respondé en español claro y conciso.",
-        "Task Engine seleccionó localmente las tareas relevantes según la consulta del usuario.",
-        "Trabajá exclusivamente con ese contexto de tareas.",
-        "No inventes tareas ni datos que no estén presentes.",
+        "Respondé en español claro, concreto y útil para tomar decisiones.",
+        "Task Engine seleccionó localmente las tareas relevantes según la consulta actual y el hilo reciente.",
+        "Trabajá exclusivamente con ese contexto de tareas y con el historial de conversación recibido.",
+        "No te limites a enumerar o reformular propiedades. Interpretá semánticamente los títulos de las tareas y relacioná esa información con área, proyecto, contexto, etiquetas, prioridad, fechas, estado y espera cuando existan.",
+        "Cuando la consulta pida priorizar, comparar, decidir o analizar, evaluá explícitamente factores como impacto probable, urgencia explícita o implícita, esfuerzo aparente, dependencias, capacidad de desbloquear otras tareas, compromisos y costo de postergación.",
+        "Los campos daysUntilDue y daysSinceCreated son cálculos objetivos hechos por Task Engine. Usalos para el razonamiento temporal y no recalcules manualmente la distancia entre fechas cuando estén presentes.",
+        "Podés hacer inferencias razonables a partir del lenguaje natural de los títulos y de las relaciones entre tareas, pero toda afirmación que no surja directamente de un campo explícito debe presentarse claramente como inferencia, posibilidad o hipótesis.",
+        "No presentes como hechos consecuencias no registradas, como multas, obligatoriedad, pérdida de turnos, dependencias o bloqueos, salvo que el contexto las indique explícitamente. Si las deducís, marcá la inferencia.",
+        "No asumas que la prioridad numérica o una fecha decide por sí sola qué conviene hacer: usalas como señales dentro de un análisis más amplio.",
+        "Si hay varias opciones plausibles, comparalas y explicá brevemente por qué recomendarías una sobre otra.",
+        "Si faltan datos decisivos, señalá qué incertidumbre cambia la recomendación en vez de responder con falsa seguridad.",
+        "Usá un español natural y directo; evitá metáforas o expresiones rebuscadas que puedan volver ambigua la recomendación.",
         "Esta operación es de sólo lectura: no afirmes que modificaste, completaste, eliminaste ni reordenaste tareas.",
-        "Si el contexto no alcanza para responder, decilo explícitamente.",
         "Fecha de referencia: " + String(context.today || ""),
-        "Consulta del usuario: " + normalizedQuestion,
+        "Consulta actual: " + normalizedQuestion,
         "Contexto JSON:",
-        JSON.stringify(context)
+        JSON.stringify(taskContext)
     ].join("\n\n");
 
     return providerId === "groq"
-        ? queryGroq_(apiKey, model, prompt, context.tasks.length)
-        : queryGemini_(apiKey, model, prompt, context.tasks.length);
+        ? queryGroq_(apiKey, model, prompt, history, context.tasks.length)
+        : queryGemini_(apiKey, model, prompt, history, context.tasks.length);
 }
 
-function queryGroq_(apiKey, model, prompt, taskCount) {
+function queryGroq_(apiKey, model, prompt, history, taskCount) {
+    var messages = [
+        {
+            role: "system",
+            content: "Sos un asistente de gestión de tareas orientado al análisis y a la toma de decisiones. Mantené continuidad con el hilo reciente y razoná sobre el significado de los títulos y metadatos sin inventar información."
+        }
+    ];
+
+    history.forEach(function(message) {
+        messages.push({
+            role: message.role,
+            content: message.content
+        });
+    });
+
+    messages.push({
+        role: "user",
+        content: prompt
+    });
+
     var response = UrlFetchApp.fetch(
         TASK_ENGINE_AI_SETTINGS.PROVIDERS.groq.API_BASE +
             "/chat/completions",
@@ -271,19 +330,10 @@ function queryGroq_(apiKey, model, prompt, taskCount) {
             },
             payload: JSON.stringify({
                 model: model,
-                messages: [
-                    {
-                        role: "system",
-                        content: "Sos un asistente de gestión de tareas."
-                    },
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
+                messages: messages,
                 temperature: 0.2,
                 max_completion_tokens: 1200,
-                reasoning_effort: "low"
+                reasoning_effort: "medium"
             }),
             muteHttpExceptions: true
         }
@@ -316,7 +366,21 @@ function queryGroq_(apiKey, model, prompt, taskCount) {
     };
 }
 
-function queryGemini_(apiKey, model, prompt, taskCount) {
+function queryGemini_(apiKey, model, prompt, history, taskCount) {
+    var contents = history.map(function(message) {
+        return {
+            role: message.role === "assistant"
+                ? "model"
+                : "user",
+            parts: [{ text: message.content }]
+        };
+    });
+
+    contents.push({
+        role: "user",
+        parts: [{ text: prompt }]
+    });
+
     var response = UrlFetchApp.fetch(
         TASK_ENGINE_AI_SETTINGS.PROVIDERS.gemini.API_BASE +
             "/models/" +
@@ -329,13 +393,10 @@ function queryGemini_(apiKey, model, prompt, taskCount) {
                 "x-goog-api-key": apiKey
             },
             payload: JSON.stringify({
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }],
+                contents: contents,
                 generationConfig: {
                     temperature: 0.2,
-                    maxOutputTokens: 1200
+                    maxOutputTokens: 2400
                 }
             }),
             muteHttpExceptions: true
@@ -346,16 +407,17 @@ function queryGemini_(apiKey, model, prompt, taskCount) {
     assertAiResponseOk_(response, payload, "Gemini");
 
     var candidates = payload.candidates || [];
+    var candidate = candidates[0] || {};
     var parts =
-        candidates[0] &&
-        candidates[0].content &&
-        candidates[0].content.parts || [];
+        candidate.content &&
+        candidate.content.parts || [];
     var answer = parts
         .map(function(part) {
             return String(part.text || "");
         })
         .join("\n")
         .trim();
+    var truncated = candidate.finishReason === "MAX_TOKENS";
 
     if (!answer) {
         throw protocolError_(
@@ -364,11 +426,16 @@ function queryGemini_(apiKey, model, prompt, taskCount) {
         );
     }
 
+    if (truncated) {
+        answer += "\n\nLa respuesta alcanzó el límite de longitud. Podés pedirme que continúe desde donde quedó.";
+    }
+
     return {
         ok: true,
         provider: "Gemini",
         model: model,
         taskCount: taskCount,
+        truncated: truncated,
         answer: answer
     };
 }
