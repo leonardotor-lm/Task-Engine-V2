@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import {
+    formatAiAnswer,
     normalizeAiQueryError
 } from "../src/ui/AiAssistantController.js";
 
@@ -32,6 +33,24 @@ test("conserva otros errores de IA para diagnóstico", () => {
         ),
         "API key not valid"
     );
+});
+
+test("renderiza respuestas con estructura legible sin aceptar HTML arbitrario", () => {
+    const html = formatAiAnswer([
+        "## Próximos vencimientos",
+        "",
+        "* **Hoy:** Resolver esto",
+        "* *Mañana:* Resolver aquello",
+        "",
+        "<script>alert('x')</script>"
+    ].join("\n"));
+
+    assert.match(html, /<h4>Próximos vencimientos<\/h4>/);
+    assert.match(html, /<ul>/);
+    assert.match(html, /<strong>Hoy:<\/strong>/);
+    assert.match(html, /<em>Mañana:<\/em>/);
+    assert.match(html, /&lt;script&gt;/);
+    assert.doesNotMatch(html, /<script>/);
 });
 
 test("el asistente se integra en Planificación y usa un diálogo propio", async () => {
