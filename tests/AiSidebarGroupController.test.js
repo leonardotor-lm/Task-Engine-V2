@@ -63,7 +63,7 @@ test("agrupa todas las herramientas de IA y queda colapsado por defecto", () => 
     }
 });
 
-test("convierte Planificación en grupo real, muestra flecha y ordena sus vistas", () => {
+test("convierte Planificación en grupo real, muestra flecha abierta y ordena sus vistas", () => {
     const sidebar = { render: () => sidebarHtml() };
     const controller = new AiSidebarGroupController(
         { mainView: { sidebar }, render() {} },
@@ -81,7 +81,7 @@ test("convierte Planificación en grupo real, muestra flecha y ordena sus vistas
     assert.match(html, /sidebarGroupLabel">Planificación<\/span>/);
     assert.match(
         html,
-        /sidebarGroupChevron" aria-hidden="true">›<\/span>/
+        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">⌄<\/span>/
     );
     assert.match(
         html,
@@ -127,7 +127,6 @@ test("usa flechas explícitas en todos los títulos colapsables de la barra", ()
     for (const label of [
         "Filtros personalizados",
         "Áreas",
-        "Planificación",
         "Asistencia con IA",
         "Historial"
     ]) {
@@ -139,6 +138,11 @@ test("usa flechas explícitas en todos los títulos colapsables de la barra", ()
             )
         );
     }
+
+    assert.match(
+        html,
+        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">⌄<\/span>/
+    );
 
     assert.doesNotMatch(
         html,
@@ -163,9 +167,17 @@ test("conserva los estados de Planificación e IA durante nuevos renders", () =>
         html,
         /id="aiSidebarTools"[\s\S]*?\sopen>/
     );
+    assert.match(
+        html,
+        /sidebarGroupLabel">Asistencia con IA<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">⌄<\/span>/
+    );
     assert.doesNotMatch(
         html,
         /id="sidebarPlanningGroup"[^>]*\sopen(?:\s|>)/
+    );
+    assert.match(
+        html,
+        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">›<\/span>/
     );
 });
 
@@ -194,12 +206,10 @@ test("normaliza encabezados y deja un solo separador antes de Planificación", (
         source,
         /\.customFiltersSection \{[\s\S]*border-bottom: 0 !important/
     );
-    assert.match(
-        source,
-        /\.customFiltersSection\[open\] > summary \.sidebarGroupChevron,[\s\S]*\.sidebarPlanningGroup\[open\] > summary \.sidebarGroupChevron[\s\S]*rotate\(90deg\)/
-    );
     assert.match(source, /summary::after \{[\s\S]*content: none !important/);
-    assert.match(source, /\.sidebarGroupChevron \{[\s\S]*display: inline-block !important/);
+    assert.match(source, /function chevronForExpanded\(expanded\)/);
+    assert.match(source, /return expanded \? "⌄" : "›"/);
+    assert.doesNotMatch(source, /rotate\(90deg\)/);
 });
 
 test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
