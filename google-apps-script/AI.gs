@@ -1,62 +1,125 @@
 var TASK_ENGINE_AI_SETTINGS = Object.freeze({
-    API_KEY_PROPERTY: "TASK_ENGINE_GEMINI_API_KEY",
-    MODEL_PROPERTY: "TASK_ENGINE_GEMINI_MODEL",
-    DEFAULT_MODEL: "gemini-3.7-flash",
-    API_BASE: "https://generativelanguage.googleapis.com/v1beta",
-    MAX_QUESTION_LENGTH: 1000,
-    MAX_TASKS: 300
+    DEFAULT_PROVIDER: "groq",
+    PROVIDERS: {
+        groq: {
+            LABEL: "Groq",
+            API_KEY_PROPERTY: "TASK_ENGINE_GROQ_API_KEY",
+            DEFAULT_MODEL: "openai/gpt-oss-20b",
+            ALLOWED_MODELS: [
+                "openai/gpt-oss-20b",
+                "openai/gpt-oss-120b"
+            ],
+            API_BASE: "https://api.groq.com/openai/v1"
+        },
+        gemini: {
+            LABEL: "Gemini",
+            API_KEY_PROPERTY: "TASK_ENGINE_GEMINI_API_KEY",
+            DEFAULT_MODEL: "gemini-3.5-flash-lite",
+            ALLOWED_MODELS: [
+                "gemini-3.5-flash-lite",
+                "gemini-3.7-flash"
+            ],
+            API_BASE: "https://generativelanguage.googleapis.com/v1beta"
+        }
+    },
+    MAX_QUESTION_LENGTH: 1000
 });
 
-function getAiApiKey_() {
+function normalizeAiProvider_(provider) {
+    var normalized = String(provider || "").trim().toLowerCase();
 
-    return String(
-        PropertiesService.getScriptProperties()
-            .getProperty(
-                TASK_ENGINE_AI_SETTINGS.API_KEY_PROPERTY
-            ) || ""
-    ).trim();
-
+    return TASK_ENGINE_AI_SETTINGS.PROVIDERS[normalized]
+        ? normalized
+        : TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER;
 }
 
-function getAiModel_() {
+function getAiProviderSettings_(provider) {
+    return TASK_ENGINE_AI_SETTINGS.PROVIDERS[
+        normalizeAiProvider_(provider)
+    ];
+}
+
+function getAiApiKey_(provider) {
+    var settings = getAiProviderSettings_(provider);
 
     return String(
         PropertiesService.getScriptProperties()
-            .getProperty(
-                TASK_ENGINE_AI_SETTINGS.MODEL_PROPERTY
-            ) ||
-        TASK_ENGINE_AI_SETTINGS.DEFAULT_MODEL
+            .getProperty(settings.API_KEY_PROPERTY) || ""
     ).trim();
+}
 
+function normalizeAiModel_(provider, model) {
+    var settings = getAiProviderSettings_(provider);
+    var normalized = String(model || "").trim();
+
+    return settings.ALLOWED_MODELS.indexOf(normalized) !== -1
+        ? normalized
+        : settings.DEFAULT_MODEL;
 }
 
 function getAiStatus_(validateRemote) {
+    var providers = {};
+    var providerIds = Object.keys(
+        TASK_ENGINE_AI_SETTINGS.PROVIDERS
+    );
 
-    var apiKey = getAiApiKey_();
-    var model = getAiModel_();
+    providerIds.forEach(function(providerId) {
+        providers[providerId] = getAiProviderStatus_(
+            providerId,
+            validateRemote === true
+        );
+    });
+
+    var defaultStatus = providers[
+        TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER
+    ];
+
+    return {
+        ok: true,
+        configured: defaultStatus.configured,
+        connected: defaultStatus.connected,
+        provider: defaultStatus.provider,
+        model: defaultStatus.model,
+        providers: providers
+    };
+}
+
+function getAiProviderStatus_(provider, validateRemote) {
+    var providerId = normalizeAiProvider_(provider);
+    var settings = getAiProviderSettings_(providerId);
+    var apiKey = getAiApiKey_(providerId);
+    var model = settings.DEFAULT_MODEL;
 
     if (!apiKey) {
         return {
-            ok: true,
             configured: false,
             connected: false,
-            provider: "Gemini",
+            provider: settings.LABEL,
+            providerId: providerId,
             model: model
         };
     }
 
     if (validateRemote !== true) {
         return {
-            ok: true,
             configured: true,
             connected: false,
-            provider: "Gemini",
+            provider: settings.LABEL,
+            providerId: providerId,
             model: model
         };
     }
 
+    if (providerId === "groq") {
+        return verifyGroqProvider_(
+            apiKey,
+            model,
+            settings
+        );
+    }
+
     var response = UrlFetchApp.fetch(
-        TASK_ENGINE_AI_SETTINGS.API_BASE +
+        settings.API_BASE +
             "/models/" +
             encodeURIComponent(model),
         {
@@ -69,25 +132,70 @@ function getAiStatus_(validateRemote) {
     );
     var payload = parseAiResponse_(response);
 
-    assertAiResponseOk_(response, payload);
+    assertAiResponseOk_(
+        response,
+        payload,
+        settings.LABEL
+    );
 
     return {
-        ok: true,
         configured: true,
         connected: true,
-        provider: "Gemini",
+        provider: settings.LABEL,
+        providerId: providerId,
         model:
             String(payload.name || "")
-                .replace(/^models\//, "") ||
-            model,
+                .replace(/^models\//, "") || model,
         modelDisplayName:
             payload.displayName || ""
     };
+}
 
+function verifyGroqProvider_(apiKey, model, settings) {
+    var response = UrlFetchApp.fetch(
+        settings.API_BASE + "/models",
+        {
+            method: "get",
+            headers: {
+                Authorization: "Bearer " + apiKey
+            },
+            muteHttpExceptions: true
+        }
+    );
+    var payload = parseAiResponse_(response);
+
+    assertAiResponseOk_(
+        response,
+        payload,
+        settings.LABEL
+    );
+
+    var models = Array.isArray(payload.data)
+        ? payload.data
+        : [];
+    var selectedModel = models.find(function(item) {
+        return String(item && item.id || "") === model;
+    });
+
+    if (!selectedModel) {
+        throw protocolError_(
+            "AI_MODEL_UNAVAILABLE",
+            "El modelo seleccionado de Groq no está disponible para esta cuenta."
+        );
+    }
+
+    return {
+        configured: true,
+        connected: true,
+        provider: settings.LABEL,
+        providerId: "groq",
+        model: model,
+        modelDisplayName:
+            selectedModel.owned_by || ""
+    };
 }
 
 function queryAi_(question, context) {
-
     var normalizedQuestion = String(
         question || ""
     ).trim();
@@ -105,9 +213,7 @@ function queryAi_(question, context) {
 
     if (
         !context ||
-        !Array.isArray(context.tasks) ||
-        context.tasks.length >
-            TASK_ENGINE_AI_SETTINGS.MAX_TASKS
+        !Array.isArray(context.tasks)
     ) {
         throw protocolError_(
             "INVALID_AI_CONTEXT",
@@ -115,20 +221,30 @@ function queryAi_(question, context) {
         );
     }
 
-    var apiKey = getAiApiKey_();
-    var model = getAiModel_();
+    var providerId = normalizeAiProvider_(
+        context.aiProvider
+    );
+    var settings = getAiProviderSettings_(providerId);
+    var model = normalizeAiModel_(
+        providerId,
+        context.aiModel
+    );
+    var apiKey = getAiApiKey_(providerId);
 
     if (!apiKey) {
         throw protocolError_(
             "AI_NOT_CONFIGURED",
-            "La asistencia con IA no está configurada."
+            "Falta configurar la clave de " +
+                settings.LABEL +
+                " en Apps Script."
         );
     }
 
     var prompt = [
         "Sos el asistente de Task Engine.",
         "Respondé en español claro y conciso.",
-        "Trabajá exclusivamente con el contexto de tareas que se incluye abajo.",
+        "Task Engine seleccionó localmente las tareas relevantes según la consulta del usuario.",
+        "Trabajá exclusivamente con ese contexto de tareas.",
         "No inventes tareas ni datos que no estén presentes.",
         "Esta operación es de sólo lectura: no afirmes que modificaste, completaste, eliminaste ni reordenaste tareas.",
         "Si el contexto no alcanza para responder, decilo explícitamente.",
@@ -138,8 +254,71 @@ function queryAi_(question, context) {
         JSON.stringify(context)
     ].join("\n\n");
 
+    return providerId === "groq"
+        ? queryGroq_(apiKey, model, prompt, context.tasks.length)
+        : queryGemini_(apiKey, model, prompt, context.tasks.length);
+}
+
+function queryGroq_(apiKey, model, prompt, taskCount) {
     var response = UrlFetchApp.fetch(
-        TASK_ENGINE_AI_SETTINGS.API_BASE +
+        TASK_ENGINE_AI_SETTINGS.PROVIDERS.groq.API_BASE +
+            "/chat/completions",
+        {
+            method: "post",
+            contentType: "application/json",
+            headers: {
+                Authorization: "Bearer " + apiKey
+            },
+            payload: JSON.stringify({
+                model: model,
+                messages: [
+                    {
+                        role: "system",
+                        content: "Sos un asistente de gestión de tareas."
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.2,
+                max_completion_tokens: 1200,
+                reasoning_effort: "low"
+            }),
+            muteHttpExceptions: true
+        }
+    );
+    var payload = parseAiResponse_(response);
+
+    assertAiResponseOk_(response, payload, "Groq");
+
+    var answer = String(
+        payload &&
+        payload.choices &&
+        payload.choices[0] &&
+        payload.choices[0].message &&
+        payload.choices[0].message.content || ""
+    ).trim();
+
+    if (!answer) {
+        throw protocolError_(
+            "AI_EMPTY_RESPONSE",
+            "Groq no devolvió una respuesta utilizable."
+        );
+    }
+
+    return {
+        ok: true,
+        provider: "Groq",
+        model: model,
+        taskCount: taskCount,
+        answer: answer
+    };
+}
+
+function queryGemini_(apiKey, model, prompt, taskCount) {
+    var response = UrlFetchApp.fetch(
+        TASK_ENGINE_AI_SETTINGS.PROVIDERS.gemini.API_BASE +
             "/models/" +
             encodeURIComponent(model) +
             ":generateContent",
@@ -164,7 +343,7 @@ function queryAi_(question, context) {
     );
     var payload = parseAiResponse_(response);
 
-    assertAiResponseOk_(response, payload);
+    assertAiResponseOk_(response, payload, "Gemini");
 
     var candidates = payload.candidates || [];
     var parts =
@@ -189,14 +368,12 @@ function queryAi_(question, context) {
         ok: true,
         provider: "Gemini",
         model: model,
-        taskCount: context.tasks.length,
+        taskCount: taskCount,
         answer: answer
     };
-
 }
 
 function parseAiResponse_(response) {
-
     var payload = {};
 
     try {
@@ -208,11 +385,9 @@ function parseAiResponse_(response) {
     }
 
     return payload;
-
 }
 
-function assertAiResponseOk_(response, payload) {
-
+function assertAiResponseOk_(response, payload, providerLabel) {
     var statusCode = response.getResponseCode();
 
     if (
@@ -230,7 +405,8 @@ function assertAiResponseOk_(response, payload) {
     throw protocolError_(
         "AI_CONNECTION_FAILED",
         providerMessage ||
-            "No se pudo completar la solicitud a Gemini."
+            "No se pudo completar la solicitud a " +
+            providerLabel +
+            "."
     );
-
 }

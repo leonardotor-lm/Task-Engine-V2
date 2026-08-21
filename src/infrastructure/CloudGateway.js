@@ -190,7 +190,13 @@ export class CloudGateway {
         );
     }
 
-    aiStatus({ url, token, validateRemote = false }) {
+    aiStatus({
+        url,
+        token,
+        validateRemote = false,
+        provider,
+        model
+    }) {
         return this.request(
             this.buildUrl(url),
             {
@@ -202,13 +208,22 @@ export class CloudGateway {
                 body: JSON.stringify({
                     action: "aiStatus",
                     token,
-                    validateRemote: validateRemote === true
+                    validateRemote: validateRemote === true,
+                    provider,
+                    model
                 })
             }
         );
     }
 
-    aiQuery({ url, token, question, context }) {
+    aiQuery({
+        url,
+        token,
+        question,
+        context,
+        provider,
+        model
+    }) {
         return this.request(
             this.buildUrl(url),
             {
@@ -221,7 +236,9 @@ export class CloudGateway {
                     action: "aiQuery",
                     token,
                     question,
-                    context
+                    context,
+                    provider,
+                    model
                 })
             },
             {
