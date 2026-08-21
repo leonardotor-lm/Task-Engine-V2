@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
 import { Dialog } from "../src/components/Dialog.js";
 import {
     AiPriorityApplyController
@@ -142,5 +143,27 @@ test("rechaza IDs duplicados y prioridades fuera del rango permitido", () => {
     assert.throws(
         () => invalidPriorityController.validateSelectedItems(),
         /prioridad inválida/
+    );
+});
+
+test("Aplicar IA queda cableado al controlador de propuestas y disponible en la PWA", async () => {
+    const main = await fs.readFile(
+        new URL("../src/main.js", import.meta.url),
+        "utf8"
+    );
+    const pwaAssets = await fs.readFile(
+        new URL("../pwa-assets.js", import.meta.url),
+        "utf8"
+    );
+
+    assert.match(main, /AiPriorityApplyController/);
+    assert.match(
+        main,
+        /new AiPriorityApplyController\([\s\S]*aiPriorityProposalController/
+    );
+    assert.match(main, /aiPriorityApplyController\.start\(\)/);
+    assert.match(
+        pwaAssets,
+        /\.\/src\/ui\/AiPriorityApplyController\.js/
     );
 });
