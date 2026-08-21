@@ -9,6 +9,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/components/Dialog.js",
     "./src/core/ActivityService.js",
     "./src/core/AdvancedSearch.js",
+    "./src/core/AiTaskContext.js",
     "./src/core/App.js",
     "./src/core/AreaService.js",
     "./src/core/AttachmentSearch.js",
