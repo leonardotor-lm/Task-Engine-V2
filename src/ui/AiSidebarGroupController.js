@@ -105,7 +105,7 @@ export class AiSidebarGroupController {
             .sidebarPlanningGroup > summary {
                 box-sizing: border-box;
                 min-height: 30px;
-                padding: 6px 8px 4px;
+                padding: 6px 30px 4px 8px;
                 color: var(--color-text-muted) !important;
                 font-family: inherit !important;
                 font-size: 11px !important;
@@ -136,6 +136,7 @@ export class AiSidebarGroupController {
             .sidebarNavigationGroup > summary,
             .aiSidebarTools > summary,
             .sidebarPlanningGroup > summary {
+                position: relative !important;
                 display: flex;
                 align-items: center;
                 gap: 8px;
@@ -160,23 +161,34 @@ export class AiSidebarGroupController {
                 min-width: 0;
             }
             .sidebarGroupChevron {
+                position: absolute !important;
+                top: 50% !important;
+                right: 8px !important;
                 display: block !important;
-                flex: 0 0 14px;
                 width: 14px !important;
                 height: 14px !important;
-                margin-left: auto;
-                overflow: visible;
-                color: currentColor;
+                margin: 0 !important;
+                overflow: visible !important;
+                color: currentColor !important;
                 opacity: 1 !important;
                 visibility: visible !important;
+                pointer-events: none;
+                z-index: 2;
+                transform: translateY(-50%);
                 transform-origin: center;
                 transition: transform 120ms ease;
+            }
+            .sidebarGroupChevron path {
+                display: block !important;
+                stroke: currentColor !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
             .customFiltersSection[open] > summary .sidebarGroupChevron,
             .sidebarNavigationGroup[open] > summary .sidebarGroupChevron,
             .aiSidebarTools[open] > summary .sidebarGroupChevron,
             .sidebarPlanningGroup[open] > summary .sidebarGroupChevron {
-                transform: rotate(90deg);
+                transform: translateY(-50%) rotate(90deg);
             }
             .customFiltersSection > summary:hover,
             .sidebarNavigationGroup > summary:hover,
@@ -293,7 +305,26 @@ export class AiSidebarGroupController {
         };
     }
 
+    ensureDomChevrons() {
+        this.document?.querySelectorAll?.(
+            ".customFiltersSection > summary, " +
+            "#sidebarPlanningGroup > summary, " +
+            "#aiSidebarTools > summary, " +
+            ".sidebarNavigationGroup > summary"
+        )?.forEach(summary => {
+            if (summary.querySelector?.(".sidebarGroupChevron")) {
+                return;
+            }
+            summary.insertAdjacentHTML?.(
+                "beforeend",
+                renderChevron()
+            );
+        });
+    }
+
     apply() {
+        this.ensureDomChevrons();
+
         const aiGroup = this.document?.getElementById?.(
             "aiSidebarTools"
         );
