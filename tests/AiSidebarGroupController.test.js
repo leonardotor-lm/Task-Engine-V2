@@ -63,7 +63,7 @@ test("agrupa todas las herramientas de IA y queda colapsado por defecto", () => 
     }
 });
 
-test("convierte Planificación en grupo real, muestra flecha abierta y ordena sus vistas", () => {
+test("convierte Planificación en grupo real, muestra chevron SVG y ordena sus vistas", () => {
     const sidebar = { render: () => sidebarHtml() };
     const controller = new AiSidebarGroupController(
         { mainView: { sidebar }, render() {} },
@@ -81,7 +81,7 @@ test("convierte Planificación en grupo real, muestra flecha abierta y ordena su
     assert.match(html, /sidebarGroupLabel">Planificación<\/span>/);
     assert.match(
         html,
-        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">⌄<\/span>/
+        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?<svg[\s\S]*?class="sidebarGroupChevron"[\s\S]*?<path[\s\S]*?d="M5 2\.75 L10\.25 8 L5 13\.25"/
     );
     assert.match(
         html,
@@ -114,7 +114,7 @@ test("convierte Planificación en grupo real, muestra flecha abierta y ordena su
     );
 });
 
-test("usa flechas explícitas en todos los títulos colapsables de la barra", () => {
+test("usa chevrons SVG explícitos en todos los títulos colapsables de la barra", () => {
     const sidebar = { render: () => sidebarHtml() };
     const controller = new AiSidebarGroupController(
         { mainView: { sidebar }, render() {} },
@@ -127,6 +127,7 @@ test("usa flechas explícitas en todos los títulos colapsables de la barra", ()
     for (const label of [
         "Filtros personalizados",
         "Áreas",
+        "Planificación",
         "Asistencia con IA",
         "Historial"
     ]) {
@@ -134,15 +135,10 @@ test("usa flechas explícitas en todos los títulos colapsables de la barra", ()
         assert.match(
             html,
             new RegExp(
-                `sidebarGroupLabel">${escaped}<\\/span>[\\s\\S]*?sidebarGroupChevron" aria-hidden="true">›<\\/span>`
+                `sidebarGroupLabel">${escaped}<\\/span>[\\s\\S]*?<svg[\\s\\S]*?class="sidebarGroupChevron"`
             )
         );
     }
-
-    assert.match(
-        html,
-        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">⌄<\/span>/
-    );
 
     assert.doesNotMatch(
         html,
@@ -167,17 +163,13 @@ test("conserva los estados de Planificación e IA durante nuevos renders", () =>
         html,
         /id="aiSidebarTools"[\s\S]*?\sopen>/
     );
-    assert.match(
-        html,
-        /sidebarGroupLabel">Asistencia con IA<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">⌄<\/span>/
-    );
     assert.doesNotMatch(
         html,
         /id="sidebarPlanningGroup"[^>]*\sopen(?:\s|>)/
     );
     assert.match(
         html,
-        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron" aria-hidden="true">›<\/span>/
+        /sidebarGroupLabel">Planificación<\/span>[\s\S]*?sidebarGroupChevron/
     );
 });
 
@@ -207,9 +199,9 @@ test("normaliza encabezados y deja un solo separador antes de Planificación", (
         /\.customFiltersSection \{[\s\S]*border-bottom: 0 !important/
     );
     assert.match(source, /summary::after \{[\s\S]*content: none !important/);
-    assert.match(source, /function chevronForExpanded\(expanded\)/);
-    assert.match(source, /return expanded \? "⌄" : "›"/);
-    assert.doesNotMatch(source, /rotate\(90deg\)/);
+    assert.match(source, /function renderChevron\(\)/);
+    assert.match(source, /<svg[\s\S]*class="sidebarGroupChevron"/);
+    assert.match(source, /transform: rotate\(90deg\)/);
 });
 
 test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
