@@ -58,3 +58,18 @@ test("Apps Script limita y normaliza el historial antes de enviarlo al proveedor
     assert.match(ai, /history\.forEach/);
     assert.match(ai, /message\.role === "assistant"[\s\S]*"model"/);
 });
+
+test("Gemini admite respuestas analíticas más largas y avisa si alcanza el máximo", async () => {
+    const ai = await fs.readFile(
+        new URL(
+            "../google-apps-script/AI.gs",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(ai, /maxOutputTokens: 2400/);
+    assert.match(ai, /finishReason === "MAX_TOKENS"/);
+    assert.match(ai, /respuesta alcanzó el límite de longitud/i);
+    assert.match(ai, /truncated: truncated/);
+});
