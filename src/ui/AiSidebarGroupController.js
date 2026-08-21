@@ -35,8 +35,22 @@ function replacePlanningLabel(html, replacement) {
     return html.replace(pattern, replacement);
 }
 
-function chevronForExpanded(expanded) {
-    return expanded ? "⌄" : "›";
+function renderChevron() {
+    return `
+        <svg
+            class="sidebarGroupChevron"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false">
+            <path
+                d="M5 2.75 L10.25 8 L5 13.25"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+            </path>
+        </svg>`;
 }
 
 function addExplicitChevrons(html) {
@@ -49,22 +63,8 @@ function addExplicitChevrons(html) {
                 return match;
             }
 
-            const expanded = /\sopen(?:\s|>)/i.test(start);
-            const chevron = chevronForExpanded(expanded);
-
-            return `${start}<span class="sidebarGroupLabel">${content.trim()}</span><span class="sidebarGroupChevron" aria-hidden="true">${chevron}</span>${end}`;
+            return `${start}<span class="sidebarGroupLabel">${content.trim()}</span>${renderChevron()}${end}`;
         }
-    );
-}
-
-function syncChevron(group) {
-    const chevron = group?.querySelector?.(
-        ":scope > summary .sidebarGroupChevron"
-    );
-    if (!chevron) return;
-
-    chevron.textContent = chevronForExpanded(
-        Boolean(group.open)
     );
 }
 
@@ -160,15 +160,23 @@ export class AiSidebarGroupController {
                 min-width: 0;
             }
             .sidebarGroupChevron {
-                display: inline-block !important;
-                flex: 0 0 auto;
+                display: block !important;
+                flex: 0 0 14px;
+                width: 14px !important;
+                height: 14px !important;
                 margin-left: auto;
-                color: inherit;
-                font-size: 16px;
-                font-weight: 400;
-                line-height: 1;
+                overflow: visible;
+                color: currentColor;
                 opacity: 1 !important;
                 visibility: visible !important;
+                transform-origin: center;
+                transition: transform 120ms ease;
+            }
+            .customFiltersSection[open] > summary .sidebarGroupChevron,
+            .sidebarNavigationGroup[open] > summary .sidebarGroupChevron,
+            .aiSidebarTools[open] > summary .sidebarGroupChevron,
+            .sidebarPlanningGroup[open] > summary .sidebarGroupChevron {
+                transform: rotate(90deg);
             }
             .customFiltersSection > summary:hover,
             .sidebarNavigationGroup > summary:hover,
@@ -242,7 +250,7 @@ export class AiSidebarGroupController {
                         class="sidebarPlanningGroup sidebarNavigationGroup"${this.planningExpanded ? " open" : ""}>
                         <summary>
                             <span class="sidebarGroupLabel">Planificación</span>
-                            <span class="sidebarGroupChevron" aria-hidden="true">${chevronForExpanded(this.planningExpanded)}</span>
+                            ${renderChevron()}
                         </summary>
                         <div class="sidebarPlanningGroupBody sidebarNavigationGroupBody">
                             ${planningTools.join("\n                            ")}
@@ -257,7 +265,7 @@ export class AiSidebarGroupController {
                         class="aiSidebarTools sidebarNavigationGroup"${this.expanded ? " open" : ""}>
                         <summary>
                             <span class="sidebarGroupLabel">Asistencia con IA</span>
-                            <span class="sidebarGroupChevron" aria-hidden="true">${chevronForExpanded(this.expanded)}</span>
+                            ${renderChevron()}
                         </summary>
                         <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
                             ${aiTools.join("\n                            ")}
@@ -317,18 +325,6 @@ export class AiSidebarGroupController {
         ) {
             statistics.before(waiting);
         }
-
-        this.document?.querySelectorAll?.(
-            "details.customFiltersSection, details.sidebarNavigationGroup"
-        )?.forEach(group => {
-            syncChevron(group);
-            if (group.dataset.sidebarChevronBound) return;
-
-            group.dataset.sidebarChevronBound = "true";
-            group.addEventListener("toggle", () => {
-                syncChevron(group);
-            });
-        });
 
         if (
             planningGroup &&
