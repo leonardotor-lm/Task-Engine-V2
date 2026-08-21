@@ -184,3 +184,33 @@ test("una consulta de asesoramiento para hoy conserva todas las tareas activas",
         ["Vence hoy", "Puede desbloquear otra cosa"]
     );
 });
+
+test("agrega distancias temporales objetivas para evitar cálculos del modelo", () => {
+    const context = buildAiTaskContext({
+        question: "Analizá mis tareas pendientes",
+        today: "2026-08-21",
+        tasks: [
+            {
+                id: "future",
+                title: "Vence la semana próxima",
+                status: "PENDING",
+                dueDate: "2026-08-27",
+                createdAt: "2026-08-11T12:00:00.000Z",
+                tagIds: []
+            },
+            {
+                id: "overdue",
+                title: "Ya venció",
+                status: "PENDING",
+                dueDate: "2026-08-19",
+                createdAt: "2026-08-20T12:00:00.000Z",
+                tagIds: []
+            }
+        ]
+    });
+
+    assert.equal(context.tasks[0].daysUntilDue, 6);
+    assert.equal(context.tasks[0].daysSinceCreated, 10);
+    assert.equal(context.tasks[1].daysUntilDue, -2);
+    assert.equal(context.tasks[1].daysSinceCreated, 1);
+});
