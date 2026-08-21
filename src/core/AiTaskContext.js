@@ -41,6 +41,18 @@ function addDays(date, amount) {
     return parsed.toISOString().slice(0, 10);
 }
 
+function daysBetween(start, end) {
+    const startDate = dateOnly(start);
+    const endDate = dateOnly(end);
+    if (!startDate || !endDate) return null;
+
+    const startMs = Date.parse(`${startDate}T00:00:00Z`);
+    const endMs = Date.parse(`${endDate}T00:00:00Z`);
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return null;
+
+    return Math.round((endMs - startMs) / 86400000);
+}
+
 function startOfWeek(date) {
     const parsed = new Date(`${date}T00:00:00Z`);
     const day = parsed.getUTCDay();
@@ -299,7 +311,8 @@ function compactTask(
         contextsById,
         tagsById,
         tasksById,
-        question
+        question,
+        today
     }
 ) {
     const result = {
@@ -325,10 +338,19 @@ function compactTask(
     if (context) result.context = context;
     if (taskTags.length) result.tags = taskTags;
     if (task.startDate) result.startDate = dateOnly(task.startDate);
-    if (task.dueDate) result.dueDate = dateOnly(task.dueDate);
+    if (task.dueDate) {
+        result.dueDate = dateOnly(task.dueDate);
+        result.daysUntilDue = daysBetween(today, task.dueDate);
+    }
     if (task.dueTime) result.dueTime = task.dueTime;
     if (task.completedAt) {
         result.completedAt = String(task.completedAt);
+    }
+    if (task.createdAt) {
+        const age = daysBetween(task.createdAt, today);
+        if (age !== null && age >= 0) {
+            result.daysSinceCreated = age;
+        }
     }
     if (/cread|creacion|antigu|recient/.test(question) && task.createdAt) {
         result.createdAt = String(task.createdAt);
@@ -372,7 +394,8 @@ export function buildAiTaskContext({
                 contextsById,
                 tagsById,
                 tasksById,
-                question: normalizedQuestion
+                question: normalizedQuestion,
+                today
             })
         )
     };
