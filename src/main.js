@@ -105,6 +105,9 @@ import {
     AiProjectProposalController
 } from "./ui/AiProjectProposalController.js";
 import {
+    AiTaskQualityController
+} from "./ui/AiTaskQualityController.js";
+import {
     NotionSettingsController
 } from "./ui/NotionSettingsController.js";
 import {
@@ -209,6 +212,8 @@ const aiOrganizationProposalController =
     new AiOrganizationProposalController(app);
 const aiProjectProposalController =
     new AiProjectProposalController(app);
+const aiTaskQualityController =
+    new AiTaskQualityController(app);
 const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
@@ -272,6 +277,7 @@ aiDueDateProposalController.start();
 aiWaitingProposalController.start();
 aiOrganizationProposalController.start();
 aiProjectProposalController.start();
+aiTaskQualityController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
