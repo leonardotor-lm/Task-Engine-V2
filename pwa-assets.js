@@ -124,6 +124,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/TaskToolbarLayoutController.js",
     "./src/ui/ThemeController.js",
     "./src/ui/ViewRouter.js",
+    "./src/ui/ViewTaskSummaryController.js",
     "./src/ui/WaitingController.js",
     "./src/ui/escapeHtml.js",
     "./styles.css",
@@ -146,5 +147,6 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/themes/high-contrast.css",
     "./styles/themes/ink-blue.css",
     "./styles/themes/terminal-80.css",
+    "./styles/view-task-summary.css",
     "./styles/waiting.css"
 ]);

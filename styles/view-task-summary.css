@@ -1,0 +1,55 @@
+.taskListTitleSummary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+    min-width: 0;
+}
+
+.taskListTitleSummary > h2 {
+    margin-right: 2px;
+}
+
+.taskViewSummary {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 8px;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.taskViewSummaryItem {
+    white-space: nowrap;
+}
+
+.taskViewSummaryItem:not(:first-child)::before {
+    content: "·";
+    margin-right: 8px;
+    color: var(--color-text-muted);
+}
+
+.taskViewSummaryItem-today {
+    color: var(--color-accent-strong);
+}
+
+.taskViewSummaryItem-overdue {
+    color: var(--color-danger);
+}
+
+.taskViewSummaryItem-completed {
+    color: var(--color-success);
+}
+
+@media (max-width: 760px) {
+    .taskListTitleSummary {
+        flex: 1 1 100%;
+    }
+
+    .taskViewSummary {
+        flex: 1 1 100%;
+        font-size: 11px;
+        line-height: 1.35;
+    }
+}

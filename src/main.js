@@ -102,6 +102,9 @@ import {
     BusinessDayRecurrenceController
 } from "./ui/BusinessDayRecurrenceController.js";
 import {
+    ViewTaskSummaryController
+} from "./ui/ViewTaskSummaryController.js";
+import {
     StrictAdvancedSearchResultsController
 } from "./ui/StrictAdvancedSearchResultsController.js";
 import {
@@ -186,6 +189,8 @@ const recurrenceLifecycleController =
     new RecurrenceLifecycleController(app);
 const businessDayRecurrenceController =
     new BusinessDayRecurrenceController(app);
+const viewTaskSummaryController =
+    new ViewTaskSummaryController(app);
 const strictAdvancedSearchResultsController =
     new StrictAdvancedSearchResultsController(app);
 const themeController =
@@ -226,6 +231,7 @@ manualTaskOrderController.start();
 bulkDueDateController.start();
 recurrenceLifecycleController.start();
 businessDayRecurrenceController.start();
+viewTaskSummaryController.start();
 strictAdvancedSearchResultsController.start();
 app.start();
 themeController.start();
