@@ -60,7 +60,7 @@ test("agrupa todas las herramientas de IA y queda colapsado por defecto", () => 
     }
 });
 
-test("convierte Planificación en grupo real y ordena sus vistas", () => {
+test("convierte Planificación en grupo real, muestra flecha y ordena sus vistas", () => {
     const sidebar = { render: () => sidebarHtml() };
     const controller = new AiSidebarGroupController(
         { mainView: { sidebar }, render() {} },
@@ -71,7 +71,11 @@ test("convierte Planificación en grupo real y ordena sus vistas", () => {
     const html = sidebar.render();
 
     assert.match(html, /id="sidebarPlanningGroup"/);
-    assert.match(html, />Planificación<\/summary>/);
+    assert.match(html, /<span>Planificación<\/span>/);
+    assert.match(
+        html,
+        /class="sidebarGroupChevron"[\s\S]*?aria-hidden="true">›<\/span>/
+    );
     assert.match(
         html,
         /id="sidebarPlanningGroup"[^>]*\sopen(?:\s|>)/
@@ -150,6 +154,10 @@ test("normaliza encabezados y deja un solo separador antes de Planificación", (
     assert.match(
         source,
         /\.customFiltersSection \{[\s\S]*border-bottom: 0 !important/
+    );
+    assert.match(
+        source,
+        /\.sidebarPlanningGroup\[open\] > summary \.sidebarGroupChevron[\s\S]*rotate\(90deg\)/
     );
 });
 
