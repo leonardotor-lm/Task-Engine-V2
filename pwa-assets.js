@@ -74,6 +74,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/ActivityView.js",
     "./src/ui/AiAssistantController.js",
     "./src/ui/AiDueDateProposalController.js",
+    "./src/ui/AiOrganizationProposalController.js",
     "./src/ui/AiPriorityApplyController.js",
     "./src/ui/AiPriorityProposalController.js",
     "./src/ui/AiSettingsController.js",
