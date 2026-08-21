@@ -20,13 +20,13 @@ function createStorage() {
     };
 }
 
-test("usa Groq con GPT-OSS 20B como opción predeterminada", () => {
+test("usa Gemini 3.7 Flash como opción predeterminada", () => {
     const preferences = new AiPreferences(createStorage());
 
-    assert.equal(DEFAULT_AI_PROVIDER, "groq");
-    assert.equal(DEFAULT_AI_MODEL, "openai/gpt-oss-20b");
-    assert.equal(preferences.getProvider(), "groq");
-    assert.equal(preferences.getModel(), "openai/gpt-oss-20b");
+    assert.equal(DEFAULT_AI_PROVIDER, "gemini");
+    assert.equal(DEFAULT_AI_MODEL, "gemini-3.7-flash");
+    assert.equal(preferences.getProvider(), "gemini");
+    assert.equal(preferences.getModel(), "gemini-3.7-flash");
     assert.equal(AI_PROVIDERS.length, 2);
 });
 
@@ -34,20 +34,20 @@ test("persiste proveedor y sólo modelos compatibles con él", () => {
     const preferences = new AiPreferences(createStorage());
 
     assert.equal(
+        preferences.setModel("gemini-3.5-flash-lite"),
+        "gemini-3.5-flash-lite"
+    );
+    assert.equal(preferences.getModel(), "gemini-3.5-flash-lite");
+
+    assert.equal(preferences.setProvider("groq"), "groq");
+    assert.equal(preferences.getModel(), "openai/gpt-oss-20b");
+    assert.equal(
         preferences.setModel("openai/gpt-oss-120b"),
         "openai/gpt-oss-120b"
     );
-    assert.equal(preferences.getModel(), "openai/gpt-oss-120b");
-
-    assert.equal(preferences.setProvider("gemini"), "gemini");
-    assert.equal(preferences.getModel(), "gemini-3.5-flash-lite");
     assert.equal(
         preferences.setModel("gemini-3.7-flash"),
-        "gemini-3.7-flash"
-    );
-    assert.equal(
-        preferences.setModel("openai/gpt-oss-20b"),
-        "gemini-3.7-flash"
+        "openai/gpt-oss-120b"
     );
 });
 
