@@ -12,7 +12,10 @@ const PRIORITY_LABELS = Object.freeze({
     4: "Crítica"
 });
 
-const MAX_TASKS = 300;
+// Keep the request comfortably below free-tier token limits.
+// The server prompt and model answer also consume tokens, so this
+// intentionally leaves headroom instead of approaching the limit.
+const MAX_TASKS = 70;
 
 function indexById(items = []) {
     return new Map(
