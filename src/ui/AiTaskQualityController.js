@@ -15,6 +15,18 @@ const ACTIVE_STATUSES = new Set([
     "PENDING"
 ]);
 
+export const TASK_QUALITY_QUESTION = [
+    "Auditá las tareas activas y señalá sólo problemas claros.",
+    "Tipos: DUPLICATE, AMBIGUOUS, TOO_LARGE, UNORGANIZED.",
+    "DUPLICATE: 2 a 4 tareas que representan esencialmente la misma acción o resultado; no sólo tareas relacionadas.",
+    "AMBIGUOUS: título demasiado vago para identificar la acción.",
+    "TOO_LARGE: tarea no proyecto que claramente requiere varias acciones; sé conservador.",
+    "UNORGANIZED: falta relevante de área, contexto o etiquetas cuando serían claramente útiles; no uses sólo ausencia de fecha o prioridad.",
+    "No inventes datos. Para DUPLICATE usá 2 a 4 taskIds; para los demás, exactamente 1.",
+    'Respondé sólo JSON: {"findings":[{"type":"AMBIGUOUS","taskIds":["id"],"reason":"motivo breve","recommendation":"sugerencia concreta"}]}.',
+    'Copiá exactamente los taskIds recibidos. Si no hay hallazgos, devolvé {"findings":[]}.'
+].join("\n");
+
 function normalizeText(value, maxLength = 360) {
     return String(value || "")
         .replace(/\s+/g, " ")
@@ -430,20 +442,6 @@ export class AiTaskQualityController {
             return null;
         }
 
-        const question = [
-            "Auditá la calidad de las tareas activas recibidas y señalá sólo problemas suficientemente claros.",
-            "Tipos permitidos: DUPLICATE, AMBIGUOUS, TOO_LARGE, UNORGANIZED.",
-            "DUPLICATE: dos o más tareas parecen representar sustancialmente la misma acción o resultado. No marques como duplicadas tareas sólo relacionadas.",
-            "AMBIGUOUS: el título es tan vago que no permite saber qué acción concreta corresponde. No exijas detalle innecesario si el título ya es accionable.",
-            "TOO_LARGE: una tarea que no es proyecto parece representar un resultado que requiere varias acciones diferenciadas. Sé conservador.",
-            "UNORGANIZED: los metadatos disponibles sugieren una carencia de organización relevante (por ejemplo área/contexto/etiquetas ausentes cuando serían claramente útiles). No marques una tarea sólo por no tener fecha o prioridad.",
-            "No inventes información que no esté en los datos. No propongas cambios automáticos: sólo una recomendación breve y accionable.",
-            "Para DUPLICATE usá entre 2 y 4 taskIds. Para los demás tipos usá exactamente 1 taskId.",
-            "Devolvé exclusivamente JSON válido, sin Markdown ni texto adicional, con esta forma exacta:",
-            '{"findings":[{"type":"AMBIGUOUS","taskIds":["id exacto recibido"],"reason":"motivo breve","recommendation":"sugerencia concreta"}]}',
-            "Cada taskId debe copiar exactamente un taskId recibido. Si no hay hallazgos claros, devolvé {\"findings\":[]}."
-        ].join("\n");
-
         this.loading = true;
         this.error = "";
         this.renderDialog();
@@ -451,7 +449,7 @@ export class AiTaskQualityController {
         try {
             const response = await gateway.aiQuery({
                 ...this.app.syncConfig.get(),
-                question,
+                question: TASK_QUALITY_QUESTION,
                 context
             });
             const findings = parseTaskQualityFindings(
