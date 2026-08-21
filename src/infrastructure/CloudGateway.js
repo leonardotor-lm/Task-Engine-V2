@@ -39,14 +39,19 @@ export class CloudGateway {
 
     async request(
         url,
-        options = {}
+        options = {},
+        {
+            timeoutMs = this.timeoutMs,
+            timeoutMessage =
+                "La sincronización tardó demasiado en responder."
+        } = {}
     ) {
 
         const controller = new AbortController();
 
         const timeoutId = setTimeout(
             () => controller.abort(),
-            this.timeoutMs
+            timeoutMs
         );
 
         let response;
@@ -65,9 +70,7 @@ export class CloudGateway {
         } catch (error) {
 
             if (error.name === "AbortError") {
-                throw new Error(
-                    "La sincronización tardó demasiado en responder."
-                );
+                throw new Error(timeoutMessage);
             }
 
             const detail = error?.message
@@ -220,6 +223,11 @@ export class CloudGateway {
                     question,
                     context
                 })
+            },
+            {
+                timeoutMs: 60000,
+                timeoutMessage:
+                    "La consulta a la IA tardó demasiado en responder."
             }
         );
     }
