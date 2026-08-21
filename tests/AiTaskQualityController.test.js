@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {
     AiTaskQualityController,
+    TASK_QUALITY_QUESTION,
     parseTaskQualityFindings
 } from "../src/ui/AiTaskQualityController.js";
 
@@ -144,6 +145,14 @@ test("el contexto incluye sólo tareas activas e identifica entidades para diagn
     assert.deepEqual(
         context.tasks.map(item => item.taskId),
         ["task-1", "inbox-1"]
+    );
+});
+
+test("la consulta de calidad respeta el límite de AI.gs", () => {
+    assert.ok(TASK_QUALITY_QUESTION.length > 0);
+    assert.ok(
+        TASK_QUALITY_QUESTION.length <= 1000,
+        `La consulta mide ${TASK_QUALITY_QUESTION.length} caracteres.`
     );
 });
 
