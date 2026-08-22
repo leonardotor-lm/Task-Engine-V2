@@ -1,4 +1,7 @@
 import { Dialog } from "../components/Dialog.js";
+import {
+    applyAtomicTaskUpdates
+} from "../core/AtomicTaskUpdates.js";
 
 const MIN_PRIORITY = 0;
 const MAX_PRIORITY = 4;
@@ -223,12 +226,13 @@ export class AiPriorityApplyController {
         if (!confirmed) return 0;
 
         try {
-            for (const { task, priority } of changes) {
-                this.app.taskService.updateTask(
-                    task.id,
-                    { priority }
-                );
-            }
+            applyAtomicTaskUpdates(
+                this.app.taskService,
+                changes.map(({ task, priority }) => ({
+                    id: task.id,
+                    changes: { priority }
+                }))
+            );
 
             this.proposalController.proposal = null;
             this.proposalController.error = "";
