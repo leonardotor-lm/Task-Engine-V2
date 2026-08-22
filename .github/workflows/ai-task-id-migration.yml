@@ -1,0 +1,47 @@
+name: AI task ID migration
+
+on:
+  push:
+    branches:
+      - fix/ai-task-id-mapping
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply migration
+        run: python3 scripts/migrate-ai-task-ids.py
+      - name: Remove migration helpers
+        run: rm scripts/migrate-ai-task-ids.py .github/workflows/ai-task-id-migration.yml
+      - name: Install dependencies
+        run: npm install
+      - name: Run unit tests
+        run: npm test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser smoke tests
+        run: npm run test:e2e
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/core/AiTaskContext.js \
+            src/ui/AiPriorityProposalController.js \
+            src/ui/AiDueDateProposalController.js \
+            src/ui/AiWaitingProposalController.js \
+            src/ui/AiOrganizationProposalController.js \
+            src/ui/AiProjectProposalController.js \
+            src/ui/AiTaskQualityController.js \
+            tests/AiTaskIdentityMapping.test.js
+          git add -u scripts/migrate-ai-task-ids.py .github/workflows/ai-task-id-migration.yml
+          git commit -m "Eliminar mapeo posicional de IDs en IA"
+          git push origin HEAD:fix/ai-task-id-mapping
