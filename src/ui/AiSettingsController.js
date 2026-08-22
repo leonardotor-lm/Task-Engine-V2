@@ -1,6 +1,7 @@
 import { escapeHtml } from "./escapeHtml.js";
 import {
-    AI_PROVIDERS
+    AI_PROVIDERS,
+    DEFAULT_AI_PROVIDER
 } from "../infrastructure/AiPreferences.js";
 
 export class AiSettingsController {
@@ -79,7 +80,8 @@ export class AiSettingsController {
 
     getSelectedProvider() {
         const providerId =
-            this.app?.aiPreferences?.getProvider?.() || "groq";
+            this.app?.aiPreferences?.getProvider?.() ||
+            DEFAULT_AI_PROVIDER;
 
         return AI_PROVIDERS.find(
             provider => provider.id === providerId
