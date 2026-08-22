@@ -2,7 +2,7 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 20 de agosto de 2026.
+Última actualización: 22 de agosto de 2026.
 
 ## Regla de lectura
 
@@ -33,7 +33,18 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 
 ## Backlog aprobado
 
-No quedan actualmente mejoras funcionales aprobadas sin implementar fuera del bloque de **Temas visuales intercambiables**.
+### Agrupación visual de tareas
+
+- **Estado:** Pendiente.
+- Agregar en la barra de herramientas superior, junto a filtros rápidos y orden, un control **Agrupar por**.
+- Opciones acordadas: **Sin agrupar**, **Área**, **Contexto** y **Proyecto**.
+- No incluir agrupación por etiquetas: ese caso se resuelve mejor con búsqueda avanzada y filtros personalizados.
+- La agrupación modifica únicamente la presentación de la lista; no altera qué tareas entran en la vista ni su orden interno.
+- Las tareas sin asignación deben aparecer en grupos explícitos: **Sin área**, **Sin contexto** o **Sin proyecto**, según corresponda.
+- Los grupos se muestran abiertos por defecto y se ordenan alfabéticamente, dejando los grupos **Sin…** al final.
+- La preferencia elegida debe persistir localmente de forma similar a las preferencias de orden.
+- Implementar la agrupación después del filtrado y ordenado y antes del render de la lista, evitando contaminar la lógica de búsqueda o modificar las tareas.
+- Complejidad estimada: media-baja.
 
 ## Capacidades auditadas y cerradas
 
