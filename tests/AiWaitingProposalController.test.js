@@ -2,6 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Dialog } from "../src/components/Dialog.js";
 import {
+    createAtomicTaskServiceFixture
+} from "./helpers/AtomicTaskServiceFixture.js";
+import {
     AiWaitingProposalController,
     parseWaitingProposals
 } from "../src/ui/AiWaitingProposalController.js";
@@ -66,34 +69,27 @@ test("parsea sólo propuestas válidas para tareas pendientes que no están En e
 });
 
 test("aplica sólo propuestas seleccionadas mediante TaskService después de confirmar", async () => {
-    const tasks = new Map([
-        ["a", {
+    const {
+        tasks,
+        updates,
+        taskService
+    } = createAtomicTaskServiceFixture([
+        {
             id: "a",
             title: "Tarea A",
             status: "PENDING",
             isWaiting: false
-        }],
-        ["b", {
+        },
+        {
             id: "b",
             title: "Tarea B",
             status: "PENDING",
             isWaiting: false
-        }]
+        }
     ]);
-    const updates = [];
     let renders = 0;
     const app = {
-        taskService: {
-            getTaskById(id) {
-                return tasks.get(id) || null;
-            },
-            updateTask(id, changes) {
-                const task = tasks.get(id);
-                Object.assign(task, changes);
-                updates.push({ id, changes });
-                return task;
-            }
-        },
+        taskService,
         render() {
             renders += 1;
         }

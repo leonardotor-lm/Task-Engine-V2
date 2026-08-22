@@ -2,6 +2,9 @@ import {
     buildAiTaskContext
 } from "../core/AiTaskContext.js";
 import { Dialog } from "../components/Dialog.js";
+import {
+    applyAtomicTaskUpdates
+} from "../core/AtomicTaskUpdates.js";
 import { escapeHtml } from "./escapeHtml.js";
 
 function isIsoDate(value) {
@@ -579,12 +582,13 @@ export class AiDueDateProposalController {
         if (!confirmed) return 0;
 
         try {
-            for (const { task, dueDate } of changes) {
-                this.app.taskService.updateTask(
-                    task.id,
-                    { dueDate }
-                );
-            }
+            applyAtomicTaskUpdates(
+                this.app.taskService,
+                changes.map(({ task, dueDate }) => ({
+                    id: task.id,
+                    changes: { dueDate }
+                }))
+            );
 
             this.proposal = null;
             this.error = "";
