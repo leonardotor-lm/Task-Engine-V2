@@ -140,6 +140,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/WaitingController.js",
     "./src/ui/escapeHtml.js",
     "./styles.css",
+    "./styles/ai.css",
     "./styles/attachments.css",
     "./styles/goal-workspace.css",
     "./styles/manual-task-order.css",
