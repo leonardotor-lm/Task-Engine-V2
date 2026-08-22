@@ -325,7 +325,7 @@ export class AiDueDateProposalController {
 
         return `
             <section class="settingsToolPanel">
-                <p>La IA puede sugerir fechas de vencimiento para tareas pendientes que todavía no tienen una. Gemini propone; Task Engine sólo aplica los cambios que selecciones y confirmes.</p>
+                <p>La IA puede sugerir fechas de vencimiento para tareas pendientes que todavía no tienen una. La IA propone; Task Engine sólo aplica los cambios que selecciones y confirmes.</p>
                 <p class="settingsHint">Tareas sin vencimiento disponibles para analizar: ${eligibleCount}.</p>
                 ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
                 ${this.proposal ? this.getProposalHtml() : ""}

@@ -1,5 +1,5 @@
 var TASK_ENGINE_AI_SETTINGS = Object.freeze({
-    DEFAULT_PROVIDER: "groq",
+    DEFAULT_PROVIDER: "gemini",
     PROVIDERS: {
         groq: {
             LABEL: "Groq",
@@ -14,7 +14,7 @@ var TASK_ENGINE_AI_SETTINGS = Object.freeze({
         gemini: {
             LABEL: "Gemini",
             API_KEY_PROPERTY: "TASK_ENGINE_GEMINI_API_KEY",
-            DEFAULT_MODEL: "gemini-3.5-flash-lite",
+            DEFAULT_MODEL: "gemini-3.7-flash",
             ALLOWED_MODELS: [
                 "gemini-3.5-flash-lite",
                 "gemini-3.7-flash"
