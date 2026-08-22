@@ -4,6 +4,10 @@
   "type": "module",
   "scripts": {
     "generate:pwa-assets": "node scripts/generate-pwa-assets.mjs",
-    "test": "node --test"
+    "test": "node --test",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
   }
 }
