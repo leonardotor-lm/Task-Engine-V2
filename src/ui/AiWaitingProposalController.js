@@ -230,15 +230,15 @@ export class AiWaitingProposalController {
             tags:
                 this.app.tagService?.getAllTags?.() || [],
             question:
-                "Detectar tareas pendientes que deberían quedar En espera"
+                "Detectar tareas pendientes que deberían quedar En espera",
+            includeTaskIds: true
         });
 
         return {
             ...base,
             requestType: "waitingProposal",
-            tasks: base.tasks.map((task, index) => ({
+            tasks: base.tasks.map(task => ({
                 ...task,
-                taskId: eligibleTasks[index]?.id || "",
                 currentIsWaiting: false
             })),
             aiProvider:

@@ -255,17 +255,22 @@ export class AiProjectProposalController {
             tags:
                 this.app.tagService?.getAllTags?.() || [],
             question:
-                "Analizar complejidad de tareas pendientes"
+                "Analizar complejidad de tareas pendientes",
+            includeTaskIds: true
         });
+
+        const eligibleById = new Map(
+            eligibleTasks.map(task => [String(task.id), task])
+        );
 
         return {
             ...base,
             requestType: "projectProposal",
-            tasks: base.tasks.map((task, index) => ({
+            tasks: base.tasks.map(task => ({
                 ...task,
-                taskId: eligibleTasks[index]?.id || "",
-                taskVersion:
-                    Number(eligibleTasks[index]?.version ?? 1)
+                taskVersion: Number(
+                    eligibleById.get(String(task.taskId))?.version ?? 1
+                )
             })),
             aiProvider:
                 this.app?.aiPreferences?.getProvider?.() ||

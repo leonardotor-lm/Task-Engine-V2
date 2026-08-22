@@ -315,6 +315,7 @@ function selectTasksForQuestion({
 function compactTask(
     task,
     {
+        includeTaskId = false,
         areasById,
         contextsById,
         tagsById,
@@ -327,6 +328,10 @@ function compactTask(
         title: task.title,
         status: task.status
     };
+
+    if (includeTaskId) {
+        result.taskId = String(task.id || "");
+    }
 
     const project = nearestProjectTitle(task, tasksById);
     const priority = Number(task.priority ?? 0);
@@ -373,6 +378,7 @@ export function buildAiTaskContext({
     contexts = [],
     tags = [],
     question = "",
+    includeTaskIds = false,
     today = getLocalDateIso()
 } = {}) {
     const areasById = indexById(areas);
@@ -398,6 +404,7 @@ export function buildAiTaskContext({
         omittedCount: 0,
         tasks: selected.map(task =>
             compactTask(task, {
+                includeTaskId: includeTaskIds,
                 areasById,
                 contextsById,
                 tagsById,
