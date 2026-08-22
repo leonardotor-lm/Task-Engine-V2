@@ -2,27 +2,43 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { Dialog } from "../src/components/Dialog.js";
+import { Task } from "../src/domain/Task.js";
 import {
     AiPriorityApplyController
 } from "../src/ui/AiPriorityApplyController.js";
 
 test("aplica sólo propuestas seleccionadas mediante TaskService después de confirmar", async () => {
-    const tasks = new Map([
-        ["a", { id: "a", title: "Tarea A", status: "PENDING", priority: 1 }],
-        ["b", { id: "b", title: "Tarea B", status: "PENDING", priority: 2 }]
-    ]);
+    let storedTasks = [
+        new Task({ id: "a", title: "Tarea A", status: "PENDING", priority: 1 }),
+        new Task({ id: "b", title: "Tarea B", status: "PENDING", priority: 2 })
+    ];
     const updates = [];
     let renders = 0;
+    const repository = {
+        getById(id) {
+            return storedTasks.find(task => task.id === id) || null;
+        },
+        getAll() {
+            return [...storedTasks];
+        },
+        updateMany(tasks) {
+            updates.push(...tasks.map(task => ({
+                id: task.id,
+                priority: task.priority
+            })));
+            const replacements = new Map(tasks.map(task => [task.id, task]));
+            storedTasks = storedTasks.map(task => replacements.get(task.id) || task);
+        },
+        replaceAll(tasks) {
+            storedTasks = [...tasks];
+        }
+    };
     const app = {
         taskService: {
+            repository,
+            activityService: null,
             getTaskById(id) {
-                return tasks.get(id) || null;
-            },
-            updateTask(id, changes) {
-                const task = tasks.get(id);
-                Object.assign(task, changes);
-                updates.push({ id, changes });
-                return task;
+                return repository.getById(id);
             }
         },
         render() {
@@ -54,10 +70,10 @@ test("aplica sólo propuestas seleccionadas mediante TaskService después de con
 
         assert.equal(count, 1);
         assert.deepEqual(updates, [
-            { id: "a", changes: { priority: 3 } }
+            { id: "a", priority: 3 }
         ]);
-        assert.equal(tasks.get("a").priority, 3);
-        assert.equal(tasks.get("b").priority, 2);
+        assert.equal(repository.getById("a").priority, 3);
+        assert.equal(repository.getById("b").priority, 2);
         assert.equal(proposalController.proposal, null);
         assert.equal(renders, 1);
     } finally {
