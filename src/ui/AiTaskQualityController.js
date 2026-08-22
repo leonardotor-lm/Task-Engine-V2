@@ -285,25 +285,28 @@ export class AiTaskQualityController {
             tags:
                 this.app.tagService?.getAllTags?.() || [],
             question:
-                "Auditar calidad y organización de tareas activas"
+                "Auditar calidad y organización de tareas activas",
+            includeTaskIds: true
         });
+
+        const eligibleById = new Map(
+            eligibleTasks.map(task => [String(task.id), task])
+        );
 
         return {
             ...base,
             requestType: "taskQualityAudit",
-            tasks: base.tasks.map((task, index) => ({
-                ...task,
-                taskId: eligibleTasks[index]?.id || "",
-                areaId: eligibleTasks[index]?.areaId ?? null,
-                contextId: eligibleTasks[index]?.contextId ?? null,
-                tagIds: [
-                    ...(eligibleTasks[index]?.tagIds || [])
-                ],
-                isProject:
-                    eligibleTasks[index]?.isProject === true,
-                parentTaskId:
-                    eligibleTasks[index]?.parentTaskId ?? null
-            })),
+            tasks: base.tasks.map(task => {
+                const source = eligibleById.get(String(task.taskId));
+                return {
+                    ...task,
+                    areaId: source?.areaId ?? null,
+                    contextId: source?.contextId ?? null,
+                    tagIds: [...(source?.tagIds || [])],
+                    isProject: source?.isProject === true,
+                    parentTaskId: source?.parentTaskId ?? null
+                };
+            }),
             aiProvider:
                 this.app?.aiPreferences?.getProvider?.() ||
                 "gemini",

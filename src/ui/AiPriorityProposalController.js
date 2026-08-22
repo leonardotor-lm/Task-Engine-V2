@@ -120,16 +120,22 @@ export class AiPriorityProposalController {
             areas: this.app.areaService?.getAllAreas?.() || [],
             contexts: this.app.contextService?.getAllContexts?.() || [],
             tags: this.app.tagService?.getAllTags?.() || [],
-            question: "Proponer prioridades para tareas pendientes"
+            question: "Proponer prioridades para tareas pendientes",
+            includeTaskIds: true
         });
+
+        const pendingById = new Map(
+            pendingTasks.map(task => [String(task.id), task])
+        );
 
         return {
             ...base,
             requestType: "priorityProposal",
-            tasks: base.tasks.map((task, index) => ({
+            tasks: base.tasks.map(task => ({
                 ...task,
-                taskId: pendingTasks[index]?.id || "",
-                currentPriority: Number(pendingTasks[index]?.priority ?? 0)
+                currentPriority: Number(
+                    pendingById.get(String(task.taskId))?.priority ?? 0
+                )
             })),
             aiProvider:
                 this.app?.aiPreferences?.getProvider?.() ||

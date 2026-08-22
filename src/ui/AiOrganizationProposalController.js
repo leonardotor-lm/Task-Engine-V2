@@ -279,19 +279,26 @@ export class AiOrganizationProposalController {
             contexts: entities.contexts,
             tags: entities.tags,
             question:
-                "Proponer organización por área, contexto y etiquetas para tareas pendientes"
+                "Proponer organización por área, contexto y etiquetas para tareas pendientes",
+            includeTaskIds: true
         });
+
+        const tasksById = new Map(
+            tasks.map(task => [String(task.id), task])
+        );
 
         return {
             ...base,
             requestType: "organizationProposal",
-            tasks: base.tasks.map((task, index) => ({
-                ...task,
-                taskId: tasks[index]?.id || "",
-                currentAreaId: tasks[index]?.areaId ?? null,
-                currentContextId: tasks[index]?.contextId ?? null,
-                currentTagIds: [...(tasks[index]?.tagIds || [])]
-            })),
+            tasks: base.tasks.map(task => {
+                const source = tasksById.get(String(task.taskId));
+                return {
+                    ...task,
+                    currentAreaId: source?.areaId ?? null,
+                    currentContextId: source?.contextId ?? null,
+                    currentTagIds: [...(source?.tagIds || [])]
+                };
+            }),
             availableAreas: entities.areas.map(area => ({
                 id: area.id,
                 name: area.name

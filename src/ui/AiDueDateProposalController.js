@@ -259,20 +259,25 @@ export class AiDueDateProposalController {
             tags:
                 this.app.tagService?.getAllTags?.() || [],
             question:
-                "Proponer fechas de vencimiento para tareas pendientes"
+                "Proponer fechas de vencimiento para tareas pendientes",
+            includeTaskIds: true
         });
+
+        const eligibleById = new Map(
+            eligibleTasks.map(task => [String(task.id), task])
+        );
 
         return {
             ...base,
             requestType: "dueDateProposal",
-            tasks: base.tasks.map((task, index) => ({
-                ...task,
-                taskId: eligibleTasks[index]?.id || "",
-                currentDueDate:
-                    eligibleTasks[index]?.dueDate || null,
-                currentStartDate:
-                    eligibleTasks[index]?.startDate || null
-            })),
+            tasks: base.tasks.map(task => {
+                const source = eligibleById.get(String(task.taskId));
+                return {
+                    ...task,
+                    currentDueDate: source?.dueDate || null,
+                    currentStartDate: source?.startDate || null
+                };
+            }),
             aiProvider:
                 this.app?.aiPreferences?.getProvider?.() ||
                 "gemini",
