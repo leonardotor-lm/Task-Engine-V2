@@ -2,6 +2,9 @@ import {
     buildAiTaskContext
 } from "../core/AiTaskContext.js";
 import { Dialog } from "../components/Dialog.js";
+import {
+    applyAtomicTaskUpdates
+} from "../core/AtomicTaskUpdates.js";
 import { escapeHtml } from "./escapeHtml.js";
 
 export function parseWaitingProposals(
@@ -531,12 +534,13 @@ export class AiWaitingProposalController {
         if (!confirmed) return 0;
 
         try {
-            for (const task of tasks) {
-                this.app.taskService.updateTask(
-                    task.id,
-                    { isWaiting: true }
-                );
-            }
+            applyAtomicTaskUpdates(
+                this.app.taskService,
+                tasks.map(task => ({
+                    id: task.id,
+                    changes: { isWaiting: true }
+                }))
+            );
 
             this.proposal = null;
             this.error = "";

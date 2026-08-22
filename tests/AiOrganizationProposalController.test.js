@@ -2,6 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Dialog } from "../src/components/Dialog.js";
 import {
+    createAtomicTaskServiceFixture
+} from "./helpers/AtomicTaskServiceFixture.js";
+import {
     AiOrganizationProposalController,
     parseOrganizationProposals
 } from "../src/ui/AiOrganizationProposalController.js";
@@ -116,28 +119,24 @@ test("descarta propuestas sin cambios o con entidades inventadas", () => {
 });
 
 test("aplica el paquete seleccionado mediante TaskService después de confirmar", async () => {
-    const task = {
-        id: "task-a",
-        title: "Comprar repuesto",
-        status: "PENDING",
-        areaId: "area-a",
-        contextId: null,
-        tagIds: ["tag-a"]
-    };
-    const updates = [];
+    const {
+        tasks,
+        updates,
+        taskService
+    } = createAtomicTaskServiceFixture([
+        {
+            id: "task-a",
+            title: "Comprar repuesto",
+            status: "PENDING",
+            areaId: "area-a",
+            contextId: null,
+            tagIds: ["tag-a"]
+        }
+    ]);
+    const task = tasks.get("task-a");
     let renders = 0;
     const app = {
-        taskService: {
-            getTaskById(id) {
-                return id === task.id ? task : null;
-            },
-            updateTask(id, changes) {
-                assert.equal(id, task.id);
-                Object.assign(task, changes);
-                updates.push({ id, changes });
-                return task;
-            }
-        },
+        taskService,
         areaService: {
             getAllAreas() {
                 return [

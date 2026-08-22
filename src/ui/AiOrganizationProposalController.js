@@ -2,6 +2,9 @@ import {
     buildAiTaskContext
 } from "../core/AiTaskContext.js";
 import { Dialog } from "../components/Dialog.js";
+import {
+    applyAtomicTaskUpdates
+} from "../core/AtomicTaskUpdates.js";
 import { escapeHtml } from "./escapeHtml.js";
 
 function sameStringArray(first = [], second = []) {
@@ -708,12 +711,13 @@ export class AiOrganizationProposalController {
         if (!confirmed) return 0;
 
         try {
-            for (const entry of changes) {
-                this.app.taskService.updateTask(
-                    entry.task.id,
-                    entry.changes
-                );
-            }
+            applyAtomicTaskUpdates(
+                this.app.taskService,
+                changes.map(entry => ({
+                    id: entry.task.id,
+                    changes: entry.changes
+                }))
+            );
 
             this.proposal = null;
             this.error = "";

@@ -2,6 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Dialog } from "../src/components/Dialog.js";
 import {
+    createAtomicTaskServiceFixture
+} from "./helpers/AtomicTaskServiceFixture.js";
+import {
     AiDueDateProposalController,
     parseDueDateProposals
 } from "../src/ui/AiDueDateProposalController.js";
@@ -112,36 +115,29 @@ test("descarta fechas anteriores a hoy o a la fecha de inicio", () => {
 });
 
 test("aplica sólo fechas seleccionadas mediante TaskService después de confirmar", async () => {
-    const tasks = new Map([
-        ["a", {
+    const {
+        tasks,
+        updates,
+        taskService
+    } = createAtomicTaskServiceFixture([
+        {
             id: "a",
             title: "Tarea A",
             status: "PENDING",
             dueDate: null,
             startDate: null
-        }],
-        ["b", {
+        },
+        {
             id: "b",
             title: "Tarea B",
             status: "PENDING",
             dueDate: null,
             startDate: null
-        }]
+        }
     ]);
-    const updates = [];
     let renders = 0;
     const app = {
-        taskService: {
-            getTaskById(id) {
-                return tasks.get(id) || null;
-            },
-            updateTask(id, changes) {
-                const task = tasks.get(id);
-                Object.assign(task, changes);
-                updates.push({ id, changes });
-                return task;
-            }
-        },
+        taskService,
         render() {
             renders += 1;
         }
