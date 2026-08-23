@@ -36,6 +36,24 @@ function resolveProject(task, tasksById) {
     return project;
 }
 
+function buildAncestorPath(task, tasksById) {
+    const path = [];
+    const visited = new Set();
+    let parentId = task?.parentTaskId ?? null;
+
+    while (parentId && !visited.has(parentId)) {
+        visited.add(parentId);
+        const parent = tasksById.get(parentId);
+
+        if (!parent) break;
+
+        path.unshift(parent);
+        parentId = parent.parentTaskId ?? null;
+    }
+
+    return path;
+}
+
 export function getTaskGroupingViewKey(app) {
     if (app.currentCustomFilterId) {
         return `custom-filter:${app.currentCustomFilterId}`;
@@ -227,7 +245,20 @@ export class TaskGroupingController {
                     <option value="PROJECT">Proyecto</option>
                 </select>
             `;
-            body.appendChild(wrapper);
+
+            const sortControl = body.querySelector(
+                ".taskContextToolbarSort:not(.taskContextToolbarGrouping)"
+            );
+
+            if (sortControl) {
+                sortControl.insertAdjacentElement(
+                    "afterend",
+                    wrapper
+                );
+            } else {
+                body.appendChild(wrapper);
+            }
+
             control = wrapper.querySelector(
                 "#taskGrouping"
             );
@@ -299,6 +330,9 @@ export class TaskGroupingController {
         const allTasks =
             this.app.taskService?.getAllTasks?.() ??
             visibleTasks;
+        const allTasksById = new Map(
+            allTasks.map(task => [task.id, task])
+        );
         const groups = buildTaskGroups(
             visibleTasks,
             grouping,
@@ -310,6 +344,14 @@ export class TaskGroupingController {
                 allTasks
             }
         );
+        const groupKeyByTaskId = new Map();
+
+        for (const group of groups) {
+            for (const task of group.tasks) {
+                groupKeyByTaskId.set(task.id, group.key);
+            }
+        }
+
         const fragment = this.document
             .createDocumentFragment();
 
@@ -325,10 +367,70 @@ export class TaskGroupingController {
 
             for (const task of group.tasks) {
                 const row = rowById.get(task.id);
-                if (row) fragment.appendChild(row);
+
+                if (!row) continue;
+
+                if (
+                    grouping === TaskGrouping.CONTEXT &&
+                    task.parentTaskId &&
+                    groupKeyByTaskId.has(task.parentTaskId) &&
+                    groupKeyByTaskId.get(task.parentTaskId) !==
+                        group.key
+                ) {
+                    this.ensureSeparatedHierarchyPath(
+                        row,
+                        task,
+                        allTasksById
+                    );
+                }
+
+                fragment.appendChild(row);
             }
         }
 
         list.appendChild(fragment);
+    }
+
+    ensureSeparatedHierarchyPath(
+        row,
+        task,
+        allTasksById
+    ) {
+        const body = row.querySelector?.(".taskBody");
+
+        if (
+            !body ||
+            body.querySelector(":scope > .taskHierarchyPath")
+        ) {
+            return;
+        }
+
+        const path = buildAncestorPath(
+            task,
+            allTasksById
+        );
+
+        if (path.length === 0) return;
+
+        const text = path
+            .map(item => item.title)
+            .join(" › ");
+        const breadcrumb = this.document.createElement(
+            "div"
+        );
+
+        breadcrumb.className =
+            "taskHierarchyPath groupingHierarchyPath";
+        breadcrumb.textContent = text;
+        breadcrumb.setAttribute("title", text);
+        breadcrumb.setAttribute(
+            "aria-label",
+            `Ruta: ${text}`
+        );
+
+        body.insertBefore(
+            breadcrumb,
+            body.querySelector(".taskTitleLine")
+        );
     }
 }
