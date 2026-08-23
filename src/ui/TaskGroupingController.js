@@ -207,6 +207,7 @@ export class TaskGroupingController {
 
     apply() {
         this.ensureControl();
+        this.ensureActiveFiltersNotice();
         this.bindControl();
         this.groupVisibleTasks();
     }
@@ -266,6 +267,60 @@ export class TaskGroupingController {
 
         if (control) {
             control.value = this.getGrouping();
+        }
+    }
+
+    ensureActiveFiltersNotice() {
+        if (!this.document) return;
+
+        this.document.getElementById?.(
+            "clearActiveTaskFilters"
+        )?.remove();
+
+        const filtersActive = Object.values(
+            this.app.taskFilters ?? {}
+        ).some(Boolean);
+
+        if (!filtersActive) return;
+
+        const body = this.document.querySelector?.(
+            "#taskContextToolbar .taskContextToolbarBody"
+        );
+
+        if (!body) return;
+
+        const button = this.document.createElement(
+            "button"
+        );
+        button.id = "clearActiveTaskFilters";
+        button.type = "button";
+        button.className =
+            "taskContextToolbarButton active taskActiveFiltersClear";
+        button.textContent = "Filtros activos · Limpiar";
+        button.setAttribute(
+            "aria-label",
+            "Hay filtros activos. Limpiar filtros"
+        );
+        button.setAttribute(
+            "title",
+            "Hay filtros activos. Limpiar filtros"
+        );
+        button.addEventListener("click", () => {
+            this.app.mainView?.callbacks
+                ?.onClearTaskFilters?.();
+        });
+
+        const filtersButton = body.querySelector(
+            "#openTaskTools"
+        );
+
+        if (filtersButton) {
+            filtersButton.insertAdjacentElement(
+                "afterend",
+                button
+            );
+        } else {
+            body.prepend(button);
         }
     }
 
