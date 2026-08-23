@@ -197,7 +197,7 @@ export class TaskGroupingController {
         if (!this.document) return;
 
         const body = this.document.querySelector?.(
-            "#taskToolsDialog .taskViewOptionsBody"
+            "#taskContextToolbar .taskContextToolbarBody"
         );
 
         if (!body) return;
@@ -208,14 +208,19 @@ export class TaskGroupingController {
 
         if (!control) {
             const wrapper = this.document.createElement(
-                "div"
+                "label"
             );
-            wrapper.className = "taskGrouping";
+            wrapper.className =
+                "taskContextToolbarSort taskContextToolbarGrouping";
+            wrapper.setAttribute(
+                "for",
+                "taskGrouping"
+            );
             wrapper.innerHTML = `
-                <label for="taskGrouping">
-                    Agrupar por
-                </label>
-                <select id="taskGrouping">
+                <span>Agrupar</span>
+                <select
+                    id="taskGrouping"
+                    aria-label="Agrupar tareas">
                     <option value="NONE">Sin agrupar</option>
                     <option value="AREA">Área</option>
                     <option value="CONTEXT">Contexto</option>
