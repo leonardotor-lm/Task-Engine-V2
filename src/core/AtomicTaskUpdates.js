@@ -34,6 +34,17 @@ function validatePatch(patch) {
     }
 }
 
+function cloneTaskForAtomicUpdate(current) {
+    const clone = new Task(current.toJSON());
+
+    clone.statusBeforeCompletion =
+        current.statusBeforeCompletion ?? null;
+    clone.isWaitingBeforeCompletion =
+        current.isWaitingBeforeCompletion ?? null;
+
+    return clone;
+}
+
 export function applyAtomicTaskUpdates(
     taskService,
     updates = []
@@ -73,7 +84,7 @@ export function applyAtomicTaskUpdates(
         }
 
         const before = current.toJSON();
-        const next = new Task(before);
+        const next = cloneTaskForAtomicUpdate(current);
         next.update(patch);
 
         seen.add(id);
