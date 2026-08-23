@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 const pending = new Map();
+const lines = value => value.join("\n");
 
 function read(path) {
     return pending.has(path)
@@ -16,229 +17,248 @@ function replaceOnce(path, from, to) {
     }
     const count = source.split(from).length - 1;
     if (count !== 1) {
-        throw new Error(`Se esperaba exactamente una coincidencia en ${path} y se encontraron ${count}.`);
+        throw new Error(
+            `Se esperaba exactamente una coincidencia en ${path} y se encontraron ${count}.`
+        );
     }
     pending.set(path, source.replace(from, to));
 }
 
 replaceOnce(
     "google-apps-script/Code.gs",
-`                getAiStatus_(
-                    body.validateRemote === true
-                )`,
-`                getAiStatus_(
-                    body.validateRemote === true,
-                    body.provider,
-                    body.model
-                )`
+    lines([
+        "                getAiStatus_(",
+        "                    body.validateRemote === true",
+        "                )"
+    ]),
+    lines([
+        "                getAiStatus_(",
+        "                    body.validateRemote === true,",
+        "                    body.provider,",
+        "                    body.model",
+        "                )"
+    ])
 );
 
 replaceOnce(
     "google-apps-script/AI.gs",
-`function getAiStatus_(validateRemote) {
-    var providers = {};
-    var providerIds = Object.keys(
-        TASK_ENGINE_AI_SETTINGS.PROVIDERS
-    );
-
-    providerIds.forEach(function(providerId) {
-        providers[providerId] = getAiProviderStatus_(
-            providerId,
-            validateRemote === true
-        );
-    });
-
-    var defaultStatus = providers[
-        TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER
-    ];
-
-    return {
-        ok: true,
-        configured: defaultStatus.configured,
-        connected: defaultStatus.connected,
-        provider: defaultStatus.provider,
-        model: defaultStatus.model,
-        providers: providers
-    };
-}
-
-function getAiProviderStatus_(provider, validateRemote) {
-    var providerId = normalizeAiProvider_(provider);
-    var settings = getAiProviderSettings_(providerId);
-    var apiKey = getAiApiKey_(providerId);
-    var model = settings.DEFAULT_MODEL;`,
-`function getAiStatus_(validateRemote, provider, model) {
-    var providers = {};
-    var requestedProvider = String(provider || "").trim();
-    var providerIds = requestedProvider
-        ? [normalizeAiProvider_(requestedProvider)]
-        : Object.keys(TASK_ENGINE_AI_SETTINGS.PROVIDERS);
-
-    providerIds.forEach(function(providerId) {
-        try {
-            providers[providerId] = getAiProviderStatus_(
-                providerId,
-                validateRemote === true,
-                providerId === normalizeAiProvider_(requestedProvider)
-                    ? model
-                    : null
-            );
-        } catch (error) {
-            var settings = getAiProviderSettings_(providerId);
-            providers[providerId] = {
-                configured: Boolean(getAiApiKey_(providerId)),
-                connected: false,
-                provider: settings.LABEL,
-                providerId: providerId,
-                model: normalizeAiModel_(providerId, model),
-                error:
-                    error.publicMessage ||
-                    error.message ||
-                    "No se pudo verificar el proveedor."
-            };
-        }
-    });
-
-    var selectedProvider = requestedProvider
-        ? normalizeAiProvider_(requestedProvider)
-        : TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER;
-    var selectedStatus = providers[selectedProvider];
-
-    return {
-        ok: true,
-        configured: selectedStatus.configured,
-        connected: selectedStatus.connected,
-        provider: selectedStatus.provider,
-        providerId: selectedStatus.providerId,
-        model: selectedStatus.model,
-        error: selectedStatus.error || "",
-        providers: providers
-    };
-}
-
-function getAiProviderStatus_(provider, validateRemote, model) {
-    var providerId = normalizeAiProvider_(provider);
-    var settings = getAiProviderSettings_(providerId);
-    var apiKey = getAiApiKey_(providerId);
-    var resolvedModel = normalizeAiModel_(providerId, model);`
+    lines([
+        "function getAiStatus_(validateRemote) {",
+        "    var providers = {};",
+        "    var providerIds = Object.keys(",
+        "        TASK_ENGINE_AI_SETTINGS.PROVIDERS",
+        "    );",
+        "",
+        "    providerIds.forEach(function(providerId) {",
+        "        providers[providerId] = getAiProviderStatus_(",
+        "            providerId,",
+        "            validateRemote === true",
+        "        );",
+        "    });",
+        "",
+        "    var defaultStatus = providers[",
+        "        TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER",
+        "    ];",
+        "",
+        "    return {",
+        "        ok: true,",
+        "        configured: defaultStatus.configured,",
+        "        connected: defaultStatus.connected,",
+        "        provider: defaultStatus.provider,",
+        "        model: defaultStatus.model,",
+        "        providers: providers",
+        "    };",
+        "}",
+        "",
+        "function getAiProviderStatus_(provider, validateRemote) {",
+        "    var providerId = normalizeAiProvider_(provider);",
+        "    var settings = getAiProviderSettings_(providerId);",
+        "    var apiKey = getAiApiKey_(providerId);",
+        "    var model = settings.DEFAULT_MODEL;"
+    ]),
+    lines([
+        "function getAiStatus_(validateRemote, provider, model) {",
+        "    var providers = {};",
+        "    var requestedProvider = String(provider || \"\").trim();",
+        "    var providerIds = requestedProvider",
+        "        ? [normalizeAiProvider_(requestedProvider)]",
+        "        : Object.keys(TASK_ENGINE_AI_SETTINGS.PROVIDERS);",
+        "",
+        "    providerIds.forEach(function(providerId) {",
+        "        try {",
+        "            providers[providerId] = getAiProviderStatus_(",
+        "                providerId,",
+        "                validateRemote === true,",
+        "                requestedProvider ? model : null",
+        "            );",
+        "        } catch (error) {",
+        "            var settings = getAiProviderSettings_(providerId);",
+        "            providers[providerId] = {",
+        "                configured: Boolean(getAiApiKey_(providerId)),",
+        "                connected: false,",
+        "                provider: settings.LABEL,",
+        "                providerId: providerId,",
+        "                model: normalizeAiModel_(providerId, requestedProvider ? model : null),",
+        "                error:",
+        "                    error.publicMessage ||",
+        "                    error.message ||",
+        "                    \"No se pudo verificar el proveedor.\"",
+        "            };",
+        "        }",
+        "    });",
+        "",
+        "    var selectedProvider = requestedProvider",
+        "        ? normalizeAiProvider_(requestedProvider)",
+        "        : TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER;",
+        "    var selectedStatus = providers[selectedProvider];",
+        "",
+        "    return {",
+        "        ok: true,",
+        "        configured: selectedStatus.configured,",
+        "        connected: selectedStatus.connected,",
+        "        provider: selectedStatus.provider,",
+        "        providerId: selectedStatus.providerId,",
+        "        model: selectedStatus.model,",
+        "        error: selectedStatus.error || \"\",",
+        "        providers: providers",
+        "    };",
+        "}",
+        "",
+        "function getAiProviderStatus_(provider, validateRemote, model) {",
+        "    var providerId = normalizeAiProvider_(provider);",
+        "    var settings = getAiProviderSettings_(providerId);",
+        "    var apiKey = getAiApiKey_(providerId);",
+        "    var resolvedModel = normalizeAiModel_(providerId, model);"
+    ])
 );
 
 replaceOnce(
     "google-apps-script/AI.gs",
-`            model: model
-        };
-    }
-
-    if (validateRemote !== true) {
-        return {
-            configured: true,
-            connected: false,
-            provider: settings.LABEL,
-            providerId: providerId,
-            model: model
-        };
-    }
-
-    if (providerId === "groq") {
-        return verifyGroqProvider_(
-            apiKey,
-            model,
-            settings
-        );
-    }
-
-    var response = UrlFetchApp.fetch(
-        settings.API_BASE +
-            "/models/" +
-            encodeURIComponent(model),`,
-`            model: resolvedModel
-        };
-    }
-
-    if (validateRemote !== true) {
-        return {
-            configured: true,
-            connected: false,
-            provider: settings.LABEL,
-            providerId: providerId,
-            model: resolvedModel
-        };
-    }
-
-    if (providerId === "groq") {
-        return verifyGroqProvider_(
-            apiKey,
-            resolvedModel,
-            settings
-        );
-    }
-
-    var response = UrlFetchApp.fetch(
-        settings.API_BASE +
-            "/models/" +
-            encodeURIComponent(resolvedModel),`
+    lines([
+        "            model: model",
+        "        };",
+        "    }",
+        "",
+        "    if (validateRemote !== true) {",
+        "        return {",
+        "            configured: true,",
+        "            connected: false,",
+        "            provider: settings.LABEL,",
+        "            providerId: providerId,",
+        "            model: model",
+        "        };",
+        "    }",
+        "",
+        "    if (providerId === \"groq\") {",
+        "        return verifyGroqProvider_(",
+        "            apiKey,",
+        "            model,",
+        "            settings",
+        "        );",
+        "    }",
+        "",
+        "    var response = UrlFetchApp.fetch(",
+        "        settings.API_BASE +",
+        "            \"/models/\" +",
+        "            encodeURIComponent(model),"
+    ]),
+    lines([
+        "            model: resolvedModel",
+        "        };",
+        "    }",
+        "",
+        "    if (validateRemote !== true) {",
+        "        return {",
+        "            configured: true,",
+        "            connected: false,",
+        "            provider: settings.LABEL,",
+        "            providerId: providerId,",
+        "            model: resolvedModel",
+        "        };",
+        "    }",
+        "",
+        "    if (providerId === \"groq\") {",
+        "        return verifyGroqProvider_(",
+        "            apiKey,",
+        "            resolvedModel,",
+        "            settings",
+        "        );",
+        "    }",
+        "",
+        "    var response = UrlFetchApp.fetch(",
+        "        settings.API_BASE +",
+        "            \"/models/\" +",
+        "            encodeURIComponent(resolvedModel),"
+    ])
 );
 
 replaceOnce(
     "google-apps-script/AI.gs",
-`                .replace(/^models\\//, "") || model,`,
-`                .replace(/^models\\//, "") || resolvedModel,`
+    "                .replace(/^models\\//, \"\") || model,",
+    "                .replace(/^models\\//, \"\") || resolvedModel,"
 );
 
 replaceOnce(
     "src/ui/AiSettingsController.js",
-`        this.document.getElementById("aiProvider")?.addEventListener("change", event => {
-            this.app.aiPreferences.setProvider(event.target.value);
-            this.error = "";
-            this.renderPanel();
-        });`,
-`        this.document.getElementById("aiProvider")?.addEventListener("change", event => {
-            this.app.aiPreferences.setProvider(event.target.value);
-            this.status = null;
-            this.error = "";
-            this.renderPanel();
-            this.refresh(false);
-        });`
+    lines([
+        "        this.document.getElementById(\"aiProvider\")?.addEventListener(\"change\", event => {",
+        "            this.app.aiPreferences.setProvider(event.target.value);",
+        "            this.error = \"\";",
+        "            this.renderPanel();",
+        "        });"
+    ]),
+    lines([
+        "        this.document.getElementById(\"aiProvider\")?.addEventListener(\"change\", event => {",
+        "            this.app.aiPreferences.setProvider(event.target.value);",
+        "            this.status = null;",
+        "            this.error = \"\";",
+        "            this.renderPanel();",
+        "            this.refresh(false);",
+        "        });"
+    ])
 );
 
 replaceOnce(
     "src/ui/AiSettingsController.js",
-`            } else if (selectedStatus?.connected === true) {
-                statusClass = "configured";
-                statusText = "Conectada";
-            } else if (selectedStatus?.configured) {`,
-`            } else if (selectedStatus?.error) {
-                statusClass = "error";
-                statusText = "Error";
-            } else if (selectedStatus?.connected === true) {
-                statusClass = "configured";
-                statusText = "Conectada";
-            } else if (selectedStatus?.configured) {`
+    lines([
+        "            } else if (selectedStatus?.connected === true) {",
+        "                statusClass = \"configured\";",
+        "                statusText = \"Conectada\";",
+        "            } else if (selectedStatus?.configured) {"
+    ]),
+    lines([
+        "            } else if (selectedStatus?.error) {",
+        "                statusClass = \"error\";",
+        "                statusText = \"Error\";",
+        "            } else if (selectedStatus?.connected === true) {",
+        "                statusClass = \"configured\";",
+        "                statusText = \"Conectada\";",
+        "            } else if (selectedStatus?.configured) {"
+    ])
 );
 
 replaceOnce(
     "src/ui/AiSettingsController.js",
-`            ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
-
-            ${status && !status.configured ? ``,
-`            ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
-            ${status?.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(status.error)}</p>` : ""}
-
-            ${status && !status.configured ? ``
+    "            ${this.error ? `<p class=\"syncErrorHint\" role=\"alert\">${escapeHtml(this.error)}</p>` : \"\"}\n\n            ${status && !status.configured ? `",
+    "            ${this.error ? `<p class=\"syncErrorHint\" role=\"alert\">${escapeHtml(this.error)}</p>` : \"\"}\n            ${status?.error ? `<p class=\"syncErrorHint\" role=\"alert\">${escapeHtml(status.error)}</p>` : \"\"}\n\n            ${status && !status.configured ? `"
 );
 
 replaceOnce(
     "src/ui/AiSettingsController.js",
-`            this.status = await gateway.aiStatus({
-                ...connection,
-                validateRemote
-            });`,
-`            this.status = await gateway.aiStatus({
-                ...connection,
-                validateRemote,
-                provider: this.app.aiPreferences.getProvider(),
-                model: this.app.aiPreferences.getModel()
-            });`
+    lines([
+        "            this.status = await gateway.aiStatus({",
+        "                ...connection,",
+        "                validateRemote",
+        "            });"
+    ]),
+    lines([
+        "            this.status = await gateway.aiStatus({",
+        "                ...connection,",
+        "                validateRemote,",
+        "                provider: this.app.aiPreferences.getProvider(),",
+        "                model: this.app.aiPreferences.getModel()",
+        "            });"
+    ])
 );
 
 const testPath = "tests/AiProviderStatusIsolation.test.js";
