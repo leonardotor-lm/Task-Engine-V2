@@ -1,8 +1,8 @@
+import { View } from "../core/View.js";
 import {
     TaskGrouping,
     TaskGroupingPreferencesRepository
 } from "../infrastructure/TaskGroupingPreferencesRepository.js";
-import { getTaskSortViewKey } from "./TaskSortPreferencesController.js";
 
 function compareGroupLabels(a, b) {
     if (a.unassigned !== b.unassigned) {
@@ -34,6 +34,30 @@ function resolveProject(task, tasksById) {
     }
 
     return project;
+}
+
+export function getTaskGroupingViewKey(app) {
+    if (app.currentCustomFilterId) {
+        return `custom-filter:${app.currentCustomFilterId}`;
+    }
+
+    if (app.advancedSearchMode) {
+        return "advanced-search";
+    }
+
+    switch (app.currentView) {
+        case View.AREA:
+            return `area:${app.currentAreaId ?? "none"}`;
+
+        case View.PROJECT:
+            return `project:${app.projectTaskId ?? "none"}`;
+
+        case View.GOAL:
+            return `goal:${app.selectedGoal?.id ?? "none"}`;
+
+        default:
+            return `view:${app.currentView ?? View.TODAY}`;
+    }
 }
 
 export function buildTaskGroups(
@@ -141,7 +165,7 @@ export class TaskGroupingController {
     }
 
     getViewKey() {
-        return getTaskSortViewKey(this.app);
+        return getTaskGroupingViewKey(this.app);
     }
 
     getGrouping() {
@@ -288,7 +312,8 @@ export class TaskGroupingController {
             const header = this.document.createElement(
                 "li"
             );
-            header.className = "taskGroupHeader";
+            header.className =
+                "taskGroupHeader taskHierarchyPath";
             header.setAttribute("role", "presentation");
             header.textContent = group.label;
             fragment.appendChild(header);
