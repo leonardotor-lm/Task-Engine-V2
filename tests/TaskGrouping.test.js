@@ -110,6 +110,82 @@ test("agrupa por contexto y contempla tareas sin contexto", () => {
     );
 });
 
+test("al agrupar por contexto separa padre e hijo cuando tienen contextos distintos", () => {
+    const project = {
+        id: "p",
+        title: "Mudanza",
+        contextId: "trabajo",
+        parentTaskId: null,
+        isProject: true
+    };
+    const child = {
+        id: "c",
+        title: "Comprar cajas",
+        contextId: "casa",
+        parentTaskId: "p",
+        isProject: false
+    };
+
+    const groups = buildTaskGroups(
+        [project, child],
+        TaskGrouping.CONTEXT,
+        {
+            contexts: [
+                { id: "casa", name: "Casa" },
+                { id: "trabajo", name: "Trabajo" }
+            ],
+            allTasks: [project, child]
+        }
+    );
+
+    assert.deepEqual(
+        groups.map(group => ({
+            label: group.label,
+            ids: group.tasks.map(task => task.id)
+        })),
+        [
+            { label: "Casa", ids: ["c"] },
+            { label: "Trabajo", ids: ["p"] }
+        ]
+    );
+});
+
+test("al agrupar por contexto mantiene juntos padre e hijo cuando comparten contexto", () => {
+    const project = {
+        id: "p",
+        contextId: "c",
+        parentTaskId: null,
+        isProject: true
+    };
+    const child = {
+        id: "h",
+        contextId: "c",
+        parentTaskId: "p",
+        isProject: false
+    };
+
+    const groups = buildTaskGroups(
+        [project, child],
+        TaskGrouping.CONTEXT,
+        {
+            contexts: [
+                { id: "c", name: "Computadora" }
+            ],
+            allTasks: [project, child]
+        }
+    );
+
+    assert.deepEqual(
+        groups.map(group => ({
+            label: group.label,
+            ids: group.tasks.map(task => task.id)
+        })),
+        [
+            { label: "Computadora", ids: ["p", "h"] }
+        ]
+    );
+});
+
 test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyecto", () => {
     const project = {
         id: "p",
@@ -148,7 +224,7 @@ test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyec
     );
 });
 
-test("inserta Agrupar junto al orden en la barra de herramientas y no en la sección eliminada del diálogo", async () => {
+test("inserta Agrupar inmediatamente después del selector de orden", async () => {
     const source = await fs.readFile(
         new URL(
             "../src/ui/TaskGroupingController.js",
@@ -159,7 +235,7 @@ test("inserta Agrupar junto al orden en la barra de herramientas y no en la secc
 
     assert.match(
         source,
-        /#taskContextToolbar \.taskContextToolbarBody/
+        /sortControl\.insertAdjacentElement\(\s*"afterend",\s*wrapper/
     );
     assert.match(
         source,
@@ -168,5 +244,47 @@ test("inserta Agrupar junto al orden en la barra de herramientas y no en la secc
     assert.doesNotMatch(
         source,
         /#taskToolsDialog \.taskViewOptionsBody/
+    );
+});
+
+test("muestra breadcrumb cuando el contexto separa una subtarea de su padre", async () => {
+    const source = await fs.readFile(
+        new URL(
+            "../src/ui/TaskGroupingController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(
+        source,
+        /grouping === TaskGrouping\.CONTEXT/
+    );
+    assert.match(
+        source,
+        /groupKeyByTaskId\.get\(task\.parentTaskId\)/
+    );
+    assert.match(
+        source,
+        /groupingHierarchyPath/
+    );
+});
+
+test("advierte filtros activos y ofrece limpiarlos desde la barra", async () => {
+    const source = await fs.readFile(
+        new URL(
+            "../src/ui/TaskGroupingController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(
+        source,
+        /Filtros activos · Limpiar/
+    );
+    assert.match(
+        source,
+        /onClearTaskFilters/
     );
 });
