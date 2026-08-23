@@ -21,20 +21,15 @@ export function parseTaskCaptureProposals(answer) {
     const text = String(answer || "").trim();
     const firstBrace = text.indexOf("{");
     const lastBrace = text.lastIndexOf("}");
-
     if (firstBrace === -1 || lastBrace < firstBrace) {
-        throw new Error(
-            "La IA devolvió una propuesta con formato inválido. Intentá nuevamente."
-        );
+        throw new Error("La IA devolvió una propuesta con formato inválido. Intentá nuevamente.");
     }
 
     let parsed;
     try {
         parsed = JSON.parse(text.slice(firstBrace, lastBrace + 1));
     } catch {
-        throw new Error(
-            "La IA devolvió una propuesta con formato inválido. Intentá nuevamente."
-        );
+        throw new Error("La IA devolvió una propuesta con formato inválido. Intentá nuevamente.");
     }
 
     const items = requireAiStructuredCollection(
@@ -44,21 +39,16 @@ export function parseTaskCaptureProposals(answer) {
     );
     const seen = new Set();
 
-    return items
-        .slice(0, MAX_TASKS)
-        .map(item => {
-            const title = normalizeText(item?.title, MAX_TITLE_LENGTH);
-            const description = String(item?.description || "")
-                .trim()
-                .slice(0, MAX_DESCRIPTION_LENGTH);
-            const key = title.toLocaleLowerCase("es");
-
-            if (!title || seen.has(key)) return null;
-            seen.add(key);
-
-            return { title, description };
-        })
-        .filter(Boolean);
+    return items.slice(0, MAX_TASKS).map(item => {
+        const title = normalizeText(item?.title, MAX_TITLE_LENGTH);
+        const description = String(item?.description || "")
+            .trim()
+            .slice(0, MAX_DESCRIPTION_LENGTH);
+        const key = title.toLocaleLowerCase("es");
+        if (!title || seen.has(key)) return null;
+        seen.add(key);
+        return { title, description };
+    }).filter(Boolean);
 }
 
 export class AiTaskCaptureController {
@@ -76,44 +66,13 @@ export class AiTaskCaptureController {
     start() {
         if (this.started) return;
         this.started = true;
-        this.wrapSidebarRender();
         this.wrapAppRender();
         this.apply();
-    }
-
-    wrapSidebarRender() {
-        const sidebar = this.app?.mainView?.sidebar;
-        if (!sidebar?.render) return;
-        const originalRender = sidebar.render.bind(sidebar);
-
-        sidebar.render = (...args) => {
-            const html = originalRender(...args);
-            if (html.includes('id="openAiTaskCapture"')) return html;
-
-            const marker = `
-                    <span class="sidebarSectionLabel">
-                        Planificación
-                    </span>`;
-            if (!html.includes(marker)) return html;
-
-            const entry = `
-
-                    <button
-                        id="openAiTaskCapture"
-                        type="button"
-                        class="sidebarButton"
-                        aria-haspopup="dialog">
-                        Convertir texto en tareas
-                    </button>`;
-
-            return html.replace(marker, `${marker}${entry}`);
-        };
     }
 
     wrapAppRender() {
         if (!this.app?.render) return;
         const originalRender = this.app.render.bind(this.app);
-
         this.app.render = (...args) => {
             const result = originalRender(...args);
             this.apply();
@@ -122,24 +81,40 @@ export class AiTaskCaptureController {
     }
 
     apply() {
+        this.ensureSidebarEntry();
         this.bindSidebarEntry();
         this.ensureDialog();
+    }
+
+    ensureSidebarEntry() {
+        if (this.document?.getElementById?.("openAiTaskCapture")) return;
+        const body = this.document?.querySelector?.(".aiSidebarToolsBody");
+        if (!body || !this.document?.createElement) return;
+
+        const button = this.document.createElement("button");
+        button.id = "openAiTaskCapture";
+        button.type = "button";
+        button.className = "sidebarButton";
+        button.setAttribute("aria-haspopup", "dialog");
+        button.textContent = "Convertir texto en tareas";
+
+        const assistant = body.querySelector?.("#openAiAssistant");
+        if (assistant?.nextSibling) {
+            body.insertBefore(button, assistant.nextSibling);
+        } else {
+            body.appendChild(button);
+        }
     }
 
     bindSidebarEntry() {
         const entry = this.document?.getElementById?.("openAiTaskCapture");
         if (!entry || entry.dataset.aiTaskCaptureBound) return;
-
         entry.dataset.aiTaskCaptureBound = "true";
         entry.addEventListener("click", () => this.open());
     }
 
     ensureDialog() {
-        if (
-            !this.document?.body ||
-            this.document.getElementById?.("aiTaskCaptureDialog")
-        ) return;
-
+        if (!this.document?.body || this.document.getElementById?.("aiTaskCaptureDialog")) return;
         const dialog = this.document.createElement("dialog");
         dialog.id = "aiTaskCaptureDialog";
         dialog.className = "settingsDialog aiTaskCaptureDialog";
@@ -155,9 +130,7 @@ export class AiTaskCaptureController {
         this.ensureDialog();
         this.renderDialog();
         const dialog = this.document?.getElementById?.("aiTaskCaptureDialog");
-        if (dialog && !dialog.open && typeof dialog.showModal === "function") {
-            dialog.showModal();
-        }
+        if (dialog && !dialog.open && typeof dialog.showModal === "function") dialog.showModal();
     }
 
     close() {
@@ -168,7 +141,6 @@ export class AiTaskCaptureController {
     renderDialog() {
         const dialog = this.document?.getElementById?.("aiTaskCaptureDialog");
         if (!dialog) return;
-
         dialog.innerHTML = `
             <style>
                 .aiTaskCaptureDialog { width:min(760px, calc(100vw - 32px)); }
@@ -188,7 +160,6 @@ export class AiTaskCaptureController {
             <div class="settingsDialogFooter">
                 <button id="cancelAiTaskCapture" type="button" class="tertiaryAction">Cerrar</button>
             </div>`;
-
         this.bindDialogEvents();
     }
 
@@ -196,7 +167,6 @@ export class AiTaskCaptureController {
         if (!this.isEnabled()) {
             return `<p class="settingsHint">Activá la asistencia con IA desde Configuración → IA para usar esta herramienta.</p>`;
         }
-
         const selectedCount = this.getSelectedItems().length;
         return `
             <section class="settingsToolPanel">
@@ -215,14 +185,10 @@ export class AiTaskCaptureController {
     }
 
     getProposalHtml() {
-        const items = Array.isArray(this.proposal?.items)
-            ? this.proposal.items
-            : [];
-
+        const items = Array.isArray(this.proposal?.items) ? this.proposal.items : [];
         if (!items.length) {
             return `<p class="settingsHint">La IA no detectó acciones suficientemente concretas para crear tareas.</p>`;
         }
-
         const html = items.map((item, index) => `
             <label class="aiTaskCaptureItem">
                 <input type="checkbox" data-ai-task-capture-index="${index}" ${item.selected !== false ? "checked" : ""}>
@@ -231,43 +197,35 @@ export class AiTaskCaptureController {
                     ${item.description ? `<p class="aiTaskCaptureItemDescription">${escapeHtml(item.description)}</p>` : ""}
                 </div>
             </label>`).join("");
-
-        return `
-            <div class="aiTaskCaptureList">${html}</div>
+        return `<div class="aiTaskCaptureList">${html}</div>
             <p class="settingsHint">${this.getSelectedItems().length} de ${items.length} propuestas seleccionadas.</p>`;
     }
 
     getSelectedItems() {
-        const items = Array.isArray(this.proposal?.items)
-            ? this.proposal.items
-            : [];
+        const items = Array.isArray(this.proposal?.items) ? this.proposal.items : [];
         return items.filter(item => item?.selected !== false);
     }
 
     bindDialogEvents() {
-        this.document?.getElementById?.("closeAiTaskCapture")
-            ?.addEventListener("click", () => this.close());
-        this.document?.getElementById?.("cancelAiTaskCapture")
-            ?.addEventListener("click", () => this.close());
-        this.document?.getElementById?.("generateAiTaskCapture")
-            ?.addEventListener("click", () => this.generate());
-        this.document?.getElementById?.("applyAiTaskCapture")
-            ?.addEventListener("click", () => this.confirmAndApply());
-        this.document?.getElementById?.("discardAiTaskCapture")
-            ?.addEventListener("click", () => {
-                this.captureSourceText();
-                this.proposal = null;
-                this.error = "";
-                this.renderDialog();
-            });
-        this.document?.querySelectorAll?.("[data-ai-task-capture-index]")
-            ?.forEach(input => input.addEventListener("change", event => {
+        this.document?.getElementById?.("closeAiTaskCapture")?.addEventListener("click", () => this.close());
+        this.document?.getElementById?.("cancelAiTaskCapture")?.addEventListener("click", () => this.close());
+        this.document?.getElementById?.("generateAiTaskCapture")?.addEventListener("click", () => this.generate());
+        this.document?.getElementById?.("applyAiTaskCapture")?.addEventListener("click", () => this.confirmAndApply());
+        this.document?.getElementById?.("discardAiTaskCapture")?.addEventListener("click", () => {
+            this.captureSourceText();
+            this.proposal = null;
+            this.error = "";
+            this.renderDialog();
+        });
+        this.document?.querySelectorAll?.("[data-ai-task-capture-index]")?.forEach(input =>
+            input.addEventListener("change", event => {
                 this.captureSourceText();
                 const index = Number(event.target.dataset.aiTaskCaptureIndex);
                 if (!Number.isInteger(index) || !this.proposal?.items?.[index]) return;
                 this.proposal.items[index].selected = event.target.checked;
                 this.renderDialog();
-            }));
+            })
+        );
     }
 
     captureSourceText() {
@@ -288,7 +246,6 @@ export class AiTaskCaptureController {
 
     async generate() {
         if (this.loading || !this.isEnabled()) return null;
-
         const sourceText = this.captureSourceText();
         if (!sourceText) {
             this.error = "Escribí o pegá un texto para procesar.";
@@ -300,7 +257,6 @@ export class AiTaskCaptureController {
             this.renderDialog();
             return null;
         }
-
         const gateway = this.app.syncEngine?.gateway;
         if (!gateway?.aiQuery) {
             this.error = "La instalación actual de Apps Script todavía no admite consultas de IA.";
@@ -321,17 +277,13 @@ export class AiTaskCaptureController {
         this.loading = true;
         this.error = "";
         this.renderDialog();
-
         try {
             const response = await gateway.aiQuery({
                 ...this.app.syncConfig.get(),
                 question,
                 context: this.buildContext()
             });
-            assertAiStructuredResponseComplete(
-                response,
-                { kind: "La propuesta de tareas" }
-            );
+            assertAiStructuredResponseComplete(response, { kind: "La propuesta de tareas" });
             const items = parseTaskCaptureProposals(response.answer);
             this.proposal = {
                 provider: response.provider || "",
@@ -340,9 +292,7 @@ export class AiTaskCaptureController {
             };
             return response;
         } catch (error) {
-            this.error = String(
-                error?.message || error || "No se pudo generar la propuesta."
-            );
+            this.error = String(error?.message || error || "No se pudo generar la propuesta.");
             return null;
         } finally {
             this.loading = false;
@@ -352,16 +302,11 @@ export class AiTaskCaptureController {
 
     validateSelectedItems() {
         const selected = this.getSelectedItems();
-        if (!selected.length) {
-            throw new Error("Seleccioná al menos una tarea para crear.");
-        }
-
+        if (!selected.length) throw new Error("Seleccioná al menos una tarea para crear.");
         const seen = new Set();
         return selected.map(item => {
             const title = normalizeText(item?.title, MAX_TITLE_LENGTH);
-            const description = String(item?.description || "")
-                .trim()
-                .slice(0, MAX_DESCRIPTION_LENGTH);
+            const description = String(item?.description || "").trim().slice(0, MAX_DESCRIPTION_LENGTH);
             const key = title.toLocaleLowerCase("es");
             if (!title || seen.has(key)) {
                 throw new Error("La propuesta contiene una tarea inválida o duplicada.");
@@ -379,7 +324,6 @@ export class AiTaskCaptureController {
             await Dialog.alert(error.message, { title: "No se pueden crear las tareas" });
             return 0;
         }
-
         const confirmed = await Dialog.confirmAsync(
             `Se crearán ${tasks.length} ${tasks.length === 1 ? "tarea" : "tareas"} en Inbox.`,
             {
