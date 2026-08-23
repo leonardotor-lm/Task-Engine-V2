@@ -1,0 +1,41 @@
+name: Apply task completion serialization fix
+
+on:
+  push:
+    branches:
+      - fix/task-completion-serialization
+    paths:
+      - ".github/workflows/apply-task-completion-serialization.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/task-completion-serialization
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply migration
+        run: node scripts/migrate-task-completion-serialization.mjs
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Commit validated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/domain/Task.js tests/Task.test.js
+          git commit -m "Preservar estado previo al completado"
+          git push origin HEAD:fix/task-completion-serialization
