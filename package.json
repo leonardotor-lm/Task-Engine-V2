@@ -1,4 +1,6 @@
 {
+  "name": "task-engine-v2",
+  "private": true,
   "type": "module",
   "scripts": {
     "generate:pwa-assets": "node scripts/generate-pwa-assets.mjs",
@@ -6,6 +8,6 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0"
+    "@playwright/test": "1.55.0"
   }
 }
