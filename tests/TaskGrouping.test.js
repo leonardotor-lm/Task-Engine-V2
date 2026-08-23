@@ -224,7 +224,7 @@ test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyec
     );
 });
 
-test("inserta Agrupar inmediatamente después del selector de orden", async () => {
+test("inserta el selector de agrupación inmediatamente después del selector de orden y sin título visible", async () => {
     const source = await fs.readFile(
         new URL(
             "../src/ui/TaskGroupingController.js",
@@ -243,11 +243,15 @@ test("inserta Agrupar inmediatamente después del selector de orden", async () =
     );
     assert.doesNotMatch(
         source,
+        /<span>Agrupar<\/span>/
+    );
+    assert.doesNotMatch(
+        source,
         /#taskToolsDialog \.taskViewOptionsBody/
     );
 });
 
-test("muestra breadcrumb cuando el contexto separa una subtarea de su padre", async () => {
+test("muestra breadcrumb y elimina la sangría cuando el contexto separa una subtarea de su padre", async () => {
     const source = await fs.readFile(
         new URL(
             "../src/ui/TaskGroupingController.js",
@@ -267,6 +271,14 @@ test("muestra breadcrumb cuando el contexto separa una subtarea de su padre", as
     assert.match(
         source,
         /groupingHierarchyPath/
+    );
+    assert.match(
+        source,
+        /"--task-depth",\s*"0"/
+    );
+    assert.match(
+        source,
+        /row\.style\.borderLeft = "0"/
     );
 });
 
