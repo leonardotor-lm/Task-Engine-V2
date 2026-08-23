@@ -135,8 +135,10 @@ export class AiSettingsController {
 
         this.document.getElementById("aiProvider")?.addEventListener("change", event => {
             this.app.aiPreferences.setProvider(event.target.value);
+            this.status = null;
             this.error = "";
             this.renderPanel();
+            this.refresh(false);
         });
 
         this.document.getElementById("aiModel")?.addEventListener("change", event => {
@@ -159,6 +161,9 @@ export class AiSettingsController {
                 statusClass = "syncing";
                 statusText = "Comprobando…";
             } else if (this.error) {
+                statusClass = "error";
+                statusText = "Error";
+            } else if (selectedStatus?.error) {
                 statusClass = "error";
                 statusText = "Error";
             } else if (selectedStatus?.connected === true) {
@@ -222,6 +227,7 @@ export class AiSettingsController {
             <p class="settingsHint">La selección se guarda en este dispositivo. Las claves permanecen en Apps Script y nunca se envían al navegador.</p>
 
             ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
+            ${status?.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(status.error)}</p>` : ""}
 
             ${status && !status.configured ? `
                 <div class="notionSetupGuide">
@@ -259,7 +265,9 @@ export class AiSettingsController {
         try {
             this.status = await gateway.aiStatus({
                 ...connection,
-                validateRemote
+                validateRemote,
+                provider: this.app.aiPreferences.getProvider(),
+                model: this.app.aiPreferences.getModel()
             });
             return this.status;
         } catch (error) {

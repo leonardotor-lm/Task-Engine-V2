@@ -99,7 +99,9 @@ function handleRequest_(event, method) {
         ) {
             return jsonResponse_(
                 getAiStatus_(
-                    body.validateRemote === true
+                    body.validateRemote === true,
+                    body.provider,
+                    body.model
                 )
             );
         }
