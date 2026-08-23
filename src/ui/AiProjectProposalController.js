@@ -239,7 +239,7 @@ export class AiProjectProposalController {
 
     getEligibleTasks() {
         const taskService = this.app?.taskService;
-        const tasks = taskService?.repository?.getAll?.() || [];
+        const tasks = taskService?.getAllTasks?.() || [];
 
         return tasks.filter(task =>
             task.status === "PENDING" &&

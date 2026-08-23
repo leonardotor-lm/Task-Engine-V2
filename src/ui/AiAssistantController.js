@@ -374,7 +374,7 @@ export class AiAssistantController {
     buildContext(question = "") {
         return {
             ...buildAiTaskContext({
-                tasks: this.app.taskService?.repository?.getAll?.() || [],
+                tasks: this.app.taskService?.getAllTasks?.() || [],
                 areas: this.app.areaService?.getAllAreas?.() || [],
                 contexts: this.app.contextService?.getAllContexts?.() || [],
                 tags: this.app.tagService?.getAllTags?.() || [],

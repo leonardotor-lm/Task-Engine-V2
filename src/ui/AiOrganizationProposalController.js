@@ -264,7 +264,7 @@ export class AiOrganizationProposalController {
 
     getPendingTasks() {
         return (
-            this.app.taskService?.repository?.getAll?.() || []
+            this.app.taskService?.getAllTasks?.() || []
         ).filter(task => task.status === "PENDING");
     }
 

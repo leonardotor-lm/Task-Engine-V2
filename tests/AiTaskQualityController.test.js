@@ -113,9 +113,7 @@ test("el contexto incluye sólo tareas activas e identifica entidades para diagn
     ];
     const app = {
         taskService: {
-            repository: {
-                getAll: () => tasks
-            }
+            getAllTasks: () => tasks
         },
         areaService: {
             getAllAreas: () => [
