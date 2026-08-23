@@ -87,6 +87,9 @@ import {
     AiAssistantController
 } from "./ui/AiAssistantController.js";
 import {
+    AiTaskCaptureController
+} from "./ui/AiTaskCaptureController.js";
+import {
     AiPriorityProposalController
 } from "./ui/AiPriorityProposalController.js";
 import {
@@ -200,6 +203,8 @@ const aiSettingsController =
     new AiSettingsController(app);
 const aiAssistantController =
     new AiAssistantController(app);
+const aiTaskCaptureController =
+    new AiTaskCaptureController(app);
 const aiPriorityProposalController =
     new AiPriorityProposalController(app);
 const aiPriorityApplyController =
@@ -277,6 +282,7 @@ pwaController.start();
 aiSettingsController.start();
 aiSidebarGroupController.start();
 aiAssistantController.start();
+aiTaskCaptureController.start();
 aiPriorityProposalController.start();
 aiPriorityApplyController.start();
 aiDueDateProposalController.start();
