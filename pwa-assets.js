@@ -10,6 +10,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/core/ActivityService.js",
     "./src/core/AdvancedSearch.js",
     "./src/core/AiTaskContext.js",
+    "./src/core/AiStructuredResponse.js",
     "./src/core/AtomicTaskUpdates.js",
     "./src/core/App.js",
     "./src/core/AreaService.js",

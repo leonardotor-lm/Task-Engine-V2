@@ -3,6 +3,10 @@ import {
 } from "../core/AiTaskContext.js";
 import { Dialog } from "../components/Dialog.js";
 import { escapeHtml } from "./escapeHtml.js";
+import {
+    assertAiStructuredResponseComplete,
+    requireAiStructuredCollection
+} from "../core/AiStructuredResponse.js";
 
 const MIN_SUBTASKS = 2;
 const MAX_SUBTASKS = 6;
@@ -44,9 +48,11 @@ export function parseProjectProposals(answer, tasks) {
         ])
     );
     const seen = new Set();
-    const proposals = Array.isArray(parsed?.proposals)
-        ? parsed.proposals
-        : [];
+    const proposals = requireAiStructuredCollection(
+        parsed,
+        "proposals",
+        { kind: "una propuesta" }
+    );
 
     return proposals
         .map(item => {
@@ -470,6 +476,10 @@ export class AiProjectProposalController {
                 question,
                 context
             });
+            assertAiStructuredResponseComplete(
+                response,
+                { kind: "La propuesta de proyectos" }
+            );
             const parsed = parseProjectProposals(
                 response.answer,
                 eligibleTasks

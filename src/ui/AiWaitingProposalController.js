@@ -6,6 +6,10 @@ import {
     applyAtomicTaskUpdates
 } from "../core/AtomicTaskUpdates.js";
 import { escapeHtml } from "./escapeHtml.js";
+import {
+    assertAiStructuredResponseComplete,
+    requireAiStructuredCollection
+} from "../core/AiStructuredResponse.js";
 
 export function parseWaitingProposals(
     answer,
@@ -39,9 +43,11 @@ export function parseWaitingProposals(
         ])
     );
     const seen = new Set();
-    const proposals = Array.isArray(parsed?.proposals)
-        ? parsed.proposals
-        : [];
+    const proposals = requireAiStructuredCollection(
+        parsed,
+        "proposals",
+        { kind: "una propuesta" }
+    );
 
     return proposals
         .map(item => {
@@ -439,6 +445,10 @@ export class AiWaitingProposalController {
                 question,
                 context
             });
+            assertAiStructuredResponseComplete(
+                response,
+                { kind: "La propuesta de tareas En espera" }
+            );
             const parsed = parseWaitingProposals(
                 response.answer,
                 eligibleTasks
