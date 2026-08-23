@@ -7,7 +7,8 @@ import {
     TaskGroupingPreferencesRepository
 } from "../src/infrastructure/TaskGroupingPreferencesRepository.js";
 import {
-    buildTaskGroups
+    buildTaskGroups,
+    TaskGroupingController
 } from "../src/ui/TaskGroupingController.js";
 
 function createStorage() {
@@ -184,6 +185,37 @@ test("al agrupar por contexto mantiene juntos padre e hijo cuando comparten cont
             { label: "Computadora", ids: ["p", "h"] }
         ]
     );
+});
+
+test("al agrupar por contexto renderiza también hijos de padres contraídos", () => {
+    let receivedState = null;
+    const app = {
+        currentView: "TODAY",
+        mainView: {
+            render(state) {
+                receivedState = state;
+            }
+        }
+    };
+    const repository = {
+        get() {
+            return TaskGrouping.CONTEXT;
+        }
+    };
+    const controller = new TaskGroupingController(
+        app,
+        {
+            repository,
+            documentRef: null
+        }
+    );
+
+    controller.wrapMainViewRender();
+    controller.app.mainView.render({
+        expandedTaskIds: new Set()
+    });
+
+    assert.equal(receivedState.expandedTaskIds, null);
 });
 
 test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyecto", () => {
