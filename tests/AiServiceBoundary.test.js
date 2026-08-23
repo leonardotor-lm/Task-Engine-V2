@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import path from "node:path";
 
 const uiDir = new URL("../src/ui/", import.meta.url);
 
@@ -42,6 +41,6 @@ test("TaskService mantiene una API pública para listar tareas", () => {
 
     assert.match(
         source,
-        /getAllTaskss*(s*)/
+        /getAllTasks\s*\(\s*\)/
     );
 });
