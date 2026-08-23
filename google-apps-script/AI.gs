@@ -84,38 +84,58 @@ function normalizeAiHistory_(history) {
         .filter(Boolean);
 }
 
-function getAiStatus_(validateRemote) {
+function getAiStatus_(validateRemote, provider, model) {
     var providers = {};
-    var providerIds = Object.keys(
-        TASK_ENGINE_AI_SETTINGS.PROVIDERS
-    );
+    var requestedProvider = String(provider || "").trim();
+    var providerIds = requestedProvider
+        ? [normalizeAiProvider_(requestedProvider)]
+        : Object.keys(TASK_ENGINE_AI_SETTINGS.PROVIDERS);
 
     providerIds.forEach(function(providerId) {
-        providers[providerId] = getAiProviderStatus_(
-            providerId,
-            validateRemote === true
-        );
+        try {
+            providers[providerId] = getAiProviderStatus_(
+                providerId,
+                validateRemote === true,
+                requestedProvider ? model : null
+            );
+        } catch (error) {
+            var settings = getAiProviderSettings_(providerId);
+            providers[providerId] = {
+                configured: Boolean(getAiApiKey_(providerId)),
+                connected: false,
+                provider: settings.LABEL,
+                providerId: providerId,
+                model: normalizeAiModel_(providerId, requestedProvider ? model : null),
+                error:
+                    error.publicMessage ||
+                    error.message ||
+                    "No se pudo verificar el proveedor."
+            };
+        }
     });
 
-    var defaultStatus = providers[
-        TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER
-    ];
+    var selectedProvider = requestedProvider
+        ? normalizeAiProvider_(requestedProvider)
+        : TASK_ENGINE_AI_SETTINGS.DEFAULT_PROVIDER;
+    var selectedStatus = providers[selectedProvider];
 
     return {
         ok: true,
-        configured: defaultStatus.configured,
-        connected: defaultStatus.connected,
-        provider: defaultStatus.provider,
-        model: defaultStatus.model,
+        configured: selectedStatus.configured,
+        connected: selectedStatus.connected,
+        provider: selectedStatus.provider,
+        providerId: selectedStatus.providerId,
+        model: selectedStatus.model,
+        error: selectedStatus.error || "",
         providers: providers
     };
 }
 
-function getAiProviderStatus_(provider, validateRemote) {
+function getAiProviderStatus_(provider, validateRemote, model) {
     var providerId = normalizeAiProvider_(provider);
     var settings = getAiProviderSettings_(providerId);
     var apiKey = getAiApiKey_(providerId);
-    var model = settings.DEFAULT_MODEL;
+    var resolvedModel = normalizeAiModel_(providerId, model);
 
     if (!apiKey) {
         return {
@@ -123,7 +143,7 @@ function getAiProviderStatus_(provider, validateRemote) {
             connected: false,
             provider: settings.LABEL,
             providerId: providerId,
-            model: model
+            model: resolvedModel
         };
     }
 
@@ -133,14 +153,14 @@ function getAiProviderStatus_(provider, validateRemote) {
             connected: false,
             provider: settings.LABEL,
             providerId: providerId,
-            model: model
+            model: resolvedModel
         };
     }
 
     if (providerId === "groq") {
         return verifyGroqProvider_(
             apiKey,
-            model,
+            resolvedModel,
             settings
         );
     }
@@ -148,7 +168,7 @@ function getAiProviderStatus_(provider, validateRemote) {
     var response = UrlFetchApp.fetch(
         settings.API_BASE +
             "/models/" +
-            encodeURIComponent(model),
+            encodeURIComponent(resolvedModel),
         {
             method: "get",
             headers: {
@@ -172,7 +192,7 @@ function getAiProviderStatus_(provider, validateRemote) {
         providerId: providerId,
         model:
             String(payload.name || "")
-                .replace(/^models\//, "") || model,
+                .replace(/^models\//, "") || resolvedModel,
         modelDisplayName:
             payload.displayName || ""
     };
