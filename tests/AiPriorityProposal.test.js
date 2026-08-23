@@ -30,9 +30,7 @@ function createApp() {
             getModel: () => "gemini-3.7-flash"
         },
         taskService: {
-            repository: {
-                getAll: () => tasks
-            }
+            getAllTasks: () => tasks
         },
         areaService: { getAllAreas: () => [] },
         contextService: { getAllContexts: () => [] },
