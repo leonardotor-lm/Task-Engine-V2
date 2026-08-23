@@ -236,10 +236,10 @@ export class TaskGroupingController {
                 "taskGrouping"
             );
             wrapper.innerHTML = `
-                <span>Agrupar</span>
                 <select
                     id="taskGrouping"
-                    aria-label="Agrupar tareas">
+                    aria-label="Agrupar tareas"
+                    title="Agrupar tareas">
                     <option value="NONE">Sin agrupar</option>
                     <option value="AREA">Área</option>
                     <option value="CONTEXT">Contexto</option>
@@ -432,7 +432,7 @@ export class TaskGroupingController {
                     groupKeyByTaskId.get(task.parentTaskId) !==
                         group.key
                 ) {
-                    this.ensureSeparatedHierarchyPath(
+                    this.prepareSeparatedSubtask(
                         row,
                         task,
                         allTasksById
@@ -444,6 +444,26 @@ export class TaskGroupingController {
         }
 
         list.appendChild(fragment);
+    }
+
+    prepareSeparatedSubtask(
+        row,
+        task,
+        allTasksById
+    ) {
+        row.style?.setProperty?.(
+            "--task-depth",
+            "0"
+        );
+        if (row.style) {
+            row.style.borderLeft = "0";
+        }
+
+        this.ensureSeparatedHierarchyPath(
+            row,
+            task,
+            allTasksById
+        );
     }
 
     ensureSeparatedHierarchyPath(
