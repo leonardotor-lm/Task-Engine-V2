@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
 import {
     TASK_GROUPING_PREFERENCES_STORAGE_KEY,
     TaskGrouping,
@@ -144,5 +145,28 @@ test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyec
             { label: "Mudanza", ids: ["c", "p"] },
             { label: "Sin proyecto", ids: ["s"] }
         ]
+    );
+});
+
+test("inserta Agrupar junto al orden en la barra de herramientas y no en la sección eliminada del diálogo", async () => {
+    const source = await fs.readFile(
+        new URL(
+            "../src/ui/TaskGroupingController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(
+        source,
+        /#taskContextToolbar \.taskContextToolbarBody/
+    );
+    assert.match(
+        source,
+        /id="taskGrouping"/
+    );
+    assert.doesNotMatch(
+        source,
+        /#taskToolsDialog \.taskViewOptionsBody/
     );
 });
