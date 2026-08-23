@@ -178,6 +178,7 @@ export class TaskGroupingController {
         this.app.taskGroupingPreferencesRepository =
             this.repository;
 
+        this.wrapMainViewRender();
         this.wrapRender();
         this.apply();
     }
@@ -190,6 +191,27 @@ export class TaskGroupingController {
         return this.repository.get(
             this.getViewKey()
         );
+    }
+
+    wrapMainViewRender() {
+        const mainView = this.app.mainView;
+
+        if (!mainView || typeof mainView.render !== "function") {
+            return;
+        }
+
+        const originalRender = mainView.render.bind(mainView);
+
+        mainView.render = state => {
+            if (this.getGrouping() !== TaskGrouping.CONTEXT) {
+                return originalRender(state);
+            }
+
+            return originalRender({
+                ...state,
+                expandedTaskIds: null
+            });
+        };
     }
 
     wrapRender() {
