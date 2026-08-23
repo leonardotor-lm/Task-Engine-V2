@@ -25,7 +25,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Apply migration
         run: node scripts/migrate-task-completion-persistence.mjs
