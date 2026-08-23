@@ -402,9 +402,14 @@ function parsePriorityProposals_(answer, tasks) {
     });
 
     var seen = {};
-    var proposals = Array.isArray(parsed.proposals)
-        ? parsed.proposals
-        : [];
+    if (!Array.isArray(parsed.proposals)) {
+        throw protocolError_(
+            "AI_INVALID_PROPOSAL",
+            "La IA devolvió una propuesta con formato inválido. Intentá nuevamente."
+        );
+    }
+
+    var proposals = parsed.proposals;
 
     return proposals
         .map(function(item) {

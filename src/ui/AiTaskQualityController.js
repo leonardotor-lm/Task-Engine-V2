@@ -2,6 +2,10 @@ import {
     buildAiTaskContext
 } from "../core/AiTaskContext.js";
 import { escapeHtml } from "./escapeHtml.js";
+import {
+    assertAiStructuredResponseComplete,
+    requireAiStructuredCollection
+} from "../core/AiStructuredResponse.js";
 
 const QUALITY_TYPES = Object.freeze({
     DUPLICATE: "Posible duplicado",
@@ -72,9 +76,11 @@ export function parseTaskQualityFindings(answer, tasks) {
             task
         ])
     );
-    const findings = Array.isArray(parsed?.findings)
-        ? parsed.findings
-        : [];
+    const findings = requireAiStructuredCollection(
+        parsed,
+        "findings",
+        { kind: "un diagnóstico" }
+    );
     const seen = new Set();
 
     return findings
@@ -455,6 +461,10 @@ export class AiTaskQualityController {
                 question: TASK_QUALITY_QUESTION,
                 context
             });
+            assertAiStructuredResponseComplete(
+                response,
+                { kind: "El diagnóstico de calidad" }
+            );
             const findings = parseTaskQualityFindings(
                 response.answer,
                 eligibleTasks

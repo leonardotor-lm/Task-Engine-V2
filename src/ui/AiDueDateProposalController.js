@@ -6,6 +6,10 @@ import {
     applyAtomicTaskUpdates
 } from "../core/AtomicTaskUpdates.js";
 import { escapeHtml } from "./escapeHtml.js";
+import {
+    assertAiStructuredResponseComplete,
+    requireAiStructuredCollection
+} from "../core/AiStructuredResponse.js";
 
 function isIsoDate(value) {
     const normalized = String(value || "").trim();
@@ -59,9 +63,11 @@ export function parseDueDateProposals(
         ])
     );
     const seen = new Set();
-    const proposals = Array.isArray(parsed?.proposals)
-        ? parsed.proposals
-        : [];
+    const proposals = requireAiStructuredCollection(
+        parsed,
+        "proposals",
+        { kind: "una propuesta" }
+    );
 
     return proposals
         .map(item => {
@@ -474,6 +480,10 @@ export class AiDueDateProposalController {
                 question,
                 context
             });
+            assertAiStructuredResponseComplete(
+                response,
+                { kind: "La propuesta de fechas" }
+            );
             const parsed = parseDueDateProposals(
                 response.answer,
                 eligibleTasks,

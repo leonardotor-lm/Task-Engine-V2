@@ -6,6 +6,10 @@ import {
     applyAtomicTaskUpdates
 } from "../core/AtomicTaskUpdates.js";
 import { escapeHtml } from "./escapeHtml.js";
+import {
+    assertAiStructuredResponseComplete,
+    requireAiStructuredCollection
+} from "../core/AiStructuredResponse.js";
 
 function sameStringArray(first = [], second = []) {
     const a = [...first].map(String).sort();
@@ -55,9 +59,11 @@ export function parseOrganizationProposals(
         tags.map(tag => String(tag?.id || "")).filter(Boolean)
     );
     const seen = new Set();
-    const proposals = Array.isArray(parsed?.proposals)
-        ? parsed.proposals
-        : [];
+    const proposals = requireAiStructuredCollection(
+        parsed,
+        "proposals",
+        { kind: "una propuesta" }
+    );
 
     return proposals
         .map(item => {
@@ -564,6 +570,10 @@ export class AiOrganizationProposalController {
                 question,
                 context
             });
+            assertAiStructuredResponseComplete(
+                response,
+                { kind: "La propuesta de organización" }
+            );
             const items = parseOrganizationProposals(
                 response.answer,
                 tasks,
