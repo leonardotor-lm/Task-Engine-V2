@@ -84,6 +84,9 @@ export function createAtomicTaskServiceFixture(taskData = []) {
         activityService: null,
         getTaskById(id) {
             return repository.getById(id);
+        },
+        getAllTasks() {
+            return repository.getAll();
         }
     };
 
