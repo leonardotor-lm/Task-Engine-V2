@@ -48,9 +48,11 @@ export class Task {
 
         this.statusBeforeDelete = data.statusBeforeDelete ?? null;
 
-        this.statusBeforeCompletion = null;
+        this.statusBeforeCompletion =
+            data.statusBeforeCompletion ?? null;
 
-        this.isWaitingBeforeCompletion = null;
+        this.isWaitingBeforeCompletion =
+            data.isWaitingBeforeCompletion ?? null;
 
         this.areaId = data.areaId ?? null;
 
@@ -693,6 +695,12 @@ export class Task {
             status: this.status,
 
             statusBeforeDelete: this.statusBeforeDelete,
+
+            statusBeforeCompletion:
+                this.statusBeforeCompletion,
+
+            isWaitingBeforeCompletion:
+                this.isWaitingBeforeCompletion,
 
             areaId: this.areaId,
 
