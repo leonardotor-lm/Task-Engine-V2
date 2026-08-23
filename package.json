@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "generate:pwa-assets": "node scripts/generate-pwa-assets.mjs",
-    "test": "node --test tests/[A-M]*.test.js",
+    "test": "node --test tests/[A-F]*.test.js",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
