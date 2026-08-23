@@ -109,7 +109,7 @@ export class AiPriorityProposalController {
     }
 
     getPendingTasks() {
-        return (this.app.taskService?.repository?.getAll?.() || [])
+        return (this.app.taskService?.getAllTasks?.() || [])
             .filter(task => task.status === "PENDING");
     }
 
