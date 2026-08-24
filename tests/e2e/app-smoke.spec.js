@@ -49,7 +49,7 @@ test("la navegación móvil abre y cierra la barra lateral", async ({ page }) =>
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
-test("Todas sigue navegable con agrupación por contexto persistida", async ({ page }) => {
+test("Todas sigue navegable y agrupa padre e hija por sus propios contextos", async ({ page }) => {
     const pageErrors = [];
     page.on("pageerror", error => pageErrors.push(error.message));
 
@@ -57,6 +57,34 @@ test("Todas sigue navegable con agrupación por contexto persistida", async ({ p
         localStorage.setItem(
             "task-engine-v2-task-grouping-by-view-v1",
             JSON.stringify({ "view:ALL": "CONTEXT" })
+        );
+        localStorage.setItem(
+            "task-engine-contexts",
+            JSON.stringify([
+                { id: "casa", name: "Casa" },
+                { id: "trabajo", name: "Trabajo" }
+            ])
+        );
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([
+                {
+                    id: "padre",
+                    title: "Proyecto padre",
+                    status: "PENDING",
+                    isProject: true,
+                    parentTaskId: null,
+                    contextId: "trabajo"
+                },
+                {
+                    id: "hija",
+                    title: "Subtarea hija",
+                    status: "PENDING",
+                    isProject: false,
+                    parentTaskId: "padre",
+                    contextId: "casa"
+                }
+            ])
         );
     });
 
@@ -66,5 +94,9 @@ test("Todas sigue navegable con agrupación por contexto persistida", async ({ p
     await expect(page.locator("#showAll")).toHaveClass(/active/);
     await expect(page.locator(".taskListHeading h2")).toContainText("Todas");
     await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
+    await expect(page.locator(".taskGroupHeader", { hasText: "Casa" })).toBeVisible();
+    await expect(page.locator(".taskGroupHeader", { hasText: "Trabajo" })).toBeVisible();
+    await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
+    await expect(page.locator('.task[data-id="padre"]')).toBeVisible();
     expect(pageErrors).toEqual([]);
 });
