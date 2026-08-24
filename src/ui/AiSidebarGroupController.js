@@ -315,7 +315,11 @@ export class AiSidebarGroupController {
                         </div>
                     </details>`;
 
-            const aiGroup = `
+            const aiEnabled =
+                this.app?.aiPreferences
+                    ?.isEnabled?.() !== false;
+            const aiGroup = aiEnabled
+                ? `
 
                     <details
                         id="aiSidebarTools"
@@ -327,7 +331,8 @@ export class AiSidebarGroupController {
                         <div class="aiSidebarToolsBody sidebarNavigationGroupBody">
                             ${aiTools.join("\n                            ")}
                         </div>
-                    </details>`;
+                    </details>`
+                : "";
 
             const groupedHtml = replacePlanningLabel(
                 html,
