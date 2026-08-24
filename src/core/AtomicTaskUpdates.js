@@ -124,5 +124,12 @@ export function applyAtomicTaskUpdates(
         }
     }
 
+    taskService.onAtomicTaskChanges?.(
+        prepared.map(({ before, next }) => ({
+            before,
+            next: next.toJSON()
+        }))
+    );
+
     return prepared.map(item => item.next);
 }
