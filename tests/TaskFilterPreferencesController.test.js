@@ -5,6 +5,9 @@ import { View } from "../src/core/View.js";
 import {
     TaskFilterPreferencesController
 } from "../src/ui/TaskFilterPreferencesController.js";
+import {
+    TaskFilterPreferencesRepository
+} from "../src/infrastructure/TaskFilterPreferencesRepository.js";
 
 function createStorage() {
 
@@ -220,6 +223,51 @@ test("limpiar filtros queda persistido para esa vista", () => {
     assert.deepEqual(
         app.taskFilters,
         emptyFilters()
+    );
+
+});
+
+test("eliminar una etiqueta limpia su referencia en todas las vistas", () => {
+
+    const repository =
+        new TaskFilterPreferencesRepository(
+            createStorage()
+        );
+
+    repository.replaceAll({
+        "view:today": {
+            ...emptyFilters(),
+            tagId: "tag-removed"
+        },
+        "view:inbox": {
+            ...emptyFilters(),
+            tagId: "tag-kept"
+        },
+        "area:area-1": {
+            ...emptyFilters(),
+            tagId: "tag-removed"
+        }
+    });
+
+    repository.clearTag("tag-removed");
+
+    assert.equal(
+        repository
+            .getAll()["view:today"]
+            .tagId,
+        ""
+    );
+    assert.equal(
+        repository
+            .getAll()["area:area-1"]
+            .tagId,
+        ""
+    );
+    assert.equal(
+        repository
+            .getAll()["view:inbox"]
+            .tagId,
+        "tag-kept"
     );
 
 });

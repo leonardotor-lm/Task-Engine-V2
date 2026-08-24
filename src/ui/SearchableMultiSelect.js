@@ -316,7 +316,9 @@ export class SearchableMultiSelect {
             );
 
             this.updateCount(id, selected);
-            closeManager();
+            search.value = "";
+            refresh();
+            search.focus();
 
         });
 
@@ -335,6 +337,8 @@ export class SearchableMultiSelect {
 
                 if (!button) return;
 
+                event.stopPropagation();
+
                 const chip = button.closest(
                     ".searchableMultiSelectChip"
                 );
@@ -343,6 +347,9 @@ export class SearchableMultiSelect {
                 if (!chip || value === undefined) {
                     return;
                 }
+
+                const keepManagerOpen =
+                    manager?.open === true;
 
                 chip.remove();
 
@@ -374,6 +381,11 @@ export class SearchableMultiSelect {
 
                 refresh();
                 this.updateCount(id, selected);
+
+                if (keepManagerOpen && manager) {
+                    manager.open = true;
+                    search.focus();
+                }
 
             }
         );

@@ -63,6 +63,32 @@ test("el agrupador central genera todas las herramientas de IA y queda colapsado
     );
 });
 
+test("oculta las herramientas cuando la asistencia con IA está desactivada", () => {
+    const sidebar = { render: () => sidebarHtml() };
+    const controller = new AiSidebarGroupController(
+        {
+            mainView: { sidebar },
+            aiPreferences: {
+                isEnabled: () => false
+            },
+            render() {}
+        },
+        { documentRef: null }
+    );
+
+    controller.start();
+    const html = sidebar.render();
+
+    assert.doesNotMatch(
+        html,
+        /id="aiSidebarTools"/
+    );
+    assert.match(
+        html,
+        /id="sidebarPlanningGroup"/
+    );
+});
+
 test("convierte Planificación en grupo real, muestra chevron SVG y ordena sus vistas", () => {
     const sidebar = { render: () => sidebarHtml() };
     const controller = new AiSidebarGroupController(

@@ -8,11 +8,15 @@ import {
 } from "../src/ui/TaskSwipeController.js";
 
 const controller =
-    new TaskSwipeController();
+    new TaskSwipeController({
+        setTimeoutFn: () => 1,
+        clearTimeoutFn: () => {}
+    });
 
 function createNoticeEnvironment() {
 
     const listeners = new Map();
+    const noticeListeners = new Map();
     const buttons = new Map(
         [
             ".undoTaskCompletion",
@@ -40,6 +44,12 @@ function createNoticeEnvironment() {
         setAttribute(name, value) {
             this.attributes.set(name, value);
         },
+        addEventListener(type, handler) {
+            noticeListeners.set(type, handler);
+        },
+        contains() {
+            return false;
+        },
         querySelector(selector) {
             return buttons.get(selector);
         },
@@ -64,6 +74,7 @@ function createNoticeEnvironment() {
             }
         },
         listeners,
+        noticeListeners,
         notice
     };
 
@@ -105,7 +116,7 @@ test("un desplazamiento principalmente vertical no ejecuta acciones", () => {
 
 });
 
-test("el aviso permanece hasta deshacer o cerrar", async t => {
+test("el aviso permite deshacer antes del cierre automático", async t => {
 
     const previousDocument = globalThis.document;
     const environment = createNoticeEnvironment();
@@ -172,6 +183,46 @@ test("el aviso puede cerrarse sin deshacer", t => {
 
 });
 
+test("el aviso se cierra a los ocho segundos aunque el puntero permanezca encima", t => {
+
+    const previousDocument = globalThis.document;
+    const environment = createNoticeEnvironment();
+    const scheduled = [];
+    const timedController =
+        new TaskSwipeController({
+            noticeDuration: 8000,
+            setTimeoutFn: (handler, delay) => {
+                scheduled.push({ handler, delay });
+                return scheduled.length;
+            },
+            clearTimeoutFn: () => {}
+        });
+
+    globalThis.document = environment.documentRef;
+    t.after(() => {
+        globalThis.document = previousDocument;
+    });
+
+    timedController.showCompletionNotice(
+        "task-3",
+        () => true
+    );
+
+    assert.equal(scheduled[0].delay, 8000);
+
+    assert.equal(
+        environment.noticeListeners.has(
+            "pointerenter"
+        ),
+        false
+    );
+
+    scheduled[0].handler();
+
+    assert.equal(environment.notice.removed, true);
+
+});
+
 test("la casilla reutiliza el aviso en escritorio y celular", async () => {
 
     const mainView = await readFile(
@@ -197,9 +248,9 @@ test("la casilla reutiliza el aviso en escritorio y celular", async () => {
         mainView,
         /taskCompleteCheckbox[\s\S]*?showCompletionNotice/
     );
-    assert.doesNotMatch(
+    assert.match(
         swipeController,
-        /setTimeout\([\s\S]*?5000/
+        /noticeDuration = 8000/
     );
     assert.ok(
         styles.indexOf(".taskCompletionNotice {") <

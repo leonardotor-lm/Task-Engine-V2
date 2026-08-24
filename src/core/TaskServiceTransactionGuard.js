@@ -8,6 +8,7 @@ const GUARDED_METHODS = Object.freeze([
     "removeTaskAttachment",
     "removeGoalAssociations",
     "removeMissingGoalAssociations",
+    "removeTagAssociations",
     "updateTasks",
     "completeTasks",
     "archiveTasks",

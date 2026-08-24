@@ -83,6 +83,17 @@
     color: var(--color-accent-strong);
 }
 
+.notionNoteIndicator {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-strong);
+}
+
+.notionNoteIndicator .notionNoteIcon {
+    width: 15px;
+    height: 15px;
+}
+
 .syncStatus.configured,
 .sidebarSyncStatus.configured,
 .applicationTools .settingsSaveStatus {

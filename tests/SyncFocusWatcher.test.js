@@ -29,6 +29,22 @@ class EventTargetStub {
 
 }
 
+class DocumentStub extends EventTargetStub {
+
+    constructor() {
+        super();
+        this.visibilityState = "hidden";
+    }
+
+    show() {
+        this.visibilityState = "visible";
+        this.listeners.get(
+            "visibilitychange"
+        )?.();
+    }
+
+}
+
 test("comprueba la nube al recuperar el foco", () => {
 
     const target = new EventTargetStub();
@@ -62,6 +78,27 @@ test("comprueba la nube al recuperar la conexión", () => {
 
     watcher.start();
     target.reconnect();
+
+    assert.equal(checks, 1);
+
+});
+
+test("comprueba la nube cuando la aplicación vuelve a ser visible", () => {
+
+    const target = new EventTargetStub();
+    const documentRef = new DocumentStub();
+    let checks = 0;
+
+    const watcher = new SyncFocusWatcher({
+        target,
+        documentRef,
+        onFocus: () => {
+            checks += 1;
+        }
+    });
+
+    watcher.start();
+    documentRef.show();
 
     assert.equal(checks, 1);
 

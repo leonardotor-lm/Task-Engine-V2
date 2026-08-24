@@ -116,10 +116,28 @@ test("aplicación ofrece la instalación de la PWA", () => {
     assert.match(html, /id="installApp"/);
     assert.match(html, /id="pwaInstallDescription"/);
     assert.match(html, /id="sidebarTitleForm"/);
+    assert.match(html, /Nombre de la aplicación/);
+    assert.match(
+        html,
+        /barra lateral y en el encabezado principal/
+    );
     assert.match(html, /value="Tareas de Leo"/);
     assert.match(html, /<h3>Tareas de Leo<\/h3>/);
     assert.match(html, />\s*Guardado\s*<\/button>/);
     assert.match(html, /Nombre actualizado\./);
+
+});
+
+test("el encabezado principal usa el mismo nombre configurable", () => {
+
+    assert.match(
+        mainViewSource,
+        /const applicationTitle =[\s\S]*?String\(sidebarTitle\)\.trim\(\)[\s\S]*?"Mis tareas"/
+    );
+    assert.match(
+        mainViewSource,
+        /<strong>\$\{escapeHtml\(applicationTitle\)\}<\/strong>/
+    );
 
 });
 

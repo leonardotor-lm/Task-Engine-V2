@@ -7,12 +7,23 @@ export class TaskSwipeController {
 
     constructor({
         threshold = 72,
-        maximumDistance = 96
+        maximumDistance = 96,
+        noticeDuration = 8000,
+        setTimeoutFn = (...args) =>
+            globalThis.setTimeout(...args),
+        clearTimeoutFn = timeoutId =>
+            globalThis.clearTimeout(timeoutId),
+        now = () => Date.now()
     } = {}) {
 
         this.threshold = threshold;
         this.maximumDistance =
             maximumDistance;
+        this.noticeDuration = noticeDuration;
+        this.setTimeoutFn = setTimeoutFn;
+        this.clearTimeoutFn = clearTimeoutFn;
+        this.now = now;
+        this.dismissCompletionNotice = null;
 
     }
 
@@ -328,6 +339,7 @@ export class TaskSwipeController {
         onUndoComplete
     ) {
 
+        this.dismissCompletionNotice?.();
         document.getElementById(
             "taskCompletionNotice"
         )?.remove();
@@ -365,9 +377,57 @@ export class TaskSwipeController {
             </div>
         `;
 
-        const remove = () => {
-            notice.remove();
+        let remaining = this.noticeDuration;
+        let startedAt = 0;
+        let timeoutId = null;
+        let focusInside = false;
+
+        const clearSchedule = () => {
+            if (timeoutId === null) return;
+            this.clearTimeoutFn(timeoutId);
+            timeoutId = null;
         };
+
+        const remove = () => {
+            clearSchedule();
+            notice.remove();
+            if (
+                this.dismissCompletionNotice ===
+                remove
+            ) {
+                this.dismissCompletionNotice = null;
+            }
+        };
+
+        const schedule = () => {
+            if (timeoutId !== null) return;
+            if (remaining <= 0) {
+                remove();
+                return;
+            }
+            startedAt = this.now();
+            timeoutId = this.setTimeoutFn(
+                remove,
+                remaining
+            );
+        };
+
+        const pause = () => {
+            if (timeoutId === null) return;
+            remaining = Math.max(
+                0,
+                remaining -
+                    (this.now() - startedAt)
+            );
+            clearSchedule();
+        };
+
+        const resume = () => {
+            if (focusInside) return;
+            schedule();
+        };
+
+        this.dismissCompletionNotice = remove;
 
         notice.querySelector(
             ".undoTaskCompletion"
@@ -394,9 +454,33 @@ export class TaskSwipeController {
             remove
         );
 
+        notice.addEventListener(
+            "focusin",
+            () => {
+                focusInside = true;
+                pause();
+            }
+        );
+        notice.addEventListener(
+            "focusout",
+            event => {
+                if (
+                    notice.contains?.(
+                        event.relatedTarget
+                    )
+                ) {
+                    return;
+                }
+                focusInside = false;
+                resume();
+            }
+        );
+
         document.body.appendChild(
             notice
         );
+
+        schedule();
 
     }
 

@@ -153,4 +153,27 @@ export class TaskFilterPreferencesRepository {
 
     }
 
+    clearTag(tagId) {
+
+        const normalizedTagId =
+            String(tagId ?? "");
+        const next = this.getAll();
+        let changed = false;
+
+        for (const filters of Object.values(next)) {
+            if (filters.tagId !== normalizedTagId) {
+                continue;
+            }
+            filters.tagId = "";
+            changed = true;
+        }
+
+        if (changed) {
+            this.replaceAll(next);
+        }
+
+        return next;
+
+    }
+
 }

@@ -12,6 +12,7 @@ import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
 import { Icon } from "./Icon.js";
+import { escapeHtml } from "./escapeHtml.js";
 
 export class MainView {
 
@@ -448,6 +449,10 @@ export class MainView {
             sidebarTitleSaved
         } = state;
 
+        const applicationTitle =
+            String(sidebarTitle).trim() ||
+            "Mis tareas";
+
         document.getElementById("app").innerHTML = `
             <div class="layout">
 
@@ -463,7 +468,7 @@ export class MainView {
                         ${Icon.render("menu")}
                     </button>
 
-                    <strong>Mis tareas</strong>
+                    <strong>${escapeHtml(applicationTitle)}</strong>
 
                 </header>
 
@@ -1347,6 +1352,11 @@ export class MainView {
             this.callbacks.onClearSyncConfig();
 
         });
+
+        document.getElementById("retrySync")
+            ?.addEventListener("click", () => {
+                this.callbacks.onRetrySync?.();
+            });
 
         document.getElementById("pushToCloud")?.addEventListener("click", async () => {
 
@@ -4461,7 +4471,17 @@ export class MainView {
                     create: this.callbacks.onCreateTag,
                     update: this.callbacks.onUpdateTag,
                     remove: this.callbacks.onDeleteTag,
-                    isInUse: this.callbacks.onIsTagInUse
+                    isInUse: this.callbacks.onIsTagInUse,
+                    getUsageCount:
+                        this.callbacks
+                            .onGetTagUsageCount,
+                    getActiveUsageCount:
+                        this.callbacks
+                            .onGetActiveTagUsageCount,
+                    reviewUsage:
+                        this.callbacks
+                            .onReviewTagTasks,
+                    allowUsageCleanup: true
                 }
 
             }[entityView];
@@ -4498,9 +4518,16 @@ export class MainView {
                         ? "este"
                         : "esta";
 
-                    if (config.isInUse(
-                        button.dataset.id
-                    )) {
+                    const entityId =
+                        button.dataset.id;
+                    const isInUse = config.isInUse(
+                        entityId
+                    );
+
+                    if (
+                        isInUse &&
+                        !config.allowUsageCleanup
+                    ) {
                         await Dialog.alert(
                             `No se puede eliminar ${article} ${config.name} porque está asignado a una o más tareas.`,
                             {
@@ -4511,8 +4538,53 @@ export class MainView {
                         return;
                     }
 
+                    if (isInUse) {
+                        const usageCount =
+                            config.getUsageCount?.(
+                                entityId
+                            ) ?? 0;
+                        const choices = [
+                            {
+                                value: "review",
+                                label:
+                                    "Ver tareas asociadas",
+                                variant:
+                                    "primary"
+                            },
+                            {
+                                value: "delete",
+                                label:
+                                    "Eliminar y desafectar",
+                                variant:
+                                    "danger"
+                            }
+                        ];
+                        const choice =
+                            await Dialog.chooseAsync(
+                                `Esta etiqueta está asociada a ${usageCount} ${usageCount === 1 ? "tarea" : "tareas"}. Podés revisarlas antes de decidir. Si la eliminás, se quitará también de las tareas completadas, archivadas o enviadas a Papelera.`,
+                                {
+                                    title:
+                                        "Etiqueta en uso",
+                                    choices
+                                }
+                            );
+
+                        if (choice === "review") {
+                            config.reviewUsage?.(
+                                entityId
+                            );
+                            return;
+                        }
+
+                        if (choice !== "delete") {
+                            return;
+                        }
+                    }
+
                     if (!await Dialog.confirmAsync(
-                        `Eliminar ${article} ${config.name} puede afectar a múltiples tareas que lo utilizan. ¿Querés continuar?`,
+                        isInUse
+                            ? `Se quitará esta etiqueta de todas las tareas asociadas y luego se eliminará. ¿Querés continuar?`
+                            : `Eliminar ${article} ${config.name} puede afectar a múltiples tareas que lo utilizan. ¿Querés continuar?`,
                         {
                             title: `Eliminar ${config.name}`,
                             confirmLabel: "Continuar",
@@ -4536,7 +4608,7 @@ export class MainView {
 
                     try {
 
-                        config.remove(button.dataset.id);
+                        config.remove(entityId);
 
                     } catch (error) {
 

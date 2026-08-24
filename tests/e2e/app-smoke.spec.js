@@ -5,14 +5,22 @@ test("la aplicación carga sin errores de página y muestra la navegación princ
     page.on("pageerror", error => pageErrors.push(error.message));
 
     await page.goto("/");
+    await page.waitForTimeout(100);
+
+    expect(pageErrors).toEqual([]);
 
     await expect(page.locator("#appSidebar")).toBeVisible();
     await expect(page.locator("#sidebarPlanningGroup")).toBeVisible();
-    await expect(page.locator("#aiSidebarTools")).toBeVisible();
-    expect(pageErrors).toEqual([]);
+    await expect(page.locator("#aiSidebarTools")).toHaveCount(0);
 });
 
 test("los grupos Planificación y Asistencia con IA se pueden contraer y expandir", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-v2-ai-enabled",
+            "true"
+        );
+    });
     await page.goto("/");
 
     const planning = page.locator("#sidebarPlanningGroup");
@@ -90,4 +98,64 @@ test("Contexto conserva las filas de padre e hija en Todas", async ({ page }) =>
     await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
     await expect(page.locator('.task[data-id="padre"]')).toBeVisible();
     await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
+});
+
+test("quitar una etiqueta mantiene abierto el selector del editor", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-v2-tags",
+            JSON.stringify([{
+                id: "tag-prueba",
+                name: "Prueba",
+                color: "#336699",
+                order: 0
+            }])
+        );
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([{
+                id: "tarea-etiquetada",
+                title: "Tarea etiquetada",
+                status: "PENDING",
+                tagIds: ["tag-prueba"]
+            }])
+        );
+    });
+
+    await page.goto("/");
+    await page.locator("#showAll").click();
+    await page.locator(
+        '.task[data-id="tarea-etiquetada"] .taskBody'
+    ).click();
+
+    const picker = page.locator(
+        '[data-picker-id="taskTags"]'
+    );
+    const manager = picker.locator(
+        ".searchableMultiSelectManager"
+    );
+
+    await manager.locator(":scope > summary").click();
+    await expect(manager).toHaveAttribute("open", "");
+    await picker.locator(
+        ".searchableMultiSelectRemove"
+    ).click();
+    await expect(manager).toHaveAttribute("open", "");
+});
+
+test("el aviso de tarea completada se cierra automáticamente", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#showAll").click();
+
+    await page.locator(
+        ".taskCompleteCheckbox"
+    ).first().click();
+
+    const notice = page.locator(
+        "#taskCompletionNotice"
+    );
+    await expect(notice).toBeVisible();
+    await expect(notice).toHaveCount(0, {
+        timeout: 9000
+    });
 });

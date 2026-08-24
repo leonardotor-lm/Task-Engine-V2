@@ -188,10 +188,26 @@ test("loadSnapshot reconstruye el mismo contrato persistido en la revisión acti
             getLastRow() {
                 return rows.length + 1;
             },
-            getRange() {
+            getRange(
+                row,
+                column,
+                rowCount,
+                columnCount
+            ) {
                 return {
                     getValues() {
-                        return rows;
+                        const selected = rows.slice(
+                            row - 2,
+                            row - 2 + rowCount
+                        );
+
+                        if (columnCount === 1) {
+                            return selected.map(
+                                value => [value[0]]
+                            );
+                        }
+
+                        return selected;
                     }
                 };
             }
@@ -236,6 +252,85 @@ test("loadSnapshot reconstruye el mismo contrato persistido en la revisión acti
         result.data.data.displayPreferences
             .sidebarTitle,
         "Trabajo"
+    );
+
+});
+
+test("loadSnapshot lee sólo el bloque de la revisión activa", () => {
+
+    const backend = loadBackend();
+    const historicalRows = [];
+
+    for (let revision = 1; revision <= 20; revision += 1) {
+        historicalRows.push(
+            ...backend.snapshotToRows_(
+                snapshot({
+                    tasks: [
+                        {
+                            id: `task-${revision}`,
+                            title: `Tarea ${revision}`,
+                            status: "PENDING",
+                            tagIds: [],
+                            version: 1,
+                            updatedAt:
+                                "2026-08-08T20:00:00.000Z"
+                        }
+                    ],
+                    customFilters: [],
+                    taskSortPreferences: {},
+                    taskFilterPreferences: {},
+                    displayPreferences: {}
+                }),
+                revision
+            )
+        );
+    }
+
+    const calls = [];
+    const dataSheet = {
+        getLastRow() {
+            return historicalRows.length + 1;
+        },
+        getRange(row, column, rowCount, columnCount) {
+            calls.push({
+                row,
+                column,
+                rowCount,
+                columnCount
+            });
+
+            return {
+                getValues() {
+                    const selected = historicalRows.slice(
+                        row - 2,
+                        row - 2 + rowCount
+                    );
+
+                    return columnCount === 1
+                        ? selected.map(value => [value[0]])
+                        : selected;
+                }
+            };
+        }
+    };
+
+    const rows = plain(
+        backend.getRevisionRows_(
+            dataSheet,
+            20
+        )
+    );
+
+    assert.ok(rows.length > 0);
+    assert.ok(
+        rows.every(row => row[0] === 20)
+    );
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0].columnCount, 1);
+    assert.equal(calls[1].columnCount, 6);
+    assert.equal(
+        calls[1].rowCount,
+        rows.length
     );
 
 });

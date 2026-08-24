@@ -131,6 +131,47 @@ test("muestra la prioridad mediante una bandera con color", () => {
 
 });
 
+test("avisa siempre cuando una tarea tiene una nota de Notion", () => {
+
+    const task = new Task({
+        id: "task-notion",
+        title: "Preparar clase",
+        notionPageId: "page-1",
+        notionPageUrl:
+            "https://www.notion.so/page-1"
+    });
+
+    const html = new TaskList().render(
+        [task],
+        "Todas",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(),
+        false,
+        new Set(),
+        false,
+        null,
+        false
+    );
+
+    assert.match(
+        html,
+        /class="notionNoteIndicator"/
+    );
+    assert.match(
+        html,
+        /Tiene una nota vinculada en Notion/
+    );
+    assert.match(
+        html,
+        /class="icon notionNoteIcon"/
+    );
+
+});
+
 test("usa un color seguro cuando el dato no es válido", () => {
 
     const task = new Task({

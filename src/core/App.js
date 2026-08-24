@@ -20,6 +20,9 @@ import {
 import {
     permanentlyDeleteGoalWithTaskCleanup
 } from "./GoalTaskTransaction.js";
+import {
+    deleteTagWithTaskCleanup
+} from "./TagTaskTransaction.js";
 import { ActivityService } from "./ActivityService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
@@ -1326,19 +1329,80 @@ export class App {
 
             onDeleteTag: (id) => {
 
-                if (this.taskService.hasTasksWithTag(id)) {
-                    throw new Error(
-                        "No se puede eliminar la etiqueta porque está asignada a una o más tareas."
-                    );
+                deleteTagWithTaskCleanup(
+                    this.tagService,
+                    this.taskService,
+                    id,
+                    this
+                        .taskFilterPreferencesRepository
+                );
+                if (this.taskFilters.tagId === id) {
+                    this.taskFilters = {
+                        ...this.taskFilters,
+                        tagId: ""
+                    };
                 }
-
-                this.tagService.deleteTag(id);
                 this.render();
 
             },
 
             onIsTagInUse: (id) =>
                 this.taskService.hasTasksWithTag(id),
+
+            onGetTagUsageCount: (id) =>
+                this.taskService
+                    .getTasksWithTag(id)
+                    .length,
+
+            onGetActiveTagUsageCount: (id) =>
+                this.taskService
+                    .getActiveTasksWithTag(id)
+                    .length,
+
+            onReviewTagTasks: (id) => {
+
+                const associatedTasks =
+                    this.taskService
+                        .getTasksWithTag(id);
+
+                if (
+                    associatedTasks.some(task =>
+                        this.taskService
+                            .isActiveTask(task)
+                    )
+                ) {
+                    this.currentView = View.ALL;
+                } else if (
+                    associatedTasks.some(task =>
+                        task.isCompleted()
+                    )
+                ) {
+                    this.currentView = View.COMPLETED;
+                } else if (
+                    associatedTasks.some(task =>
+                        task.isArchived()
+                    )
+                ) {
+                    this.currentView = View.ARCHIVED;
+                } else {
+                    this.currentView = View.TRASH;
+                }
+                this.settingsDialogOpen = false;
+                this.settingsSection = null;
+                this.advancedSearchMode = false;
+                this.advancedSearchExpression = null;
+                this.currentCustomFilterId = null;
+
+                this.mainView.callbacks
+                    .onApplyTaskFilters({
+                        areaId: "",
+                        contextId: "",
+                        tagId: id,
+                        priority: "",
+                        due: ""
+                    });
+
+            },
 
             onSaveSyncConfig: ({
                 url,
@@ -1385,6 +1449,9 @@ export class App {
                 this.render();
 
             },
+
+            onRetrySync: () =>
+                this.checkRemoteStatus(),
 
             onPushToCloud: () => {
 

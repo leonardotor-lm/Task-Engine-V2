@@ -361,7 +361,16 @@ export class Sidebar {
                             class="syncErrorHint"
                             title="${escapeHtml(syncLastError)}">
                             Los cambios continúan guardados localmente. La aplicación volverá a intentarlo después de un nuevo cambio o al recuperar el foco.
+                            <span class="syncErrorDetail">
+                                Detalle: ${escapeHtml(syncLastError)}
+                            </span>
                         </p>
+                        <button
+                            id="retrySync"
+                            type="button"
+                            class="secondaryAction">
+                            Reintentar ahora
+                        </button>
                     `
                     : ""}
 
@@ -547,7 +556,7 @@ export class Sidebar {
                 <form id="sidebarTitleForm">
 
                     <label for="sidebarTitle">
-                        Nombre en la barra lateral
+                        Nombre de la aplicación
                     </label>
 
                     <input
@@ -559,7 +568,7 @@ export class Sidebar {
                         autocomplete="off">
 
                     <p class="settingsHint">
-                        Si lo dejás vacío, se mostrará “Mis tareas”.
+                        Se muestra en la barra lateral y en el encabezado principal. Si lo dejás vacío, se usará “Mis tareas”.
                     </p>
 
                     <button
