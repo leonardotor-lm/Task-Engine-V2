@@ -19,6 +19,7 @@ export class SyncEngine {
         this.backupService = backupService;
         this.config = config;
         this.gateway = gateway;
+        this.remoteWriteOutcomeUncertain = false;
 
     }
 
@@ -60,6 +61,96 @@ export class SyncEngine {
             activityEvents:
                 (data.activityEvents ?? []).length
         };
+
+    }
+
+    async saveRemote(payload) {
+
+        try {
+
+            const response =
+                await this.gateway.save(payload);
+
+            this.remoteWriteOutcomeUncertain = false;
+
+            return response;
+
+        } catch (error) {
+
+            if (!this.isConflict(error)) {
+                this.remoteWriteOutcomeUncertain = true;
+            }
+
+            throw error;
+
+        }
+
+    }
+
+    async reconcileUncertainPush(
+        connection,
+        backup
+    ) {
+
+        if (!this.remoteWriteOutcomeUncertain) {
+            return null;
+        }
+
+        const response = await this.gateway.load(
+            connection
+        );
+        const remoteRevision =
+            this.validateRevision(response.revision);
+        const localRevision =
+            this.config.getRevision();
+
+        if (remoteRevision === localRevision) {
+            this.remoteWriteOutcomeUncertain = false;
+            return null;
+        }
+
+        if (remoteRevision < localRevision) {
+            throw new Error(
+                "La revisión remota es anterior a la revisión local confirmada."
+            );
+        }
+
+        const localFingerprint =
+            createSyncFingerprint(backup);
+        const remoteFingerprint =
+            response.data === null
+                ? null
+                : createSyncFingerprint(
+                    response.data
+                );
+
+        if (
+            remoteFingerprint !== null &&
+            remoteFingerprint === localFingerprint
+        ) {
+            this.config.setRevision(
+                remoteRevision
+            );
+            this.config.markSynchronized(
+                localFingerprint
+            );
+            this.remoteWriteOutcomeUncertain = false;
+
+            return {
+                revision: remoteRevision,
+                summary: this.summarize(
+                    this.backupService
+                        .parseAndValidate(
+                            JSON.stringify(backup)
+                        )
+                )
+            };
+        }
+
+        throw new SyncConflictError(
+            "La nube cambió mientras se verificaba una sincronización anterior.",
+            remoteRevision
+        );
 
     }
 
@@ -114,7 +205,17 @@ export class SyncEngine {
         const backup =
             this.backupService.createBackup();
 
-        const response = await this.gateway.save({
+        const reconciled =
+            await this.reconcileUncertainPush(
+                connection,
+                backup
+            );
+
+        if (reconciled) {
+            return reconciled;
+        }
+
+        const response = await this.saveRemote({
             ...connection,
             baseRevision:
                 this.config.getRevision(),
@@ -193,6 +294,8 @@ export class SyncEngine {
                 .parseAndValidate(
                     JSON.stringify(remoteBackup)
                 );
+
+        this.remoteWriteOutcomeUncertain = false;
 
         const action =
             getSyncReconnectionAction({
@@ -298,7 +401,7 @@ export class SyncEngine {
                         JSON.stringify(mergedBackup)
                     );
 
-            const saved = await this.gateway.save({
+            const saved = await this.saveRemote({
                 ...connection,
                 baseRevision: remoteRevision,
                 data: mergedBackup
@@ -331,7 +434,7 @@ export class SyncEngine {
 
         }
 
-        const saved = await this.gateway.save({
+        const saved = await this.saveRemote({
             ...connection,
             baseRevision: remoteRevision,
             data: localBackup
@@ -366,10 +469,12 @@ export class SyncEngine {
                 currentRemote.revision
             );
 
+        this.remoteWriteOutcomeUncertain = false;
+
         const backup =
             this.backupService.createBackup();
 
-        const response = await this.gateway.save({
+        const response = await this.saveRemote({
             ...connection,
             baseRevision,
             data: backup
