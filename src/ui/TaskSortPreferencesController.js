@@ -3,6 +3,9 @@ import { View } from "../core/View.js";
 import {
     TaskSortPreferencesRepository
 } from "../infrastructure/TaskSortPreferencesRepository.js";
+import {
+    TaskGroupingController
+} from "./TaskGroupingController.js";
 
 export function getTaskSortViewKey(app) {
 
@@ -71,6 +74,12 @@ export class TaskSortPreferencesController {
 
         this.wrapSortCallback();
         this.wrapRender();
+
+        if (!this.app.taskGroupingController) {
+            this.app.taskGroupingController =
+                new TaskGroupingController(this.app);
+            this.app.taskGroupingController.start();
+        }
 
     }
 

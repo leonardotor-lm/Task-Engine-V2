@@ -48,3 +48,46 @@ test("la navegación móvil abre y cierra la barra lateral", async ({ page }) =>
     await expect(layout).not.toHaveClass(/mobileMenuOpen/);
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
+
+test("Contexto conserva las filas de padre e hija en Todas", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-contexts",
+            JSON.stringify([
+                { id: "casa", name: "Casa" },
+                { id: "trabajo", name: "Trabajo" }
+            ])
+        );
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([
+                {
+                    id: "padre",
+                    title: "Proyecto padre",
+                    status: "PENDING",
+                    isProject: true,
+                    parentTaskId: null,
+                    contextId: "trabajo"
+                },
+                {
+                    id: "hija",
+                    title: "Subtarea hija",
+                    status: "PENDING",
+                    isProject: false,
+                    parentTaskId: "padre",
+                    contextId: "casa"
+                }
+            ])
+        );
+    });
+
+    await page.goto("/");
+    await page.locator("#showAll").click();
+    await expect(page.locator('.task[data-id="padre"]')).toBeVisible();
+
+    await page.locator("#taskGrouping").selectOption("CONTEXT");
+
+    await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
+    await expect(page.locator('.task[data-id="padre"]')).toBeVisible();
+    await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
+});
