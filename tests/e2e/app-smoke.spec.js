@@ -49,11 +49,14 @@ test("la navegación móvil abre y cierra la barra lateral", async ({ page }) =>
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
-test("Todas muestra el selector de contexto persistido", async ({ page }) => {
+test("Todas sigue navegable y agrupa padre e hija por sus propios contextos", async ({ page }) => {
+    const pageErrors = [];
+    page.on("pageerror", error => pageErrors.push(error.message));
+
     await page.addInitScript(() => {
         localStorage.setItem(
             "task-engine-v2-task-grouping-by-view-v1",
-            JSON.stringify({ "view:ALL": "CONTEXT" })
+            JSON.stringify({ "view:all": "CONTEXT" })
         );
         localStorage.setItem(
             "task-engine-contexts",
@@ -91,4 +94,9 @@ test("Todas muestra el selector de contexto persistido", async ({ page }) => {
     await expect(page.locator("#showAll")).toHaveClass(/active/);
     await expect(page.locator(".taskListHeading h2")).toContainText("Todas");
     await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
+    await expect(page.locator(".taskGroupHeader", { hasText: "Casa" })).toBeVisible();
+    await expect(page.locator(".taskGroupHeader", { hasText: "Trabajo" })).toBeVisible();
+    await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
+    await expect(page.locator('.task[data-id="padre"]')).toBeVisible();
+    expect(pageErrors).toEqual([]);
 });
