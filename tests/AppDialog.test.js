@@ -50,6 +50,41 @@ test("renderiza una solicitud de texto con la estética propia", () => {
     assert.doesNotMatch(html, /value="<Hoy>"/);
 });
 
+test("renderiza decisiones con más de dos alternativas", () => {
+    const html = Dialog.render({
+        id: "dialog-choice",
+        title: "Etiqueta en uso",
+        message: "Elegí qué hacer.",
+        cancelLabel: "Cancelar",
+        choices: [
+            {
+                value: "review",
+                label: "Ver tareas",
+                variant: "primary"
+            },
+            {
+                value: "delete",
+                label: "Eliminar y desafectar",
+                variant: "danger"
+            }
+        ]
+    });
+
+    assert.match(
+        html,
+        /data-dialog-value="review"/
+    );
+    assert.match(
+        html,
+        /data-dialog-value="delete"/
+    );
+    assert.match(html, /Eliminar y desafectar/);
+    assert.doesNotMatch(
+        html,
+        /data-dialog-action="confirm"/
+    );
+});
+
 test("las confirmaciones restantes usan el diálogo propio", () => {
     assert.doesNotMatch(
         mainViewSource,
