@@ -17,11 +17,13 @@ import {
 import {
     TaskDisplayPreferences
 } from "../src/infrastructure/TaskDisplayPreferences.js";
+import { Task } from "../src/domain/Task.js";
 
 class MemoryStorage {
 
     constructor() {
         this.values = new Map();
+        this.failedWriteKey = null;
     }
 
     getItem(key) {
@@ -29,11 +31,21 @@ class MemoryStorage {
     }
 
     setItem(key, value) {
+        if (key === this.failedWriteKey) {
+            this.failedWriteKey = null;
+            throw new Error(
+                "fallo al guardar preferencias visuales"
+            );
+        }
         this.values.set(key, String(value));
     }
 
     removeItem(key) {
         this.values.delete(key);
+    }
+
+    failNextWriteTo(key) {
+        this.failedWriteKey = key;
     }
 
 }
@@ -88,6 +100,13 @@ function setup() {
         );
     const taskDisplayPreferences =
         new TaskDisplayPreferences(storage);
+    const taskRepository =
+        new MemoryRepository([
+            new Task({
+                id: "task-local",
+                title: "Tarea local"
+            })
+        ]);
 
     taskSortPreferencesRepository.set(
         "view:today",
@@ -98,7 +117,7 @@ function setup() {
     );
 
     const backupService = new BackupService({
-        taskRepository: new MemoryRepository(),
+        taskRepository,
         areaRepository: new MemoryRepository(),
         contextRepository: new MemoryRepository(),
         tagRepository: new MemoryRepository(),
@@ -116,12 +135,68 @@ function setup() {
 
     return {
         backupService,
+        storage,
+        taskRepository,
         customFilterRepository,
         taskSortPreferencesRepository,
         taskDisplayPreferences
     };
 
 }
+
+test("revierte datos y preferencias si falla el título lateral", () => {
+
+    const {
+        backupService,
+        storage,
+        taskRepository,
+        taskSortPreferencesRepository,
+        taskDisplayPreferences
+    } = setup();
+
+    storage.failNextWriteTo(
+        "task-engine-v2-sidebar-title"
+    );
+
+    assert.throws(
+        () => backupService.importBackup(
+            createBackupData({
+                tasks: [{
+                    id: "task-remote",
+                    title: "Tarea remota"
+                }],
+                customFilters: [],
+                goals: [],
+                taskSortPreferences: {
+                    "view:today":
+                        TaskSort.CREATED_NEWEST
+                },
+                displayPreferences: {
+                    sidebarTitle: "Trabajo"
+                }
+            })
+        ),
+        /fallo al guardar preferencias visuales/
+    );
+
+    assert.deepEqual(
+        taskRepository
+            .getAll()
+            .map(task => task.id),
+        ["task-local"]
+    );
+    assert.equal(
+        taskSortPreferencesRepository.get(
+            "view:today"
+        ),
+        TaskSort.PRIORITY
+    );
+    assert.equal(
+        taskDisplayPreferences.getSidebarTitle(),
+        "Tareas de Leo"
+    );
+
+});
 
 test("incluye las preferencias sincronizables en las copias nuevas", () => {
 
