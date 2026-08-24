@@ -7,10 +7,13 @@ import {
     TaskGroupingPreferencesRepository
 } from "../src/infrastructure/TaskGroupingPreferencesRepository.js";
 import {
+    buildDateGroupingRenderState,
     buildContextGroupingRenderState,
     buildTaskGroups,
+    isDateGroupingAvailable,
     TaskGroupingController
 } from "../src/ui/TaskGroupingController.js";
+import { View } from "../src/core/View.js";
 
 function createStorage() {
     const values = new Map();
@@ -326,6 +329,127 @@ test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyec
             { label: "Mudanza", ids: ["c", "p"] },
             { label: "Sin proyecto", ids: ["s"] }
         ]
+    );
+});
+
+test("agrupa por fecha de vencimiento en orden cronológico y deja Sin fecha al final", () => {
+    const groups = buildTaskGroups(
+        [
+            {
+                id: "future",
+                dueDate: "2026-08-28"
+            },
+            {
+                id: "none",
+                dueDate: null
+            },
+            {
+                id: "today-1",
+                dueDate: "2026-08-24"
+            },
+            {
+                id: "tomorrow",
+                dueDate: "2026-08-25"
+            },
+            {
+                id: "today-2",
+                dueDate: "2026-08-24"
+            }
+        ],
+        TaskGrouping.DATE,
+        { today: "2026-08-24" }
+    );
+
+    assert.deepEqual(
+        groups.map(group => ({
+            key: group.key,
+            label: group.label,
+            ids: group.tasks.map(task => task.id)
+        })),
+        [
+            {
+                key: "2026-08-24",
+                label: "Hoy",
+                ids: ["today-1", "today-2"]
+            },
+            {
+                key: "2026-08-25",
+                label: "Mañana",
+                ids: ["tomorrow"]
+            },
+            {
+                key: "2026-08-28",
+                label: "Viernes 28/08",
+                ids: ["future"]
+            },
+            {
+                key: "__none__",
+                label: "Sin fecha",
+                ids: ["none"]
+            }
+        ]
+    );
+});
+
+test("la agrupación por fecha separa subtareas con vencimientos distintos", () => {
+    const state = buildDateGroupingRenderState(
+        [
+            {
+                id: "project",
+                parentTaskId: null,
+                dueDate: "2026-08-30"
+            },
+            {
+                id: "child",
+                parentTaskId: "project",
+                dueDate: "2026-08-28"
+            }
+        ],
+        new Set()
+    );
+
+    assert.deepEqual(
+        [...state.originallyVisibleTaskIds],
+        ["project"]
+    );
+    assert.deepEqual(
+        [...state.forcedVisibleTaskIds],
+        ["child"]
+    );
+    assert.deepEqual(
+        [...state.renderExpandedTaskIds],
+        ["project"]
+    );
+});
+
+test("ofrece agrupar por fecha salvo en Hoy Mañana o el filtro Sin fecha", () => {
+    assert.equal(
+        isDateGroupingAvailable({
+            currentView: View.TODAY,
+            taskFilters: {}
+        }),
+        false
+    );
+    assert.equal(
+        isDateGroupingAvailable({
+            currentView: View.TOMORROW,
+            taskFilters: {}
+        }),
+        false
+    );
+    assert.equal(
+        isDateGroupingAvailable({
+            currentView: View.UPCOMING,
+            taskFilters: {}
+        }),
+        true
+    );
+    assert.equal(
+        isDateGroupingAvailable({
+            currentView: View.ALL,
+            taskFilters: { due: "NO_DATE" }
+        }),
+        false
     );
 });
 

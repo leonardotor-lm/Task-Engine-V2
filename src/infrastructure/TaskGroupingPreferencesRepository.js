@@ -5,7 +5,8 @@ export const TaskGrouping = Object.freeze({
     NONE: "NONE",
     AREA: "AREA",
     CONTEXT: "CONTEXT",
-    PROJECT: "PROJECT"
+    PROJECT: "PROJECT",
+    DATE: "DATE"
 });
 
 const VALID_GROUPINGS = new Set(
