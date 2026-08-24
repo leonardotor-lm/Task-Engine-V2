@@ -63,6 +63,22 @@ export class Dialog {
 
     }
 
+    static chooseAsync(message, options = {}) {
+
+        if (typeof document === "undefined") {
+            return Promise.resolve(null);
+        }
+
+        return this.open({
+            title: options.title ?? "Elegir una acción",
+            message,
+            cancelLabel: options.cancelLabel ?? "Cancelar",
+            variant: options.variant ?? "confirm",
+            choices: options.choices ?? []
+        });
+
+    }
+
     static render({
         id,
         title,
@@ -72,7 +88,8 @@ export class Dialog {
         variant = "info",
         input = false,
         defaultValue = "",
-        inputLabel = "Valor"
+        inputLabel = "Valor",
+        choices = []
     }) {
 
         const destructive = variant === "danger";
@@ -125,14 +142,29 @@ export class Dialog {
                             </button>
                         `
                         : ""}
-                    <button
-                        type="button"
-                        class="${destructive
-                            ? "dangerAction"
-                            : "primaryAction"}"
-                        data-dialog-action="confirm">
-                        ${escapeHtml(confirmLabel)}
-                    </button>
+                    ${choices.length > 0
+                        ? choices.map(choice => `
+                            <button
+                                type="button"
+                                class="${choice.variant === "danger"
+                                    ? "dangerAction"
+                                    : choice.variant === "primary"
+                                        ? "primaryAction"
+                                        : "secondaryAction"}"
+                                data-dialog-value="${escapeHtml(choice.value)}">
+                                ${escapeHtml(choice.label)}
+                            </button>
+                        `).join("")
+                        : `
+                            <button
+                                type="button"
+                                class="${destructive
+                                    ? "dangerAction"
+                                    : "primaryAction"}"
+                                data-dialog-action="confirm">
+                                ${escapeHtml(confirmLabel)}
+                            </button>
+                        `}
                 </footer>
             </dialog>
         `;
@@ -180,11 +212,21 @@ export class Dialog {
             );
 
             dialog.querySelectorAll(
-                "[data-dialog-action]"
+                "[data-dialog-action], [data-dialog-value]"
             ).forEach(button => {
                 button.addEventListener(
                     "click",
                     () => {
+                        if (
+                            button.dataset.dialogValue !==
+                            undefined
+                        ) {
+                            finish(
+                                button.dataset.dialogValue
+                            );
+                            return;
+                        }
+
                         const confirmed =
                             button.dataset.dialogAction ===
                             "confirm";
@@ -202,12 +244,16 @@ export class Dialog {
 
             dialog.addEventListener("cancel", event => {
                 event.preventDefault();
-                finish(false);
+                finish(options.choices ? null : false);
             });
 
             dialog.addEventListener("click", event => {
                 if (event.target === dialog) {
-                    finish(false);
+                    finish(
+                        options.choices
+                            ? null
+                            : false
+                    );
                 }
             });
 
