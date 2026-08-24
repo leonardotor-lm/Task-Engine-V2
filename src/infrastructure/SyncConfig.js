@@ -77,6 +77,8 @@ export class SyncConfig {
     runStorageTransaction(keys, operation) {
 
         const snapshot = this.snapshotStorage(keys);
+        const pendingRevisionRollback =
+            this.pendingRevisionRollback;
 
         try {
             return operation();
@@ -92,6 +94,9 @@ export class SyncConfig {
                     // Conservamos el error original.
                 }
             }
+
+            this.pendingRevisionRollback =
+                pendingRevisionRollback;
 
             throw error;
 
