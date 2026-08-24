@@ -48,3 +48,23 @@ test("la navegación móvil abre y cierra la barra lateral", async ({ page }) =>
     await expect(layout).not.toHaveClass(/mobileMenuOpen/);
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
+
+test("Todas sigue navegable con agrupación por contexto persistida", async ({ page }) => {
+    const pageErrors = [];
+    page.on("pageerror", error => pageErrors.push(error.message));
+
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-v2-task-grouping-by-view-v1",
+            JSON.stringify({ "view:ALL": "CONTEXT" })
+        );
+    });
+
+    await page.goto("/");
+    await page.locator("#showAll").click();
+
+    await expect(page.locator("#showAll")).toHaveClass(/active/);
+    await expect(page.locator(".taskListHeading h2")).toContainText("Todas");
+    await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
+    expect(pageErrors).toEqual([]);
+});
