@@ -1,3 +1,7 @@
+import {
+    runTaskServiceTransaction
+} from "../core/TaskServiceTransactionGuard.js";
+
 export class RecurrenceLifecycleController {
 
     constructor(app) {
@@ -28,19 +32,24 @@ export class RecurrenceLifecycleController {
 
         service[methodName] = (...args) => {
 
-            const existingIds = new Set(
-                service
-                    .getAllTasks()
-                    .map(task => task.id)
+            return runTaskServiceTransaction(
+                service,
+                () => {
+                    const existingIds = new Set(
+                        service
+                            .getAllTasks()
+                            .map(task => task.id)
+                    );
+
+                    const result = original(...args);
+
+                    this.removeNewDuplicateOccurrences(
+                        existingIds
+                    );
+
+                    return result;
+                }
             );
-
-            const result = original(...args);
-
-            this.removeNewDuplicateOccurrences(
-                existingIds
-            );
-
-            return result;
 
         };
 
