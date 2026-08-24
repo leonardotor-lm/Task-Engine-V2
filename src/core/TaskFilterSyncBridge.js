@@ -43,7 +43,7 @@ export class TaskFilterSyncBridge {
             backupService,
             repository
         );
-        this.wrapApplyData(
+        this.wrapApplyOperations(
             backupService,
             repository
         );
@@ -134,7 +134,47 @@ export class TaskFilterSyncBridge {
 
     }
 
-    wrapApplyData(
+    wrapApplyOperations(
+        backupService,
+        repository
+    ) {
+
+        if (
+            typeof backupService.getApplyOperations ===
+            "function"
+        ) {
+            const originalGetApplyOperations =
+                backupService.getApplyOperations
+                    .bind(backupService);
+
+            backupService.getApplyOperations = data => {
+                const operations =
+                    originalGetApplyOperations(data);
+
+                if (
+                    data.taskFilterPreferences !== null &&
+                    data.taskFilterPreferences !== undefined
+                ) {
+                    operations.push([
+                        repository,
+                        data.taskFilterPreferences
+                    ]);
+                }
+
+                return operations;
+            };
+
+            return;
+        }
+
+        this.wrapLegacyApplyData(
+            backupService,
+            repository
+        );
+
+    }
+
+    wrapLegacyApplyData(
         backupService,
         repository
     ) {

@@ -109,7 +109,10 @@ export class TaskSortPreferencesRepository {
 
     }
 
-    replaceAll(preferences) {
+    replaceAll(
+        preferences,
+        { throwOnError = false } = {}
+    ) {
 
         const normalized =
             this.normalizePreferences(preferences);
@@ -121,7 +124,10 @@ export class TaskSortPreferencesRepository {
                 JSON.stringify(normalized)
             );
 
-        } catch {
+        } catch (error) {
+            if (throwOnError) {
+                throw error;
+            }
             // Las preferencias no deben impedir usar la aplicación.
         }
 

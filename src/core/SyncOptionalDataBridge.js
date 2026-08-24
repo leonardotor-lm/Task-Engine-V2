@@ -127,7 +127,7 @@ export class SyncOptionalDataBridge {
         this.wrapParseAndValidate(
             backupService
         );
-        this.wrapApplyData(
+        this.wrapApplyOperations(
             backupService,
             sortPreferences,
             displayPreferences
@@ -238,51 +238,74 @@ export class SyncOptionalDataBridge {
 
     }
 
-    wrapApplyData(
+    wrapApplyOperations(
         backupService,
         sortPreferences,
         displayPreferences
     ) {
 
-        const originalApplyData =
-            backupService.applyData
+        const originalGetApplyOperations =
+            backupService.getApplyOperations
                 .bind(backupService);
+        const sortRepository = {
+            getAll: () =>
+                sortPreferences.getAll(),
+            replaceAll: preferences =>
+                sortPreferences.replaceAll(
+                    preferences,
+                    { throwOnError: true }
+                )
+        };
+        const displayRepository = {
+            getAll: () => ({
+                sidebarTitle:
+                    displayPreferences
+                        .getSidebarTitle()
+            }),
+            replaceAll: preferences =>
+                displayPreferences.setSidebarTitle(
+                    preferences?.sidebarTitle ?? ""
+                )
+        };
 
-        backupService.applyData = data => {
-
-            const preservedCustomFilters =
-                data.customFilters === null
-                    ? (
-                        backupService
-                            .customFilterRepository
-                            ?.getAll?.() ?? []
-                    )
-                    : data.customFilters;
-
-            originalApplyData({
+        backupService.getApplyOperations = data => {
+            const normalizedData = {
                 ...data,
                 customFilters:
-                    preservedCustomFilters
-            });
+                    data.customFilters === null
+                        ? (
+                            backupService
+                                .customFilterRepository
+                                ?.getAll?.() ?? []
+                        )
+                        : data.customFilters
+            };
+            const operations =
+                originalGetApplyOperations(
+                    normalizedData
+                );
 
             if (
                 data.taskSortPreferences !== null &&
                 data.taskSortPreferences !== undefined
             ) {
-                sortPreferences.replaceAll(
+                operations.push([
+                    sortRepository,
                     data.taskSortPreferences
-                );
+                ]);
             }
 
             if (
                 data.displayPreferences !== null &&
                 data.displayPreferences !== undefined
             ) {
-                displayPreferences.setSidebarTitle(
+                operations.push([
+                    displayRepository,
                     data.displayPreferences
-                        .sidebarTitle ?? ""
-                );
+                ]);
             }
+
+            return operations;
 
         };
 
