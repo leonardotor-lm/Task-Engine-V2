@@ -5,14 +5,22 @@ test("la aplicación carga sin errores de página y muestra la navegación princ
     page.on("pageerror", error => pageErrors.push(error.message));
 
     await page.goto("/");
+    await page.waitForTimeout(100);
+
+    expect(pageErrors).toEqual([]);
 
     await expect(page.locator("#appSidebar")).toBeVisible();
     await expect(page.locator("#sidebarPlanningGroup")).toBeVisible();
-    await expect(page.locator("#aiSidebarTools")).toBeVisible();
-    expect(pageErrors).toEqual([]);
+    await expect(page.locator("#aiSidebarTools")).toHaveCount(0);
 });
 
 test("los grupos Planificación y Asistencia con IA se pueden contraer y expandir", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-v2-ai-enabled",
+            "true"
+        );
+    });
     await page.goto("/");
 
     const planning = page.locator("#sidebarPlanningGroup");
