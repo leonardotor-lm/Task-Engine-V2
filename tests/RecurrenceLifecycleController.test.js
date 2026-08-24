@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { Task } from "../src/domain/Task.js";
+
 import {
     RecurrenceLifecycleController
 } from "../src/ui/RecurrenceLifecycleController.js";
@@ -177,4 +179,96 @@ test("la finalización masiva deja como máximo una nueva ocurrencia por serie",
 
     assert.equal(active.length, 1);
 
+});
+
+test("revierte completado, ocurrencia e historial si falla deduplicar", () => {
+    const current = new Task({
+        id: "current",
+        title: "Actual",
+        status: "PENDING",
+        recurrenceId: "series-1",
+        recurrence: "DAILY",
+        dueDate: "2026-08-24"
+    });
+    const active = new Task({
+        id: "active",
+        title: "Ya existente",
+        status: "PENDING",
+        recurrenceId: "series-1",
+        recurrence: "DAILY",
+        dueDate: "2026-08-25"
+    });
+    const service = {
+        tasks: [current, active],
+        activityService: {
+            repository: {
+                events: [],
+                getAll() {
+                    return [...this.events];
+                },
+                replaceAll(events) {
+                    this.events = [...events];
+                }
+            }
+        },
+        getAllTasks() {
+            return [...this.tasks];
+        },
+        toggleTask() {
+            current.complete();
+            this.tasks.push(new Task({
+                id: "duplicate",
+                title: "Duplicada",
+                status: "PENDING",
+                recurrenceId: "series-1",
+                recurrence: "DAILY",
+                dueDate: "2026-08-26"
+            }));
+            this.activityService.repository.events.push({
+                type: "TASK_COMPLETED"
+            });
+            return current;
+        },
+        completeTasks() {
+            return [];
+        }
+    };
+
+    service.repository = {
+        getAll: () => [...service.tasks],
+        replaceAll: tasks => {
+            service.tasks = [...tasks];
+        },
+        remove: id => {
+            service.tasks = service.tasks.filter(
+                task => task.id !== id
+            );
+            throw new Error(
+                "fallo simulado al deduplicar"
+            );
+        }
+    };
+
+    new RecurrenceLifecycleController({
+        taskService: service
+    }).start();
+
+    assert.throws(
+        () => service.toggleTask("current"),
+        /fallo simulado al deduplicar/
+    );
+
+    assert.deepEqual(
+        service.tasks.map(task => task.id),
+        ["current", "active"]
+    );
+    assert.equal(
+        service.tasks[0].status,
+        "PENDING"
+    );
+    assert.equal(
+        service.activityService.repository
+            .events.length,
+        0
+    );
 });
