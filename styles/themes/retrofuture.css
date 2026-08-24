@@ -1,24 +1,24 @@
 :root[data-theme="retrofuture"] {
-    --color-text: #2a1f30;
-    --color-text-subtle: #523766;
-    --color-text-secondary: #685da5;
-    --color-text-muted: #746f7d;
-    --color-surface: #f3f0f1;
-    --color-surface-subtle: #dfe1e5;
-    --color-surface-hover: #e8dde4;
-    --color-border: #989ba3;
-    --color-border-strong: #93709f;
-    --color-accent: #f0831e;
-    --color-accent-strong: #ea6b2b;
-    --color-accent-soft: #f8dfcf;
-    --color-accent-muted: #d96352;
-    --color-on-accent: #2a1f30;
+    --color-text: #2b2430;
+    --color-text-subtle: #51465a;
+    --color-text-secondary: #665d70;
+    --color-text-muted: #77717c;
+    --color-surface: #d7dbd8;
+    --color-surface-subtle: #c6cbc8;
+    --color-surface-hover: #d0c9d2;
+    --color-border: #a59faa;
+    --color-border-strong: #7e7088;
+    --color-accent: #f28a1d;
+    --color-accent-strong: #e96d2a;
+    --color-accent-soft: #e8b49d;
+    --color-accent-muted: #d96655;
+    --color-on-accent: #2b2430;
     --color-on-dark: #ffffff;
-    --color-focus-ring: #706ecb;
-    --color-danger: #922b55;
-    --color-danger-soft: #f2dbe3;
+    --color-focus-ring: #716bc5;
+    --color-danger: #9c3158;
+    --color-danger-soft: #e7c2cb;
     --disabled-opacity: 0.5;
-    --interface-radius: 8px;
+    --interface-radius: 7px;
 
     --ui-font:
         Inter,
@@ -36,15 +36,13 @@
     --compact-gap: 6px;
     --transient-surface-border:
         1px solid var(--color-border-strong);
-    --transient-surface-radius: 12px;
+    --transient-surface-radius: 9px;
     --transient-surface-shadow:
-        0 10px 0 rgb(82 55 102 / 12%),
-        0 16px 30px rgb(42 31 48 / 16%);
+        0 8px 20px rgb(43 36 48 / 16%);
     --transient-dialog-shadow:
-        0 12px 0 rgb(112 110 203 / 12%),
-        0 22px 48px rgb(42 31 48 / 22%);
+        0 16px 36px rgb(43 36 48 / 22%);
     --transient-backdrop:
-        rgb(42 31 48 / 42%);
+        rgb(43 36 48 / 40%);
     --transient-surface-gap: 6px;
     --transient-surface-padding: 10px;
     --transient-header-padding: 12px 14px;
@@ -55,76 +53,75 @@
 :root[data-theme="retrofuture"],
 :root[data-theme="retrofuture"] body,
 :root[data-theme="retrofuture"] #app,
-:root[data-theme="retrofuture"] .layout {
+:root[data-theme="retrofuture"] .layout,
+:root[data-theme="retrofuture"] .content {
     background: var(--color-surface-subtle);
     color: var(--color-text);
 }
 
-:root[data-theme="retrofuture"] .content,
-:root[data-theme="retrofuture"] .details {
+:root[data-theme="retrofuture"] .details,
+:root[data-theme="retrofuture"] .mobileHeader {
     background: var(--color-surface);
     color: var(--color-text);
     border-color: var(--color-border-strong);
 }
 
-:root[data-theme="retrofuture"] .sidebar,
-:root[data-theme="retrofuture"] .mobileHeader {
-    background: #685da5;
-    color: #ffffff;
-    border-color: #523766;
-}
-
 :root[data-theme="retrofuture"] .sidebar {
-    border-right-color: #523766;
-    box-shadow: 4px 0 0 rgb(82 55 102 / 14%);
-}
-
-:root[data-theme="retrofuture"] .details {
-    border-left-color: #93709f;
+    background: #746bc2;
+    color: #f6f3f6;
+    border-right-color: #544a83;
 }
 
 :root[data-theme="retrofuture"] .sidebar h1,
 :root[data-theme="retrofuture"] .sidebar h2,
 :root[data-theme="retrofuture"] .sidebar h3,
 :root[data-theme="retrofuture"] .sidebar label,
-:root[data-theme="retrofuture"] .sidebar .settingsHint,
-:root[data-theme="retrofuture"] .mobileHeader {
-    color: #ffffff;
+:root[data-theme="retrofuture"] .sidebar .settingsHint {
+    color: #f6f3f6;
 }
 
 :root[data-theme="retrofuture"] .sidebar .settingsHint {
-    opacity: 0.82;
+    opacity: 0.8;
 }
 
 :root[data-theme="retrofuture"] .sidebarButton {
-    color: #ffffff;
-    border-radius: 8px;
+    color: #f6f3f6;
+    background: transparent;
+    border-color: transparent;
+    border-radius: 7px;
 }
 
 :root[data-theme="retrofuture"] .sidebarButton:hover {
-    background: #706ecb;
+    background: #847bd0;
 }
 
 :root[data-theme="retrofuture"] .sidebarButton.active {
-    background: #f0831e;
-    color: #2a1f30;
-    box-shadow: inset 0 -3px 0 #d96352;
+    background: #f28a1d;
+    color: #2b2430;
+    border-color: #e96d2a;
+}
+
+:root[data-theme="retrofuture"] .sidebar .sidebarButton:not(.active) .sidebarCount,
+:root[data-theme="retrofuture"] .sidebar .sidebarSectionTitle,
+:root[data-theme="retrofuture"] .sidebar .sidebarSectionToggle {
+    color: #dfd9ea;
 }
 
 :root[data-theme="retrofuture"] .task {
-    border-bottom-color: #989ba3;
+    border-bottom-color: #a59faa;
     color: var(--color-text);
+    background: transparent;
 }
 
 :root[data-theme="retrofuture"] .task:hover {
-    background: #e8dde4;
+    background: #d0c9d2;
 }
 
 :root[data-theme="retrofuture"] .task.bulkSelectedTask,
 :root[data-theme="retrofuture"] .advancedSearchActiveNotice,
 :root[data-theme="retrofuture"] .bulkToolbar {
-    background: #f8dfcf;
-    border-color: #ea6b2b;
+    background: #e7b79f;
+    border-color: #e96d2a;
 }
 
 :root[data-theme="retrofuture"] .settingsToolPanel,
@@ -132,79 +129,70 @@
 :root[data-theme="retrofuture"] .taskDrawer,
 :root[data-theme="retrofuture"] .searchableSelectMenu,
 :root[data-theme="retrofuture"] .searchableMultiSelectManagerBody {
-    border-color: #93709f;
-    background: #f3f0f1;
-    color: #2a1f30;
-}
-
-:root[data-theme="retrofuture"] .settingsToolPanel,
-:root[data-theme="retrofuture"] dialog,
-:root[data-theme="retrofuture"] .taskDrawer {
-    box-shadow:
-        0 6px 0 rgb(147 112 159 / 16%),
-        0 18px 38px rgb(42 31 48 / 18%);
+    border-color: #7e7088;
+    background: #d7dbd8;
+    color: #2b2430;
 }
 
 :root[data-theme="retrofuture"] button,
 :root[data-theme="retrofuture"] input,
 :root[data-theme="retrofuture"] select,
 :root[data-theme="retrofuture"] textarea {
-    border-color: #93709f;
-    background-color: #f3f0f1;
-    color: #2a1f30;
-    border-radius: 8px;
+    border-color: #7e7088;
+    background-color: #d7dbd8;
+    color: #2b2430;
+    border-radius: 7px;
 }
 
 :root[data-theme="retrofuture"] input::placeholder,
 :root[data-theme="retrofuture"] textarea::placeholder {
-    color: #746f7d;
+    color: #77717c;
     opacity: 1;
 }
 
 :root[data-theme="retrofuture"] .sidebar input,
 :root[data-theme="retrofuture"] .sidebar select,
 :root[data-theme="retrofuture"] .sidebar textarea {
-    background: #f3f0f1;
-    color: #2a1f30;
-    border-color: #93709f;
+    background: #d7dbd8;
+    color: #2b2430;
+    border-color: #6e6380;
 }
 
 :root[data-theme="retrofuture"] .primaryAction {
-    border-color: #d96352;
-    background: #f0831e;
-    color: #2a1f30;
-    box-shadow: inset 0 -3px 0 #d96352;
+    border-color: #d96655;
+    background: #f28a1d;
+    color: #2b2430;
 }
 
 :root[data-theme="retrofuture"] .primaryAction:not(:disabled):hover {
-    background: #ea6b2b;
+    background: #e96d2a;
 }
 
 :root[data-theme="retrofuture"] .secondaryAction,
 :root[data-theme="retrofuture"] .tertiaryAction {
-    border-color: #93709f;
-    background: #e7e1e7;
-    color: #2a1f30;
+    border-color: #7e7088;
+    background: #ced3d0;
+    color: #2b2430;
 }
 
 :root[data-theme="retrofuture"] .dangerAction {
-    border-color: #922b55;
-    color: #922b55;
+    border-color: #9c3158;
+    color: #9c3158;
 }
 
 :root[data-theme="retrofuture"] a {
-    color: #523766;
+    color: #51465a;
 }
 
 :root[data-theme="retrofuture"] :focus-visible {
-    outline-color: #706ecb;
+    outline-color: #716bc5;
 }
 
 :root[data-theme="retrofuture"] ::selection {
-    background: #706ecb;
+    background: #716bc5;
     color: #ffffff;
 }
 
 :root[data-theme="retrofuture"] * {
-    scrollbar-color: #93709f #dfe1e5;
+    scrollbar-color: #7e7088 #c6cbc8;
 }
