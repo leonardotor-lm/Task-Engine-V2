@@ -17,7 +17,14 @@ const sidebarSource = fs.readFileSync(
 
 test("la interfaz muestra Mis tareas como nombre de la aplicación", () => {
     assert.match(indexHtml, /<title>Mis tareas<\/title>/);
-    assert.match(mainViewSource, /<strong>Mis tareas<\/strong>/);
+    assert.match(
+        mainViewSource,
+        /const applicationTitle =[\s\S]*?String\(sidebarTitle\)\.trim\(\)[\s\S]*?\|\|[\s\S]*?"Mis tareas"/
+    );
+    assert.match(
+        mainViewSource,
+        /<strong>\$\{escapeHtml\(applicationTitle\)\}<\/strong>/
+    );
     assert.match(
         mainViewSource,
         /Salir de la aplicación/
