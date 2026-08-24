@@ -27,7 +27,8 @@ test("ofrece la familia inicial de íconos", () => {
             "check",
             "list-checks",
             "search",
-            "settings"
+            "settings",
+            "note"
         ]
     );
 
