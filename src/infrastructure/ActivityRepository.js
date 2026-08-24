@@ -44,8 +44,19 @@ export class ActivityRepository {
     add(data) {
 
         const event = new ActivityEvent(data);
-        this.events.push(event);
-        this.save();
+        const previous = this.events;
+        this.events = [
+            ...this.events,
+            event
+        ];
+
+        try {
+            this.save();
+        } catch (error) {
+            this.events = previous;
+            throw error;
+        }
+
         return event;
 
     }
@@ -58,8 +69,15 @@ export class ActivityRepository {
 
     replaceAll(events) {
 
+        const previous = this.events;
         this.events = [...events];
-        this.save();
+
+        try {
+            this.save();
+        } catch (error) {
+            this.events = previous;
+            throw error;
+        }
 
     }
 
