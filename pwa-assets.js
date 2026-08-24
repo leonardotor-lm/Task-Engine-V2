@@ -41,6 +41,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/core/TaskFilters.js",
     "./src/core/TaskSearch.js",
     "./src/core/TaskService.js",
+    "./src/core/TaskServiceTransactionGuard.js",
     "./src/core/TaskSorting.js",
     "./src/core/TaskTree.js",
     "./src/core/View.js",
