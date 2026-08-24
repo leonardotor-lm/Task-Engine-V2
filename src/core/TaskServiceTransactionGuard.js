@@ -51,6 +51,49 @@ function restoreSafely(repository, snapshot) {
     }
 }
 
+export function runTaskServiceTransaction(
+    taskService,
+    operation
+) {
+    const taskRepository = taskService?.repository;
+    const activityRepository =
+        taskService?.activityService?.repository;
+
+    if (
+        !taskRepository?.getAll ||
+        !taskRepository?.replaceAll
+    ) {
+        return operation();
+    }
+
+    const taskSnapshot = cloneTasks(
+        taskRepository.getAll()
+    );
+    const activitySnapshot =
+        activityRepository?.getAll?.() ?? null;
+
+    try {
+        return operation();
+    } catch (error) {
+        restoreSafely(
+            taskRepository,
+            taskSnapshot
+        );
+
+        if (
+            activitySnapshot !== null &&
+            activityRepository?.replaceAll
+        ) {
+            restoreSafely(
+                activityRepository,
+                activitySnapshot
+            );
+        }
+
+        throw error;
+    }
+}
+
 export function installTaskServiceTransactionGuard(
     taskService,
     methodNames = GUARDED_METHODS
@@ -60,9 +103,6 @@ export function installTaskServiceTransactionGuard(
     }
 
     const taskRepository = taskService.repository;
-    const activityRepository =
-        taskService.activityService?.repository;
-
     if (
         !taskRepository?.getAll ||
         !taskRepository?.replaceAll
@@ -74,34 +114,14 @@ export function installTaskServiceTransactionGuard(
         const original = taskService[methodName];
         if (typeof original !== "function") continue;
 
-        taskService[methodName] = (...args) => {
-            const taskSnapshot = cloneTasks(
-                taskRepository.getAll()
+        taskService[methodName] = (...args) =>
+            runTaskServiceTransaction(
+                taskService,
+                () => original.apply(
+                    taskService,
+                    args
+                )
             );
-            const activitySnapshot =
-                activityRepository?.getAll?.() ?? null;
-
-            try {
-                return original.apply(taskService, args);
-            } catch (error) {
-                restoreSafely(
-                    taskRepository,
-                    taskSnapshot
-                );
-
-                if (
-                    activitySnapshot !== null &&
-                    activityRepository?.replaceAll
-                ) {
-                    restoreSafely(
-                        activityRepository,
-                        activitySnapshot
-                    );
-                }
-
-                throw error;
-            }
-        };
     }
 
     taskService.__transactionGuardInstalled = true;
