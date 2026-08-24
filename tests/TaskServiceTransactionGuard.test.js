@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import { Task } from "../src/domain/Task.js";
 import { TaskService } from "../src/core/TaskService.js";
@@ -7,13 +8,23 @@ import {
     installTaskServiceTransactionGuard
 } from "../src/core/TaskServiceTransactionGuard.js";
 
+const appSource = await readFile(
+    new URL("../src/core/App.js", import.meta.url),
+    "utf8"
+);
+
 function createRepository(
     tasks,
-    { failOnUpdate = null, failOnAdd = false } = {}
+    {
+        failOnUpdate = null,
+        failOnAdd = false,
+        failOnReplace = false
+    } = {}
 ) {
     return {
         tasks: [...tasks],
         updateCount: 0,
+        replaceCount: 0,
         getAll() {
             return [...this.tasks];
         },
@@ -53,6 +64,15 @@ function createRepository(
         },
         replaceAll(nextTasks) {
             this.tasks = [...nextTasks];
+            this.replaceCount += 1;
+            if (
+                failOnReplace &&
+                this.replaceCount === 1
+            ) {
+                throw new Error(
+                    "fallo simulado al reemplazar"
+                );
+            }
         }
     };
 }
@@ -232,4 +252,106 @@ test("conserva normalmente una operación compuesta exitosa", () => {
         activityService.repository.events.length,
         1
     );
+});
+
+test("restaura una operación masiva si falla replaceAll", () => {
+    const task = new Task({
+        id: "task",
+        title: "Tarea",
+        status: "PENDING"
+    });
+    const repository = createRepository(
+        [task],
+        { failOnReplace: true }
+    );
+    const { service, activityService } =
+        guardedService(repository);
+
+    assert.throws(
+        () => service.completeTasks(["task"]),
+        /fallo simulado al reemplazar/
+    );
+
+    assert.equal(
+        repository.getById("task").status,
+        "PENDING"
+    );
+    assert.equal(
+        activityService.repository.events.length,
+        0
+    );
+});
+
+test("restaura una tarea individual mutada antes de persistir", () => {
+    const task = new Task({
+        id: "task",
+        title: "Tarea",
+        status: "PENDING",
+        dueDate: "2026-08-24"
+    });
+    const repository = createRepository(
+        [task],
+        { failOnUpdate: 1 }
+    );
+    const { service, activityService } =
+        guardedService(repository);
+
+    assert.throws(
+        () => service.postponeTask(
+            "task",
+            "2026-08-25"
+        ),
+        /fallo simulado de persistencia/
+    );
+
+    assert.equal(
+        repository.getById("task").dueDate,
+        "2026-08-24"
+    );
+    assert.equal(
+        activityService.repository.events.length,
+        0
+    );
+});
+
+test("no conserva copias si falla duplicar un árbol", () => {
+    const task = new Task({
+        id: "task",
+        title: "Tarea",
+        status: "PENDING"
+    });
+    const repository = createRepository(
+        [task],
+        { failOnReplace: true }
+    );
+    const { service, activityService } =
+        guardedService(repository);
+
+    assert.throws(
+        () => service.duplicateTaskTree("task"),
+        /fallo simulado al reemplazar/
+    );
+
+    assert.deepEqual(
+        repository.getAll().map(item => item.id),
+        ["task"]
+    );
+    assert.equal(
+        activityService.repository.events.length,
+        0
+    );
+});
+
+test("instala el guard antes de normalizar tareas al iniciar", () => {
+    const installation = appSource.indexOf(
+        "installTaskServiceTransactionGuard(\n" +
+        "            this.taskService"
+    );
+    const normalization = appSource.indexOf(
+        "this.taskService.ensureProjectFlags()"
+    );
+
+    assert.notEqual(installation, -1);
+    assert.notEqual(normalization, -1);
+    assert.ok(installation < normalization);
 });
