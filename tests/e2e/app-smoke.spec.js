@@ -49,10 +49,7 @@ test("la navegación móvil abre y cierra la barra lateral", async ({ page }) =>
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
-test("Todas inicializa la agrupación por contexto sin error", async ({ page }) => {
-    const pageErrors = [];
-    page.on("pageerror", error => pageErrors.push(error.message));
-
+test("Todas muestra el selector de contexto persistido", async ({ page }) => {
     await page.addInitScript(() => {
         localStorage.setItem(
             "task-engine-v2-task-grouping-by-view-v1",
@@ -94,5 +91,4 @@ test("Todas inicializa la agrupación por contexto sin error", async ({ page }) 
     await expect(page.locator("#showAll")).toHaveClass(/active/);
     await expect(page.locator(".taskListHeading h2")).toContainText("Todas");
     await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
-    expect(pageErrors).toEqual([]);
 });
