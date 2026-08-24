@@ -76,7 +76,7 @@ test("no escribe cuando ninguna tarea usa esos objetivos", () => {
     assert.equal(writes, 0);
 });
 
-test("la aplicación desvincula tareas antes de borrar los objetivos", () => {
+test("la aplicación borra objetivos y asociaciones en una transacción", () => {
     const start = appSource.indexOf(
         "onPermanentlyDeleteGoal: (id)"
     );
@@ -85,9 +85,9 @@ test("la aplicación desvincula tareas antes de borrar los objetivos", () => {
         start + 900
     );
 
-    assert.ok(
-        block.indexOf("removeGoalAssociations") <
-        block.indexOf("permanentlyDeleteGoal")
+    assert.match(
+        block,
+        /permanentlyDeleteGoalWithTaskCleanup\(\s*this\.goalService,\s*this\.taskService,\s*id\s*\)/
     );
 });
 
