@@ -8,6 +8,12 @@ import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
 import { CustomFilterService } from "./CustomFilterService.js";
 import { GoalService } from "./GoalService.js";
+import {
+    installGoalServiceTransactionGuard
+} from "./GoalServiceTransactionGuard.js";
+import {
+    permanentlyDeleteGoalWithTaskCleanup
+} from "./GoalTaskTransaction.js";
 import { ActivityService } from "./ActivityService.js";
 import { BackupService } from "./BackupService.js";
 import { SyncEngine } from "./SyncEngine.js";
@@ -62,6 +68,9 @@ export class App {
         this.customFilterService =
             new CustomFilterService();
         this.goalService = new GoalService();
+        installGoalServiceTransactionGuard(
+            this.goalService
+        );
 
         this.taskService
             .removeMissingGoalAssociations(
@@ -1882,17 +1891,11 @@ export class App {
 
             onPermanentlyDeleteGoal: (id) => {
 
-                const removedGoalIds =
-                    this.goalService
-                        .getPermanentDeletionGoalIds(id);
-
-                this.taskService
-                    .removeGoalAssociations(
-                        removedGoalIds
-                    );
-
-                this.goalService
-                    .permanentlyDeleteGoal(id);
+                permanentlyDeleteGoalWithTaskCleanup(
+                    this.goalService,
+                    this.taskService,
+                    id
+                );
 
                 this.render();
 

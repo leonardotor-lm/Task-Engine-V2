@@ -3,9 +3,11 @@ import { GoalStatus } from "../domain/GoalStatus.js";
 
 export class GoalService {
 
-    constructor() {
+    constructor(
+        repository = new GoalRepository()
+    ) {
 
-        this.repository = new GoalRepository();
+        this.repository = repository;
 
     }
 

@@ -22,6 +22,8 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/core/ContextService.js",
     "./src/core/CustomFilterService.js",
     "./src/core/GoalService.js",
+    "./src/core/GoalServiceTransactionGuard.js",
+    "./src/core/GoalTaskTransaction.js",
     "./src/core/ManualTaskOrder.js",
     "./src/core/Statistics.js",
     "./src/core/SyncBackupCanonicalizer.js",
