@@ -2,9 +2,11 @@ import { ContextRepository } from "../infrastructure/ContextRepository.js";
 
 export class ContextService {
 
-    constructor() {
+    constructor(
+        repository = new ContextRepository()
+    ) {
 
-        this.repository = new ContextRepository();
+        this.repository = repository;
 
     }
 
