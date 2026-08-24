@@ -1,5 +1,8 @@
 import { Config } from "./Config.js";
 import { TaskService } from "./TaskService.js";
+import {
+    installTaskServiceTransactionGuard
+} from "./TaskServiceTransactionGuard.js";
 import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
@@ -48,6 +51,9 @@ export class App {
         this.taskService = new TaskService(
             undefined,
             this.activityService
+        );
+        installTaskServiceTransactionGuard(
+            this.taskService
         );
         this.taskService.ensureProjectFlags();
         this.areaService = new AreaService();
