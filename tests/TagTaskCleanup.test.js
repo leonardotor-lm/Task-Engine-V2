@@ -260,11 +260,11 @@ test("la interfaz ofrece revisar o eliminar y desafectar", async () => {
 
     assert.match(
         mainView,
-        /Ver \$\{activeUsageCount\}[\s\S]*?Eliminar y desafectar/
+        /Ver tareas asociadas[\s\S]*?Eliminar y desafectar/
     );
     assert.match(
         mainView,
-        /Dialog\.chooseAsync\([\s\S]*?tareas activas/
+        /Dialog\.chooseAsync\([\s\S]*?Podés revisarlas antes de decidir/
     );
     assert.match(
         mainView,
@@ -272,7 +272,7 @@ test("la interfaz ofrece revisar o eliminar y desafectar", async () => {
     );
     assert.match(
         app,
-        /onReviewTagTasks:[\s\S]*?View\.ALL[\s\S]*?tagId: id/
+        /onReviewTagTasks:[\s\S]*?getTasksWithTag\(id\)[\s\S]*?View\.ALL[\s\S]*?View\.COMPLETED[\s\S]*?View\.ARCHIVED[\s\S]*?View\.TRASH[\s\S]*?tagId: id/
     );
     assert.match(
         app,

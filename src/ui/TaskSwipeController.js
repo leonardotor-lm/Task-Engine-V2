@@ -378,7 +378,6 @@ export class TaskSwipeController {
         let remaining = this.noticeDuration;
         let startedAt = 0;
         let timeoutId = null;
-        let pointerInside = false;
         let focusInside = false;
 
         const clearSchedule = () => {
@@ -422,7 +421,7 @@ export class TaskSwipeController {
         };
 
         const resume = () => {
-            if (pointerInside || focusInside) return;
+            if (focusInside) return;
             schedule();
         };
 
@@ -453,20 +452,6 @@ export class TaskSwipeController {
             remove
         );
 
-        notice.addEventListener(
-            "pointerenter",
-            () => {
-                pointerInside = true;
-                pause();
-            }
-        );
-        notice.addEventListener(
-            "pointerleave",
-            () => {
-                pointerInside = false;
-                resume();
-            }
-        );
         notice.addEventListener(
             "focusin",
             () => {

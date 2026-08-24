@@ -110,6 +110,15 @@ test("mantiene abierto el selector después de agregar una opción", () => {
 
 });
 
+test("mantiene abierto el selector después de quitar una opción", () => {
+
+    assert.match(
+        source,
+        /const keepManagerOpen =[\s\S]*?manager\?\.open === true;[\s\S]*?chip\.remove\(\);[\s\S]*?if \(keepManagerOpen && manager\)[\s\S]*?manager\.open = true;[\s\S]*?search\.focus\(\)/
+    );
+
+});
+
 test("permite cancelar sin agregar una opción", () => {
 
     assert.match(

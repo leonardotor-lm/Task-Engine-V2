@@ -1361,7 +1361,32 @@ export class App {
 
             onReviewTagTasks: (id) => {
 
-                this.currentView = View.ALL;
+                const associatedTasks =
+                    this.taskService
+                        .getTasksWithTag(id);
+
+                if (
+                    associatedTasks.some(task =>
+                        this.taskService
+                            .isActiveTask(task)
+                    )
+                ) {
+                    this.currentView = View.ALL;
+                } else if (
+                    associatedTasks.some(task =>
+                        task.isCompleted()
+                    )
+                ) {
+                    this.currentView = View.COMPLETED;
+                } else if (
+                    associatedTasks.some(task =>
+                        task.isArchived()
+                    )
+                ) {
+                    this.currentView = View.ARCHIVED;
+                } else {
+                    this.currentView = View.TRASH;
+                }
                 this.settingsDialogOpen = false;
                 this.settingsSection = null;
                 this.advancedSearchMode = false;

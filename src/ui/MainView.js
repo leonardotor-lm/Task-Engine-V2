@@ -4538,21 +4538,14 @@ export class MainView {
                             config.getUsageCount?.(
                                 entityId
                             ) ?? 0;
-                        const activeUsageCount =
-                            config
-                                .getActiveUsageCount?.(
-                                    entityId
-                                ) ?? 0;
                         const choices = [
-                            ...(activeUsageCount > 0
-                                ? [{
-                                    value: "review",
-                                    label:
-                                        `Ver ${activeUsageCount} ${activeUsageCount === 1 ? "tarea activa" : "tareas activas"}`,
-                                    variant:
-                                        "primary"
-                                }]
-                                : []),
+                            {
+                                value: "review",
+                                label:
+                                    "Ver tareas asociadas",
+                                variant:
+                                    "primary"
+                            },
                             {
                                 value: "delete",
                                 label:
@@ -4563,7 +4556,7 @@ export class MainView {
                         ];
                         const choice =
                             await Dialog.chooseAsync(
-                                `Esta etiqueta está asociada a ${usageCount} ${usageCount === 1 ? "tarea" : "tareas"}. ${activeUsageCount > 0 ? "Podés revisar las tareas activas antes de decidir." : "No hay tareas activas para revisar."} Si la eliminás, se quitará también de las tareas completadas, archivadas o enviadas a Papelera.`,
+                                `Esta etiqueta está asociada a ${usageCount} ${usageCount === 1 ? "tarea" : "tareas"}. Podés revisarlas antes de decidir. Si la eliminás, se quitará también de las tareas completadas, archivadas o enviadas a Papelera.`,
                                 {
                                     title:
                                         "Etiqueta en uso",

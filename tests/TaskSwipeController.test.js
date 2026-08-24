@@ -183,13 +183,11 @@ test("el aviso puede cerrarse sin deshacer", t => {
 
 });
 
-test("el aviso se cierra a los ocho segundos y pausa el tiempo al interactuar", t => {
+test("el aviso se cierra a los ocho segundos aunque el puntero permanezca encima", t => {
 
     const previousDocument = globalThis.document;
     const environment = createNoticeEnvironment();
     const scheduled = [];
-    const cleared = [];
-    let currentTime = 1000;
     const timedController =
         new TaskSwipeController({
             noticeDuration: 8000,
@@ -197,10 +195,7 @@ test("el aviso se cierra a los ocho segundos y pausa el tiempo al interactuar", 
                 scheduled.push({ handler, delay });
                 return scheduled.length;
             },
-            clearTimeoutFn: id => {
-                cleared.push(id);
-            },
-            now: () => currentTime
+            clearTimeoutFn: () => {}
         });
 
     globalThis.document = environment.documentRef;
@@ -215,20 +210,14 @@ test("el aviso se cierra a los ocho segundos y pausa el tiempo al interactuar", 
 
     assert.equal(scheduled[0].delay, 8000);
 
-    currentTime = 3000;
-    environment.noticeListeners.get(
-        "pointerenter"
-    )();
+    assert.equal(
+        environment.noticeListeners.has(
+            "pointerenter"
+        ),
+        false
+    );
 
-    assert.deepEqual(cleared, [1]);
-
-    environment.noticeListeners.get(
-        "pointerleave"
-    )({ type: "pointerleave" });
-
-    assert.equal(scheduled[1].delay, 6000);
-
-    scheduled[1].handler();
+    scheduled[0].handler();
 
     assert.equal(environment.notice.removed, true);
 

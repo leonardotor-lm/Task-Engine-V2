@@ -346,6 +346,9 @@ export class SearchableMultiSelect {
                     return;
                 }
 
+                const keepManagerOpen =
+                    manager?.open === true;
+
                 chip.remove();
 
                 const option = Array
@@ -376,6 +379,11 @@ export class SearchableMultiSelect {
 
                 refresh();
                 this.updateCount(id, selected);
+
+                if (keepManagerOpen && manager) {
+                    manager.open = true;
+                    search.focus();
+                }
 
             }
         );
