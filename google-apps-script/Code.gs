@@ -663,25 +663,10 @@ function loadSnapshot_() {
         };
     }
 
-    var rows = [];
-    var lastRow =
-        storage.dataSheet.getLastRow();
-
-    if (lastRow >= 2) {
-
-        rows = storage.dataSheet
-            .getRange(
-                2,
-                1,
-                lastRow - 1,
-                6
-            )
-            .getValues()
-            .filter(function(row) {
-                return Number(row[0]) === revision;
-            });
-
-    }
+    var rows = getRevisionRows_(
+        storage.dataSheet,
+        revision
+    );
 
     return {
         ok: true,
@@ -699,6 +684,91 @@ function loadSnapshot_() {
             data: rowsToSnapshotData_(rows)
         }
     };
+
+}
+
+function getRevisionRows_(
+    dataSheet,
+    revision
+) {
+
+    var lastRow = dataSheet.getLastRow();
+
+    if (lastRow < 2) {
+        return [];
+    }
+
+    var chunkSize = 500;
+    var blockLastRow = 0;
+    var blockFirstRow = 0;
+    var cursor = lastRow;
+
+    while (cursor >= 2) {
+
+        var chunkFirstRow = Math.max(
+            2,
+            cursor - chunkSize + 1
+        );
+
+        var revisionValues = dataSheet
+            .getRange(
+                chunkFirstRow,
+                1,
+                cursor - chunkFirstRow + 1,
+                1
+            )
+            .getValues();
+
+        for (
+            var index = revisionValues.length - 1;
+            index >= 0;
+            index -= 1
+        ) {
+
+            var rowNumber =
+                chunkFirstRow + index;
+            var rowRevision = Number(
+                revisionValues[index][0]
+            );
+
+            if (rowRevision === revision) {
+                if (blockLastRow === 0) {
+                    blockLastRow = rowNumber;
+                }
+                blockFirstRow = rowNumber;
+                continue;
+            }
+
+            if (blockFirstRow !== 0) {
+                return dataSheet
+                    .getRange(
+                        blockFirstRow,
+                        1,
+                        blockLastRow -
+                            blockFirstRow + 1,
+                        6
+                    )
+                    .getValues();
+            }
+
+        }
+
+        cursor = chunkFirstRow - 1;
+
+    }
+
+    if (blockFirstRow === 0) {
+        return [];
+    }
+
+    return dataSheet
+        .getRange(
+            blockFirstRow,
+            1,
+            blockLastRow - blockFirstRow + 1,
+            6
+        )
+        .getValues();
 
 }
 
