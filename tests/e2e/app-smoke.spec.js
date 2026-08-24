@@ -149,7 +149,7 @@ test("el aviso de tarea completada se cierra automáticamente", async ({ page })
 
     await page.locator(
         ".taskCompleteCheckbox"
-    ).first().check();
+    ).first().click();
 
     const notice = page.locator(
         "#taskCompletionNotice"
