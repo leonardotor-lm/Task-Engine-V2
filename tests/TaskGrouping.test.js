@@ -7,6 +7,7 @@ import {
     TaskGroupingPreferencesRepository
 } from "../src/infrastructure/TaskGroupingPreferencesRepository.js";
 import {
+    buildContextGroupingRenderState,
     buildTaskGroups,
     TaskGroupingController
 } from "../src/ui/TaskGroupingController.js";
@@ -187,6 +188,44 @@ test("al agrupar por contexto mantiene juntos padre e hijo cuando comparten cont
     );
 });
 
+test("al agrupar por contexto fuerza sólo las ramas necesarias y conserva la visibilidad original", () => {
+    const tasks = [
+        {
+            id: "p",
+            contextId: "trabajo",
+            parentTaskId: null
+        },
+        {
+            id: "same",
+            contextId: "trabajo",
+            parentTaskId: "p"
+        },
+        {
+            id: "different",
+            contextId: "casa",
+            parentTaskId: "p"
+        }
+    ];
+
+    const state = buildContextGroupingRenderState(
+        tasks,
+        new Set()
+    );
+
+    assert.deepEqual(
+        [...state.originallyVisibleTaskIds],
+        ["p"]
+    );
+    assert.deepEqual(
+        [...state.forcedVisibleTaskIds],
+        ["different"]
+    );
+    assert.deepEqual(
+        [...state.renderExpandedTaskIds],
+        ["p"]
+    );
+});
+
 test("al agrupar por contexto expande sólo el render de TaskList sin envolver MainView", () => {
     let receivedExpandedTaskIds = "not-called";
     const taskList = {
@@ -223,17 +262,32 @@ test("al agrupar por contexto expande sólo el render de TaskList sin envolver M
 
     controller.wrapTaskListRender();
     taskList.render(
-        [],
+        [
+            {
+                id: "p",
+                contextId: "trabajo",
+                parentTaskId: null
+            },
+            {
+                id: "c",
+                contextId: "casa",
+                parentTaskId: "p"
+            }
+        ],
         "Hoy",
         false,
         [],
         [],
         [],
         "",
-        new Set(["p"])
+        new Set()
     );
 
-    assert.equal(receivedExpandedTaskIds, null);
+    assert.ok(receivedExpandedTaskIds instanceof Set);
+    assert.deepEqual(
+        [...receivedExpandedTaskIds],
+        ["p"]
+    );
     assert.equal(mainView.render, originalMainRender);
 });
 
