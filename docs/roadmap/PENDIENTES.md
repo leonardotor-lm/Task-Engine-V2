@@ -2,11 +2,11 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 22 de agosto de 2026.
+Última actualización: 24 de agosto de 2026.
 
 ## Regla de lectura
 
-Antes de reconstruir una lista de pendientes desde conversaciones, notas históricas o memoria, debe consultarse primero este documento y contrastarse con `docs/roadmap/ROADMAP.md` y las PR fusionadas. Una capacidad incluida en **Capacidades auditadas y cerradas** no vuelve al backlog salvo que exista un defecto concreto, una regresión reproducible o una nueva mejora expresamente aprobada.
+Antes de reconstruir una lista de pendientes desde conversaciones, notas históricas o memoria, debe consultarse primero este documento y contrastarse con `docs/roadmap/ROADMAP.md`, los issues vigentes y las PR fusionadas. Una capacidad incluida en **Capacidades auditadas y cerradas** no vuelve al backlog salvo que exista un defecto concreto, una regresión reproducible o una nueva mejora expresamente aprobada.
 
 ## Estados
 
@@ -18,38 +18,33 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 
 ## Prioridad actual
 
-### 1. Temas visuales intercambiables
+No hay actualmente un bloque de **desarrollo funcional aprobado** pendiente.
 
-- **Estado:** En desarrollo; seguimiento en issue #250.
-- Es el primer trabajo pendiente y debe mantenerse por encima de cualquier mejora funcional nueva hasta cerrar o redefinir este bloque.
-- La infraestructura de temas está implementada desde PR #251.
-- La selección y persistencia de la preferencia están implementadas desde PR #252.
-- Desde PR #257, el tema es deliberadamente **local por dispositivo** y no se sincroniza entre instalaciones; `sidebarTitle` sí continúa sincronizándose.
-- Temas alternativos ya fusionados y disponibles: **Retro Dark** (#253–#254), **Oscuro** (#255), **Papel** (#258), **Alto contraste** (#260), **Azul tinta** (#261) y **Terminal 80** (#265).
-- La PR #256 **Muestrario** continúa abierta en borrador y no debe considerarse una capacidad aprobada o terminada hasta que se revise expresamente.
-- La PR #262 **Oliva** fue cerrada sin fusionar y queda descartada como variante actual.
-- **Trabajo real restante:** migrar gradualmente los colores concretos que todavía no usan tokens semánticos y realizar una verificación final del conjunto de temas en escritorio, celular y PWA.
-- No reabrir infraestructura, selector ni persistencia salvo que aparezca una regresión concreta.
+El único issue abierto de puesta en marcha es:
+
+### Configurar Notion para el segundo usuario — #280
+
+- **Estado:** pendiente operativo; no requiere desarrollar nuevamente la integración.
+- Conectar la cuenta de Notion del segundo usuario.
+- Seleccionar/configurar su base contenedora de notas.
+- Verificar creación, apertura y desvinculación de notas.
+- Verificar aislamiento respecto de la cuenta y las notas del primer usuario.
+- Comprobar actualización de estado de las notas vinculadas.
 
 ## Backlog aprobado
 
-### Agrupación visual de tareas
+No hay actualmente mejoras funcionales aprobadas pendientes de implementación.
 
-- **Estado:** Pendiente.
-- Agregar en la barra de herramientas superior, junto a filtros rápidos y orden, un control **Agrupar por**.
-- Opciones acordadas: **Sin agrupar**, **Área**, **Contexto** y **Proyecto**.
-- No incluir agrupación por etiquetas: ese caso se resuelve mejor con búsqueda avanzada y filtros personalizados.
-- La agrupación modifica únicamente la presentación de la lista; no altera qué tareas entran en la vista ni su orden interno.
-- Las tareas sin asignación deben aparecer en grupos explícitos: **Sin área**, **Sin contexto** o **Sin proyecto**, según corresponda.
-- Los grupos se muestran abiertos por defecto y se ordenan alfabéticamente, dejando los grupos **Sin…** al final.
-- La preferencia elegida debe persistir localmente de forma similar a las preferencias de orden.
-- Implementar la agrupación después del filtrado y ordenado y antes del render de la lista, evitando contaminar la lógica de búsqueda o modificar las tareas.
-- Complejidad estimada: media-baja.
+Antes de iniciar un nuevo desarrollo debe elegirse expresamente una propuesta existente o definir una mejora nueva con alcance y criterio de cierre.
 
 ## Capacidades auditadas y cerradas
 
-La auditoría iniciada el 19 de agosto de 2026 y actualizada el 20 de agosto contrastó `PENDIENTES.md`, `ROADMAP.md`, documentos específicos y PRs fusionadas. Los siguientes bloques **no son pendientes**:
+La auditoría iniciada el 19 de agosto de 2026 y actualizada el 24 de agosto contrastó `PENDIENTES.md`, `ROADMAP.md`, documentos específicos, issues y PRs fusionadas. Los siguientes bloques **no son pendientes**:
 
+- **Temas visuales intercambiables:** infraestructura, selector, persistencia local y conjunto de temas implementados y revisados; issue #250 cerrado. La PR #256 **Muestrario** continúa abierta en borrador y no forma parte del conjunto aprobado actual. La PR #262 **Oliva** fue cerrada sin fusionar.
+- **Agrupación visual de tareas:** resuelta en PR #316 / issue #315. Permite `Sin agrupar`, `Área`, `Contexto` y `Proyecto`, con persistencia local por vista, grupos `Sin…` y manejo jerárquico de subtareas al agrupar por contexto.
+- **Asistencia con IA:** alcance paraguas de #281 auditado y cerrado el 24 de agosto. Incluye configuración opcional y segura, Gemini/Groq, consultas de sólo lectura, chat de sesión, propuestas y aplicación confirmada de prioridades, fechas, En espera y organización, conversión en proyectos/subtareas, revisión de calidad y conversión de texto libre en tareas (#284–#306, #311 y #313). Las API keys permanecen en propiedades de Apps Script y nunca se envían al navegador.
+- **Integridad transaccional y sincronización:** auditoría cerrada mediante issues #318, #320, #323, #325, #327, #329, #331, #333, #335, #337 y #339, resueltos en las PR #319, #321, #324, #326, #328, #330, #332, #334, #336, #338 y #340. Las escrituras compuestas de tareas, objetivos, organización, IA, recurrencias, importaciones, preferencias y estado de sincronización restauran el estado previo ante fallos; los pushes de resultado incierto se reconcilian antes de sobrescribir la nube.
 - **Selección múltiple: limpiar fecha:** resuelta en PR #266. La acción limpia `dueDate` y `dueTime`, conserva `startDate` y bloquea de forma segura selecciones que incluyan recurrencias.
 - **Recurrencias: ciclo de vida único y reglas avanzadas:** resueltas en PR #267. Cada serie mantiene una sola ocurrencia activa; la siguiente se genera al completar la actual. Se conservan intervalos cada N días/semanas/meses y selección de varios días semanales, y se agregan reglas de primer a quinto y último día hábil mensual. Para esta versión, día hábil significa lunes a viernes sin feriados.
 - **Búsqueda avanzada: resultados jerárquicos estrictos:** resuelta en PR #268. Sólo se muestran las tareas que cumplen directamente la expresión; una subtarea coincidente puede aparecer aislada manteniendo visible su ruta jerárquica sin convertir a sus ancestros en resultados.
@@ -71,7 +66,7 @@ La auditoría iniciada el 19 de agosto de 2026 y actualizada el 20 de agosto con
 - **Sincronización y recuperación de conflictos:** reconciliación automática, continuidad de interacción, recuperación manual y estabilización del orden están implementadas (#165, #170, #178, #199, #202–#203, #213, #235).
 - **PWA instalable y funcionamiento sin conexión:** implementados y verificados (#194, #200–#204).
 - **Historial de actividad y estadísticas:** implementados (#189 y #191), incluidos períodos de 6 y 12 meses.
-- **Integración con Notion:** conexión, tareas/proyectos, objetivos, actualización de metadatos, cola de reintentos, diagnóstico, aislamiento por instalación y revisión móvil están cerrados en #240–#248.
+- **Integración con Notion:** conexión, tareas/proyectos, objetivos, actualización de metadatos, cola de reintentos, diagnóstico, aislamiento por instalación y revisión móvil están cerrados en #240–#248. El issue #280 es únicamente la configuración operativa de la segunda cuenta.
 
 Estos bloques sólo deben volver a aparecer si se describe una regresión o una mejora nueva y concreta sobre la capacidad ya existente.
 
@@ -118,7 +113,7 @@ También quedan descartados por decisión de alcance:
 Antes de iniciar un bloque:
 
 1. revisar este documento;
-2. contrastar cualquier supuesto pendiente con `ROADMAP.md` y las PR fusionadas;
+2. contrastar cualquier supuesto pendiente con `ROADMAP.md`, los issues vigentes y las PR fusionadas;
 3. acordar un único objetivo principal;
 4. crear una rama específica desde `main` actualizado;
 5. implementar y probar;
