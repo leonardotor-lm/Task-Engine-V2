@@ -7,6 +7,12 @@ import { AreaService } from "./AreaService.js";
 import { ContextService } from "./ContextService.js";
 import { TagService } from "./TagService.js";
 import { CustomFilterService } from "./CustomFilterService.js";
+import {
+    installAreaServiceTransactionGuard,
+    installContextServiceTransactionGuard,
+    installCustomFilterServiceTransactionGuard,
+    installTagServiceTransactionGuard
+} from "./EntityServiceTransactionGuard.js";
 import { GoalService } from "./GoalService.js";
 import {
     installGoalServiceTransactionGuard
@@ -67,6 +73,18 @@ export class App {
         this.tagService = new TagService();
         this.customFilterService =
             new CustomFilterService();
+        installAreaServiceTransactionGuard(
+            this.areaService
+        );
+        installContextServiceTransactionGuard(
+            this.contextService
+        );
+        installTagServiceTransactionGuard(
+            this.tagService
+        );
+        installCustomFilterServiceTransactionGuard(
+            this.customFilterService
+        );
         this.goalService = new GoalService();
         installGoalServiceTransactionGuard(
             this.goalService
