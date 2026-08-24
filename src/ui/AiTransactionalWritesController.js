@@ -3,6 +3,9 @@ import {
     createSubtasksAtomically,
     createTasksAtomically
 } from "../core/AtomicTaskCreations.js";
+import {
+    installTaskServiceTransactionGuard
+} from "../core/TaskServiceTransactionGuard.js";
 
 export class AiTransactionalWritesController {
 
@@ -24,6 +27,9 @@ export class AiTransactionalWritesController {
     start() {
         if (this.started) return;
         this.started = true;
+        installTaskServiceTransactionGuard(
+            this.app?.taskService
+        );
         this.installAtomicChangeBridge();
         this.installTaskCaptureApply();
         this.installProjectProposalApply();
