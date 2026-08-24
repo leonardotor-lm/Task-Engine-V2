@@ -143,6 +143,20 @@ export function buildContextGroupingRenderState(
     };
 }
 
+export function isSeparatedContextSubtask(
+    task,
+    groupKey,
+    rowById,
+    groupKeyByTaskId
+) {
+    if (!task?.parentTaskId) return false;
+
+    return (
+        !rowById.has(task.parentTaskId) ||
+        groupKeyByTaskId.get(task.parentTaskId) !== groupKey
+    );
+}
+
 export function getTaskGroupingViewKey(app) {
     if (app.currentCustomFilterId) {
         return `custom-filter:${app.currentCustomFilterId}`;
@@ -564,10 +578,12 @@ export class TaskGroupingController {
 
                 if (
                     grouping === TaskGrouping.CONTEXT &&
-                    task.parentTaskId &&
-                    groupKeyByTaskId.has(task.parentTaskId) &&
-                    groupKeyByTaskId.get(task.parentTaskId) !==
-                        group.key
+                    isSeparatedContextSubtask(
+                        task,
+                        group.key,
+                        rowById,
+                        groupKeyByTaskId
+                    )
                 ) {
                     this.prepareSeparatedSubtask(
                         row,
