@@ -349,6 +349,25 @@ export class TaskList {
                 const metadata = [];
 
                 if (
+                    task.notionPageId &&
+                    task.notionPageUrl
+                ) {
+
+                    metadata.push(`
+                        <span
+                            class="notionNoteIndicator"
+                            title="Tiene una nota vinculada en Notion"
+                            aria-label="Tiene una nota vinculada en Notion">
+                            ${Icon.render(
+                                "note",
+                                "notionNoteIcon"
+                            )}
+                        </span>
+                    `);
+
+                }
+
+                if (
                     priority &&
                     priority.value !== 0 &&
                     (
