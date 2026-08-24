@@ -129,8 +129,8 @@ export class AiSettingsController {
             const enabled = this.app.aiPreferences.setEnabled(event.target.checked);
             this.status = null;
             this.error = "";
+            this.app.render();
             if (enabled) this.refresh(false);
-            else this.renderPanel();
         });
 
         this.document.getElementById("aiProvider")?.addEventListener("change", event => {
