@@ -2,9 +2,11 @@ import { AreaRepository } from "../infrastructure/AreaRepository.js";
 
 export class AreaService {
 
-    constructor() {
+    constructor(
+        repository = new AreaRepository()
+    ) {
 
-        this.repository = new AreaRepository();
+        this.repository = repository;
 
     }
 
