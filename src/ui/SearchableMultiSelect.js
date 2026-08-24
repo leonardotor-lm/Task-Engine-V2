@@ -316,7 +316,9 @@ export class SearchableMultiSelect {
             );
 
             this.updateCount(id, selected);
-            closeManager();
+            search.value = "";
+            refresh();
+            search.focus();
 
         });
 
