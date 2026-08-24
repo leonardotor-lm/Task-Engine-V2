@@ -96,12 +96,6 @@ function collectVisibleTaskIds(tasks, expandedTaskIds) {
         }
     }
 
-    for (const task of tasks) {
-        if (!visited.has(task.id)) {
-            visit(task);
-        }
-    }
-
     return visibleTaskIds;
 }
 
