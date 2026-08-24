@@ -97,11 +97,15 @@ test("escapa las opciones y las etiquetas", () => {
 
 });
 
-test("cierra el selector después de agregar una opción", () => {
+test("mantiene abierto el selector después de agregar una opción", () => {
 
     assert.match(
         source,
-        /closeManager[\s\S]*?manager\.open = false;[\s\S]*?querySelector\("summary"\)[\s\S]*?add\.addEventListener\("click"[\s\S]*?closeManager\(\)/
+        /add\.addEventListener\("click"[\s\S]*?search\.value = "";[\s\S]*?refresh\(\);[\s\S]*?search\.focus\(\)/
+    );
+    assert.doesNotMatch(
+        source,
+        /add\.addEventListener\("click"[\s\S]{0,900}?closeManager\(\)/
     );
 
 });
