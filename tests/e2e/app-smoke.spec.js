@@ -49,7 +49,7 @@ test("la navegación móvil abre y cierra la barra lateral", async ({ page }) =>
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
-test("el selector acepta Contexto en la vista Todas", async ({ page }) => {
+test("Contexto crea los encabezados esperados en Todas", async ({ page }) => {
     await page.addInitScript(() => {
         localStorage.setItem(
             "task-engine-contexts",
@@ -83,8 +83,9 @@ test("el selector acepta Contexto en la vista Todas", async ({ page }) => {
 
     await page.goto("/");
     await page.locator("#showAll").click();
-    await expect(page.locator(".taskListHeading h2")).toContainText("Todas");
-
     await page.locator("#taskGrouping").selectOption("CONTEXT");
+
     await expect(page.locator("#taskGrouping")).toHaveValue("CONTEXT");
+    await expect(page.locator(".taskGroupHeader", { hasText: "Casa" })).toBeVisible();
+    await expect(page.locator(".taskGroupHeader", { hasText: "Trabajo" })).toBeVisible();
 });
