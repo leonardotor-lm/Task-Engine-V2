@@ -49,6 +49,15 @@ function getProviderDefinition(providerId) {
         AI_PROVIDERS.find(provider => provider.id === DEFAULT_AI_PROVIDER);
 }
 
+function restoreStorageValue(storage, key, value) {
+    if (value === null) {
+        storage.removeItem(key);
+        return;
+    }
+
+    storage.setItem(key, value);
+}
+
 export class AiPreferences {
     constructor(storage = localStorage) {
         this.storage = storage;
@@ -80,14 +89,46 @@ export class AiPreferences {
             return this.getProvider();
         }
 
-        this.storage.setItem(AI_PROVIDER_STORAGE_KEY, normalized);
         const provider = getProviderDefinition(normalized);
         const currentModel = String(
             this.storage.getItem(AI_MODEL_STORAGE_KEY) || ""
         ).trim();
+        const previousProvider = this.storage.getItem(
+            AI_PROVIDER_STORAGE_KEY
+        );
+        const previousModel = this.storage.getItem(
+            AI_MODEL_STORAGE_KEY
+        );
 
-        if (!provider.models.some(model => model.id === currentModel)) {
-            this.storage.setItem(AI_MODEL_STORAGE_KEY, provider.defaultModel);
+        try {
+            this.storage.setItem(
+                AI_PROVIDER_STORAGE_KEY,
+                normalized
+            );
+
+            if (!provider.models.some(model => model.id === currentModel)) {
+                this.storage.setItem(
+                    AI_MODEL_STORAGE_KEY,
+                    provider.defaultModel
+                );
+            }
+        } catch (error) {
+            for (const [key, value] of [
+                [AI_MODEL_STORAGE_KEY, previousModel],
+                [AI_PROVIDER_STORAGE_KEY, previousProvider]
+            ]) {
+                try {
+                    restoreStorageValue(
+                        this.storage,
+                        key,
+                        value
+                    );
+                } catch {
+                    // Conservamos el error original.
+                }
+            }
+
+            throw error;
         }
 
         return normalized;
