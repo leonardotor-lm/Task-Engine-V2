@@ -434,33 +434,95 @@ export class BackupService {
 
     }
 
-    applyData(data) {
+    getApplyOperations(data) {
 
-        this.taskRepository.replaceAll(data.tasks);
-        this.areaRepository.replaceAll(data.areas);
-        this.contextRepository.replaceAll(
-            data.contexts
-        );
-        this.tagRepository.replaceAll(data.tags);
+        const operations = [
+            [this.taskRepository, data.tasks],
+            [this.areaRepository, data.areas],
+            [this.contextRepository, data.contexts],
+            [this.tagRepository, data.tags]
+        ];
 
-        this.customFilterRepository
-            ?.replaceAll(
+        if (this.customFilterRepository) {
+            operations.push([
+                this.customFilterRepository,
                 data.customFilters ?? []
-            );
+            ]);
+        }
 
-        this.goalRepository
-            ?.replaceAll(
+        if (this.goalRepository) {
+            operations.push([
+                this.goalRepository,
                 data.goals ?? []
-            );
+            ]);
+        }
 
         if (
             this.activityRepository &&
             data.activityEvents !== null &&
             data.activityEvents !== undefined
         ) {
-            this.activityRepository.replaceAll(
+            operations.push([
+                this.activityRepository,
                 data.activityEvents
-            );
+            ]);
+        }
+
+        return operations;
+
+    }
+
+    applyData(data) {
+
+        const operations =
+            this.getApplyOperations(data)
+                .map(([repository, items]) => ({
+                    repository,
+                    items,
+                    previousItems:
+                        repository.getAll()
+                }));
+
+        const reached = [];
+
+        try {
+
+            for (const operation of operations) {
+                reached.push(operation);
+                operation.repository.replaceAll(
+                    operation.items
+                );
+            }
+
+        } catch (error) {
+
+            const rollbackErrors = [];
+
+            for (
+                const operation of
+                [...reached].reverse()
+            ) {
+
+                try {
+                    operation.repository.replaceAll(
+                        operation.previousItems
+                    );
+                } catch (rollbackError) {
+                    rollbackErrors.push(
+                        rollbackError
+                    );
+                }
+
+            }
+
+            if (rollbackErrors.length > 0) {
+                throw new Error(
+                    `${error.message} No se pudo restaurar por completo el estado local.`
+                );
+            }
+
+            throw error;
+
         }
 
     }
