@@ -54,6 +54,101 @@ function buildAncestorPath(task, tasksById) {
     return path;
 }
 
+function getContextKey(task) {
+    return task?.contextId ?? "__none__";
+}
+
+function collectVisibleTaskIds(tasks, expandedTaskIds) {
+    const tasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
+    const childrenByParent = new Map();
+    const visibleTaskIds = new Set();
+    const visited = new Set();
+
+    for (const task of tasks) {
+        if (!task.parentTaskId || !tasksById.has(task.parentTaskId)) {
+            continue;
+        }
+
+        const children =
+            childrenByParent.get(task.parentTaskId) ?? [];
+        children.push(task);
+        childrenByParent.set(task.parentTaskId, children);
+    }
+
+    const visit = task => {
+        if (!task || visited.has(task.id)) return;
+
+        visited.add(task.id);
+        visibleTaskIds.add(task.id);
+
+        if (!expandedTaskIds.has(task.id)) return;
+
+        for (const child of childrenByParent.get(task.id) ?? []) {
+            visit(child);
+        }
+    };
+
+    for (const task of tasks) {
+        if (!task.parentTaskId || !tasksById.has(task.parentTaskId)) {
+            visit(task);
+        }
+    }
+
+    for (const task of tasks) {
+        if (!visited.has(task.id)) {
+            visit(task);
+        }
+    }
+
+    return visibleTaskIds;
+}
+
+export function buildContextGroupingRenderState(
+    tasks,
+    expandedTaskIds = new Set()
+) {
+    const expanded = expandedTaskIds instanceof Set
+        ? expandedTaskIds
+        : new Set();
+    const tasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
+    const originallyVisibleTaskIds =
+        collectVisibleTaskIds(tasks, expanded);
+    const forcedVisibleTaskIds = new Set();
+    const renderExpandedTaskIds = new Set(expanded);
+
+    for (const task of tasks) {
+        const parent = tasksById.get(task.parentTaskId);
+
+        if (
+            !parent ||
+            getContextKey(parent) === getContextKey(task)
+        ) {
+            continue;
+        }
+
+        forcedVisibleTaskIds.add(task.id);
+
+        const visited = new Set();
+        let current = parent;
+
+        while (current && !visited.has(current.id)) {
+            visited.add(current.id);
+            renderExpandedTaskIds.add(current.id);
+            current = tasksById.get(current.parentTaskId) ?? null;
+        }
+    }
+
+    return {
+        originallyVisibleTaskIds,
+        forcedVisibleTaskIds,
+        renderExpandedTaskIds
+    };
+}
+
 export function getTaskGroupingViewKey(app) {
     if (app.currentCustomFilterId) {
         return `custom-filter:${app.currentCustomFilterId}`;
@@ -169,6 +264,7 @@ export class TaskGroupingController {
                 storage
             );
         this.started = false;
+        this.contextGroupingRenderState = null;
     }
 
     start() {
@@ -205,11 +301,18 @@ export class TaskGroupingController {
 
         taskList.render = (...args) => {
             if (this.getGrouping() !== TaskGrouping.CONTEXT) {
+                this.contextGroupingRenderState = null;
                 return originalRender(...args);
             }
 
             const contextArgs = [...args];
-            contextArgs[7] = null;
+            const state = buildContextGroupingRenderState(
+                contextArgs[0] ?? [],
+                contextArgs[7]
+            );
+
+            this.contextGroupingRenderState = state;
+            contextArgs[7] = state.renderExpandedTaskIds;
 
             return originalRender(...contextArgs);
         };
@@ -388,10 +491,27 @@ export class TaskGroupingController {
             return;
         }
 
+        const contextState = grouping === TaskGrouping.CONTEXT
+            ? this.contextGroupingRenderState
+            : null;
         const rows = Array.from(list.children)
             .filter(element =>
                 element.classList?.contains("task")
-            );
+            )
+            .filter(row => {
+                if (!contextState) return true;
+
+                const taskId = row.dataset.id;
+                const keep =
+                    contextState.originallyVisibleTaskIds.has(taskId) ||
+                    contextState.forcedVisibleTaskIds.has(taskId);
+
+                if (!keep) {
+                    row.remove();
+                }
+
+                return keep;
+            });
 
         if (rows.length === 0) return;
 
