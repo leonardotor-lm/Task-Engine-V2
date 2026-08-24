@@ -361,7 +361,16 @@ export class Sidebar {
                             class="syncErrorHint"
                             title="${escapeHtml(syncLastError)}">
                             Los cambios continúan guardados localmente. La aplicación volverá a intentarlo después de un nuevo cambio o al recuperar el foco.
+                            <span class="syncErrorDetail">
+                                Detalle: ${escapeHtml(syncLastError)}
+                            </span>
                         </p>
+                        <button
+                            id="retrySync"
+                            type="button"
+                            class="secondaryAction">
+                            Reintentar ahora
+                        </button>
                     `
                     : ""}
 

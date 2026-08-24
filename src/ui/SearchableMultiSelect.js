@@ -337,6 +337,8 @@ export class SearchableMultiSelect {
 
                 if (!button) return;
 
+                event.stopPropagation();
+
                 const chip = button.closest(
                     ".searchableMultiSelectChip"
                 );

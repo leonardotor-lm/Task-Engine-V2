@@ -9,8 +9,10 @@ export class TaskSwipeController {
         threshold = 72,
         maximumDistance = 96,
         noticeDuration = 8000,
-        setTimeoutFn = globalThis.setTimeout,
-        clearTimeoutFn = globalThis.clearTimeout,
+        setTimeoutFn = (...args) =>
+            globalThis.setTimeout(...args),
+        clearTimeoutFn = timeoutId =>
+            globalThis.clearTimeout(timeoutId),
         now = () => Date.now()
     } = {}) {
 

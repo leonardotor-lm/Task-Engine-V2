@@ -1353,6 +1353,11 @@ export class MainView {
 
         });
 
+        document.getElementById("retrySync")
+            ?.addEventListener("click", () => {
+                this.callbacks.onRetrySync?.();
+            });
+
         document.getElementById("pushToCloud")?.addEventListener("click", async () => {
 
             if (!await Dialog.confirmAsync(

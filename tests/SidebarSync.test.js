@@ -272,6 +272,8 @@ test("muestra un error sin perder los controles manuales", () => {
         html,
         /Los cambios continúan guardados localmente/
     );
+    assert.match(html, /Detalle: No se pudo conectar\./);
+    assert.match(html, /id="retrySync"/);
     assert.match(
         html,
         /id="pushToCloud"/

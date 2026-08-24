@@ -1450,6 +1450,9 @@ export class App {
 
             },
 
+            onRetrySync: () =>
+                this.checkRemoteStatus(),
+
             onPushToCloud: () => {
 
                 return this.runManualSync(
