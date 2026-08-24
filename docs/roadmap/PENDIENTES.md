@@ -18,9 +18,19 @@ Antes de reconstruir una lista de pendientes desde conversaciones, notas histór
 
 ## Prioridad actual
 
-No hay actualmente un bloque de **desarrollo funcional aprobado** pendiente.
+La próxima mejora funcional aprobada es:
 
-El único issue abierto de puesta en marcha es:
+### Recordatorios móviles con Google Calendar — #343
+
+- **Estado:** pendiente de implementación.
+- Integración unidireccional desde Task Engine hacia un calendario independiente llamado **Task Engine — Recordatorios**.
+- Un único recordatorio por tarea, que requiere fecha y hora de vencimiento.
+- Anticipaciones disponibles: 5, 15 y 30 minutos; 1 hora; 1, 2, 5 y 10 días.
+- Crear, actualizar o retirar el evento según el ciclo de vida de la tarea, sin importar cambios manuales realizados en Calendar.
+- Mantener las escrituras locales independientes de fallos de Calendar mediante operaciones persistentes, reintentables e idempotentes.
+- Usar la configuración de notificaciones de Google Calendar para que los avisos se emitan únicamente en el celular elegido.
+
+El issue abierto de puesta en marcha separado del desarrollo es:
 
 ### Configurar Notion para el segundo usuario — #280
 
@@ -33,9 +43,9 @@ El único issue abierto de puesta en marcha es:
 
 ## Backlog aprobado
 
-No hay actualmente mejoras funcionales aprobadas pendientes de implementación.
+- **#343 — Recordatorios móviles unidireccionales con Google Calendar.**
 
-Antes de iniciar un nuevo desarrollo debe elegirse expresamente una propuesta existente o definir una mejora nueva con alcance y criterio de cierre.
+No hay otras mejoras funcionales aprobadas pendientes de implementación.
 
 ## Capacidades auditadas y cerradas
 
@@ -67,27 +77,19 @@ La auditoría iniciada el 19 de agosto de 2026 y actualizada el 24 de agosto con
 - **PWA instalable y funcionamiento sin conexión:** implementados y verificados (#194, #200–#204).
 - **Historial de actividad y estadísticas:** implementados (#189 y #191), incluidos períodos de 6 y 12 meses.
 - **Integración con Notion:** conexión, tareas/proyectos, objetivos, actualización de metadatos, cola de reintentos, diagnóstico, aislamiento por instalación y revisión móvil están cerrados en #240–#248. El issue #280 es únicamente la configuración operativa de la segunda cuenta.
+- **Señales y flujos de interacción de tareas:** PR #342. Incluye indicador de nota de Notion, selector de etiquetas estable al agregar y quitar, revisión o eliminación transaccional de etiquetas asociadas, cierre automático del aviso de tarea completada, ocultamiento de IA desactivada y nombre de aplicación compartido por barra lateral y encabezado.
+- **Diagnóstico y rendimiento de la sincronización general:** PR #342. El error muestra un detalle seguro y una acción explícita de reintento; la aplicación reintenta al recuperar foco o visibilidad. Apps Script carga únicamente la revisión activa desde el final de la hoja en vez de transferir todo el historial acumulado.
 
 Estos bloques sólo deben volver a aparecer si se describe una regresión o una mejora nueva y concreta sobre la capacidad ya existente.
 
-## Propuesta pendiente de decisión
+## Propuestas pendientes de decisión
 
-### Diagnóstico general de errores de sincronización
-
-- **Estado:** Propuesta.
-- **Alcance:** sincronización principal con Google Apps Script / Google Sheets; no se refiere al diagnóstico de Notion, que ya está implementado.
-- Mostrar una causa resumida y segura cuando falla la sincronización general.
-- Distinguir, cuando sea posible, problemas de red, HTTP, autorización y respuesta inválida.
-- Informar el último intento y ofrecer una acción explícita para reintentar.
-- No exponer el token ni la URL completa del backend.
-
-La aplicación ya conserva cambios locales, reanuda la sincronización al recuperar conectividad y dispone de diagnóstico específico para las actualizaciones pendientes de Notion. Esta propuesta sólo debe convertirse en pendiente aprobado si se decide que el diagnóstico general actual de Sheets necesita más detalle.
+No hay actualmente propuestas documentadas que requieran una decisión.
 
 ## Ideas que no integran el backlog
 
 Las siguientes cuestiones fueron exploradas, pero no constituyen trabajo comprometido:
 
-- notificaciones o recordatorios del sistema;
 - múltiples usuarios o una segunda instancia de la aplicación como función multiusuario compartida;
 - criterio avanzado `tieneContexto`;
 - una nueva reorganización general de la barra lateral;

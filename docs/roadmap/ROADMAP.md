@@ -172,13 +172,14 @@ Con este bloque se completa el alcance del issue #212: conexión/configuración,
 
 ## Etapa operativa actual
 
-Los bloques funcionales aprobados registrados en el backlog quedaron cerrados y verificados. `docs/roadmap/PENDIENTES.md` no contiene actualmente una nueva prioridad funcional aprobada.
+Los bloques funcionales aprobados hasta la PR #342 quedaron cerrados y verificados. La próxima prioridad funcional acordada es la integración unidireccional de recordatorios móviles con Google Calendar, registrada en el issue #343 y en `docs/roadmap/PENDIENTES.md`.
 
 Quedan separados del backlog activo:
 
-- una propuesta de diagnóstico más detallado para la sincronización general de Google Sheets;
 - temas visuales intercambiables, deliberadamente postergados;
-- ideas todavía no aprobadas, como notificaciones del sistema o una función multiusuario compartida.
+- ideas todavía no aprobadas, como una función multiusuario compartida.
+
+La PR #342 completó el diagnóstico visible y el reintento explícito de la sincronización general, además de optimizar la lectura de Sheets para cargar únicamente la revisión activa. También consolidó el indicador de Notion, la edición sucesiva de etiquetas, su eliminación transaccional, el aviso temporal de tarea completada, la visibilidad condicional de IA y el nombre compartido de la aplicación.
 
 La propiedad local conserva el nombre **Descripción** para distinguirla de las páginas vinculadas de Notion.
 
