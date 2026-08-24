@@ -116,6 +116,8 @@ test("Apariencia forma parte del HTML que devuelve Sidebar", () => {
     assert.match(html, /Oscuro/);
     assert.match(html, /value="retro-dark"/);
     assert.match(html, /Retro Dark/);
+    assert.match(html, /value="retrofuture"/);
+    assert.match(html, /Retrofuturo/);
     assert.match(html, /selected/);
     assert.ok(
         html.indexOf("Apariencia") <
