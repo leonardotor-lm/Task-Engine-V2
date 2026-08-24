@@ -2,9 +2,11 @@ import { TagRepository } from "../infrastructure/TagRepository.js";
 
 export class TagService {
 
-    constructor() {
+    constructor(
+        repository = new TagRepository()
+    ) {
 
-        this.repository = new TagRepository();
+        this.repository = repository;
 
     }
 

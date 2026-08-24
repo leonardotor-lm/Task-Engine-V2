@@ -129,8 +129,10 @@ export class TaskFilterPreferencesRepository {
         const normalized =
             this.normalizeFilters(filters);
 
-        this.preferences[viewKey] = normalized;
-        this.save();
+        this.replaceAll({
+            ...this.preferences,
+            [viewKey]: normalized
+        });
 
         return { ...normalized };
 
@@ -138,9 +140,16 @@ export class TaskFilterPreferencesRepository {
 
     replaceAll(preferences) {
 
+        const previous = this.preferences;
         this.preferences =
             this.normalizeAll(preferences);
-        this.save();
+
+        try {
+            this.save();
+        } catch (error) {
+            this.preferences = previous;
+            throw error;
+        }
 
     }
 
