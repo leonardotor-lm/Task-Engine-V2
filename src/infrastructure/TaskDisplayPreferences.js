@@ -22,6 +22,7 @@ const VALID_THEMES = new Set([
     "ink-blue",
     "dark",
     "retro-dark",
+    "retrofuture",
     "terminal-80"
 ]);
 
