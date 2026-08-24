@@ -15,6 +15,7 @@ export class SyncConfig {
     constructor(storage = localStorage) {
 
         this.storage = storage;
+        this.pendingRevisionRollback = null;
 
     }
 
@@ -168,6 +169,17 @@ export class SyncConfig {
 
     }
 
+    restoreStorageValue(key, value) {
+
+        if (value === null) {
+            this.storage.removeItem(key);
+            return;
+        }
+
+        this.storage.setItem(key, value);
+
+    }
+
     setRevision(revision) {
 
         if (
@@ -179,14 +191,41 @@ export class SyncConfig {
             );
         }
 
-        this.storage.setItem(
-            SYNC_REVISION_KEY,
-            String(revision)
-        );
+        const previousRevision =
+            this.storage.getItem(SYNC_REVISION_KEY);
+
+        try {
+
+            this.storage.setItem(
+                SYNC_REVISION_KEY,
+                String(revision)
+            );
+
+        } catch (error) {
+
+            try {
+                this.restoreStorageValue(
+                    SYNC_REVISION_KEY,
+                    previousRevision
+                );
+            } catch {
+                // Conservamos el error original.
+            }
+
+            this.pendingRevisionRollback = null;
+            throw error;
+
+        }
+
+        this.pendingRevisionRollback = {
+            previousRevision
+        };
 
     }
 
     clearRevision() {
+
+        this.pendingRevisionRollback = null;
 
         this.storage.removeItem(
             SYNC_REVISION_KEY
@@ -214,15 +253,51 @@ export class SyncConfig {
             );
         }
 
-        this.storage.setItem(
-            SYNC_FINGERPRINT_KEY,
-            fingerprint
-        );
+        const previousRevision =
+            this.pendingRevisionRollback
+                ?.previousRevision ??
+            this.storage.getItem(SYNC_REVISION_KEY);
+        const previousFingerprint =
+            this.storage.getItem(
+                SYNC_FINGERPRINT_KEY
+            );
+        const previousLastSuccess =
+            this.storage.getItem(
+                SYNC_LAST_SUCCESS_KEY
+            );
 
-        this.storage.setItem(
-            SYNC_LAST_SUCCESS_KEY,
-            new Date(parsedTimestamp).toISOString()
-        );
+        try {
+
+            this.storage.setItem(
+                SYNC_FINGERPRINT_KEY,
+                fingerprint
+            );
+
+            this.storage.setItem(
+                SYNC_LAST_SUCCESS_KEY,
+                new Date(parsedTimestamp).toISOString()
+            );
+
+        } catch (error) {
+
+            for (const [key, value] of [
+                [SYNC_REVISION_KEY, previousRevision],
+                [SYNC_FINGERPRINT_KEY, previousFingerprint],
+                [SYNC_LAST_SUCCESS_KEY, previousLastSuccess]
+            ]) {
+                try {
+                    this.restoreStorageValue(key, value);
+                } catch {
+                    // Conservamos el error original.
+                }
+            }
+
+            this.pendingRevisionRollback = null;
+            throw error;
+
+        }
+
+        this.pendingRevisionRollback = null;
 
     }
 
