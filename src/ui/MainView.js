@@ -12,6 +12,7 @@ import {
     SearchableMultiSelect
 } from "./SearchableMultiSelect.js";
 import { Icon } from "./Icon.js";
+import { escapeHtml } from "./escapeHtml.js";
 
 export class MainView {
 
