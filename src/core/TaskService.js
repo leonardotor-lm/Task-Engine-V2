@@ -1844,9 +1844,63 @@ export class TaskService {
 
     hasTasksWithTag(tagId) {
 
+        return this.getTasksWithTag(tagId)
+            .length > 0;
+
+    }
+
+    getTasksWithTag(tagId) {
+
         return this.repository
             .getAll()
-            .some(task => task.tagIds.includes(tagId));
+            .filter(task =>
+                task.tagIds.includes(tagId)
+            );
+
+    }
+
+    getActiveTasksWithTag(tagId) {
+
+        return this.getTasksWithTag(tagId)
+            .filter(task =>
+                this.isActiveTask(task)
+            );
+
+    }
+
+    removeTagAssociations(tagId) {
+
+        const updated = this
+            .getTasksWithTag(tagId)
+            .map(task => {
+
+                const copy = new Task(
+                    task.toJSON()
+                );
+
+                copy.update({
+                    tagIds: copy.tagIds.filter(
+                        id => id !== tagId
+                    )
+                });
+
+                return copy;
+
+            });
+
+        if (updated.length === 0) {
+            return updated;
+        }
+
+        if (this.repository.updateMany) {
+            this.repository.updateMany(updated);
+        } else {
+            for (const task of updated) {
+                this.repository.update(task);
+            }
+        }
+
+        return updated;
 
     }
 
