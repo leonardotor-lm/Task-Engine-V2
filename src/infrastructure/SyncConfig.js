@@ -63,6 +63,63 @@ export class SyncConfig {
 
     }
 
+    snapshotStorage(keys) {
+
+        return new Map(
+            keys.map(key => [
+                key,
+                this.storage.getItem(key)
+            ])
+        );
+
+    }
+
+    runStorageTransaction(keys, operation) {
+
+        const snapshot = this.snapshotStorage(keys);
+        const pendingRevisionRollback =
+            this.pendingRevisionRollback;
+
+        try {
+            return operation();
+        } catch (error) {
+
+            for (const key of [...keys].reverse()) {
+                try {
+                    this.restoreStorageValue(
+                        key,
+                        snapshot.get(key) ?? null
+                    );
+                } catch {
+                    // Conservamos el error original.
+                }
+            }
+
+            this.pendingRevisionRollback =
+                pendingRevisionRollback;
+
+            throw error;
+
+        }
+
+    }
+
+    removeSyncStateUnsafe() {
+
+        this.pendingRevisionRollback = null;
+
+        this.storage.removeItem(
+            SYNC_REVISION_KEY
+        );
+        this.storage.removeItem(
+            SYNC_FINGERPRINT_KEY
+        );
+        this.storage.removeItem(
+            SYNC_LAST_SUCCESS_KEY
+        );
+
+    }
+
     save({ url, token }) {
 
         const configuration = {
@@ -79,24 +136,44 @@ export class SyncConfig {
             Boolean(knownEndpoint) &&
             knownEndpoint !== configuration.url;
 
-        this.storage.setItem(
+        const keys = [
             SYNC_URL_KEY,
-            configuration.url
-        );
-
-        this.storage.setItem(
             SYNC_TOKEN_KEY,
-            configuration.token
-        );
-
-        this.storage.setItem(
             SYNC_ENDPOINT_KEY,
-            configuration.url
-        );
+            ...(endpointChanged
+                ? [
+                    SYNC_REVISION_KEY,
+                    SYNC_FINGERPRINT_KEY,
+                    SYNC_LAST_SUCCESS_KEY
+                ]
+                : [])
+        ];
 
-        if (endpointChanged) {
-            this.clearSyncState();
-        }
+        this.runStorageTransaction(
+            keys,
+            () => {
+
+                this.storage.setItem(
+                    SYNC_URL_KEY,
+                    configuration.url
+                );
+
+                this.storage.setItem(
+                    SYNC_TOKEN_KEY,
+                    configuration.token
+                );
+
+                this.storage.setItem(
+                    SYNC_ENDPOINT_KEY,
+                    configuration.url
+                );
+
+                if (endpointChanged) {
+                    this.removeSyncStateUnsafe();
+                }
+
+            }
+        );
 
         return configuration;
 
@@ -142,18 +219,38 @@ export class SyncConfig {
 
     clear() {
 
-        this.storage.removeItem(SYNC_URL_KEY);
-        this.storage.removeItem(SYNC_TOKEN_KEY);
+        this.runStorageTransaction(
+            [SYNC_URL_KEY, SYNC_TOKEN_KEY],
+            () => {
+                this.storage.removeItem(SYNC_URL_KEY);
+                this.storage.removeItem(SYNC_TOKEN_KEY);
+            }
+        );
 
     }
 
     forgetEndpoint() {
 
-        this.clear();
-        this.storage.removeItem(
-            SYNC_ENDPOINT_KEY
+        const keys = [
+            SYNC_URL_KEY,
+            SYNC_TOKEN_KEY,
+            SYNC_ENDPOINT_KEY,
+            SYNC_REVISION_KEY,
+            SYNC_FINGERPRINT_KEY,
+            SYNC_LAST_SUCCESS_KEY
+        ];
+
+        this.runStorageTransaction(
+            keys,
+            () => {
+                this.storage.removeItem(SYNC_URL_KEY);
+                this.storage.removeItem(SYNC_TOKEN_KEY);
+                this.storage.removeItem(
+                    SYNC_ENDPOINT_KEY
+                );
+                this.removeSyncStateUnsafe();
+            }
         );
-        this.clearSyncState();
 
     }
 
@@ -338,14 +435,13 @@ export class SyncConfig {
 
     clearSyncState() {
 
-        this.clearRevision();
-
-        this.storage.removeItem(
-            SYNC_FINGERPRINT_KEY
-        );
-
-        this.storage.removeItem(
-            SYNC_LAST_SUCCESS_KEY
+        this.runStorageTransaction(
+            [
+                SYNC_REVISION_KEY,
+                SYNC_FINGERPRINT_KEY,
+                SYNC_LAST_SUCCESS_KEY
+            ],
+            () => this.removeSyncStateUnsafe()
         );
 
     }
