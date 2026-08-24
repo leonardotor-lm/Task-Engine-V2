@@ -9,11 +9,66 @@ function compareGroupLabels(a, b) {
         return a.unassigned ? 1 : -1;
     }
 
+    if (a.sortKey && b.sortKey) {
+        return a.sortKey.localeCompare(b.sortKey);
+    }
+
     return a.label.localeCompare(
         b.label,
         "es",
         { sensitivity: "base" }
     );
+}
+
+function getTodayString() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1)
+        .padStart(2, "0");
+    const day = String(today.getDate())
+        .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function getDateAfterDays(date, days) {
+    const value = new Date(`${date}T12:00:00`);
+    value.setDate(value.getDate() + days);
+
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1)
+        .padStart(2, "0");
+    const day = String(value.getDate())
+        .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function formatDateGroupLabel(
+    date,
+    today = getTodayString()
+) {
+    if (date === today) return "Hoy";
+    if (date === getDateAfterDays(today, 1)) {
+        return "Mañana";
+    }
+
+    const [year, month, day] = date.split("-");
+    const weekday = new Date(
+        `${date}T12:00:00`
+    ).toLocaleDateString(
+        "es-AR",
+        { weekday: "long" }
+    );
+    const capitalizedWeekday =
+        weekday.charAt(0).toUpperCase() +
+        weekday.slice(1);
+    const formattedDate =
+        year === today.slice(0, 4)
+            ? `${day}/${month}`
+            : `${day}/${month}/${year}`;
+
+    return `${capitalizedWeekday} ${formattedDate}`;
 }
 
 function resolveProject(task, tasksById) {
@@ -56,6 +111,55 @@ function buildAncestorPath(task, tasksById) {
 
 function getContextKey(task) {
     return task?.contextId ?? "__none__";
+}
+
+function getDateKey(task) {
+    return task?.dueDate ?? "__none__";
+}
+
+function buildSeparatedGroupingRenderState(
+    tasks,
+    expandedTaskIds,
+    getGroupKey
+) {
+    const expanded = expandedTaskIds instanceof Set
+        ? expandedTaskIds
+        : new Set();
+    const tasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
+    const originallyVisibleTaskIds =
+        collectVisibleTaskIds(tasks, expanded);
+    const forcedVisibleTaskIds = new Set();
+    const renderExpandedTaskIds = new Set(expanded);
+
+    for (const task of tasks) {
+        const parent = tasksById.get(task.parentTaskId);
+
+        if (
+            !parent ||
+            getGroupKey(parent) === getGroupKey(task)
+        ) {
+            continue;
+        }
+
+        forcedVisibleTaskIds.add(task.id);
+
+        const visited = new Set();
+        let current = parent;
+
+        while (current && !visited.has(current.id)) {
+            visited.add(current.id);
+            renderExpandedTaskIds.add(current.id);
+            current = tasksById.get(current.parentTaskId) ?? null;
+        }
+    }
+
+    return {
+        originallyVisibleTaskIds,
+        forcedVisibleTaskIds,
+        renderExpandedTaskIds
+    };
 }
 
 function collectVisibleTaskIds(tasks, expandedTaskIds) {
@@ -103,44 +207,22 @@ export function buildContextGroupingRenderState(
     tasks,
     expandedTaskIds = new Set()
 ) {
-    const expanded = expandedTaskIds instanceof Set
-        ? expandedTaskIds
-        : new Set();
-    const tasksById = new Map(
-        tasks.map(task => [task.id, task])
+    return buildSeparatedGroupingRenderState(
+        tasks,
+        expandedTaskIds,
+        getContextKey
     );
-    const originallyVisibleTaskIds =
-        collectVisibleTaskIds(tasks, expanded);
-    const forcedVisibleTaskIds = new Set();
-    const renderExpandedTaskIds = new Set(expanded);
+}
 
-    for (const task of tasks) {
-        const parent = tasksById.get(task.parentTaskId);
-
-        if (
-            !parent ||
-            getContextKey(parent) === getContextKey(task)
-        ) {
-            continue;
-        }
-
-        forcedVisibleTaskIds.add(task.id);
-
-        const visited = new Set();
-        let current = parent;
-
-        while (current && !visited.has(current.id)) {
-            visited.add(current.id);
-            renderExpandedTaskIds.add(current.id);
-            current = tasksById.get(current.parentTaskId) ?? null;
-        }
-    }
-
-    return {
-        originallyVisibleTaskIds,
-        forcedVisibleTaskIds,
-        renderExpandedTaskIds
-    };
+export function buildDateGroupingRenderState(
+    tasks,
+    expandedTaskIds = new Set()
+) {
+    return buildSeparatedGroupingRenderState(
+        tasks,
+        expandedTaskIds,
+        getDateKey
+    );
 }
 
 export function isSeparatedContextSubtask(
@@ -155,6 +237,17 @@ export function isSeparatedContextSubtask(
         !rowById.has(task.parentTaskId) ||
         groupKeyByTaskId.get(task.parentTaskId) !== groupKey
     );
+}
+
+export function isDateGroupingAvailable(app) {
+    if (
+        app?.currentView === View.TODAY ||
+        app?.currentView === View.TOMORROW
+    ) {
+        return false;
+    }
+
+    return app?.taskFilters?.due !== "NO_DATE";
 }
 
 export function getTaskGroupingViewKey(app) {
@@ -187,7 +280,8 @@ export function buildTaskGroups(
     {
         areas = [],
         contexts = [],
-        allTasks = tasks
+        allTasks = tasks,
+        today = getTodayString()
     } = {}
 ) {
     if (grouping === TaskGrouping.NONE) {
@@ -242,12 +336,30 @@ export function buildTaskGroups(
             key = project?.id ?? "__none__";
             label = project?.title ?? "Sin proyecto";
             unassigned = !project;
+        } else if (grouping === TaskGrouping.DATE) {
+            key = task.dueDate ?? "__none__";
+            label = task.dueDate
+                ? formatDateGroupLabel(
+                    task.dueDate,
+                    today
+                )
+                : "Sin fecha";
+            unassigned = !task.dueDate;
         } else {
             continue;
         }
 
-        ensureGroup(key, label, unassigned)
-            .tasks.push(task);
+        const group = ensureGroup(
+            key,
+            label,
+            unassigned
+        );
+
+        if (grouping === TaskGrouping.DATE) {
+            group.sortKey = task.dueDate ?? "";
+        }
+
+        group.tasks.push(task);
     }
 
     return Array.from(groupsByKey.values())
@@ -272,7 +384,7 @@ export class TaskGroupingController {
                 storage
             );
         this.started = false;
-        this.contextGroupingRenderState = null;
+        this.separatedGroupingRenderState = null;
     }
 
     start() {
@@ -292,9 +404,16 @@ export class TaskGroupingController {
     }
 
     getGrouping() {
-        return this.repository.get(
+        const grouping = this.repository.get(
             this.getViewKey()
         );
+
+        return (
+            grouping === TaskGrouping.DATE &&
+            !isDateGroupingAvailable(this.app)
+        )
+            ? TaskGrouping.NONE
+            : grouping;
     }
 
     wrapTaskListRender() {
@@ -308,18 +427,28 @@ export class TaskGroupingController {
         const originalRender = taskList.render.bind(taskList);
 
         taskList.render = (...args) => {
-            if (this.getGrouping() !== TaskGrouping.CONTEXT) {
-                this.contextGroupingRenderState = null;
+            const grouping = this.getGrouping();
+
+            if (
+                grouping !== TaskGrouping.CONTEXT &&
+                grouping !== TaskGrouping.DATE
+            ) {
+                this.separatedGroupingRenderState = null;
                 return originalRender(...args);
             }
 
             const contextArgs = [...args];
-            const state = buildContextGroupingRenderState(
-                contextArgs[0] ?? [],
-                contextArgs[7]
-            );
+            const state = grouping === TaskGrouping.DATE
+                ? buildDateGroupingRenderState(
+                    contextArgs[0] ?? [],
+                    contextArgs[7]
+                )
+                : buildContextGroupingRenderState(
+                    contextArgs[0] ?? [],
+                    contextArgs[7]
+                );
 
-            this.contextGroupingRenderState = state;
+            this.separatedGroupingRenderState = state;
             contextArgs[7] = state.renderExpandedTaskIds;
 
             return originalRender(...contextArgs);
@@ -378,6 +507,9 @@ export class TaskGroupingController {
                     <option value="AREA">Área</option>
                     <option value="CONTEXT">Contexto</option>
                     <option value="PROJECT">Proyecto</option>
+                    ${isDateGroupingAvailable(this.app)
+                        ? '<option value="DATE">Fecha</option>'
+                        : ""}
                 </select>
             `;
 
@@ -499,20 +631,23 @@ export class TaskGroupingController {
             return;
         }
 
-        const contextState = grouping === TaskGrouping.CONTEXT
-            ? this.contextGroupingRenderState
+        const separatedState = (
+            grouping === TaskGrouping.CONTEXT ||
+            grouping === TaskGrouping.DATE
+        )
+            ? this.separatedGroupingRenderState
             : null;
         const rows = Array.from(list.children)
             .filter(element =>
                 element.classList?.contains("task")
             )
             .filter(row => {
-                if (!contextState) return true;
+                if (!separatedState) return true;
 
                 const taskId = row.dataset.id;
                 const keep =
-                    contextState.originallyVisibleTaskIds.has(taskId) ||
-                    contextState.forcedVisibleTaskIds.has(taskId);
+                    separatedState.originallyVisibleTaskIds.has(taskId) ||
+                    separatedState.forcedVisibleTaskIds.has(taskId);
 
                 if (!keep) {
                     row.remove();
@@ -547,7 +682,8 @@ export class TaskGroupingController {
                     this.app.areaService?.getAllAreas?.() ?? [],
                 contexts:
                     this.app.contextService?.getAllContexts?.() ?? [],
-                allTasks
+                allTasks,
+                today: this.app.getTodayString?.()
             }
         );
         const groupKeyByTaskId = new Map();
@@ -577,7 +713,10 @@ export class TaskGroupingController {
                 if (!row) continue;
 
                 if (
-                    grouping === TaskGrouping.CONTEXT &&
+                    (
+                        grouping === TaskGrouping.CONTEXT ||
+                        grouping === TaskGrouping.DATE
+                    ) &&
                     isSeparatedContextSubtask(
                         task,
                         group.key,

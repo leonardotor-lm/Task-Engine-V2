@@ -100,6 +100,76 @@ test("Contexto conserva las filas de padre e hija en Todas", async ({ page }) =>
     await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
 });
 
+test("Fecha agrupa vencimientos exactos y no aparece en Hoy ni Mañana", async ({ page }) => {
+    await page.addInitScript(() => {
+        const dateAfterDays = days => {
+            const value = new Date();
+            value.setHours(12, 0, 0, 0);
+            value.setDate(value.getDate() + days);
+
+            const year = value.getFullYear();
+            const month = String(
+                value.getMonth() + 1
+            ).padStart(2, "0");
+            const day = String(
+                value.getDate()
+            ).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        };
+
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([
+                {
+                    id: "today",
+                    title: "Vence hoy",
+                    status: "PENDING",
+                    dueDate: dateAfterDays(0)
+                },
+                {
+                    id: "future",
+                    title: "Vence después",
+                    status: "PENDING",
+                    dueDate: dateAfterDays(4)
+                },
+                {
+                    id: "none",
+                    title: "Sin vencimiento",
+                    status: "PENDING",
+                    dueDate: null
+                }
+            ])
+        );
+    });
+
+    await page.goto("/");
+
+    await expect(
+        page.locator('#taskGrouping option[value="DATE"]')
+    ).toHaveCount(0);
+
+    await page.locator("#showAll").click();
+    await expect(
+        page.locator('#taskGrouping option[value="DATE"]')
+    ).toHaveCount(1);
+    await page.locator("#taskGrouping")
+        .selectOption("DATE");
+
+    const labels = await page.locator(
+        ".taskGroupHeader"
+    ).allTextContents();
+
+    expect(labels[0]).toBe("Hoy");
+    expect(labels[1]).toMatch(/\d{2}\/\d{2}/);
+    expect(labels.at(-1)).toBe("Sin fecha");
+
+    await page.locator("#showTomorrow").click();
+    await expect(
+        page.locator('#taskGrouping option[value="DATE"]')
+    ).toHaveCount(0);
+});
+
 test("quitar una etiqueta mantiene abierto el selector del editor", async ({ page }) => {
     await page.addInitScript(() => {
         localStorage.setItem(
