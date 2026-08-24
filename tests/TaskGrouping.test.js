@@ -187,15 +187,26 @@ test("al agrupar por contexto mantiene juntos padre e hijo cuando comparten cont
     );
 });
 
-test("al agrupar por contexto renderiza también hijos de padres contraídos", () => {
-    let receivedState = null;
+test("al agrupar por contexto expande sólo el render de TaskList sin envolver MainView", () => {
+    let receivedExpandedTaskIds = "not-called";
+    const taskList = {
+        render(...args) {
+            receivedExpandedTaskIds = args[7];
+            return "ok";
+        }
+    };
+    const mainView = {
+        render() {
+            return "main";
+        },
+        viewRouter: {
+            taskList
+        }
+    };
+    const originalMainRender = mainView.render;
     const app = {
         currentView: "TODAY",
-        mainView: {
-            render(state) {
-                receivedState = state;
-            }
-        }
+        mainView
     };
     const repository = {
         get() {
@@ -210,12 +221,20 @@ test("al agrupar por contexto renderiza también hijos de padres contraídos", (
         }
     );
 
-    controller.wrapMainViewRender();
-    controller.app.mainView.render({
-        expandedTaskIds: new Set()
-    });
+    controller.wrapTaskListRender();
+    taskList.render(
+        [],
+        "Hoy",
+        false,
+        [],
+        [],
+        [],
+        "",
+        new Set(["p"])
+    );
 
-    assert.equal(receivedState.expandedTaskIds, null);
+    assert.equal(receivedExpandedTaskIds, null);
+    assert.equal(mainView.render, originalMainRender);
 });
 
 test("agrupa subtareas con su proyecto raíz y deja tareas simples en Sin proyecto", () => {
