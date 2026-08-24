@@ -18,7 +18,7 @@ export class CloudGateway {
 
     constructor({
         fetchFn = fetch,
-        timeoutMs = 15000
+        timeoutMs = 30000
     } = {}) {
 
         this.fetchFn = fetchFn;
