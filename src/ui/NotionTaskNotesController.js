@@ -58,6 +58,7 @@ export class NotionTaskNotesController {
             "createSubtask",
             "updateTask",
             "updateTasks",
+            "removeTagAssociations",
             "completeTasks",
             "archiveTasks",
             "deleteTasks",
