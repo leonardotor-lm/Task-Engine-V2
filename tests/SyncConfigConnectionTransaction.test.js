@@ -199,3 +199,36 @@ test("un cambio de endpoint exitoso actualiza conexión y limpia estado anterior
     assert.equal(config.getLastSuccess(), "");
 
 });
+
+test("restaura el rollback pendiente si falla una limpieza transaccional", () => {
+
+    const initial = originalState();
+    const storage = new FaultyStorage(initial);
+    const config = new SyncConfig(storage);
+
+    config.setRevision(8);
+    assert.deepEqual(
+        config.pendingRevisionRollback,
+        { previousRevision: "7" }
+    );
+
+    storage.failOnce(
+        "removeItem",
+        SYNC_LAST_SUCCESS_KEY
+    );
+
+    assert.throws(
+        () => config.clearSyncState(),
+        /storage failure/
+    );
+
+    assert.deepEqual(
+        config.pendingRevisionRollback,
+        { previousRevision: "7" }
+    );
+    assert.equal(
+        storage.getItem(SYNC_REVISION_KEY),
+        "8"
+    );
+
+});
