@@ -111,6 +111,9 @@ import {
     AiTaskQualityController
 } from "./ui/AiTaskQualityController.js";
 import {
+    AiTransactionalWritesController
+} from "./ui/AiTransactionalWritesController.js";
+import {
     AiSidebarGroupController
 } from "./ui/AiSidebarGroupController.js";
 import {
@@ -228,6 +231,18 @@ const notionSettingsController =
     new NotionSettingsController(app);
 const notionTaskNotesController =
     new NotionTaskNotesController(app);
+const aiTransactionalWritesController =
+    new AiTransactionalWritesController(
+        app,
+        {
+            taskCaptureController:
+                aiTaskCaptureController,
+            projectProposalController:
+                aiProjectProposalController,
+            notionTaskNotesController:
+                notionTaskNotesController
+        }
+    );
 const notionGoalNotesController =
     new NotionGoalNotesController(app);
 const notionGoalNotesEventBridge =
@@ -293,6 +308,7 @@ aiTaskQualityController.start();
 notionSettingsController.start();
 notionSyncRetryController.start();
 notionTaskNotesController.start();
+aiTransactionalWritesController.start();
 notionGoalNotesController.start();
 notionGoalNotesEventBridge.start();
 desktopTaskEditorLayoutController.start();
