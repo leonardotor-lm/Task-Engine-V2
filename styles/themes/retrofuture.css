@@ -55,9 +55,12 @@
 :root[data-theme="retrofuture"],
 :root[data-theme="retrofuture"] body,
 :root[data-theme="retrofuture"] #app,
-:root[data-theme="retrofuture"] .layout,
-:root[data-theme="retrofuture"] .content {
+:root[data-theme="retrofuture"] .layout {
     background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="retrofuture"] .content {
     color: var(--color-text);
 }
 
