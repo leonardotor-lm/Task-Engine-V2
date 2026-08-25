@@ -1,5 +1,3 @@
-@import url("./retrofuture-background.css");
-
 :root[data-theme="retrofuture"] {
     --color-text: #2b2430;
     --color-text-subtle: #51465a;
@@ -55,17 +53,10 @@
 :root[data-theme="retrofuture"],
 :root[data-theme="retrofuture"] body,
 :root[data-theme="retrofuture"] #app,
-:root[data-theme="retrofuture"] .layout {
+:root[data-theme="retrofuture"] .layout,
+:root[data-theme="retrofuture"] .content {
     background: var(--color-surface-subtle);
     color: var(--color-text);
-}
-
-:root[data-theme="retrofuture"] .content {
-    color: var(--color-text);
-    background-size: cover, contain;
-    background-position: center, center;
-    background-repeat: no-repeat, no-repeat;
-    background-blend-mode: multiply;
 }
 
 :root[data-theme="retrofuture"] .details,
