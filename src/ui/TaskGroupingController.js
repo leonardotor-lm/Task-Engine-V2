@@ -250,6 +250,10 @@ export function isDateGroupingAvailable(app) {
     return app?.taskFilters?.due !== "NO_DATE";
 }
 
+export function isProjectGroupingAvailable(app) {
+    return app?.currentView !== View.PROJECTS;
+}
+
 export function getTaskGroupingViewKey(app) {
     if (app.currentCustomFilterId) {
         return `custom-filter:${app.currentCustomFilterId}`;
@@ -408,10 +412,17 @@ export class TaskGroupingController {
             this.getViewKey()
         );
 
-        return (
-            grouping === TaskGrouping.DATE &&
-            !isDateGroupingAvailable(this.app)
-        )
+        const unavailable =
+            (
+                grouping === TaskGrouping.DATE &&
+                !isDateGroupingAvailable(this.app)
+            ) ||
+            (
+                grouping === TaskGrouping.PROJECT &&
+                !isProjectGroupingAvailable(this.app)
+            );
+
+        return unavailable
             ? TaskGrouping.NONE
             : grouping;
     }
@@ -506,7 +517,9 @@ export class TaskGroupingController {
                     <option value="NONE">Sin agrupar</option>
                     <option value="AREA">Área</option>
                     <option value="CONTEXT">Contexto</option>
-                    <option value="PROJECT">Proyecto</option>
+                    ${isProjectGroupingAvailable(this.app)
+                        ? '<option value="PROJECT">Proyecto</option>'
+                        : ""}
                     ${isDateGroupingAvailable(this.app)
                         ? '<option value="DATE">Fecha</option>'
                         : ""}

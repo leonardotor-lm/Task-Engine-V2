@@ -11,6 +11,7 @@ import {
     buildContextGroupingRenderState,
     buildTaskGroups,
     isDateGroupingAvailable,
+    isProjectGroupingAvailable,
     TaskGroupingController
 } from "../src/ui/TaskGroupingController.js";
 import { View } from "../src/core/View.js";
@@ -450,6 +451,41 @@ test("ofrece agrupar por fecha salvo en Hoy Mañana o el filtro Sin fecha", () =
             taskFilters: { due: "NO_DATE" }
         }),
         false
+    );
+});
+
+test("oculta agrupar por proyecto sólo en la vista Proyectos", () => {
+    assert.equal(
+        isProjectGroupingAvailable({
+            currentView: View.PROJECTS
+        }),
+        false
+    );
+    assert.equal(
+        isProjectGroupingAvailable({
+            currentView: View.ALL
+        }),
+        true
+    );
+
+    const controller = new TaskGroupingController(
+        {
+            currentView: View.PROJECTS,
+            mainView: {}
+        },
+        {
+            repository: {
+                get() {
+                    return TaskGrouping.PROJECT;
+                }
+            },
+            documentRef: null
+        }
+    );
+
+    assert.equal(
+        controller.getGrouping(),
+        TaskGrouping.NONE
     );
 });
 
