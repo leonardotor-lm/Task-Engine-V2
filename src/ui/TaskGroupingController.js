@@ -117,6 +117,12 @@ function getDateKey(task) {
     return task?.dueDate ?? "__none__";
 }
 
+function normalizeGroupColor(color) {
+    return /^#[0-9a-f]{6}$/i.test(color ?? "")
+        ? color
+        : null;
+}
+
 function buildSeparatedGroupingRenderState(
     tasks,
     expandedTaskIds,
@@ -306,13 +312,15 @@ export function buildTaskGroups(
     const ensureGroup = (
         key,
         label,
-        unassigned = false
+        unassigned = false,
+        color = null
     ) => {
         if (!groupsByKey.has(key)) {
             groupsByKey.set(key, {
                 key,
                 label,
                 unassigned,
+                color,
                 tasks: []
             });
         }
@@ -324,17 +332,24 @@ export function buildTaskGroups(
         let key = "";
         let label = "";
         let unassigned = false;
+        let color = null;
 
         if (grouping === TaskGrouping.AREA) {
             const area = areasById.get(task.areaId);
             key = area?.id ?? "__none__";
             label = area?.name ?? "Sin área";
             unassigned = !area;
+            color = area
+                ? normalizeGroupColor(area.color)
+                : null;
         } else if (grouping === TaskGrouping.CONTEXT) {
             const context = contextsById.get(task.contextId);
             key = context?.id ?? "__none__";
             label = context?.name ?? "Sin contexto";
             unassigned = !context;
+            color = context
+                ? normalizeGroupColor(context.color)
+                : null;
         } else if (grouping === TaskGrouping.PROJECT) {
             const project = resolveProject(task, tasksById);
             key = project?.id ?? "__none__";
@@ -356,7 +371,8 @@ export function buildTaskGroups(
         const group = ensureGroup(
             key,
             label,
-            unassigned
+            unassigned,
+            color
         );
 
         if (grouping === TaskGrouping.DATE) {
@@ -718,6 +734,12 @@ export class TaskGroupingController {
                 "taskGroupHeader taskHierarchyPath";
             header.setAttribute("role", "presentation");
             header.textContent = group.label;
+
+            if (group.color) {
+                header.style.color = group.color;
+                header.dataset.entityColor = group.color;
+            }
+
             fragment.appendChild(header);
 
             for (const task of group.tasks) {
