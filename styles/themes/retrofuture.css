@@ -1,3 +1,5 @@
+@import url("./retrofuture-background.css");
+
 :root[data-theme="retrofuture"] {
     --color-text: #2b2430;
     --color-text-subtle: #51465a;
