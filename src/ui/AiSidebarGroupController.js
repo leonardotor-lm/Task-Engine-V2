@@ -395,15 +395,15 @@ export class AiSidebarGroupController {
         const waiting = this.document?.getElementById?.(
             "showWaiting"
         );
-        const statistics = this.document?.getElementById?.(
-            "showStatistics"
+        const calendar = this.document?.getElementById?.(
+            "showCalendar"
         );
         if (
             waiting &&
-            statistics &&
-            waiting.parentElement === statistics.parentElement
+            calendar &&
+            waiting.parentElement === calendar.parentElement
         ) {
-            statistics.before(waiting);
+            calendar.before(waiting);
         }
 
         if (

@@ -14,6 +14,25 @@ test("la aplicación carga sin errores de página y muestra la navegación princ
     await expect(page.locator("#aiSidebarTools")).toHaveCount(0);
 });
 
+test("Planificación muestra sus vistas en el orden acordado", async ({ page }) => {
+    await page.goto("/");
+
+    const ids = await page.locator(
+        "#sidebarPlanningGroup > .sidebarPlanningGroupBody > button"
+    ).evaluateAll(buttons =>
+        buttons.map(button => button.id)
+    );
+
+    expect(ids).toEqual([
+        "showAll",
+        "showProjects",
+        "showGoals",
+        "showWaiting",
+        "showCalendar",
+        "showStatistics"
+    ]);
+});
+
 test("los grupos Planificación y Asistencia con IA se pueden contraer y expandir", async ({ page }) => {
     await page.addInitScript(() => {
         localStorage.setItem(

@@ -278,7 +278,7 @@ test("usa tokens del tema para mantener contraste en mensajes del chat de IA", (
     );
 });
 
-test("reubica En espera antes de Estadísticas cuando WaitingController lo inyecta", () => {
+test("reubica En espera antes de Calendario cuando WaitingController lo inyecta", () => {
     const source = fs.readFileSync(
         new URL(
             "../src/ui/AiSidebarGroupController.js",
@@ -288,8 +288,8 @@ test("reubica En espera antes de Estadísticas cuando WaitingController lo inyec
     );
 
     assert.match(source, /getElementById\?\.\(\s*"showWaiting"/);
-    assert.match(source, /getElementById\?\.\(\s*"showStatistics"/);
-    assert.match(source, /statistics\.before\(waiting\)/);
+    assert.match(source, /getElementById\?\.\(\s*"showCalendar"/);
+    assert.match(source, /calendar\.before\(waiting\)/);
 });
 
 test("el agrupador se inicia antes que las herramientas de IA para neutralizar wrappers heredados", () => {
