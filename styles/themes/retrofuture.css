@@ -102,10 +102,37 @@
 }
 
 :root[data-theme="retrofuture"] .sidebar .sidebarTaskCount,
-:root[data-theme="retrofuture"] .sidebarNavigationGroup > summary,
-:root[data-theme="retrofuture"] .customFiltersSection > summary,
-:root[data-theme="retrofuture"] .sidebarSectionLabel {
-    color: #EC008C;
+:root[data-theme="retrofuture"] .sidebar .sidebarNavigationGroup > summary,
+:root[data-theme="retrofuture"] .sidebar .customFiltersSection > summary,
+:root[data-theme="retrofuture"] .sidebar .sidebarSectionLabel,
+:root[data-theme="retrofuture"] .sidebar .sidebarNavigationGroup > summary *,
+:root[data-theme="retrofuture"] .sidebar .customFiltersSection > summary * {
+    color: #EC008C !important;
+}
+
+:root[data-theme="retrofuture"] .sidebar .sidebarNavigationGroup > summary svg,
+:root[data-theme="retrofuture"] .sidebar .customFiltersSection > summary svg {
+    color: #EC008C !important;
+    stroke: currentColor;
+}
+
+:root[data-theme="retrofuture"] .sidebar .settingsDialog,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog h1,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog h2,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog h3,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog label,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsHint,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsToggleControl,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsToggleControl span,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsDialogHeader,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsDialogBody,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsDialogFooter {
+    color: #2b2430 !important;
+}
+
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsHint {
+    opacity: 1;
+    color: #51465a !important;
 }
 
 :root[data-theme="retrofuture"] .task {
