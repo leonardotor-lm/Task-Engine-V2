@@ -42,6 +42,14 @@ function renderMetricDetails(metric, periodLabel) {
     return `
         <dl class="statisticsDetails">
             <div>
+                <dt>Tareas consideradas</dt>
+                <dd>${metric.total}</dd>
+            </div>
+            <div>
+                <dt>Completadas</dt>
+                <dd>${metric.completed}</dd>
+            </div>
+            <div>
                 <dt>Pendientes</dt>
                 <dd>${metric.pending}</dd>
             </div>
