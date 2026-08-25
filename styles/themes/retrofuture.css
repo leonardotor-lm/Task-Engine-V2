@@ -101,10 +101,13 @@
     border-color: #e96d2a;
 }
 
-:root[data-theme="retrofuture"] .sidebar .sidebarButton:not(.active) .sidebarCount,
+:root[data-theme="retrofuture"] .sidebar .sidebarButton:not(.active) .sidebarCount {
+    color: #e8e4ee;
+}
+
 :root[data-theme="retrofuture"] .sidebar .sidebarSectionTitle,
 :root[data-theme="retrofuture"] .sidebar .sidebarSectionToggle {
-    color: #dfd9ea;
+    color: #ff18b8;
 }
 
 :root[data-theme="retrofuture"] .task {
