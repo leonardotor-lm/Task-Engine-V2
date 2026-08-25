@@ -19,9 +19,11 @@ export class SidebarLayoutController
 
         [
             "showAll",
+            "showProjects",
+            "showGoals",
             "showWaiting",
             "showCalendar",
-            "showGoals"
+            "showStatistics"
         ].forEach(id => {
 
             const button = document.getElementById(id);
