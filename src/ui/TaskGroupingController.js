@@ -260,6 +260,48 @@ export function isProjectGroupingAvailable(app) {
     return app?.currentView !== View.PROJECTS;
 }
 
+export function getRedundantMetadataSelectors(
+    app,
+    grouping = TaskGrouping.NONE
+) {
+    if (
+        app?.advancedSearchMode ||
+        app?.currentCustomFilterId
+    ) {
+        return [];
+    }
+
+    const selectors = new Set();
+
+    if (grouping === TaskGrouping.AREA) {
+        selectors.add(".taskMetaArea");
+    }
+
+    if (grouping === TaskGrouping.CONTEXT) {
+        selectors.add(".taskMetaContext");
+    }
+
+    if (grouping === TaskGrouping.DATE) {
+        selectors.add(".taskDueDate");
+    }
+
+    const filters = app?.taskFilters ?? {};
+
+    if (filters.areaId) {
+        selectors.add(".taskMetaArea");
+    }
+
+    if (filters.contextId) {
+        selectors.add(".taskMetaContext");
+    }
+
+    if (filters.due === "TODAY") {
+        selectors.add(".taskDueDate");
+    }
+
+    return Array.from(selectors);
+}
+
 export function getTaskGroupingViewKey(app) {
     if (app.currentCustomFilterId) {
         return `custom-filter:${app.currentCustomFilterId}`;
@@ -500,6 +542,7 @@ export class TaskGroupingController {
         this.ensureActiveFiltersNotice();
         this.bindControl();
         this.groupVisibleTasks();
+        this.applyMetadataRedundancy();
     }
 
     ensureControl() {
@@ -616,6 +659,38 @@ export class TaskGroupingController {
             );
         } else {
             body.prepend(button);
+        }
+    }
+
+    applyMetadataRedundancy() {
+        if (!this.document) return;
+
+        const selectors = getRedundantMetadataSelectors(
+            this.app,
+            this.getGrouping()
+        );
+
+        for (const selector of selectors) {
+            const elements = this.document.querySelectorAll?.(
+                `.content .task ${selector}`
+            ) ?? [];
+
+            for (const element of Array.from(elements)) {
+                element.remove?.();
+            }
+        }
+
+        const metadataContainers =
+            this.document.querySelectorAll?.(
+                ".content .task .taskMeta"
+            ) ?? [];
+
+        for (const container of Array.from(
+            metadataContainers
+        )) {
+            if (container.children?.length === 0) {
+                container.remove?.();
+            }
         }
     }
 
