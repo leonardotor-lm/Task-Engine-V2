@@ -101,13 +101,12 @@
     border-color: #e96d2a;
 }
 
-:root[data-theme="retrofuture"] .sidebar .sidebarButton:not(.active) .sidebarCount {
-    color: #e8e4ee;
-}
-
-:root[data-theme="retrofuture"] .sidebar .sidebarSectionTitle,
-:root[data-theme="retrofuture"] .sidebar .sidebarSectionToggle {
-    color: #ff18b8;
+:root[data-theme="retrofuture"] .sidebar .sidebarTaskCount,
+:root[data-theme="retrofuture"] .sidebarNavigationGroup > summary,
+:root[data-theme="retrofuture"] .customFiltersSection > summary,
+:root[data-theme="retrofuture"] .sidebarSectionLabel {
+    color: #ffd8f1;
+    text-shadow: 0 1px 0 #51465a;
 }
 
 :root[data-theme="retrofuture"] .task {
