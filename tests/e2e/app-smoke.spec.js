@@ -119,6 +119,22 @@ test("Contexto conserva las filas de padre e hija en Todas", async ({ page }) =>
     await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
 });
 
+test("Proyecto no aparece como agrupamiento dentro de la vista Proyectos", async ({ page }) => {
+    await page.goto("/");
+
+    await page.locator("#showAll").click();
+    await expect(
+        page.locator('#taskGrouping option[value="PROJECT"]')
+    ).toHaveCount(1);
+
+    await page.locator("#showProjects").click();
+    await expect(
+        page.locator('#taskGrouping option[value="PROJECT"]')
+    ).toHaveCount(0);
+    await expect(page.locator("#taskGrouping"))
+        .toHaveValue("NONE");
+});
+
 test("Fecha agrupa vencimientos exactos y no aparece en Hoy ni Mañana", async ({ page }) => {
     await page.addInitScript(() => {
         const dateAfterDays = days => {
