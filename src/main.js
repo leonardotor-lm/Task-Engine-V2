@@ -12,6 +12,9 @@ import {
     WaitingController
 } from "./ui/WaitingController.js";
 import {
+    PlanningNavigationController
+} from "./ui/PlanningNavigationController.js";
+import {
     CompactTaskToolbarController
 } from "./ui/CompactTaskToolbarController.js";
 import {
@@ -156,6 +159,8 @@ const attachmentController =
     new AttachmentController(app);
 const waitingController =
     new WaitingController(app);
+const planningNavigationController =
+    new PlanningNavigationController(app);
 const taskToolbarController =
     new CompactTaskToolbarController(app);
 const sidebarLayoutController =
@@ -276,6 +281,7 @@ const themeController =
 attachmentController.start();
 bindAttachmentSearchReference(app);
 waitingController.start();
+planningNavigationController.start();
 taskToolbarController.start();
 sidebarLayoutController.start();
 taskFiltersDialogController.start();
@@ -291,7 +297,7 @@ syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
-ongoingSyncReconciliationController
+goingSyncReconciliationController
     .start();
 pwaController.start();
 aiSettingsController.start();
