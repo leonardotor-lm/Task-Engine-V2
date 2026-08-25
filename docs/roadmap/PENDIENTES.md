@@ -2,7 +2,7 @@
 
 Este documento es la fuente de verdad del trabajo todavía no implementado, no verificado o deliberadamente postergado. Las funciones terminadas se registran en `docs/roadmap/ROADMAP.md`, en las decisiones estables y en el historial de Git.
 
-Última actualización: 24 de agosto de 2026.
+Última actualización: 25 de agosto de 2026.
 
 ## Regla de lectura
 
@@ -44,8 +44,22 @@ El issue abierto de puesta en marcha separado del desarrollo es:
 ## Backlog aprobado
 
 - **#343 — Recordatorios móviles unidireccionales con Google Calendar.**
-
-No hay otras mejoras funcionales aprobadas pendientes de implementación.
+- **Limpieza y coherencia de vistas y agrupamientos.** Pendiente de implementación con este alcance aprobado:
+  1. Reordenar **Planificación** como: `Todas → Proyectos → Objetivos → En espera → Calendario → Estadísticas`.
+  2. Ocultar **Agrupar por proyecto** dentro de la vista **Proyectos**.
+  3. En agrupamientos por **Área** y **Contexto**, mostrar el nombre del grupo con el color de texto configurado por el usuario; sin chips, fondos ni indicadores adicionales. `Sin área` y `Sin contexto` conservan color neutro.
+  4. Ocultar en cada tarea el metadato que resulte redundante con el agrupamiento activo. Ejemplos: área al agrupar por área, contexto al agrupar por contexto, proyecto al agrupar por proyecto y fecha de vencimiento al agrupar por fecha de vencimiento. No ocultar otros campos distintos que sigan aportando información, como una fecha de inicio diferente.
+  5. Aplicar la misma regla de no redundancia a filtros simples que determinen un único valor inequívoco, por ejemplo `Área = Personal` o `Contexto = Casa`.
+  6. **Excluir expresamente los filtros avanzados** de la regla de no redundancia: en búsquedas avanzadas, conservar siempre los metadatos normales y no intentar interpretar combinaciones `AND`, `OR`, `NOT`, múltiples valores, exclusiones o rangos para ocultarlos.
+- **Rediseño compacto y ampliación de Estadísticas.** Pendiente de implementación con este alcance aprobado:
+  1. Mantener todos los datos actualmente exhibidos, pero reducir el tamaño de las tarjetas y la cantidad de espacio vacío, con una presentación más sobria, compacta y adecuada para celular.
+  2. Mantener siempre visible el encabezado de Estadísticas, sus títulos/subtítulos, el selector de período y el cuadro **Panorama general**.
+  3. Debajo de Panorama general, incorporar navegación interna mediante `Áreas | Proyectos | Objetivos`, mostrando sólo el bloque seleccionado para evitar scroll innecesario.
+  4. Conservar sin pérdida de información los datos actuales de **Proyectos** y **Objetivos**, adaptados al nuevo diseño compacto.
+  5. Agregar una vista **Áreas** con nombre, porcentaje de avance y una barra horizontal de progreso por área; el nombre puede usar el color configurado para esa área.
+  6. Calcular el avance de cada área de forma simple: `completadas en el período ÷ (completadas en el período + pendientes relevantes) × 100`.
+  7. Excluir del cálculo tareas archivadas y en papelera. Definir al implementar si las tareas **En espera** forman parte de las pendientes relevantes.
+  8. No introducir ponderaciones por prioridad, proyecto, etiqueta u otros atributos.
 
 ## Capacidades auditadas y cerradas
 
