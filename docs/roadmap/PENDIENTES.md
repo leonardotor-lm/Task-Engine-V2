@@ -44,22 +44,38 @@ El issue abierto de puesta en marcha separado del desarrollo es:
 ## Backlog aprobado
 
 - **#343 — Recordatorios móviles unidireccionales con Google Calendar.**
-- **Limpieza y coherencia de vistas y agrupamientos.** Pendiente de implementación con este alcance aprobado:
-  1. Reordenar **Planificación** como: `Todas → Proyectos → Objetivos → En espera → Calendario → Estadísticas`.
-  2. Ocultar **Agrupar por proyecto** dentro de la vista **Proyectos**.
-  3. En agrupamientos por **Área** y **Contexto**, mostrar el nombre del grupo con el color de texto configurado por el usuario; sin chips, fondos ni indicadores adicionales. `Sin área` y `Sin contexto` conservan color neutro.
-  4. Ocultar en cada tarea el metadato que resulte redundante con el agrupamiento activo. Ejemplos: área al agrupar por área, contexto al agrupar por contexto, proyecto al agrupar por proyecto y fecha de vencimiento al agrupar por fecha de vencimiento. No ocultar otros campos distintos que sigan aportando información, como una fecha de inicio diferente.
-  5. Aplicar la misma regla de no redundancia a filtros simples que determinen un único valor inequívoco, por ejemplo `Área = Personal` o `Contexto = Casa`.
-  6. **Excluir expresamente los filtros avanzados** de la regla de no redundancia: en búsquedas avanzadas, conservar siempre los metadatos normales y no intentar interpretar combinaciones `AND`, `OR`, `NOT`, múltiples valores, exclusiones o rangos para ocultarlos.
-- **Rediseño compacto y ampliación de Estadísticas.** Pendiente de implementación con este alcance aprobado:
-  1. Mantener todos los datos actualmente exhibidos, pero reducir el tamaño de las tarjetas y la cantidad de espacio vacío, con una presentación más sobria, compacta y adecuada para celular.
-  2. Mantener siempre visible el encabezado de Estadísticas, sus títulos/subtítulos, el selector de período y el cuadro **Panorama general**.
-  3. Debajo de Panorama general, incorporar navegación interna mediante `Áreas | Proyectos | Objetivos`, mostrando sólo el bloque seleccionado para evitar scroll innecesario.
-  4. Conservar sin pérdida de información los datos actuales de **Proyectos** y **Objetivos**, adaptados al nuevo diseño compacto.
-  5. Agregar una vista **Áreas** con nombre, porcentaje de avance y una barra horizontal de progreso por área; el nombre puede usar el color configurado para esa área.
-  6. Calcular el avance de cada área de forma simple: `completadas en el período ÷ (completadas en el período + pendientes relevantes) × 100`.
-  7. Excluir del cálculo tareas archivadas y en papelera. Definir al implementar si las tareas **En espera** forman parte de las pendientes relevantes.
-  8. No introducir ponderaciones por prioridad, proyecto, etiqueta u otros atributos.
+
+### Limpieza visual, agrupamientos y Estadísticas
+
+- Reordenar **Planificación** como: `Todas → Proyectos → Objetivos → En espera → Calendario → Estadísticas`.
+- Ocultar **Agrupar por proyecto** dentro de la vista **Proyectos**.
+- En agrupamientos por **Área** o **Contexto**, mostrar el nombre del grupo con el color de texto asignado por el usuario, sin chips ni fondos; `Sin área` y `Sin contexto` conservan color neutro.
+- Ocultar metadatos redundantes cuando el agrupamiento ya expresa inequívocamente ese dato: área, contexto, proyecto o fecha de vencimiento según corresponda. No ocultar otros metadatos distintos, por ejemplo fecha de inicio si sigue siendo informativa.
+- Aplicar la misma regla a filtros simples de valor único, por ejemplo `Área = Personal` o `Contexto = Casa`.
+- **No aplicar la regla de no redundancia a filtros avanzados**. En búsquedas avanzadas, los metadatos se muestran normalmente para preservar contexto en expresiones con `AND`, `OR`, `NOT`, múltiples valores, exclusiones o rangos.
+- Rediseñar **Estadísticas** con una presentación más sobria y compacta, sin eliminar ninguno de los datos actuales.
+- Mantener siempre visibles el encabezado, subtítulos, selector de período y **Panorama general**.
+- Debajo de Panorama general, incorporar navegación interna mediante `Áreas | Proyectos | Objetivos`, mostrando sólo el bloque seleccionado para reducir scroll.
+- Agregar estadísticas por **Área** con nombre, porcentaje y barra horizontal de progreso; el nombre puede usar el color configurado del área.
+- Calcular el avance del área con una fórmula simple: `completadas en el período / (completadas en el período + pendientes relevantes) × 100`. Excluir papelera y archivadas. Antes de implementar, decidir explícitamente si **En espera** integra el denominador.
+
+### Mostrar completadas de forma contextual por vista
+
+- **Estado:** pendiente aprobado; implementar como lógica de visibilidad, sin modificar el significado de `COMPLETED`, `completedAt` ni el modelo de persistencia.
+- Regla general: al activar **Mostrar completadas**, mostrar únicamente las tareas completadas que pertenezcan de manera coherente a la vista actual.
+- **Hoy:** mostrar tareas cuyo `completedAt` corresponda al día de hoy, incluso si tenían otra fecha de vencimiento.
+- **Mañana:** desactivar la opción.
+- **Próximas:** desactivar la opción.
+- **Todas:** mostrar todas las tareas completadas históricamente.
+- **Área:** mostrar todas las tareas completadas históricas pertenecientes a esa área.
+- **Contexto:** mostrar todas las tareas completadas históricas pertenecientes a ese contexto.
+- **Proyecto concreto / vista Proyectos:** mostrar las completadas del proyecto correspondiente respetando identidad, jerarquía y estructura actual.
+- **Objetivo:** mostrar completadas vinculadas al objetivo siguiendo la navegación vigente de Objetivos.
+- **En espera:** desactivar la opción, porque una tarea completada deja de tener sentido operativo como tarea en espera.
+- **Calendario:** mantener su lógica propia y no reutilizar este botón para alterar la representación temporal del calendario.
+- **Búsqueda avanzada:** mantener las reglas propias de la búsqueda sin reinterpretar sus resultados mediante esta lógica contextual.
+- Verificar especialmente combinaciones con agrupamientos, filtros rápidos, subtareas, jerarquías, proyectos y recurrencias.
+- Al navegar desde una vista donde el botón está disponible hacia **Mañana** o **Próximas**, evitar conservar un estado visual o lógico inconsistente.
 
 ## Capacidades auditadas y cerradas
 
