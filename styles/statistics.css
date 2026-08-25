@@ -1,137 +1,210 @@
 .statisticsView {
     display: grid;
     align-content: start;
-    gap: 28px;
+    gap: 18px;
 }
 
 .statisticsHeading,
-.statisticsCard > header,
-.statisticsSectionHeading {
+.statisticsCard > header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
 }
 
 .statisticsHeading h1,
-.statisticsSection h2,
-.statisticsCard h3 {
+.statisticsCard h3,
+.statisticsPanorama h2 {
     margin: 0;
 }
 
 .statisticsHeading p {
-    margin: 6px 0 0;
+    margin: 4px 0 0;
     color: var(--color-text-muted);
 }
 
 .statisticsEyebrow {
-    margin: 0 0 4px !important;
+    margin: 0 0 3px !important;
     color: var(--color-accent-strong) !important;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: .06em;
+    letter-spacing: .055em;
     text-transform: uppercase;
 }
 
 .statisticsPeriod {
     display: grid;
-    flex: 0 0 180px;
-    gap: 5px;
+    flex: 0 0 170px;
+    gap: 4px;
 }
 
 .statisticsPeriod span {
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
 }
 
 .statisticsPeriod select {
     box-sizing: border-box;
-    min-height: 40px;
+    min-height: 36px;
 }
 
 .statisticsPanorama,
-.statisticsCard {
+.statisticsCard,
+.statisticsAreaRow {
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 7px;
     background: var(--color-surface);
 }
 
 .statisticsPanorama {
-    padding: 20px;
+    padding: 14px;
 }
 
 .statisticsPanorama h2 {
-    margin: 0 0 16px;
-    font-size: 17px;
+    margin-bottom: 10px;
+    font-size: 16px;
 }
 
 .statisticsIndicators {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
+    gap: 8px;
 }
 
 .statisticsIndicators article {
-    display: grid;
-    gap: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
     min-width: 0;
-    padding: 14px;
-    border-radius: 6px;
+    padding: 9px 10px;
+    border-radius: 5px;
     background: var(--color-surface-subtle);
 }
 
 .statisticsIndicators strong {
-    font-size: 24px;
+    flex: 0 0 auto;
+    font-size: 19px;
     font-variant-numeric: tabular-nums;
 }
 
 .statisticsIndicators span {
+    min-width: 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.statisticsBreakdown {
+    position: relative;
+    display: grid;
+    gap: 12px;
+}
+
+.statisticsTabInput {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.statisticsTabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 1px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.statisticsTabs label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 10px;
+    border-bottom: 2px solid transparent;
     color: var(--color-text-muted);
     font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
-.statisticsSection {
-    display: grid;
-    gap: 14px;
-}
-
-.statisticsSectionHeading {
-    align-items: center;
-}
-
-.statisticsSectionHeading span {
-    min-width: 28px;
-    padding: 3px 8px;
+.statisticsTabs label span {
+    min-width: 20px;
+    padding: 1px 5px;
     border-radius: 999px;
     background: var(--color-surface-subtle);
     color: var(--color-text-muted);
+    font-size: 11px;
     text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+#statisticsTabAreas:checked ~ .statisticsTabs label[for="statisticsTabAreas"],
+#statisticsTabProjects:checked ~ .statisticsTabs label[for="statisticsTabProjects"],
+#statisticsTabGoals:checked ~ .statisticsTabs label[for="statisticsTabGoals"] {
+    border-bottom-color: var(--color-accent);
+    color: var(--color-text);
+}
+
+.statisticsTabInput:focus-visible ~ .statisticsTabs label {
+    outline-offset: 2px;
+}
+
+.statisticsPanel {
+    display: none;
+}
+
+#statisticsTabAreas:checked ~ .statisticsPanelAreas,
+#statisticsTabProjects:checked ~ .statisticsPanelProjects,
+#statisticsTabGoals:checked ~ .statisticsPanelGoals {
+    display: grid;
+}
+
+.statisticsSection {
+    gap: 10px;
 }
 
 .statisticsGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 10px;
 }
 
 .statisticsCard {
     min-width: 0;
-    padding: 18px;
+    padding: 13px;
 }
 
 .statisticsCard h3 {
     overflow-wrap: anywhere;
-    font-size: 17px;
+    font-size: 15px;
+}
+
+.statisticsCard .tertiaryAction {
+    min-height: 30px;
+    padding: 4px 8px;
+}
+
+.statisticsProgressLine {
+    display: grid;
+    gap: 6px;
+    margin-top: 11px;
 }
 
 .statisticsProgressLabel {
-    margin: 18px 0 7px;
+    margin: 0;
+    font-size: 13px;
     font-weight: 700;
 }
 
 .statisticsProgress {
-    height: 8px;
+    height: 6px;
     overflow: hidden;
     border-radius: 999px;
     background: var(--color-border);
@@ -147,37 +220,74 @@
 .statisticsDetails {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-    margin: 18px 0 0;
+    gap: 7px;
+    margin: 11px 0 0;
 }
 
 .statisticsDetails div {
     display: grid;
-    gap: 3px;
+    gap: 2px;
 }
 
 .statisticsDetails dt {
     color: var(--color-text-muted);
-    font-size: 11px;
+    font-size: 10px;
 }
 
 .statisticsDetails dd {
     margin: 0;
+    font-size: 13px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
 
 .statisticsLastAdvance,
 .statisticsOwnProgress,
-.statisticsDeadline {
-    margin: 14px 0 0;
+.statisticsDeadline,
+.statisticsAreaSummary {
+    margin: 8px 0 0;
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .statisticsDeadline {
     color: var(--color-accent-strong);
     font-weight: 700;
+}
+
+.statisticsAreaList {
+    display: grid;
+    gap: 8px;
+}
+
+.statisticsAreaRow {
+    display: grid;
+    gap: 7px;
+    padding: 11px 12px;
+}
+
+.statisticsAreaHeading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.statisticsAreaHeading strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+}
+
+.statisticsAreaHeading span {
+    flex: 0 0 auto;
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.statisticsAreaSummary {
+    margin: 0;
 }
 
 @media (max-width: 900px) {
@@ -192,11 +302,16 @@
 
 @media (max-width: 560px) {
     .statisticsView {
-        gap: 22px;
+        gap: 15px;
     }
 
     .statisticsHeading {
         display: grid;
+        gap: 10px;
+    }
+
+    .statisticsHeading > div > p:not(.statisticsEyebrow) {
+        font-size: 13px;
     }
 
     .statisticsPeriod {
@@ -205,14 +320,35 @@
 
     .statisticsIndicators {
         grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .statisticsIndicators article {
+        display: grid;
+        gap: 1px;
+        padding: 8px;
+    }
+
+    .statisticsIndicators strong {
+        font-size: 18px;
     }
 
     .statisticsPanorama,
     .statisticsCard {
-        padding: 14px;
+        padding: 11px;
+    }
+
+    .statisticsTabs label {
+        flex: 1 0 auto;
+        justify-content: center;
+        padding-inline: 8px;
     }
 
     .statisticsDetails {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .statisticsAreaRow {
+        padding: 10px;
     }
 }
