@@ -119,6 +119,59 @@ test("Contexto conserva las filas de padre e hija en Todas", async ({ page }) =>
     await expect(page.locator('.task[data-id="hija"]')).toBeVisible();
 });
 
+test("los encabezados agrupados usan el color de Área y dejan Sin área neutro", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-areas",
+            JSON.stringify([
+                {
+                    id: "personal",
+                    name: "Personal",
+                    color: "#c026d3"
+                }
+            ])
+        );
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([
+                {
+                    id: "con-area",
+                    title: "Con área",
+                    status: "PENDING",
+                    areaId: "personal"
+                },
+                {
+                    id: "sin-area",
+                    title: "Sin área",
+                    status: "PENDING",
+                    areaId: null
+                }
+            ])
+        );
+    });
+
+    await page.goto("/");
+    await page.locator("#showAll").click();
+    await page.locator("#taskGrouping")
+        .selectOption("AREA");
+
+    const personal = page.locator(
+        ".taskGroupHeader",
+        { hasText: "Personal" }
+    );
+    const unassigned = page.locator(
+        ".taskGroupHeader",
+        { hasText: "Sin área" }
+    );
+
+    await expect(personal)
+        .toHaveCSS("color", "rgb(192, 38, 211)");
+    await expect(personal)
+        .toHaveAttribute("data-entity-color", "#c026d3");
+    await expect(unassigned)
+        .not.toHaveAttribute("data-entity-color", /.+/);
+});
+
 test("Proyecto no aparece como agrupamiento dentro de la vista Proyectos", async ({ page }) => {
     await page.goto("/");
 

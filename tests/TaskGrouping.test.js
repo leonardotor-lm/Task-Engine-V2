@@ -96,6 +96,76 @@ test("agrupa por área alfabéticamente y deja Sin área al final sin alterar el
     );
 });
 
+test("usa el color de texto del área o contexto y mantiene neutros los grupos Sin", () => {
+    const areaGroups = buildTaskGroups(
+        [
+            { id: "area", areaId: "a" },
+            { id: "no-area", areaId: null }
+        ],
+        TaskGrouping.AREA,
+        {
+            areas: [
+                {
+                    id: "a",
+                    name: "Personal",
+                    color: "#c026d3"
+                }
+            ]
+        }
+    );
+
+    assert.deepEqual(
+        areaGroups.map(group => ({
+            label: group.label,
+            color: group.color
+        })),
+        [
+            {
+                label: "Personal",
+                color: "#c026d3"
+            },
+            {
+                label: "Sin área",
+                color: null
+            }
+        ]
+    );
+
+    const contextGroups = buildTaskGroups(
+        [
+            { id: "context", contextId: "c" },
+            { id: "no-context", contextId: null }
+        ],
+        TaskGrouping.CONTEXT,
+        {
+            contexts: [
+                {
+                    id: "c",
+                    name: "Casa",
+                    color: "#15803d"
+                }
+            ]
+        }
+    );
+
+    assert.deepEqual(
+        contextGroups.map(group => ({
+            label: group.label,
+            color: group.color
+        })),
+        [
+            {
+                label: "Casa",
+                color: "#15803d"
+            },
+            {
+                label: "Sin contexto",
+                color: null
+            }
+        ]
+    );
+});
+
 test("agrupa por contexto y contempla tareas sin contexto", () => {
     const groups = buildTaskGroups(
         [
