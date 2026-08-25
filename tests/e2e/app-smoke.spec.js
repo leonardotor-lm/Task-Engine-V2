@@ -122,7 +122,7 @@ test("Contexto conserva las filas de padre e hija en Todas", async ({ page }) =>
 test("los encabezados agrupados usan el color de Área y dejan Sin área neutro", async ({ page }) => {
     await page.addInitScript(() => {
         localStorage.setItem(
-            "task-engine-areas",
+            "task-engine-v2-areas",
             JSON.stringify([
                 {
                     id: "personal",
