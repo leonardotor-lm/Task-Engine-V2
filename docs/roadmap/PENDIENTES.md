@@ -77,6 +77,20 @@ El issue abierto de puesta en marcha separado del desarrollo es:
 - Verificar especialmente combinaciones con agrupamientos, filtros rápidos, subtareas, jerarquías, proyectos y recurrencias.
 - Al navegar desde una vista donde el botón está disponible hacia **Mañana** o **Próximas**, evitar conservar un estado visual o lógico inconsistente.
 
+### Simplificación y mejora de la experiencia móvil
+
+- **Estado:** pendiente aprobado; requiere auditoría y definición detallada antes de implementar.
+- Alcance exclusivo: **celular**. No rediseñar la interfaz de escritorio dentro de este bloque.
+- Objetivo: simplificar el uso móvil sin eliminar funcionalidades ni crear una versión reducida de Task Engine.
+- Tratar la interfaz móvil como una experiencia propia, no como una mera reducción del escritorio.
+- Priorizar menos controles visibles al mismo tiempo, mejor jerarquía visual y menor desplazamiento vertical.
+- Llevar opciones secundarias a menús o paneles cuando ayude a reducir ruido, manteniendo siempre accesibles las funciones existentes.
+- Favorecer acciones contextuales: mostrar controles sólo cuando tengan sentido en la vista o tarea actual.
+- Evitar duplicar lógica funcional entre escritorio y móvil; la adaptación debe concentrarse principalmente en presentación y comportamiento responsive para minimizar riesgos.
+- Realizar primero una auditoría móvil por flujos: captura rápida, procesamiento de Inbox, navegación, edición de tareas, selección múltiple, planificación y estadísticas.
+- A partir de la auditoría, definir qué elementos conviene compactar, ocultar temporalmente, mover o presentar de otra manera en pantallas pequeñas.
+- Documento de referencia: `docs/roadmap/MOVIL_UX.md`.
+
 ## Capacidades auditadas y cerradas
 
 La auditoría iniciada el 19 de agosto de 2026 y actualizada el 24 de agosto contrastó `PENDIENTES.md`, `ROADMAP.md`, documentos específicos, issues y PRs fusionadas. Los siguientes bloques **no son pendientes**:
