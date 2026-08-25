@@ -185,6 +185,62 @@ function collectGoalDescendants(rootId, goalsByParent) {
     return ids;
 }
 
+function normalizeAreaColor(color) {
+    return /^#[0-9a-f]{6}$/i.test(color ?? "")
+        ? color
+        : null;
+}
+
+export function buildAreaStatistics({
+    tasks = [],
+    areas = [],
+    period = "30",
+    today = new Date().toISOString().slice(0, 10)
+} = {}) {
+    const selectedPeriod = createPeriod(
+        String(period),
+        today
+    );
+    const tasksById = new Map(
+        tasks.map(task => [task.id, task])
+    );
+    const includedTasks = tasks.filter(
+        task =>
+            isIncludedTask(task) &&
+            hasIncludedHierarchy(task, tasksById)
+    );
+
+    return areas.map(area => {
+        const areaTasks = includedTasks.filter(
+            task => task.areaId === area.id
+        );
+        const completed = areaTasks.filter(
+            task =>
+                task.status === TaskStatus.COMPLETED &&
+                isRecent(task.completedAt, selectedPeriod)
+        );
+        const pending = areaTasks.filter(
+            task =>
+                task.status !== TaskStatus.COMPLETED &&
+                !task.isWaiting
+        );
+        const total = completed.length + pending.length;
+
+        return {
+            id: area.id,
+            name: area.name,
+            color: normalizeAreaColor(area.color),
+            completed: completed.length,
+            pending: pending.length,
+            total,
+            percentage: percentage(
+                completed.length,
+                total
+            )
+        };
+    });
+}
+
 export function buildProgressStatistics({
     tasks = [],
     goals = [],
