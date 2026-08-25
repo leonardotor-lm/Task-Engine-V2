@@ -177,6 +177,8 @@ test("Estadísticas mantiene Panorama general y organiza el desglose en tres pes
     assert.match(html, /Personal/);
     assert.match(html, /Proyecto/);
     assert.match(html, /Objetivo/);
+    assert.match(html, /Tareas consideradas/);
+    assert.match(html, /Completadas/);
     assert.match(html, /Pendientes/);
     assert.match(html, /Vencidas/);
     assert.match(html, /Pospuestas/);
