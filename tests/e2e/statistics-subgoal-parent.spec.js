@@ -32,11 +32,19 @@ test("Estadísticas muestra el objetivo padre en subobjetivos", async ({ page })
 
     const parentCard = page.locator(
         ".statisticsGoalCard",
-        { hasText: "Objetivo principal" }
+        {
+            has: page.locator(
+                '.openStatisticsGoal[data-id="parent"]'
+            )
+        }
     );
     const childCard = page.locator(
         ".statisticsGoalCard",
-        { hasText: "Subobjetivo de prueba" }
+        {
+            has: page.locator(
+                '.openStatisticsGoal[data-id="child"]'
+            )
+        }
     );
 
     await expect(parentCard).toBeVisible();
