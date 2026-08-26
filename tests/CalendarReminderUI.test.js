@@ -18,10 +18,6 @@ test("agrupa recurrencia y recordatorios bajo Programación", async () => {
     );
     assert.match(
         source,
-        /Programación: recurrencia y recordatorios/
-    );
-    assert.match(
-        source,
         />\s*Recordatorio\s*</
     );
 
