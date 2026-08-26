@@ -21,7 +21,7 @@ test("estadisticas usa el token semantico de superficie sutil", async () => {
     );
     assert.match(
         css,
-        /\.statisticsSectionHeading span[\s\S]*background:\s*var\(--color-surface-subtle\)/
+        /\.statisticsTabs label span[\s\S]*background:\s*var\(--color-surface-subtle\)/
     );
     assert.doesNotMatch(css, /--color-surface-soft\b/);
 });

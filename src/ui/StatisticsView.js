@@ -1,3 +1,4 @@
+import { buildAreaStatistics } from "../core/Statistics.js";
 import { escapeHtml } from "./escapeHtml.js";
 
 function formatProgress(metric) {
@@ -41,6 +42,14 @@ function renderMetricDetails(metric, periodLabel) {
     return `
         <dl class="statisticsDetails">
             <div>
+                <dt>Tareas consideradas</dt>
+                <dd>${metric.total}</dd>
+            </div>
+            <div>
+                <dt>Completadas</dt>
+                <dd>${metric.completed}</dd>
+            </div>
+            <div>
                 <dt>Pendientes</dt>
                 <dd>${metric.pending}</dd>
             </div>
@@ -80,6 +89,31 @@ export class StatisticsView {
         return labels[period] ?? `en ${period} días`;
     }
 
+    renderArea(area, periodLabel) {
+        const progress = area.percentage === null
+            ? "Sin datos"
+            : `${area.percentage} %`;
+        const colorStyle = area.color
+            ? ` style="color: ${escapeHtml(area.color)}"`
+            : "";
+
+        return `
+            <article class="statisticsAreaRow">
+                <div class="statisticsAreaHeading">
+                    <strong${colorStyle}>
+                        ${escapeHtml(area.name)}
+                    </strong>
+                    <span>${escapeHtml(progress)}</span>
+                </div>
+                ${renderProgress(area)}
+                <p class="statisticsAreaSummary">
+                    ${area.completed} completada${area.completed === 1 ? "" : "s"} ${escapeHtml(periodLabel)}
+                    · ${area.pending} pendiente${area.pending === 1 ? "" : "s"}
+                </p>
+            </article>
+        `;
+    }
+
     renderProject(project, periodLabel) {
         return `
             <article class="statisticsCard">
@@ -95,10 +129,12 @@ export class StatisticsView {
                         Abrir
                     </button>
                 </header>
-                <p class="statisticsProgressLabel">
-                    ${escapeHtml(formatProgress(project))}
-                </p>
-                ${renderProgress(project)}
+                <div class="statisticsProgressLine">
+                    <p class="statisticsProgressLabel">
+                        ${escapeHtml(formatProgress(project))}
+                    </p>
+                    ${renderProgress(project)}
+                </div>
                 ${renderMetricDetails(
                     project,
                     periodLabel
@@ -129,10 +165,12 @@ export class StatisticsView {
                         Abrir
                     </button>
                 </header>
-                <p class="statisticsProgressLabel">
-                    ${escapeHtml(formatProgress(metric))}
-                </p>
-                ${renderProgress(metric)}
+                <div class="statisticsProgressLine">
+                    <p class="statisticsProgressLabel">
+                        ${escapeHtml(formatProgress(metric))}
+                    </p>
+                    ${renderProgress(metric)}
+                </div>
                 <p class="statisticsOwnProgress">
                     Avance propio:
                     <strong>
@@ -179,6 +217,12 @@ export class StatisticsView {
         const periodLabel = this.getPeriodLabel(
             statistics.period
         );
+        const areaStatistics = buildAreaStatistics({
+            tasks: state.allTasks ?? [],
+            areas: state.areas ?? [],
+            period: statistics.period,
+            today: state.today
+        });
 
         return `
             <main class="content statisticsView">
@@ -229,50 +273,103 @@ export class StatisticsView {
                     </div>
                 </section>
 
-                <section class="statisticsSection">
-                    <div class="statisticsSectionHeading">
-                        <h2>Proyectos</h2>
-                        <span>${statistics.projects.length}</span>
-                    </div>
-                    <div class="statisticsGrid">
-                        ${statistics.projects.length > 0
-                            ? statistics.projects
-                                .map(project =>
-                                    this.renderProject(
-                                        project,
-                                        periodLabel
-                                    )
-                                )
-                                .join("")
-                            : `
-                                <p class="emptyState">
-                                    No hay proyectos con subtareas activas.
-                                </p>
-                            `}
-                    </div>
-                </section>
+                <section class="statisticsBreakdown">
+                    <input
+                        class="statisticsTabInput"
+                        type="radio"
+                        name="statisticsSection"
+                        id="statisticsTabAreas"
+                        checked>
+                    <input
+                        class="statisticsTabInput"
+                        type="radio"
+                        name="statisticsSection"
+                        id="statisticsTabProjects">
+                    <input
+                        class="statisticsTabInput"
+                        type="radio"
+                        name="statisticsSection"
+                        id="statisticsTabGoals">
 
-                <section class="statisticsSection">
-                    <div class="statisticsSectionHeading">
-                        <h2>Objetivos</h2>
-                        <span>${statistics.goals.length}</span>
-                    </div>
-                    <div class="statisticsGrid">
-                        ${statistics.goals.length > 0
-                            ? statistics.goals
-                                .map(goal =>
-                                    this.renderGoal(
-                                        goal,
-                                        periodLabel
+                    <nav
+                        class="statisticsTabs"
+                        aria-label="Desglose de estadísticas">
+                        <label for="statisticsTabAreas">
+                            Áreas
+                            <span>${areaStatistics.length}</span>
+                        </label>
+                        <label for="statisticsTabProjects">
+                            Proyectos
+                            <span>${statistics.projects.length}</span>
+                        </label>
+                        <label for="statisticsTabGoals">
+                            Objetivos
+                            <span>${statistics.goals.length}</span>
+                        </label>
+                    </nav>
+
+                    <section
+                        class="statisticsSection statisticsPanel statisticsPanelAreas"
+                        aria-labelledby="statisticsTabAreas">
+                        <div class="statisticsAreaList">
+                            ${areaStatistics.length > 0
+                                ? areaStatistics
+                                    .map(area =>
+                                        this.renderArea(
+                                            area,
+                                            periodLabel
+                                        )
                                     )
-                                )
-                                .join("")
-                            : `
-                                <p class="emptyState">
-                                    No hay objetivos para medir.
-                                </p>
-                            `}
-                    </div>
+                                    .join("")
+                                : `
+                                    <p class="emptyState">
+                                        No hay áreas para medir.
+                                    </p>
+                                `}
+                        </div>
+                    </section>
+
+                    <section
+                        class="statisticsSection statisticsPanel statisticsPanelProjects"
+                        aria-labelledby="statisticsTabProjects">
+                        <div class="statisticsGrid">
+                            ${statistics.projects.length > 0
+                                ? statistics.projects
+                                    .map(project =>
+                                        this.renderProject(
+                                            project,
+                                            periodLabel
+                                        )
+                                    )
+                                    .join("")
+                                : `
+                                    <p class="emptyState">
+                                        No hay proyectos con subtareas activas.
+                                    </p>
+                                `}
+                        </div>
+                    </section>
+
+                    <section
+                        class="statisticsSection statisticsPanel statisticsPanelGoals"
+                        aria-labelledby="statisticsTabGoals">
+                        <div class="statisticsGrid">
+                            ${statistics.goals.length > 0
+                                ? statistics.goals
+                                    .map(goal =>
+                                        this.renderGoal(
+                                            goal,
+                                            periodLabel
+                                        )
+                                    )
+                                    .join("")
+                                : `
+                                    <p class="emptyState">
+                                        No hay objetivos para medir.
+                                    </p>
+                                `}
+                        </div>
+                    </section>
                 </section>
             </main>
         `;
