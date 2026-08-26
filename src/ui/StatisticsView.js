@@ -143,7 +143,11 @@ export class StatisticsView {
         `;
     }
 
-    renderGoal(goal, periodLabel) {
+    renderGoal(
+        goal,
+        periodLabel,
+        parentGoalTitle = null
+    ) {
         const metric = goal.accumulated;
         const deadline = goal.daysAvailable === null
             ? ""
@@ -157,6 +161,14 @@ export class StatisticsView {
                     <div>
                         <p class="statisticsEyebrow">Objetivo</p>
                         <h3>${escapeHtml(goal.title)}</h3>
+                        ${parentGoalTitle
+                            ? `
+                                <p class="statisticsGoalParent">
+                                    Objetivo padre:
+                                    <strong>${escapeHtml(parentGoalTitle)}</strong>
+                                </p>
+                            `
+                            : ""}
                     </div>
                     <button
                         type="button"
@@ -223,6 +235,12 @@ export class StatisticsView {
             period: statistics.period,
             today: state.today
         });
+        const goalsById = new Map(
+            (state.goals ?? []).map(goal => [
+                goal.id,
+                goal
+            ])
+        );
 
         return `
             <main class="content statisticsView">
@@ -356,12 +374,22 @@ export class StatisticsView {
                         <div class="statisticsGrid">
                             ${statistics.goals.length > 0
                                 ? statistics.goals
-                                    .map(goal =>
-                                        this.renderGoal(
+                                    .map(goal => {
+                                        const sourceGoal =
+                                            goalsById.get(goal.id);
+                                        const parentGoal = sourceGoal
+                                            ?.parentGoalId
+                                                ? goalsById.get(
+                                                    sourceGoal.parentGoalId
+                                                )
+                                                : null;
+
+                                        return this.renderGoal(
                                             goal,
-                                            periodLabel
-                                        )
-                                    )
+                                            periodLabel,
+                                            parentGoal?.title ?? null
+                                        );
+                                    })
                                     .join("")
                                 : `
                                     <p class="emptyState">
