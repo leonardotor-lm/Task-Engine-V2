@@ -243,11 +243,16 @@
 
 .statisticsLastAdvance,
 .statisticsOwnProgress,
+.statisticsGoalParent,
 .statisticsDeadline,
 .statisticsAreaSummary {
     margin: 8px 0 0;
     color: var(--color-text-muted);
     font-size: 11px;
+}
+
+.statisticsGoalParent {
+    margin-top: 3px;
 }
 
 .statisticsDeadline {
