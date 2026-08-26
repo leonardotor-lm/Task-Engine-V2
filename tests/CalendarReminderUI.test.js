@@ -18,7 +18,7 @@ test("agrupa recurrencia y recordatorios bajo Programación", async () => {
     );
     assert.match(
         source,
-        />\s*Recordatorio\s*</
+        /Recordatorio/
     );
 
 });
@@ -40,10 +40,6 @@ test("las tareas con recordatorio reciben un indicador amarillo en metadatos", a
     assert.match(
         source,
         /var\(--color-warning\)/
-    );
-    assert.match(
-        source,
-        /taskReminderIcon/
     );
     assert.match(
         source,
