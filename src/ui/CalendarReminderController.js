@@ -93,6 +93,7 @@ export class CalendarReminderController {
 
         view.render = state => {
             originalRender(state);
+            this.injectReminderMetadata(state.allTasks ?? []);
             this.injectEditor(state.selectedTask);
         };
 
@@ -113,7 +114,13 @@ export class CalendarReminderController {
             ".editorSectionBody"
         );
 
-        if (!body || document.getElementById("taskReminderMode")) {
+        if (!body) {
+            return;
+        }
+
+        this.configureProgrammingLabel(recurrenceSection);
+
+        if (document.getElementById("taskReminderMode")) {
             return;
         }
 
@@ -212,6 +219,95 @@ export class CalendarReminderController {
                     input.focus();
                 });
             });
+    }
+
+    configureProgrammingLabel(section) {
+
+        const summary = section?.querySelector(
+            ":scope > summary"
+        );
+
+        if (summary) {
+            summary.textContent = "Programación";
+        }
+
+        for (const title of section?.querySelectorAll("strong") ?? []) {
+            if (title.textContent.trim() === "Recurrencia") {
+                title.textContent = "Programación";
+            }
+        }
+
+    }
+
+    injectReminderMetadata(tasks = []) {
+
+        const tasksById = new Map(
+            tasks.map(task => [String(task.id), task])
+        );
+
+        for (const row of document.querySelectorAll(
+            ".task[data-id]"
+        )) {
+
+            const task = tasksById.get(String(row.dataset.id));
+
+            if (!task?.reminder ||
+                row.querySelector(".taskReminderIndicator")) {
+                continue;
+            }
+
+            const taskBody = row.querySelector(".taskBody");
+            const titleLine = row.querySelector(".taskTitleLine");
+
+            if (!taskBody || !titleLine) {
+                continue;
+            }
+
+            let metadata = taskBody.querySelector(".taskMeta");
+
+            if (!metadata) {
+                metadata = document.createElement("div");
+                metadata.className = "taskMeta";
+                titleLine.after(metadata);
+            }
+
+            const indicator = document.createElement("span");
+            indicator.className = "taskReminderIndicator";
+            indicator.title = "Tiene un recordatorio";
+            indicator.setAttribute(
+                "aria-label",
+                "Tiene un recordatorio"
+            );
+            indicator.style.display = "inline-flex";
+            indicator.style.alignItems = "center";
+            indicator.style.color = "var(--color-warning)";
+            indicator.innerHTML = this.renderReminderIcon();
+
+            metadata.prepend(indicator);
+        }
+
+    }
+
+    renderReminderIcon() {
+
+        return `
+            <svg
+                class="icon taskReminderIcon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                aria-hidden="true"
+                focusable="false"
+                style="width:15px;height:15px">
+                <circle cx="12" cy="13" r="8"></circle>
+                <path d="M12 9v4l2 2"></path>
+                <path d="m5 3-2 2"></path>
+                <path d="m19 3 2 2"></path>
+                <path d="M6.38 18.7 4 21"></path>
+                <path d="M17.64 18.67 20 21"></path>
+            </svg>
+        `;
+
     }
 
     readReminderFromEditor(data = {}) {
