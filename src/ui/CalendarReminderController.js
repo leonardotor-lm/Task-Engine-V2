@@ -105,14 +105,11 @@ export class CalendarReminderController {
             return;
         }
 
-        const planningSection = [
-            ...document.querySelectorAll(".editorSection")
-        ].find(section =>
-            section.querySelector(":scope > summary")
-                ?.textContent.trim() === "Planificación"
-        );
+        const recurrenceSection =
+            document.getElementById("taskRecurrence")
+                ?.closest(".editorSection") ?? null;
 
-        const body = planningSection?.querySelector(
+        const body = recurrenceSection?.querySelector(
             ".editorSectionBody"
         );
 
