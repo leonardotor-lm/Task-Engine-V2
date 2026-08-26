@@ -93,7 +93,9 @@ export class CalendarReminderController {
 
         view.render = state => {
             originalRender(state);
-            this.injectReminderMetadata(state.allTasks ?? []);
+            this.injectReminderMetadata(
+                this.app.taskService?.getAllTasks?.() ?? []
+            );
             this.injectEditor(state.selectedTask);
         };
 
@@ -229,6 +231,10 @@ export class CalendarReminderController {
 
         if (summary) {
             summary.textContent = "Programación";
+            summary.setAttribute(
+                "aria-label",
+                "Programación: recurrencia y recordatorios"
+            );
         }
 
         for (const title of section?.querySelectorAll("strong") ?? []) {
