@@ -30,10 +30,23 @@ function compareManualOrder(a, b) {
 
 }
 
+function getLocalDateString() {
+
+    const date = new Date();
+
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+    ].join("-");
+
+}
+
 export function compareTasks(
     a,
     b,
-    sort = TaskSort.MANUAL
+    sort = TaskSort.MANUAL,
+    today = getLocalDateString()
 ) {
 
     switch (sort) {
@@ -43,12 +56,31 @@ export function compareTasks(
             if (a.dueDate && !b.dueDate) return -1;
             if (!a.dueDate && b.dueDate) return 1;
 
-            const dateDifference = compareText(
-                `${a.dueDate ?? ""} ${a.dueTime ?? ""}`,
-                `${b.dueDate ?? ""} ${b.dueTime ?? ""}`
+            const dueDateDifference = compareText(
+                a.dueDate ?? "",
+                b.dueDate ?? ""
             );
 
-            return dateDifference ||
+            if (dueDateDifference !== 0) {
+                return dueDateDifference;
+            }
+
+            if (
+                a.dueDate === today &&
+                b.dueDate === today
+            ) {
+
+                if (a.dueTime && !b.dueTime) return -1;
+                if (!a.dueTime && b.dueTime) return 1;
+
+            }
+
+            const timeDifference = compareText(
+                a.dueTime ?? "",
+                b.dueTime ?? ""
+            );
+
+            return timeDifference ||
                 compareManualOrder(a, b);
 
         }
@@ -98,7 +130,8 @@ export function compareTasks(
 
 export function sortTaskTree(
     tasks,
-    sort = TaskSort.MANUAL
+    sort = TaskSort.MANUAL,
+    today = getLocalDateString()
 ) {
 
     const tasksById = new Map(
@@ -139,7 +172,7 @@ export function sortTaskTree(
 
     const comparator = (a, b) => {
 
-        return compareTasks(a, b, sort) ||
+        return compareTasks(a, b, sort, today) ||
             originalPositions.get(a.id) -
             originalPositions.get(b.id);
 
