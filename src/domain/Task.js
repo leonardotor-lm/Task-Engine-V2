@@ -22,6 +22,68 @@ function normalizeOptionalString(value) {
 
 }
 
+function normalizeReminder(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        typeof value !== "object" ||
+        Array.isArray(value)
+    ) {
+        return null;
+    }
+
+    if (value.type === "due") {
+
+        const minutesBefore = Number(
+            value.minutesBefore
+        );
+
+        if (
+            ![
+                5,
+                15,
+                30,
+                60,
+                1440,
+                2880,
+                7200,
+                14400
+            ].includes(minutesBefore)
+        ) {
+            throw new Error(
+                "La anticipación del recordatorio es inválida."
+            );
+        }
+
+        return {
+            type: "due",
+            minutesBefore
+        };
+    }
+
+    if (value.type === "at") {
+
+        const at = String(value.at ?? "").trim();
+        const timestamp = Date.parse(at);
+
+        if (!at || Number.isNaN(timestamp)) {
+            throw new Error(
+                "La fecha del recordatorio es inválida."
+            );
+        }
+
+        return {
+            type: "at",
+            at: new Date(timestamp).toISOString()
+        };
+    }
+
+    throw new Error(
+        "El tipo de recordatorio es inválido."
+    );
+}
+
 export class Task {
 
     constructor(data = {}) {
@@ -99,6 +161,10 @@ export class Task {
         this.recurrenceWeekdays = [
             ...(data.recurrenceWeekdays ?? [])
         ];
+
+        this.reminder = normalizeReminder(
+            data.reminder
+        );
 
         this.manualOrder = data.manualOrder ?? 0;
 
@@ -428,6 +494,12 @@ export class Task {
             this.dueTime = nextDueTime;
         }
 
+        if (data.reminder !== undefined) {
+            this.reminder = normalizeReminder(
+                data.reminder
+            );
+        }
+
         if (
             data.recurrenceInterval !==
                 undefined
@@ -738,6 +810,10 @@ export class Task {
             recurrenceWeekdays: [
                 ...this.recurrenceWeekdays
             ],
+
+            reminder: this.reminder
+                ? { ...this.reminder }
+                : null,
 
             manualOrder: this.manualOrder,
 
