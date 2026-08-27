@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { App } from "../src/core/App.js";
 import { View } from "../src/core/View.js";
 import {
     filterCompletedTasks
@@ -179,6 +180,98 @@ test("filtra completadas en espacios de trabajo sin mutar la lista", () => {
         tasks
     );
     assert.equal(tasks.length, 2);
+
+});
+
+test("Hoy incluye solo las tareas completadas hoy", () => {
+
+    const completedToday = {
+        id: "today",
+        completedAt: "2026-08-27T09:30:00.000Z",
+        dueDate: "2026-08-20"
+    };
+    const completedEarlier = {
+        id: "earlier",
+        completedAt: "2026-08-26T22:00:00.000Z",
+        dueDate: "2026-08-27"
+    };
+    const completedTodayFutureDue = {
+        id: "today-future-due",
+        completedAt: "2026-08-27T10:00:00.000Z",
+        dueDate: "2026-08-30"
+    };
+    const completedTasks = [
+        completedToday,
+        completedEarlier,
+        completedTodayFutureDue
+    ];
+    const app = Object.create(App.prototype);
+
+    app.currentView = View.TODAY;
+    app.getTodayString = () => "2026-08-27";
+    app.taskService = {
+        getCompletedTasks: () => completedTasks
+    };
+
+    assert.deepEqual(
+        app.getCompletedTasksForCurrentView(),
+        [completedToday, completedTodayFutureDue]
+    );
+
+});
+
+test("Mañana y Próximas no incluyen tareas completadas", () => {
+
+    const completedTasks = [{
+        id: "future-due",
+        completedAt: "2026-08-27T10:00:00.000Z",
+        dueDate: "2026-08-28"
+    }];
+    const app = Object.create(App.prototype);
+
+    app.getTodayString = () => "2026-08-27";
+    app.taskService = {
+        getCompletedTasks: () => completedTasks
+    };
+
+    app.currentView = View.TOMORROW;
+    assert.deepEqual(
+        app.getCompletedTasksForCurrentView(),
+        []
+    );
+
+    app.currentView = View.UPCOMING;
+    assert.deepEqual(
+        app.getCompletedTasksForCurrentView(),
+        []
+    );
+
+});
+
+test("Todas conserva el historial completo de tareas completadas", () => {
+
+    const completedTasks = [
+        {
+            id: "old",
+            completedAt: "2025-12-01T12:00:00.000Z"
+        },
+        {
+            id: "recent",
+            completedAt: "2026-08-27T10:00:00.000Z"
+        }
+    ];
+    const app = Object.create(App.prototype);
+
+    app.currentView = View.ALL;
+    app.getTodayString = () => "2026-08-27";
+    app.taskService = {
+        getCompletedTasks: () => completedTasks
+    };
+
+    assert.deepEqual(
+        app.getCompletedTasksForCurrentView(),
+        completedTasks
+    );
 
 });
 

@@ -2549,41 +2549,41 @@ export class App {
 
             case View.TODAY:
                 return completedTasks.filter(
-                    task =>
-                        task.dueDate !== null &&
-                        task.dueDate <= today
+                    task => {
+
+                        if (!task.completedAt) {
+                            return false;
+                        }
+
+                        const completedAt =
+                            new Date(task.completedAt);
+
+                        if (
+                            Number.isNaN(
+                                completedAt.getTime()
+                            )
+                        ) {
+                            return false;
+                        }
+
+                        const completedDate = [
+                            completedAt.getFullYear(),
+                            String(
+                                completedAt.getMonth() + 1
+                            ).padStart(2, "0"),
+                            String(
+                                completedAt.getDate()
+                            ).padStart(2, "0")
+                        ].join("-");
+
+                        return completedDate === today;
+
+                    }
                 );
 
-            case View.TOMORROW: {
-
-                const tomorrow =
-                    this.taskService
-                        .getDateAfterDays(today, 1);
-
-                return completedTasks.filter(
-                    task =>
-                        task.dueDate === tomorrow
-                );
-
-            }
-
-            case View.UPCOMING: {
-
-                const startDate =
-                    this.taskService
-                        .getDateAfterDays(today, 2);
-                const endDate =
-                    this.taskService
-                        .getDateAfterDays(today, 7);
-
-                return completedTasks.filter(
-                    task =>
-                        task.dueDate !== null &&
-                        task.dueDate >= startDate &&
-                        task.dueDate <= endDate
-                );
-
-            }
+            case View.TOMORROW:
+            case View.UPCOMING:
+                return [];
 
             case View.ALL:
                 return completedTasks;
