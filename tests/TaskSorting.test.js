@@ -16,6 +16,7 @@ function task(id, overrides = {}) {
         manualOrder: overrides.manualOrder ?? 0,
         priority: overrides.priority ?? 0,
         dueDate: overrides.dueDate ?? null,
+        dueTime: overrides.dueTime ?? null,
         createdAt:
             overrides.createdAt ??
             "2026-07-24T10:00:00.000Z"
@@ -39,6 +40,88 @@ test("ordena las fechas próximas primero y deja sin fecha al final", () => {
     assert.deepEqual(
         result.map(item => item.id),
         ["temprano", "tarde", "sin-fecha"]
+    );
+
+});
+
+test("en vencimientos de hoy pone primero las tareas con hora", () => {
+
+    const tasks = [
+        task("hoy-sin-hora", {
+            dueDate: "2026-08-27"
+        }),
+        task("hoy-18", {
+            dueDate: "2026-08-27",
+            dueTime: "18:00"
+        }),
+        task("hoy-09", {
+            dueDate: "2026-08-27",
+            dueTime: "09:00"
+        })
+    ];
+
+    const result = sortTaskTree(
+        tasks,
+        TaskSort.DUE_DATE,
+        "2026-08-27"
+    );
+
+    assert.deepEqual(
+        result.map(item => item.id),
+        ["hoy-09", "hoy-18", "hoy-sin-hora"]
+    );
+
+});
+
+test("mantiene vencidas antes que las tareas que vencen hoy", () => {
+
+    const tasks = [
+        task("hoy-08", {
+            dueDate: "2026-08-27",
+            dueTime: "08:00"
+        }),
+        task("vencida", {
+            dueDate: "2026-08-26"
+        }),
+        task("hoy-sin-hora", {
+            dueDate: "2026-08-27"
+        })
+    ];
+
+    const result = sortTaskTree(
+        tasks,
+        TaskSort.DUE_DATE,
+        "2026-08-27"
+    );
+
+    assert.deepEqual(
+        result.map(item => item.id),
+        ["vencida", "hoy-08", "hoy-sin-hora"]
+    );
+
+});
+
+test("conserva el criterio previo para fechas distintas de hoy", () => {
+
+    const tasks = [
+        task("mañana-con-hora", {
+            dueDate: "2026-08-28",
+            dueTime: "09:00"
+        }),
+        task("mañana-sin-hora", {
+            dueDate: "2026-08-28"
+        })
+    ];
+
+    const result = sortTaskTree(
+        tasks,
+        TaskSort.DUE_DATE,
+        "2026-08-27"
+    );
+
+    assert.deepEqual(
+        result.map(item => item.id),
+        ["mañana-sin-hora", "mañana-con-hora"]
     );
 
 });
