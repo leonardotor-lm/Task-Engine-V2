@@ -2550,40 +2550,13 @@ export class App {
             case View.TODAY:
                 return completedTasks.filter(
                     task =>
-                        task.dueDate !== null &&
-                        task.dueDate <= today
+                        task.completedAt?.slice(0, 10) ===
+                        today
                 );
 
-            case View.TOMORROW: {
-
-                const tomorrow =
-                    this.taskService
-                        .getDateAfterDays(today, 1);
-
-                return completedTasks.filter(
-                    task =>
-                        task.dueDate === tomorrow
-                );
-
-            }
-
-            case View.UPCOMING: {
-
-                const startDate =
-                    this.taskService
-                        .getDateAfterDays(today, 2);
-                const endDate =
-                    this.taskService
-                        .getDateAfterDays(today, 7);
-
-                return completedTasks.filter(
-                    task =>
-                        task.dueDate !== null &&
-                        task.dueDate >= startDate &&
-                        task.dueDate <= endDate
-                );
-
-            }
+            case View.TOMORROW:
+            case View.UPCOMING:
+                return [];
 
             case View.ALL:
                 return completedTasks;
