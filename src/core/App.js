@@ -2549,9 +2549,36 @@ export class App {
 
             case View.TODAY:
                 return completedTasks.filter(
-                    task =>
-                        task.completedAt?.slice(0, 10) ===
-                        today
+                    task => {
+
+                        if (!task.completedAt) {
+                            return false;
+                        }
+
+                        const completedAt =
+                            new Date(task.completedAt);
+
+                        if (
+                            Number.isNaN(
+                                completedAt.getTime()
+                            )
+                        ) {
+                            return false;
+                        }
+
+                        const completedDate = [
+                            completedAt.getFullYear(),
+                            String(
+                                completedAt.getMonth() + 1
+                            ).padStart(2, "0"),
+                            String(
+                                completedAt.getDate()
+                            ).padStart(2, "0")
+                        ].join("-");
+
+                        return completedDate === today;
+
+                    }
                 );
 
             case View.TOMORROW:
