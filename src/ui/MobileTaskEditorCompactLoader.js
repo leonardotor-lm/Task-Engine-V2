@@ -44,6 +44,13 @@ if (!document.getElementById(overflowFixStyleId)) {
                 color: var(--color-danger) !important;
             }
 
+            .mobileTaskEditorCompactLayout
+                .mobileTaskEditorFooter {
+                position: static !important;
+                inset: auto !important;
+                z-index: auto !important;
+            }
+
             .mobileTaskEditorCompactOverflowNotes {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -118,20 +125,43 @@ if (!document.getElementById(overflowFixStyleId)) {
     document.head.append(style);
 }
 
+function bindAttachmentUserIntent(panel) {
+    if (
+        panel.dataset.mobileCompactIntentBound ===
+        "true"
+    ) {
+        return;
+    }
+
+    const summary = panel.querySelector(":scope > summary");
+    if (!summary) return;
+
+    panel.dataset.mobileCompactIntentBound = "true";
+    panel.dataset.mobileCompactUserOpened = "false";
+
+    summary.addEventListener(
+        "pointerdown",
+        () => {
+            panel.dataset.mobileCompactUserOpened = "true";
+        },
+        { once: true }
+    );
+}
+
 function closeInitialAttachmentsPanel() {
     document.querySelectorAll(
         ".mobileTaskEditorCompactAttachments"
     ).forEach(panel => {
+        bindAttachmentUserIntent(panel);
+
         if (
-            panel.dataset.mobileCompactInitialState ===
-            "closed"
+            panel.dataset.mobileCompactUserOpened ===
+            "true"
         ) {
             return;
         }
 
         panel.open = false;
-        panel.dataset.mobileCompactInitialState =
-            "closed";
     });
 }
 
