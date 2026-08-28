@@ -80,7 +80,7 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     );
 });
 
-test("Adjuntos inicia cerrado y sólo se abre por acción del usuario", () => {
+test("Adjuntos permanece cerrado hasta una apertura explícita del usuario", () => {
     assert.match(
         loader,
         /\.mobileTaskEditorCompactAttachments/
@@ -91,7 +91,26 @@ test("Adjuntos inicia cerrado y sólo se abre por acción del usuario", () => {
     );
     assert.match(
         loader,
-        /mobileCompactInitialState/
+        /mobileCompactUserOpened/
+    );
+    assert.match(
+        loader,
+        /summary\.addEventListener\([\s\S]*"pointerdown"/
+    );
+});
+
+test("Cancelar y Guardar forman parte del flujo normal del editor", () => {
+    assert.match(
+        loader,
+        /\.mobileTaskEditorFooter[\s\S]*position:\s*static\s*!important/
+    );
+    assert.match(
+        enhancer,
+        /save\.textContent = "Guardar"/
+    );
+    assert.match(
+        enhancer,
+        /cancel\.textContent = "Cancelar"/
     );
 });
 
@@ -103,14 +122,6 @@ test("las acciones administrativas pasan al menú y Guardar queda en el pie", ()
     assert.match(
         enhancer,
         /primary\?\.querySelector\("#toggleTask"\)/
-    );
-    assert.match(
-        enhancer,
-        /save\.textContent = "Guardar"/
-    );
-    assert.match(
-        enhancer,
-        /cancel\.textContent = "Cancelar"/
     );
 });
 
