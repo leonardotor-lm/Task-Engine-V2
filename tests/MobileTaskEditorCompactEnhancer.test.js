@@ -129,6 +129,21 @@ test("el cargador no observa continuamente el DOM", () => {
     );
 });
 
+test("las correcciones se reejecutan al abrir o interactuar con el editor", () => {
+    assert.match(
+        loader,
+        /function scheduleAfterUserInteraction/
+    );
+    assert.match(
+        loader,
+        /document\.addEventListener\([\s\S]*"click"[\s\S]*scheduleAfterUserInteraction/
+    );
+    assert.match(
+        loader,
+        /scheduleAfterUserInteraction[\s\S]*scheduleBoundedSynchronization\(\)/
+    );
+});
+
 test("Notas de Notion se integra de forma compacta en Más acciones", () => {
     assert.match(
         loader,
