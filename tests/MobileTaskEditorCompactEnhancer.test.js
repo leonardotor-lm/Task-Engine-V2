@@ -80,7 +80,7 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     );
 });
 
-test("Adjuntos permanece cerrado hasta una apertura explícita del usuario", () => {
+test("Adjuntos sólo admite apertura explícita del usuario", () => {
     assert.match(
         loader,
         /\.mobileTaskEditorCompactAttachments/
@@ -91,11 +91,19 @@ test("Adjuntos permanece cerrado hasta una apertura explícita del usuario", () 
     );
     assert.match(
         loader,
-        /mobileCompactUserOpened/
+        /mobileCompactUserIntent/
     );
     assert.match(
         loader,
-        /summary\.addEventListener\([\s\S]*"pointerdown"/
+        /summary\.addEventListener\("pointerdown"/
+    );
+    assert.match(
+        loader,
+        /panel\.addEventListener\("toggle"/
+    );
+    assert.match(
+        loader,
+        /if \(panel\.open && !userIntent\)/
     );
 });
 
