@@ -1,0 +1,532 @@
+@media (max-width: 760px) {
+
+    .mobileTaskEditorCompactLayout {
+        padding-right: 14px;
+        padding-left: 14px;
+        background: var(--color-surface);
+    }
+
+    .mobileTaskEditorCompactLayout .taskEditorHeader {
+        min-height: 56px;
+        margin-right: -14px;
+        margin-left: -14px;
+        margin-bottom: 16px;
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    .mobileTaskEditorCompactLayout .taskEditorHeader h3 {
+        flex: 1 1 auto;
+        margin: 0;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 650;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .taskEditorHeader
+        .mobileEditorSave {
+        display: none !important;
+    }
+
+    .mobileTaskEditorCompactOverflow {
+        position: relative;
+        flex: 0 0 44px;
+        width: 44px;
+        margin: 0;
+    }
+
+    .mobileTaskEditorCompactOverflowSummary {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        list-style: none;
+        cursor: pointer;
+        color: var(--color-text);
+    }
+
+    .mobileTaskEditorCompactOverflowSummary::-webkit-details-marker {
+        display: none;
+    }
+
+    .mobileTaskEditorCompactIcon {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        stroke-width: 1.8;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorMainFields {
+        gap: 12px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorMainField {
+        position: relative;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorMainField > input,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorMainField > textarea {
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface);
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorTitleField #taskTitleEdit {
+        min-height: 58px;
+        height: auto;
+        padding: 13px 14px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorDescriptionField {
+        display: grid;
+        gap: 6px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorDescriptionField
+        > label {
+        position: static;
+        display: block;
+        width: auto;
+        height: auto;
+        margin: 0 2px;
+        overflow: visible;
+        clip: auto;
+        clip-path: none;
+        color: var(--color-text-muted);
+        font-size: 12px;
+        font-weight: 500;
+        white-space: normal;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorDescriptionField
+        #taskDescriptionEdit {
+        min-height: 112px;
+        height: 112px;
+        padding: 12px 14px;
+        color: var(--color-text-subtle);
+        font-size: 15px;
+        line-height: 1.45;
+    }
+
+    .mobileTaskEditorOrganizationHeading {
+        margin: 18px 0 7px;
+        color: var(--color-text-muted);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorContextBar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        overflow: hidden;
+        margin: 0 0 12px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface);
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorContextField {
+        display: grid;
+        grid-template-columns: minmax(88px, auto) minmax(0, 1fr);
+        align-items: center;
+        gap: 12px;
+        min-height: 54px;
+        padding: 7px 12px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorContextField +
+        .mobileTaskEditorContextField {
+        border-top: 1px solid var(--color-border);
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorContextField label {
+        margin: 0;
+        color: var(--color-text);
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorContextField select {
+        height: 40px;
+        min-height: 40px;
+        justify-self: stretch;
+        padding: 5px 32px 5px 10px;
+        border: 0;
+        border-radius: 6px;
+        background-color: var(--color-surface-subtle);
+        color: var(--color-text-subtle);
+        font-size: 14px;
+        font-weight: 550;
+        text-align: right;
+        text-align-last: right;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorProperties {
+        display: contents;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorToolGrid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .mobileTaskEditorCompactTool,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorTool {
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    .mobileTaskEditorCompactSummary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPicker
+        .searchableMultiSelectManager
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorRecurrenceTool
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments
+        > summary {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 82px;
+        height: 82px;
+        margin: 0;
+        padding: 8px 6px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
+        font: inherit;
+        list-style: none;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactAttachments
+        > summary {
+        border: 1px solid var(--color-border) !important;
+        border-radius: 8px !important;
+        background: var(--color-surface) !important;
+    }
+
+    .mobileTaskEditorCompactSummary::-webkit-details-marker,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments
+        > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .mobileTaskEditorCompactSummary
+        .mobileTaskEditorCompactIcon,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments
+        > summary .mobileTaskEditorCompactIcon {
+        color: var(--color-text);
+    }
+
+    .mobileTaskEditorCompactLabel {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        color: var(--color-text-subtle);
+        font-size: 12px;
+        font-weight: 550;
+        line-height: 1.15;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobileTaskEditorCompactValue {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        color: var(--color-text-muted);
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 1.1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPickerCount {
+        position: absolute;
+        top: 6px;
+        right: 7px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        font-size: 10px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPicker
+        .searchableMultiSelectManager,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorRecurrenceTool,
+    .mobileTaskEditorCompactAttachments {
+        position: relative;
+        width: 100%;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorSubtasks {
+        margin-top: 14px;
+    }
+
+    .mobileTaskEditorCompactPanel,
+    .mobileTaskEditorCompactPanel[hidden],
+    details:not([open]) > .mobileTaskEditorCompactPanel {
+        display: none !important;
+    }
+
+    details[open] > .mobileTaskEditorCompactPanel {
+        position: fixed;
+        z-index: 122;
+        right: 8px;
+        bottom: calc(8px + env(safe-area-inset-bottom));
+        left: 8px;
+        display: grid !important;
+        gap: 10px;
+        box-sizing: border-box;
+        width: auto;
+        max-height: min(72dvh, 560px);
+        padding: 0 12px 12px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border: var(--transient-surface-border);
+        border-radius: var(--transient-surface-radius);
+        background: var(--color-surface);
+        box-shadow: var(--transient-dialog-shadow);
+    }
+
+    .mobileTaskEditorCompactPanelHeader {
+        position: sticky;
+        z-index: 2;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        margin: 0 -12px;
+        padding: 2px 8px 2px 12px;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-surface);
+    }
+
+    .mobileTaskEditorCompactPanelHeader strong {
+        color: var(--color-text);
+        font-size: 14px;
+        font-weight: 650;
+    }
+
+    .mobileTaskEditorCompactPanelClose {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-text-muted);
+        font-size: 22px;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty {
+        display: grid;
+        gap: 5px;
+        min-height: 0;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty +
+        .mobileTaskEditorProperty {
+        margin-top: 5px;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty > label {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 12px;
+        font-weight: 550;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty > input,
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty > select {
+        min-height: 46px;
+        height: 46px;
+        padding: 9px 10px;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
+        font-size: 14px;
+    }
+
+    .mobileTaskEditorCompactOverflow
+        > .mobileTaskEditorCompactPanel {
+        top: 58px;
+        right: 8px;
+        bottom: auto;
+        left: auto;
+        width: min(310px, calc(100vw - 16px));
+        max-height: calc(100dvh - 74px);
+    }
+
+    .mobileTaskEditorCompactOverflowOptions,
+    .mobileTaskEditorCompactOverflowActions {
+        display: grid;
+        gap: 6px;
+    }
+
+    .mobileTaskEditorCompactOverflowTitle {
+        margin: 4px 0 0;
+        color: var(--color-text-muted);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .mobileTaskEditorCompactOverflowOptions
+        .mobileTaskEditorWaitingProperty,
+    .mobileTaskEditorCompactOverflowOptions
+        .mobileTaskEditorProjectProperty {
+        display: block;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .mobileTaskEditorCompactOverflowOptions
+        .waitingTaskControl,
+    .mobileTaskEditorCompactOverflowOptions
+        .projectTaskControl,
+    .mobileTaskEditorCompactOverflowActions button,
+    .mobileTaskEditorCompactOverflowOptions
+        .mobileTaskEditorMoveTool
+        summary {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 44px;
+        margin: 0;
+        padding: 9px 10px;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: var(--color-surface);
+        color: var(--color-text-subtle);
+        font-size: 14px;
+        text-align: left;
+    }
+
+    .mobileTaskEditorCompactOverflowActions
+        #deleteTask {
+        color: var(--color-danger);
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorFooter {
+        gap: 10px;
+        margin-right: -14px;
+        margin-left: -14px;
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPrimaryActions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+        gap: 10px;
+        width: 100%;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPrimaryActions
+        button {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 7px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .mobileTaskEditorCompactCancel {
+        border: 1px solid var(--color-border-strong);
+        background: var(--color-surface);
+        color: var(--color-text);
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPrimaryActions #saveTask {
+        border-color: var(--color-accent);
+        background: var(--color-accent);
+        color: var(--color-on-accent);
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAdministrativeActions:empty {
+        display: none;
+    }
+
+    .mobileTaskEditorCompactLayout
+        summary:focus-visible,
+    .mobileTaskEditorCompactLayout
+        button:focus-visible {
+        outline: 2px solid var(--color-accent-muted);
+        outline-offset: 2px;
+    }
+}
