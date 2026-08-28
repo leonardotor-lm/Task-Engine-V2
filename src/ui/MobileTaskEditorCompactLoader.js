@@ -125,53 +125,6 @@ if (!document.getElementById(overflowFixStyleId)) {
     document.head.append(style);
 }
 
-function bindAttachmentUserIntent(panel) {
-    if (
-        panel.dataset.mobileCompactIntentBound ===
-        "true"
-    ) {
-        return;
-    }
-
-    const summary = panel.querySelector(":scope > summary");
-    if (!summary) return;
-
-    panel.dataset.mobileCompactIntentBound = "true";
-    panel.dataset.mobileCompactUserIntent = "false";
-
-    const markUserIntent = () => {
-        panel.dataset.mobileCompactUserIntent = "true";
-    };
-
-    summary.addEventListener("pointerdown", markUserIntent);
-    summary.addEventListener("keydown", event => {
-        if (event.key === "Enter" || event.key === " ") {
-            markUserIntent();
-        }
-    });
-
-    panel.addEventListener("toggle", () => {
-        const userIntent =
-            panel.dataset.mobileCompactUserIntent === "true";
-
-        if (panel.open && !userIntent) {
-            panel.open = false;
-            return;
-        }
-
-        panel.dataset.mobileCompactUserIntent = "false";
-    });
-}
-
-function closeInitialAttachmentsPanel() {
-    document.querySelectorAll(
-        ".mobileTaskEditorCompactAttachments"
-    ).forEach(panel => {
-        bindAttachmentUserIntent(panel);
-        panel.open = false;
-    });
-}
-
 function getCompactDrawer() {
     return document.querySelector(
         ".mobileTaskEditorCompactLayout:not(.recoveryPanel)"
@@ -266,7 +219,6 @@ function relocateNotionNotes() {
 }
 
 function synchronizeCompactEditorOnce() {
-    closeInitialAttachmentsPanel();
     relocateMoveFallback();
     relocateNotionNotes();
 }
