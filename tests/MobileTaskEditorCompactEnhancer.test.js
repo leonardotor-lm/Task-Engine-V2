@@ -18,6 +18,14 @@ const loader = await readFile(
     "utf8"
 );
 
+const attachmentController = await readFile(
+    new URL(
+        "../src/ui/AttachmentController.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 const styles = await readFile(
     new URL(
         "../styles/task-editor-mobile-compact.css",
@@ -80,30 +88,33 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     );
 });
 
-test("Adjuntos sólo admite apertura explícita del usuario", () => {
+test("Adjuntos nace cerrado en móvil desde su controlador de origen", () => {
     assert.match(
-        loader,
-        /\.mobileTaskEditorCompactAttachments/
+        attachmentController,
+        /const mobileEditor = window\.matchMedia\?\./
     );
     assert.match(
+        attachmentController,
+        /section\.open = draft && !mobileEditor/
+    );
+    assert.doesNotMatch(
         loader,
-        /panel\.open = false/
+        /closeInitialAttachmentsPanel|mobileCompactUserIntent|panel\.open = false/
+    );
+});
+
+test("Más acciones usa una caja de scroll con altura real de viewport", () => {
+    assert.match(
+        styles,
+        /mobileTaskEditorCompactOverflow[\s\S]*height:\s*calc\([\s\S]*100dvh - 66px - env\(safe-area-inset-bottom\)[\s\S]*\)/
     );
     assert.match(
-        loader,
-        /mobileCompactUserIntent/
+        styles,
+        /mobileTaskEditorCompactOverflow[\s\S]*max-height:\s*none/
     );
     assert.match(
-        loader,
-        /summary\.addEventListener\("pointerdown"/
-    );
-    assert.match(
-        loader,
-        /panel\.addEventListener\("toggle"/
-    );
-    assert.match(
-        loader,
-        /if \(panel\.open && !userIntent\)/
+        styles,
+        /mobileTaskEditorCompactOverflow[\s\S]*overflow-y:\s*auto/
     );
 });
 
@@ -148,7 +159,7 @@ test("el cargador no observa continuamente el DOM", () => {
     );
 });
 
-test("las correcciones se reejecutan al abrir o interactuar con el editor", () => {
+test("las correcciones auxiliares se reejecutan al abrir o interactuar con el editor", () => {
     assert.match(
         loader,
         /function scheduleAfterUserInteraction/
