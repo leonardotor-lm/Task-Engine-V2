@@ -80,6 +80,21 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     );
 });
 
+test("Adjuntos inicia cerrado y sólo se abre por acción del usuario", () => {
+    assert.match(
+        loader,
+        /\.mobileTaskEditorCompactAttachments/
+    );
+    assert.match(
+        loader,
+        /panel\.open = false/
+    );
+    assert.match(
+        loader,
+        /mobileCompactInitialState/
+    );
+});
+
 test("las acciones administrativas pasan al menú y Guardar queda en el pie", () => {
     assert.match(
         enhancer,
