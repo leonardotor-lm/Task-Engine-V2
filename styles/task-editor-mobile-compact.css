@@ -420,10 +420,13 @@
         > .mobileTaskEditorCompactPanel {
         top: 58px;
         right: 8px;
-        bottom: auto;
+        bottom: 8px;
         left: auto;
         width: min(310px, calc(100vw - 16px));
-        max-height: calc(100dvh - 74px);
+        max-height: calc(100dvh - 66px);
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        overscroll-behavior: contain;
+        scroll-padding-bottom: calc(20px + env(safe-area-inset-bottom));
     }
 
     .mobileTaskEditorCompactOverflowOptions,
