@@ -243,5 +243,19 @@ function scheduleBoundedSynchronization() {
     });
 }
 
+function scheduleAfterUserInteraction() {
+    if (!window.matchMedia("(max-width: 760px)").matches) {
+        return;
+    }
+
+    scheduleBoundedSynchronization();
+}
+
+document.addEventListener(
+    "click",
+    scheduleAfterUserInteraction,
+    true
+);
+
 import("./MobileTaskEditorCompactEnhancer.js")
     .then(scheduleBoundedSynchronization);
