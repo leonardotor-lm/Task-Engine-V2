@@ -27,15 +27,68 @@ function closeInitialAttachmentsPanel() {
     });
 }
 
-const attachmentStateObserver = new MutationObserver(
-    closeInitialAttachmentsPanel
-);
-attachmentStateObserver.observe(document.body, {
+function relocateMoveFallback() {
+    const drawer = document.querySelector(
+        ".mobileTaskEditorCompactLayout:not(.recoveryPanel)"
+    );
+    const grid = drawer?.querySelector(
+        ".mobileTaskEditorToolGrid"
+    );
+
+    if (!drawer || !grid) return;
+
+    const moveButton = Array.from(
+        grid.querySelectorAll(".mobileTaskEditorToolButton")
+    ).find(button =>
+        button.textContent.trim() === "Mover"
+    );
+
+    if (!moveButton) return;
+
+    const overflowPanel = drawer.querySelector(
+        ".mobileTaskEditorCompactOverflowPanel"
+    );
+
+    if (!overflowPanel) {
+        moveButton.remove();
+        return;
+    }
+
+    let options = overflowPanel.querySelector(
+        ".mobileTaskEditorCompactOverflowOptions"
+    );
+
+    if (!options) {
+        const title = document.createElement("strong");
+        title.className =
+            "mobileTaskEditorCompactOverflowTitle";
+        title.textContent = "Opciones";
+
+        options = document.createElement("div");
+        options.className =
+            "mobileTaskEditorCompactOverflowOptions";
+
+        overflowPanel.prepend(title, options);
+    }
+
+    options.append(moveButton);
+}
+
+function synchronizeCompactEditor() {
+    closeInitialAttachmentsPanel();
+    relocateMoveFallback();
+}
+
+const compactStateObserver = new MutationObserver(() => {
+    queueMicrotask(synchronizeCompactEditor);
+});
+compactStateObserver.observe(document.body, {
     childList: true,
     subtree: true,
     attributes: true,
     attributeFilter: ["class"]
 });
 
-closeInitialAttachmentsPanel();
-import("./MobileTaskEditorCompactEnhancer.js");
+synchronizeCompactEditor();
+import("./MobileTaskEditorCompactEnhancer.js")
+    .then(() => queueMicrotask(synchronizeCompactEditor));
