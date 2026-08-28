@@ -19,7 +19,10 @@ if (!document.getElementById(overflowFixStyleId)) {
     style.textContent = `
         @media (max-width: 760px) {
             .mobileTaskEditorCompactOverflowActions #toggleTask,
-            .mobileTaskEditorCompactOverflowActions #reopenTask {
+            .mobileTaskEditorCompactOverflowActions #reopenTask,
+            .mobileTaskEditorCompactOverflowActions #archiveTask,
+            .mobileTaskEditorCompactOverflowActions #deleteTask,
+            .mobileTaskEditorCompactOverflowActions #skipRecurringTask {
                 display: block !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
@@ -35,6 +38,10 @@ if (!document.getElementById(overflowFixStyleId)) {
                 font-weight: 400 !important;
                 line-height: 1.3 !important;
                 text-align: left !important;
+            }
+
+            .mobileTaskEditorCompactOverflowActions #deleteTask {
+                color: var(--color-danger) !important;
             }
         }
     `;
