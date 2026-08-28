@@ -114,6 +114,30 @@ test("las acciones administrativas pasan al menú y Guardar queda en el pie", ()
     );
 });
 
+test("el menú móvil recupera acciones dinámicas y las notas de Notion", () => {
+    for (const id of [
+        "toggleTask",
+        "archiveTask",
+        "deleteTask",
+        "skipRecurringTask"
+    ]) {
+        assert.match(loader, new RegExp(`"${id}"`));
+    }
+
+    assert.match(
+        loader,
+        /\.editorNotionSection/
+    );
+    assert.match(
+        loader,
+        /mobileTaskEditorCompactOverflowNotes/
+    );
+    assert.match(
+        loader,
+        /titleText[\s\S]*"Notas"|"Notas"/
+    );
+});
+
 test("la mejora queda aislada a móvil y disponible en la PWA", () => {
     assert.match(
         enhancer,
