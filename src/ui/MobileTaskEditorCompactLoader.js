@@ -10,6 +10,37 @@ if (!document.querySelector(
     document.head.append(stylesheet);
 }
 
+const overflowFixStyleId =
+    "mobile-task-editor-overflow-fix";
+
+if (!document.getElementById(overflowFixStyleId)) {
+    const style = document.createElement("style");
+    style.id = overflowFixStyleId;
+    style.textContent = `
+        @media (max-width: 760px) {
+            .mobileTaskEditorCompactOverflowActions #toggleTask,
+            .mobileTaskEditorCompactOverflowActions #reopenTask {
+                display: block !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                margin: 0 !important;
+                padding: 9px 10px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface) !important;
+                color: var(--color-text-subtle) !important;
+                font: inherit !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                line-height: 1.3 !important;
+                text-align: left !important;
+            }
+        }
+    `;
+    document.head.append(style);
+}
+
 function closeInitialAttachmentsPanel() {
     document.querySelectorAll(
         ".mobileTaskEditorCompactAttachments"
