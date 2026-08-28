@@ -121,11 +121,34 @@ test("el cargador no observa continuamente el DOM", () => {
     );
     assert.match(
         loader,
-        /synchronizeCompactEditorOnce/
+        /scheduleBoundedSynchronization/
     );
     assert.match(
         loader,
-        /setTimeout/
+        /\[0, 40, 120\]/
+    );
+});
+
+test("Notas de Notion se integra de forma compacta en Más acciones", () => {
+    assert.match(
+        loader,
+        /function relocateNotionNotes/
+    );
+    assert.match(
+        loader,
+        /\.editorNotionSection/
+    );
+    assert.match(
+        loader,
+        /mobileTaskEditorCompactOverflowNotes/
+    );
+    assert.match(
+        loader,
+        /notionSection\.open = false/
+    );
+    assert.match(
+        loader,
+        /"Notas"/
     );
 });
 
