@@ -43,6 +43,76 @@ if (!document.getElementById(overflowFixStyleId)) {
             .mobileTaskEditorCompactOverflowActions #deleteTask {
                 color: var(--color-danger) !important;
             }
+
+            .mobileTaskEditorCompactOverflowNotes {
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+                background: transparent !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes > summary {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                margin: 0 !important;
+                padding: 9px 10px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface) !important;
+                color: var(--color-text-subtle) !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                list-style: none !important;
+                cursor: pointer !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes > summary::-webkit-details-marker {
+                display: none !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes > .editorSectionBody {
+                display: grid !important;
+                gap: 8px !important;
+                margin: 6px 0 0 !important;
+                padding: 8px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface-subtle) !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes .fieldHelp,
+            .mobileTaskEditorCompactOverflowNotes .syncErrorHint {
+                margin: 0 !important;
+                font-size: 12px !important;
+                line-height: 1.35 !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes .taskEditorActions {
+                display: grid !important;
+                gap: 6px !important;
+                margin: 0 !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes a,
+            .mobileTaskEditorCompactOverflowNotes button {
+                display: flex !important;
+                align-items: center !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                margin: 0 !important;
+                padding: 9px 10px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface) !important;
+                color: var(--color-text-subtle) !important;
+                font: inherit !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                text-align: left !important;
+                text-decoration: none !important;
+            }
         }
     `;
     document.head.append(style);
@@ -65,10 +135,43 @@ function closeInitialAttachmentsPanel() {
     });
 }
 
-function relocateMoveFallback() {
-    const drawer = document.querySelector(
+function getCompactDrawer() {
+    return document.querySelector(
         ".mobileTaskEditorCompactLayout:not(.recoveryPanel)"
     );
+}
+
+function getOverflowPanel(drawer) {
+    return drawer?.querySelector(
+        ".mobileTaskEditorCompactOverflowPanel"
+    ) ?? null;
+}
+
+function ensureOverflowSection(
+    overflowPanel,
+    className,
+    titleText
+) {
+    let section = overflowPanel.querySelector(
+        `.${className}`
+    );
+
+    if (section) return section;
+
+    const title = document.createElement("strong");
+    title.className =
+        "mobileTaskEditorCompactOverflowTitle";
+    title.textContent = titleText;
+
+    section = document.createElement("div");
+    section.className = className;
+
+    overflowPanel.append(title, section);
+    return section;
+}
+
+function relocateMoveFallback() {
+    const drawer = getCompactDrawer();
     const grid = drawer?.querySelector(
         ".mobileTaskEditorToolGrid"
     );
@@ -83,45 +186,62 @@ function relocateMoveFallback() {
 
     if (!moveButton) return;
 
-    const overflowPanel = drawer.querySelector(
-        ".mobileTaskEditorCompactOverflowPanel"
-    );
+    const overflowPanel = getOverflowPanel(drawer);
 
     if (!overflowPanel) {
         moveButton.remove();
         return;
     }
 
-    let options = overflowPanel.querySelector(
-        ".mobileTaskEditorCompactOverflowOptions"
+    const options = ensureOverflowSection(
+        overflowPanel,
+        "mobileTaskEditorCompactOverflowOptions",
+        "Opciones"
     );
 
-    if (!options) {
-        const title = document.createElement("strong");
-        title.className =
-            "mobileTaskEditorCompactOverflowTitle";
-        title.textContent = "Opciones";
+    options.append(moveButton);
+}
 
-        options = document.createElement("div");
-        options.className =
-            "mobileTaskEditorCompactOverflowOptions";
+function relocateNotionNotes() {
+    const drawer = getCompactDrawer();
+    const notionSection = drawer?.querySelector(
+        ".editorNotionSection:not(.mobileTaskEditorCompactOverflowNotes)"
+    );
+    const overflowPanel = getOverflowPanel(drawer);
 
-        overflowPanel.prepend(title, options);
+    if (!drawer || !notionSection || !overflowPanel) {
+        return false;
     }
 
-    options.append(moveButton);
+    notionSection.open = false;
+    notionSection.classList.add(
+        "mobileTaskEditorCompactOverflowNotes"
+    );
+
+    const notes = ensureOverflowSection(
+        overflowPanel,
+        "mobileTaskEditorCompactOverflowNotesContainer",
+        "Notas"
+    );
+
+    notes.append(notionSection);
+    return true;
 }
 
 function synchronizeCompactEditorOnce() {
     closeInitialAttachmentsPanel();
     relocateMoveFallback();
+    relocateNotionNotes();
+}
+
+function scheduleBoundedSynchronization() {
+    [0, 40, 120].forEach(delay => {
+        window.setTimeout(
+            synchronizeCompactEditorOnce,
+            delay
+        );
+    });
 }
 
 import("./MobileTaskEditorCompactEnhancer.js")
-    .then(() => {
-        queueMicrotask(synchronizeCompactEditorOnce);
-        window.setTimeout(
-            synchronizeCompactEditorOnce,
-            0
-        );
-    });
+    .then(scheduleBoundedSynchronization);
