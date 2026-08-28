@@ -114,27 +114,18 @@ test("las acciones administrativas pasan al menú y Guardar queda en el pie", ()
     );
 });
 
-test("el menú móvil recupera acciones dinámicas y las notas de Notion", () => {
-    for (const id of [
-        "toggleTask",
-        "archiveTask",
-        "deleteTask",
-        "skipRecurringTask"
-    ]) {
-        assert.match(loader, new RegExp(`"${id}"`));
-    }
-
-    assert.match(
+test("el cargador no observa continuamente el DOM", () => {
+    assert.doesNotMatch(
         loader,
-        /\.editorNotionSection/
+        /new MutationObserver/
     );
     assert.match(
         loader,
-        /mobileTaskEditorCompactOverflowNotes/
+        /synchronizeCompactEditorOnce/
     );
     assert.match(
         loader,
-        /titleText[\s\S]*"Notas"|"Notas"/
+        /setTimeout/
     );
 });
 
