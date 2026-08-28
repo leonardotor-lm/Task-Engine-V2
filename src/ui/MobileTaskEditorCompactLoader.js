@@ -137,15 +137,30 @@ function bindAttachmentUserIntent(panel) {
     if (!summary) return;
 
     panel.dataset.mobileCompactIntentBound = "true";
-    panel.dataset.mobileCompactUserOpened = "false";
+    panel.dataset.mobileCompactUserIntent = "false";
 
-    summary.addEventListener(
-        "pointerdown",
-        () => {
-            panel.dataset.mobileCompactUserOpened = "true";
-        },
-        { once: true }
-    );
+    const markUserIntent = () => {
+        panel.dataset.mobileCompactUserIntent = "true";
+    };
+
+    summary.addEventListener("pointerdown", markUserIntent);
+    summary.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            markUserIntent();
+        }
+    });
+
+    panel.addEventListener("toggle", () => {
+        const userIntent =
+            panel.dataset.mobileCompactUserIntent === "true";
+
+        if (panel.open && !userIntent) {
+            panel.open = false;
+            return;
+        }
+
+        panel.dataset.mobileCompactUserIntent = "false";
+    });
 }
 
 function closeInitialAttachmentsPanel() {
@@ -153,14 +168,6 @@ function closeInitialAttachmentsPanel() {
         ".mobileTaskEditorCompactAttachments"
     ).forEach(panel => {
         bindAttachmentUserIntent(panel);
-
-        if (
-            panel.dataset.mobileCompactUserOpened ===
-            "true"
-        ) {
-            return;
-        }
-
         panel.open = false;
     });
 }
