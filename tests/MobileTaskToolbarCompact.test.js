@@ -28,7 +28,7 @@ const pwaAssets = await readFile(
     "utf8"
 );
 
-test("la barra móvil permanece colapsable y usa un disparador icónico", () => {
+test("la barra móvil permanece colapsable y mantiene un disparador compacto", () => {
     assert.match(
         controller,
         /task-engine-v2-mobile-task-toolbar-expanded-v2/
@@ -43,7 +43,18 @@ test("la barra móvil permanece colapsable y usa un disparador icónico", () => 
     );
     assert.match(
         controller,
-        /renderMobileIcon\(\s*"controls"\s*\)/
+        /Mostrar ↓|Ocultar ↑/
+    );
+});
+
+test("los controles móviles se decoran en el mismo ciclo de construcción", () => {
+    assert.match(
+        controller,
+        /this\.prepareMobileToggle\(toolbar\);\s*this\.decorateMobileControls\(state\);/
+    );
+    assert.doesNotMatch(
+        controller,
+        /queueMicrotask|Promise\.resolve\(\)\.then/
     );
 });
 
