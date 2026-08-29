@@ -55,12 +55,28 @@ export class CompactTaskToolbarController
         app,
         {
             storage = globalThis.localStorage,
-            windowRef = globalThis.window
+            windowRef = globalThis.window,
+            documentRef = globalThis.document
         } = {}
     ) {
 
         super(app, { storage });
         this.window = windowRef;
+        this.document = documentRef;
+        this.toolbarControlsChanged = () => {
+            if (!this.isMobileViewport()) return;
+            this.decorateToolbarSelects();
+        };
+
+    }
+
+    start() {
+
+        super.start();
+        this.document?.addEventListener?.(
+            "task-toolbar-controls-changed",
+            this.toolbarControlsChanged
+        );
 
     }
 
@@ -276,20 +292,7 @@ export class CompactTaskToolbarController
         this.prepareMobileToggle(toolbar);
         this.decorateHeadingToggle(toolbar);
         this.decorateFiltersButton();
-        this.decorateSelect(
-            document.getElementById("taskSort"),
-            {
-                icon: "sort",
-                label: "Ordenar tareas"
-            }
-        );
-        this.decorateSelect(
-            document.getElementById("taskGrouping"),
-            {
-                icon: "group",
-                label: "Agrupar tareas"
-            }
-        );
+        this.decorateToolbarSelects();
 
         const utilities = body.querySelector(
             ".taskContextToolbarUtilities"
@@ -320,6 +323,25 @@ export class CompactTaskToolbarController
         )?.classList.toggle(
             "active",
             Boolean(filtersActive || groupingActive)
+        );
+
+    }
+
+    decorateToolbarSelects() {
+
+        this.decorateSelect(
+            document.getElementById("taskSort"),
+            {
+                icon: "sort",
+                label: "Ordenar tareas"
+            }
+        );
+        this.decorateSelect(
+            document.getElementById("taskGrouping"),
+            {
+                icon: "group",
+                label: "Agrupar tareas"
+            }
         );
 
     }
@@ -355,27 +377,35 @@ export class CompactTaskToolbarController
 
         if (!select || !wrapper) return;
 
+        select.classList.remove(
+            "mobileFilterNativeSelect"
+        );
+        delete select.dataset.mobileFilterEnhanced;
+
+        this.document?.querySelector?.(
+            `.mobileFilterSelect[data-for="${select.id}"]`
+        )?.remove();
+
         wrapper.classList.add(
             "mobileTaskToolbarSelect"
         );
         wrapper.setAttribute("title", label);
         select.setAttribute("aria-label", label);
 
-        if (
-            wrapper.querySelector(
-                ":scope > .mobileTaskToolbarSelectIcon"
-            )
-        ) {
-            return;
+        let iconElement = wrapper.querySelector(
+            ":scope > .mobileTaskToolbarSelectIcon"
+        );
+
+        if (!iconElement) {
+            iconElement = document.createElement(
+                "span"
+            );
+            iconElement.className =
+                "mobileTaskToolbarSelectIcon";
+            wrapper.prepend(iconElement);
         }
 
-        const iconElement = document.createElement(
-            "span"
-        );
-        iconElement.className =
-            "mobileTaskToolbarSelectIcon";
         iconElement.innerHTML = renderMobileIcon(icon);
-        wrapper.prepend(iconElement);
 
     }
 
