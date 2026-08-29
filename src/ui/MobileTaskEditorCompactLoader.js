@@ -166,6 +166,38 @@ function ensureOverflowSection(
     return section;
 }
 
+function placeSectionBeforeActions(
+    overflowPanel,
+    section
+) {
+    const actions = overflowPanel.querySelector(
+        ".mobileTaskEditorCompactOverflowActions"
+    );
+
+    if (!actions) return;
+
+    const actionsTitle = actions.previousElementSibling;
+    const sectionTitle = section.previousElementSibling;
+
+    if (
+        !sectionTitle?.classList.contains(
+            "mobileTaskEditorCompactOverflowTitle"
+        )
+    ) {
+        return;
+    }
+
+    const anchor =
+        actionsTitle?.classList.contains(
+            "mobileTaskEditorCompactOverflowTitle"
+        )
+            ? actionsTitle
+            : actions;
+
+    overflowPanel.insertBefore(sectionTitle, anchor);
+    overflowPanel.insertBefore(section, anchor);
+}
+
 function relocateMoveFallback() {
     const drawer = getCompactDrawer();
     const overflowPanel = getOverflowPanel(drawer);
@@ -223,6 +255,7 @@ function relocateNotionNotes() {
         "Notas"
     );
 
+    placeSectionBeforeActions(overflowPanel, notes);
     notes.append(notionSection);
     return true;
 }
