@@ -9,15 +9,17 @@ const enhancer = await readFile(
     ),
     "utf8"
 );
-
-const loader = await readFile(
+const unifiedController = await readFile(
     new URL(
-        "../src/ui/MobileTaskEditorCompactLoader.js",
+        "../src/ui/UnifiedMobileTaskEditorController.js",
         import.meta.url
     ),
     "utf8"
 );
-
+const main = await readFile(
+    new URL("../src/main.js", import.meta.url),
+    "utf8"
+);
 const attachmentController = await readFile(
     new URL(
         "../src/ui/AttachmentController.js",
@@ -25,7 +27,6 @@ const attachmentController = await readFile(
     ),
     "utf8"
 );
-
 const styles = await readFile(
     new URL(
         "../styles/task-editor-mobile-compact.css",
@@ -33,12 +34,10 @@ const styles = await readFile(
     ),
     "utf8"
 );
-
 const index = await readFile(
     new URL("../index.html", import.meta.url),
     "utf8"
 );
-
 const pwaAssets = await readFile(
     new URL("../pwa-assets.js", import.meta.url),
     "utf8"
@@ -97,10 +96,6 @@ test("Adjuntos nace cerrado en móvil desde su controlador de origen", () => {
         attachmentController,
         /section\.open = draft && !mobileEditor/
     );
-    assert.doesNotMatch(
-        loader,
-        /closeInitialAttachmentsPanel|mobileCompactUserIntent|panel\.open = false/
-    );
 });
 
 test("Más acciones usa una caja de scroll con altura real de viewport", () => {
@@ -120,7 +115,7 @@ test("Más acciones usa una caja de scroll con altura real de viewport", () => {
 
 test("Cancelar y Guardar forman parte del flujo normal del editor", () => {
     assert.match(
-        loader,
+        enhancer,
         /\.mobileTaskEditorFooter[\s\S]*position:\s*static\s*!important/
     );
     assert.match(
@@ -144,79 +139,79 @@ test("las acciones administrativas pasan al menú y Guardar queda en el pie", ()
     );
 });
 
-test("las correcciones auxiliares reaccionan sólo a inserciones relevantes del editor", () => {
+test("un único controlador gobierna las dos etapas del editor móvil", () => {
     assert.match(
-        loader,
-        /new MutationObserver\([\s\S]*handleEditorMutations/
+        unifiedController,
+        /extends MobileTaskEditorLayoutController/
     );
     assert.match(
-        loader,
-        /childList:\s*true/
+        unifiedController,
+        /super\.enhanceEditor\(\)/
+    );
+    assert.match(
+        unifiedController,
+        /enhanceCompactMobileTaskEditor\(drawer\)/
+    );
+    assert.match(
+        main,
+        /new UnifiedMobileTaskEditorController\(app\)/
     );
     assert.doesNotMatch(
-        loader,
-        /document\.addEventListener\([\s\S]*"click"/
-    );
-    assert.match(
-        loader,
-        /scheduleBoundedSynchronization/
-    );
-    assert.match(
-        loader,
-        /\[0, 40, 120\]/
+        main,
+        /new MobileTaskEditorLayoutController\(app\)/
     );
 });
 
-test("Mover nunca se elimina si Más acciones todavía no está listo", () => {
-    assert.match(
-        loader,
-        /function relocateMoveFallback/
-    );
-    assert.match(
-        loader,
-        /mobileTaskEditorMoveTool/
+test("el compacto no instala observadores ni ciclos autónomos", () => {
+    assert.doesNotMatch(
+        enhancer,
+        /new MutationObserver/
     );
     assert.doesNotMatch(
-        loader,
+        enhancer,
+        /window\.addEventListener\("resize"/
+    );
+    assert.doesNotMatch(
+        enhancer,
+        /queueMicrotask\(enhance/
+    );
+    assert.doesNotMatch(
+        index,
+        /MobileTaskEditorCompactLoader\.js/
+    );
+});
+
+test("Mover se integra directamente en Opciones sin fallback destructivo", () => {
+    assert.match(
+        enhancer,
+        /grid\?\.querySelector\([\s\S]*"\.mobileTaskEditorMoveTool"/
+    );
+    assert.match(
+        enhancer,
+        /if \(move\) optionFields\.append\(move\)/
+    );
+    assert.doesNotMatch(
+        enhancer,
         /moveButton\.remove\(\)/
     );
 });
 
-test("Notas de Notion se integra sin cerrar la sección durante la interacción", () => {
+test("Notas de Notion se ubica antes de las acciones administrativas", () => {
     assert.match(
-        loader,
-        /function relocateNotionNotes/
+        enhancer,
+        /function appendNotionNotes/
     );
     assert.match(
-        loader,
+        enhancer,
         /\.editorNotionSection/
     );
     assert.match(
-        loader,
-        /mobileTaskEditorCompactOverflowNotes/
+        enhancer,
+        /appendNotionNotes\(drawer, body\);[\s\S]*const administrative/
     );
     assert.doesNotMatch(
-        loader,
+        enhancer,
         /notionSection\.open = false/
-    );
-    assert.match(
-        loader,
-        /"Notas"/
-    );
-});
-
-test("Notas se ubica antes de las acciones administrativas", () => {
-    assert.match(
-        loader,
-        /function placeSectionBeforeActions/
-    );
-    assert.match(
-        loader,
-        /\.mobileTaskEditorCompactOverflowActions/
-    );
-    assert.match(
-        loader,
-        /placeSectionBeforeActions\(overflowPanel, notes\)/
     );
 });
 
@@ -226,20 +221,12 @@ test("la mejora queda aislada a móvil y disponible en la PWA", () => {
         /\(max-width: 760px\)/
     );
     assert.match(
-        loader,
+        enhancer,
         /task-editor-mobile-compact\.css/
-    );
-    assert.match(
-        index,
-        /MobileTaskEditorCompactLoader\.js/
     );
     assert.match(
         pwaAssets,
         /MobileTaskEditorCompactEnhancer\.js/
-    );
-    assert.match(
-        pwaAssets,
-        /MobileTaskEditorCompactLoader\.js/
     );
     assert.match(
         pwaAssets,

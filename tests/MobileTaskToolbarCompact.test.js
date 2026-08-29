@@ -85,6 +85,33 @@ test("filtros orden y agrupamiento se compactan sin cambiar sus controles", () =
     );
 });
 
+test("orden y agrupamiento tardío quedan normalizados como botones con icono", () => {
+    assert.match(
+        controller,
+        /observeLateToolbarControls\(body\)/
+    );
+    assert.match(
+        controller,
+        /#taskSort, #taskGrouping/
+    );
+    assert.match(
+        controller,
+        /mobileFilterNativeSelect/
+    );
+    assert.match(
+        controller,
+        /mobileFilterSelect\[data-for=/
+    );
+    assert.match(
+        controller,
+        /iconElement\.innerHTML = renderMobileIcon\(icon\)/
+    );
+    assert.doesNotMatch(
+        controller,
+        /observer\.observe\(document\.body/
+    );
+});
+
 test("las opciones secundarias usan Más salvo durante selección múltiple", () => {
     assert.match(
         controller,
