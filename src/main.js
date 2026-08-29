@@ -57,8 +57,8 @@ import {
     DesktopTaskEditorLayoutController
 } from "./ui/DesktopTaskEditorLayoutController.js";
 import {
-    MobileTaskEditorLayoutController
-} from "./ui/MobileTaskEditorLayoutController.js";
+    UnifiedMobileTaskEditorController
+} from "./ui/UnifiedMobileTaskEditorController.js";
 import {
     GoalWorkspaceController
 } from "./ui/GoalWorkspaceController.js";
@@ -192,8 +192,8 @@ const taskFilterPreferencesController =
     new TaskFilterPreferencesController(app);
 const desktopTaskEditorLayoutController =
     new DesktopTaskEditorLayoutController(app);
-const mobileTaskEditorLayoutController =
-    new MobileTaskEditorLayoutController(app);
+const mobileTaskEditorController =
+    new UnifiedMobileTaskEditorController(app);
 const goalWorkspaceController =
     new GoalWorkspaceController(app);
 const projectWorkspaceController =
@@ -302,7 +302,7 @@ syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
-ongoingSyncReconciliationController
+goingSyncReconciliationController
     .start();
 pwaController.start();
 aiSettingsController.start();
@@ -323,7 +323,7 @@ aiTransactionalWritesController.start();
 notionGoalNotesController.start();
 notionGoalNotesEventBridge.start();
 desktopTaskEditorLayoutController.start();
-mobileTaskEditorLayoutController.start();
+mobileTaskEditorController.start();
 accessibilityStateController.start();
 keyboardNavigationController.start();
 keyboardActionShortcutsController.start();
