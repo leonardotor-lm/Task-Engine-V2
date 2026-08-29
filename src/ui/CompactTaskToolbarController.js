@@ -9,14 +9,6 @@ const MOBILE_LAYOUT_MEDIA =
     "(max-width: 760px)";
 
 const MOBILE_ICONS = Object.freeze({
-    controls: `
-        <path d="M4 7h10"></path>
-        <path d="M18 7h2"></path>
-        <circle cx="16" cy="7" r="2"></circle>
-        <path d="M4 17h2"></path>
-        <path d="M10 17h10"></path>
-        <circle cx="8" cy="17" r="2"></circle>
-    `,
     filter: `
         <path d="M4 5h16"></path>
         <path d="M7 12h10"></path>
@@ -169,9 +161,24 @@ export class CompactTaskToolbarController
             "title",
             "Controles de la lista"
         );
-        summary.innerHTML = renderMobileIcon(
-            "controls"
-        );
+
+        const updateLabel = () => {
+            summary.textContent = toolbar.open
+                ? "Ocultar"
+                : "Opciones";
+        };
+
+        updateLabel();
+
+        if (
+            summary.dataset.mobileToggleBound !== "true"
+        ) {
+            summary.dataset.mobileToggleBound = "true";
+            toolbar.addEventListener(
+                "toggle",
+                updateLabel
+            );
+        }
 
     }
 
