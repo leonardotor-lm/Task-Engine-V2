@@ -205,6 +205,21 @@ test("Notas de Notion se integra sin cerrar la sección durante la interacción"
     );
 });
 
+test("Notas se ubica antes de las acciones administrativas", () => {
+    assert.match(
+        loader,
+        /function placeSectionBeforeActions/
+    );
+    assert.match(
+        loader,
+        /\.mobileTaskEditorCompactOverflowActions/
+    );
+    assert.match(
+        loader,
+        /placeSectionBeforeActions\(overflowPanel, notes\)/
+    );
+});
+
 test("la mejora queda aislada a móvil y disponible en la PWA", () => {
     assert.match(
         enhancer,
