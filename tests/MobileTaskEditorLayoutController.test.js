@@ -16,6 +16,13 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
         ),
         "utf8"
     );
+    const unifiedController = await readFile(
+        new URL(
+            "../src/ui/UnifiedMobileTaskEditorController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
     const styles = await readFile(
         new URL(
             "../styles/task-editor-mobile.css",
@@ -26,11 +33,19 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
 
     assert.match(
         main,
-        /MobileTaskEditorLayoutController/
+        /UnifiedMobileTaskEditorController/
     );
     assert.match(
         main,
-        /mobileTaskEditorLayoutController\.start\(\)/
+        /mobileTaskEditorController\.start\(\)/
+    );
+    assert.match(
+        unifiedController,
+        /extends MobileTaskEditorLayoutController/
+    );
+    assert.match(
+        unifiedController,
+        /enhanceCompactMobileTaskEditor/
     );
     assert.match(
         controller,
