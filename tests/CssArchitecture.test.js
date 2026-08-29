@@ -40,6 +40,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-interface.css",
             "styles/view-task-summary.css",
             "styles/mobile-filter-selects.css",
+            "styles/mobile-task-toolbar.css",
             "styles/manual-task-order.css",
             "styles/task-quick-actions.css",
             "styles/task-editor-desktop.css",
@@ -413,14 +414,17 @@ test("la hoja móvil conserva alcance, jerarquía y paneles contenidos", async (
 
 });
 
-test("index no conserva referencias a las hojas transitorias", async () => {
+test("index no conserva referencias a las hojas transitorias históricas", async () => {
 
     const index = await readFile(
         resolve(ROOT, "index.html"),
         "utf8"
     );
 
-    assert.doesNotMatch(index, /task-toolbar\.css/);
+    assert.doesNotMatch(
+        index,
+        /href="styles\/task-toolbar\.css"/
+    );
     assert.doesNotMatch(index, /task-toolbar-layout\.css/);
     assert.doesNotMatch(index, /mobile-main-layout\.css/);
 
