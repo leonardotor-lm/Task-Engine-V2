@@ -292,4 +292,120 @@
         margin: 0;
     }
 
+    .bulkToolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 10px;
+    }
+
+    .bulkToolbar > strong {
+        grid-column: 1;
+        min-width: 0;
+        font-size: 13px;
+        line-height: 1.3;
+    }
+
+    .bulkToolbar > .bulkControl,
+    .bulkToolbar > .bulkTagControl,
+    .bulkToolbar > #applyBulkChanges,
+    .bulkToolbar > #openBulkMoveDialog {
+        display: none;
+    }
+
+    .bulkToolbar > .bulkMoreActions {
+        grid-column: 2;
+        position: static;
+        order: 2;
+        min-width: 0;
+    }
+
+    .bulkToolbar > .bulkMoreActions > summary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-height: 40px;
+        padding: 7px 10px;
+        font-size: 0;
+        white-space: nowrap;
+    }
+
+    .bulkToolbar > .bulkMoreActions > summary::after {
+        content: "Opciones";
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .bulkToolbar > #clearBulkSelection {
+        grid-column: 3;
+        order: 2;
+        min-height: 40px;
+        margin-left: 0;
+        padding: 7px 9px;
+        font-size: 13px;
+    }
+
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > .bulkControl,
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > .bulkTagControl,
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > #applyBulkChanges,
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > #openBulkMoveDialog {
+        display: flex;
+        grid-column: 1 / -1;
+        order: 3;
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > .bulkControl {
+        flex-wrap: wrap;
+    }
+
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > .bulkTagControl {
+        align-items: stretch;
+    }
+
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > #applyBulkChanges,
+    .bulkToolbar:has(> .bulkMoreActions[open])
+        > #openBulkMoveDialog {
+        justify-content: center;
+        min-height: 42px;
+    }
+
+    .bulkToolbar > .bulkMoreActions[open] {
+        grid-column: 1 / -1;
+        order: 4;
+    }
+
+    .bulkToolbar > .bulkMoreActions[open] > summary {
+        width: 100%;
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-strong);
+    }
+
+    .bulkToolbar > .bulkMoreActions[open]
+        > .bulkStateActions {
+        position: static;
+        display: grid;
+        gap: 6px;
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        margin-top: 7px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
 }
