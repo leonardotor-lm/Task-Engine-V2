@@ -428,10 +428,19 @@
             100dvh - 66px - env(safe-area-inset-bottom)
         );
         max-height: none;
-        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        padding-bottom: 0;
         overflow-y: auto;
         overscroll-behavior: contain;
-        scroll-padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        scroll-padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    }
+
+    .mobileTaskEditorCompactOverflow
+        > .mobileTaskEditorCompactPanel::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: calc(28px + env(safe-area-inset-bottom));
+        min-height: calc(28px + env(safe-area-inset-bottom));
     }
 
     .mobileTaskEditorCompactOverflowOptions,
