@@ -32,24 +32,33 @@
     }
 
     .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        display: flex;
+        flex-wrap: nowrap;
         align-items: baseline;
-        column-gap: 10px;
+        gap: 5px;
         width: 100%;
+        min-width: 0;
     }
 
     .mobileTaskToolbarSummaryItems {
         display: inline-flex;
-        flex-wrap: wrap;
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
         align-items: baseline;
-        gap: 4px 8px;
+        gap: 0 3px;
         min-width: 0;
+        white-space: nowrap;
+    }
+
+    .mobileTaskToolbarSummaryItems
+        .taskViewSummaryItem:not(:first-child)::before {
+        margin-right: 3px;
     }
 
     .mobileTaskToolbarHeadingToggle {
-        align-self: start;
-        margin: 0;
+        flex: 0 0 auto;
+        align-self: baseline;
+        margin: 0 0 0 auto;
         padding: 0;
         border: 0;
         background: transparent;
