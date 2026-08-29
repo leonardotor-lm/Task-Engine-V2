@@ -131,14 +131,7 @@ export class CompactTaskToolbarController
         }
 
         this.prepareMobileToggle(toolbar);
-
-        const schedule = globalThis.queueMicrotask
-            ? globalThis.queueMicrotask.bind(globalThis)
-            : callback => Promise.resolve().then(callback);
-
-        schedule(() => {
-            this.decorateMobileControls(state);
-        });
+        this.decorateMobileControls(state);
 
     }
 
