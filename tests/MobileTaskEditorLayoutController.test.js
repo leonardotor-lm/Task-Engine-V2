@@ -48,6 +48,26 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
         /enhanceCompactMobileTaskEditor/
     );
     assert.match(
+        unifiedController,
+        /task-editor-mobile-compact\.css/
+    );
+    assert.match(
+        unifiedController,
+        /preloadCompactStylesheet\(\)/
+    );
+    assert.match(
+        unifiedController,
+        /unavailableMove\?\.disabled/
+    );
+    assert.match(
+        unifiedController,
+        /textContent\?\.trim\(\) === "Mover"/
+    );
+    assert.match(
+        unifiedController,
+        /unavailableMove\.remove\(\)/
+    );
+    assert.match(
         controller,
         /\(max-width: 760px\)/
     );
