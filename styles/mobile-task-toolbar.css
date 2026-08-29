@@ -34,7 +34,7 @@
     .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
         display: flex;
         flex-wrap: nowrap;
-        align-items: baseline;
+        align-items: center;
         gap: 5px;
         width: 100%;
         min-width: 0;
@@ -44,7 +44,7 @@
         display: inline-flex;
         flex: 1 1 auto;
         flex-wrap: nowrap;
-        align-items: baseline;
+        align-items: center;
         gap: 0 3px;
         min-width: 0;
         white-space: nowrap;
@@ -56,8 +56,10 @@
     }
 
     .mobileTaskToolbarHeadingToggle {
+        display: inline-flex;
+        align-items: center;
         flex: 0 0 auto;
-        align-self: baseline;
+        align-self: center;
         margin: 0 0 0 auto;
         padding: 0;
         border: 0;
