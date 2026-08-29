@@ -8,6 +8,11 @@ import {
 export class UnifiedMobileTaskEditorController
     extends MobileTaskEditorLayoutController {
 
+    bindTransientPanels() {
+        // La etapa compacta administra todos los paneles móviles,
+        // incluidos los creados por la estructura base.
+    }
+
     enhanceEditor() {
         super.enhanceEditor();
 
