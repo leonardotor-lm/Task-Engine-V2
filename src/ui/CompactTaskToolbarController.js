@@ -63,6 +63,7 @@ export class CompactTaskToolbarController
         super(app, { storage });
         this.window = windowRef;
         this.document = documentRef;
+        this.toolbarObserver = null;
         this.toolbarControlsChanged = () => {
             if (!this.isMobileViewport()) return;
             this.decorateToolbarSelects();
@@ -292,6 +293,7 @@ export class CompactTaskToolbarController
         this.prepareMobileToggle(toolbar);
         this.decorateHeadingToggle(toolbar);
         this.decorateFiltersButton();
+        this.observeLateToolbarControls(body);
         this.decorateToolbarSelects();
 
         const utilities = body.querySelector(
@@ -324,6 +326,41 @@ export class CompactTaskToolbarController
             "active",
             Boolean(filtersActive || groupingActive)
         );
+
+    }
+
+    observeLateToolbarControls(body) {
+
+        this.toolbarObserver?.disconnect?.();
+        this.toolbarObserver = null;
+
+        const Observer =
+            this.window?.MutationObserver ??
+            globalThis.MutationObserver;
+
+        if (typeof Observer !== "function") return;
+
+        this.toolbarObserver = new Observer(mutations => {
+            const relevant = mutations.some(mutation =>
+                Array.from(mutation.addedNodes ?? [])
+                    .some(node =>
+                        node?.id === "taskSort" ||
+                        node?.id === "taskGrouping" ||
+                        node?.querySelector?.(
+                            "#taskSort, #taskGrouping"
+                        )
+                    )
+            );
+
+            if (relevant) {
+                this.decorateToolbarSelects();
+            }
+        });
+
+        this.toolbarObserver.observe(body, {
+            childList: true,
+            subtree: true
+        });
 
     }
 
