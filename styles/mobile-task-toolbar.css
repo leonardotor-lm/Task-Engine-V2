@@ -1,0 +1,295 @@
+@media (max-width: 760px) {
+
+    #taskContextToolbar[data-viewport-mode="mobile"] {
+        border: 0;
+        background: transparent;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        > .mobileTaskToolbarToggle {
+        display: block;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        min-height: 28px;
+        height: auto;
+        margin-left: auto;
+        padding: 2px 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: var(--color-text-secondary);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-align: right;
+        cursor: pointer;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"].mobileTaskToolbarHeadingToggleReady
+        > .mobileTaskToolbarToggle {
+        display: none;
+    }
+
+    .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: baseline;
+        gap: 5px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .mobileTaskToolbarSummaryItems {
+        display: inline-flex;
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
+        align-items: baseline;
+        gap: 0 3px;
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    .mobileTaskToolbarSummaryItems
+        .taskViewSummaryItem:not(:first-child)::before {
+        margin-right: 3px;
+    }
+
+    .mobileTaskToolbarHeadingToggle {
+        flex: 0 0 auto;
+        align-self: baseline;
+        margin: 0 0 0 auto;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-text-secondary);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.35;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .mobileTaskToolbarHeadingToggle:hover,
+    .mobileTaskToolbarHeadingToggle:active,
+    .mobileTaskToolbarHeadingToggle:focus-visible {
+        color: var(--color-accent-strong);
+    }
+
+    .mobileTaskToolbarHeadingToggle:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        > .mobileTaskToolbarToggle:hover,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        > .mobileTaskToolbarToggle:active,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        > .mobileTaskToolbarToggle.active,
+    #taskContextToolbar[data-viewport-mode="mobile"][open]
+        > .mobileTaskToolbarToggle {
+        border: 0;
+        background: transparent;
+        color: var(--color-accent-strong);
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        > .taskContextToolbarBody {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        min-height: 0;
+        padding: 4px 0;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]:not([open])
+        > .taskContextToolbarBody {
+        display: none;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarAction,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMoreSummary {
+        box-sizing: border-box;
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        height: 44px;
+        min-height: 44px;
+        margin: 0;
+        padding: 0 !important;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        background: var(--color-surface);
+        color: var(--color-text-secondary);
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarAction {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarAction.active {
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-strong);
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarIcon {
+        width: 18px;
+        height: 18px;
+        stroke-width: 1.8;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect > span:not(.mobileTaskToolbarSelectIcon) {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelectIcon {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+        border: 0;
+        pointer-events: none;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect > select {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        width: 44px;
+        min-width: 44px;
+        max-width: 44px;
+        height: 44px;
+        min-height: 44px;
+        padding: 0;
+        border: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect:focus-within {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore {
+        position: relative;
+        flex: 0 0 44px;
+        margin: 0;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore > summary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore[open]
+        > .mobileTaskToolbarMoreSummary {
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-strong);
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore:not([open])
+        > .taskContextToolbarUtilities {
+        display: none;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore
+        > .taskContextToolbarUtilities {
+        position: absolute;
+        z-index: 70;
+        top: calc(100% + 6px);
+        right: 0;
+        display: flex;
+        gap: 4px;
+        width: max-content;
+        margin: 0;
+        padding: 5px;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        background: var(--color-surface);
+        box-shadow: var(--transient-dialog-shadow);
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore
+        .taskContextToolbarIconButton {
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        height: 44px;
+        min-height: 44px;
+        border-radius: 8px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .taskContextToolbarWaiting {
+        min-height: 44px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"].mobileTaskToolbarBulkMode
+        .taskContextToolbarUtilities {
+        display: flex;
+        gap: 4px;
+        margin: 0;
+    }
+
+}
