@@ -1,4 +1,8 @@
 const MOBILE_MEDIA_QUERY = "(max-width: 760px)";
+const COMPACT_STYLESHEET =
+    "styles/task-editor-mobile-compact.css";
+const SUPPORT_STYLE_ID =
+    "mobile-task-editor-overflow-fix";
 
 const ICONS = Object.freeze({
     priority: `
@@ -36,9 +40,132 @@ const ICONS = Object.freeze({
 
 let activeCleanup = null;
 
+function ensureStyles() {
+    if (!document.querySelector(
+        `link[href="${COMPACT_STYLESHEET}"]`
+    )) {
+        const stylesheet = document.createElement("link");
+        stylesheet.rel = "stylesheet";
+        stylesheet.href = COMPACT_STYLESHEET;
+        document.head.append(stylesheet);
+    }
+
+    if (document.getElementById(SUPPORT_STYLE_ID)) {
+        return;
+    }
+
+    const style = document.createElement("style");
+    style.id = SUPPORT_STYLE_ID;
+    style.textContent = `
+        @media (max-width: 760px) {
+            .mobileTaskEditorCompactOverflowActions #toggleTask,
+            .mobileTaskEditorCompactOverflowActions #reopenTask,
+            .mobileTaskEditorCompactOverflowActions #archiveTask,
+            .mobileTaskEditorCompactOverflowActions #deleteTask,
+            .mobileTaskEditorCompactOverflowActions #skipRecurringTask {
+                display: block !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                margin: 0 !important;
+                padding: 9px 10px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface) !important;
+                color: var(--color-text-subtle) !important;
+                font: inherit !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                line-height: 1.3 !important;
+                text-align: left !important;
+            }
+
+            .mobileTaskEditorCompactOverflowActions #deleteTask {
+                color: var(--color-danger) !important;
+            }
+
+            .mobileTaskEditorCompactLayout .mobileTaskEditorFooter {
+                position: static !important;
+                inset: auto !important;
+                z-index: auto !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes {
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+                background: transparent !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes > summary {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                margin: 0 !important;
+                padding: 9px 10px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface) !important;
+                color: var(--color-text-subtle) !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                list-style: none !important;
+                cursor: pointer !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes > summary::-webkit-details-marker {
+                display: none !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes > .editorSectionBody {
+                display: grid !important;
+                gap: 8px !important;
+                margin: 6px 0 0 !important;
+                padding: 8px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface-subtle) !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes .fieldHelp,
+            .mobileTaskEditorCompactOverflowNotes .syncErrorHint {
+                margin: 0 !important;
+                font-size: 12px !important;
+                line-height: 1.35 !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes .taskEditorActions {
+                display: grid !important;
+                gap: 6px !important;
+                margin: 0 !important;
+            }
+
+            .mobileTaskEditorCompactOverflowNotes a,
+            .mobileTaskEditorCompactOverflowNotes button {
+                display: flex !important;
+                align-items: center !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                margin: 0 !important;
+                padding: 9px 10px !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: 6px !important;
+                background: var(--color-surface) !important;
+                color: var(--color-text-subtle) !important;
+                font: inherit !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                text-align: left !important;
+                text-decoration: none !important;
+            }
+        }
+    `;
+    document.head.append(style);
+}
+
 function renderIcon(name) {
     const paths = ICONS[name] ?? ICONS.more;
-
     return `
         <svg
             class="mobileTaskEditorCompactIcon"
@@ -60,16 +187,11 @@ function formatDueSummary(dateValue, timeValue) {
         .map(Number);
     const date = new Date(year, month - 1, day);
 
-    if (Number.isNaN(date.getTime())) {
-        return dateValue;
-    }
+    if (Number.isNaN(date.getTime())) return dateValue;
 
     const formatted = new Intl.DateTimeFormat(
         "es-AR",
-        {
-            day: "numeric",
-            month: "short"
-        }
+        { day: "numeric", month: "short" }
     ).format(date).replace(".", "");
 
     return timeValue
@@ -77,33 +199,24 @@ function formatDueSummary(dateValue, timeValue) {
         : formatted;
 }
 
-function createSummary({
-    label,
-    icon,
-    value = ""
-}) {
+function createSummary({ label, icon, value = "" }) {
     const summary = document.createElement("summary");
     summary.className = "mobileTaskEditorCompactSummary";
     summary.innerHTML = `
         ${renderIcon(icon)}
-        <span class="mobileTaskEditorCompactLabel">
-            ${label}
-        </span>
+        <span class="mobileTaskEditorCompactLabel">${label}</span>
         <span class="mobileTaskEditorCompactValue"></span>
     `;
     summary.querySelector(
         ".mobileTaskEditorCompactValue"
     ).textContent = value;
-
     return summary;
 }
 
 function addPanelHeader(details, body, title) {
-    if (
-        body.querySelector(
-            ":scope > .mobileTaskEditorCompactPanelHeader"
-        )
-    ) {
+    if (!body || body.querySelector(
+        ":scope > .mobileTaskEditorCompactPanelHeader"
+    )) {
         return;
     }
 
@@ -144,7 +257,6 @@ function configureTransient(details, body, title) {
     const sync = () => {
         body.hidden = !details.open;
     };
-
     details.addEventListener("toggle", sync);
     sync();
 }
@@ -160,7 +272,6 @@ function createFieldTool({
 
     const details = document.createElement("details");
     details.className = "mobileTaskEditorCompactTool";
-
     const summary = createSummary({
         label,
         icon,
@@ -212,11 +323,9 @@ function decorateExistingTool(
     const summary = details.querySelector(":scope > summary");
     if (summary) {
         const trailing = Array.from(summary.children)
-            .filter(child =>
-                child.classList.contains(
-                    "mobileTaskEditorPickerCount"
-                )
-            );
+            .filter(child => child.classList.contains(
+                "mobileTaskEditorPickerCount"
+            ));
 
         summary.classList.add("mobileTaskEditorCompactSummary");
         summary.replaceChildren();
@@ -232,8 +341,11 @@ function decorateExistingTool(
     }
 
     if (bodySelector) {
-        const body = details.querySelector(bodySelector);
-        configureTransient(details, body, label);
+        configureTransient(
+            details,
+            details.querySelector(bodySelector),
+            label
+        );
     }
 
     tool.classList.add("mobileTaskEditorCompactTool");
@@ -242,7 +354,9 @@ function decorateExistingTool(
 
 function createOrganizationHeading(contextBar) {
     if (!contextBar || contextBar.previousElementSibling
-        ?.classList.contains("mobileTaskEditorOrganizationHeading")) {
+        ?.classList.contains(
+            "mobileTaskEditorOrganizationHeading"
+        )) {
         return;
     }
 
@@ -254,9 +368,28 @@ function createOrganizationHeading(contextBar) {
     const contextLabel = contextBar.querySelector(
         'label[for="taskContext"]'
     );
-    if (contextLabel) {
-        contextLabel.textContent = "@Contexto";
-    }
+    if (contextLabel) contextLabel.textContent = "@Contexto";
+}
+
+function appendNotionNotes(drawer, body) {
+    const notionSection = drawer.querySelector(
+        ".editorNotionSection"
+    );
+    if (!notionSection) return;
+
+    notionSection.classList.add(
+        "mobileTaskEditorCompactOverflowNotes"
+    );
+
+    const title = document.createElement("strong");
+    title.className = "mobileTaskEditorCompactOverflowTitle";
+    title.textContent = "Notas";
+
+    const notes = document.createElement("div");
+    notes.className =
+        "mobileTaskEditorCompactOverflowNotesContainer";
+    notes.append(notionSection);
+    body.append(title, notes);
 }
 
 function createOverflow(drawer, grid) {
@@ -276,11 +409,12 @@ function createOverflow(drawer, grid) {
     body.className = "mobileTaskEditorCompactOverflowPanel";
 
     const optionFields = document.createElement("div");
-    optionFields.className = "mobileTaskEditorCompactOverflowOptions";
-
+    optionFields.className =
+        "mobileTaskEditorCompactOverflowOptions";
     const properties = drawer.querySelector(
         ".mobileTaskEditorProperties"
     );
+
     [
         properties?.querySelector(
             ".mobileTaskEditorWaitingProperty"
@@ -288,7 +422,8 @@ function createOverflow(drawer, grid) {
         properties?.querySelector(
             ".mobileTaskEditorProjectProperty"
         )
-    ].filter(Boolean).forEach(field => optionFields.append(field));
+    ].filter(Boolean)
+        .forEach(field => optionFields.append(field));
 
     const move = grid?.querySelector(
         ".mobileTaskEditorMoveTool"
@@ -301,6 +436,8 @@ function createOverflow(drawer, grid) {
         title.textContent = "Opciones";
         body.append(title, optionFields);
     }
+
+    appendNotionNotes(drawer, body);
 
     const administrative = drawer.querySelector(
         ".mobileTaskEditorAdministrativeActions"
@@ -336,9 +473,7 @@ function createOverflow(drawer, grid) {
         body.append(actions);
     }
 
-    if (body.childElementCount === 0) {
-        return null;
-    }
+    if (body.childElementCount === 0) return null;
 
     details.append(summary, body);
     header.append(details);
@@ -351,10 +486,15 @@ function buildFooter(drawer) {
         ".mobileTaskEditorFooter"
     );
     const save = footer?.querySelector("#saveTask");
-
     if (!footer || !save) return;
 
     save.textContent = "Guardar";
+
+    if (footer.querySelector(
+        ".mobileTaskEditorCompactCancel"
+    )) {
+        return;
+    }
 
     const cancel = document.createElement("button");
     cancel.type = "button";
@@ -364,10 +504,9 @@ function buildFooter(drawer) {
         document.getElementById("closeTaskEditor")?.click();
     });
 
-    const primary = footer.querySelector(
+    footer.querySelector(
         ".mobileTaskEditorPrimaryActions"
-    );
-    primary?.prepend(cancel);
+    )?.prepend(cancel);
 }
 
 function bindPanels(drawer) {
@@ -423,31 +562,22 @@ function bindPanels(drawer) {
     };
 }
 
-function enhanceEditor() {
-    if (!window.matchMedia(MOBILE_MEDIA_QUERY).matches) {
-        return;
-    }
-
-    const drawer = document.querySelector(
-        ".mobileTaskEditorLayout:not(.recoveryPanel)"
-    );
-
+export function enhanceCompactMobileTaskEditor(drawer) {
     if (
+        !window.matchMedia(MOBILE_MEDIA_QUERY).matches ||
         !drawer ||
         drawer.dataset.mobileTaskEditorCompact === "true"
     ) {
         return;
     }
 
+    ensureStyles();
     drawer.dataset.mobileTaskEditorCompact = "true";
     drawer.classList.add("mobileTaskEditorCompactLayout");
 
-    const descriptionLabel = drawer.querySelector(
+    drawer.querySelector(
         'label[for="taskDescriptionEdit"]'
-    );
-    descriptionLabel?.classList.remove(
-        "mobileTaskEditorVisuallyHidden"
-    );
+    )?.classList.remove("mobileTaskEditorVisuallyHidden");
 
     const contextBar = drawer.querySelector(
         ".mobileTaskEditorContextBar"
@@ -481,9 +611,9 @@ function enhanceEditor() {
             icon: "priority",
             valueReader: () =>
                 document.getElementById("taskPriority")
-                    ?.selectedOptions?.[0]?.textContent?.trim() ?? ""
+                    ?.selectedOptions?.[0]
+                    ?.textContent?.trim() ?? ""
         });
-
         const due = createFieldTool({
             fields: [startField, dueField, timeField],
             label: "Vencimiento",
@@ -493,20 +623,23 @@ function enhanceEditor() {
                 document.getElementById("taskDueTime")?.value
             )
         });
-
         const tags = decorateExistingTool(
             grid.querySelector('[data-picker-id="taskTags"]'),
             {
                 label: "Etiquetas",
                 icon: "tags",
-                detailsSelector: ".searchableMultiSelectManager"
+                detailsSelector: ".searchableMultiSelectManager",
+                bodySelector: ".searchableMultiSelectManagerBody"
             }
         );
         const programming = decorateExistingTool(
-            grid.querySelector(".mobileTaskEditorRecurrenceTool"),
+            grid.querySelector(
+                ".mobileTaskEditorRecurrenceTool"
+            ),
             {
                 label: "Programación",
-                icon: "programming"
+                icon: "programming",
+                bodySelector: ":scope > .editorSectionBody"
             }
         );
         const goals = decorateExistingTool(
@@ -514,7 +647,8 @@ function enhanceEditor() {
             {
                 label: "Objetivo",
                 icon: "goals",
-                detailsSelector: ".searchableMultiSelectManager"
+                detailsSelector: ".searchableMultiSelectManager",
+                bodySelector: ".searchableMultiSelectManagerBody"
             }
         );
         const attachments = drawer.querySelector(
@@ -540,47 +674,32 @@ function enhanceEditor() {
                     </span>
                 `;
             }
-            const body = attachments.querySelector(
-                ":scope > .editorSectionBody"
-            );
             configureTransient(
                 attachments,
-                body,
+                attachments.querySelector(
+                    ":scope > .editorSectionBody"
+                ),
                 "Adjuntos"
             );
         }
 
-        const ordered = [
+        [
             priority,
             due,
             tags,
             programming,
             attachments,
             goals
-        ].filter(Boolean);
-
-        ordered.forEach(tool => grid.append(tool));
+        ].filter(Boolean)
+            .forEach(tool => grid.append(tool));
     }
 
     createOverflow(drawer, grid);
 
-    if (properties && properties.childElementCount === 0) {
+    if (properties?.childElementCount === 0) {
         properties.remove();
     }
 
     buildFooter(drawer);
     bindPanels(drawer);
 }
-
-function scheduleEnhancement() {
-    queueMicrotask(enhanceEditor);
-}
-
-const observer = new MutationObserver(scheduleEnhancement);
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
-
-window.addEventListener("resize", scheduleEnhancement);
-scheduleEnhancement();
