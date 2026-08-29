@@ -17,10 +17,18 @@ test("Mover no permanece en la grilla principal del editor móvil", () => {
     );
     assert.match(
         loader,
-        /grid\.querySelectorAll\("\.mobileTaskEditorToolButton"\)/
+        /drawer\.querySelector\("\.mobileTaskEditorMoveTool"\)/
+    );
+    assert.match(
+        loader,
+        /drawer\.querySelectorAll\([\s\S]*"\.mobileTaskEditorToolButton"/
     );
     assert.match(
         loader,
         /options\.append\(moveButton\)/
+    );
+    assert.doesNotMatch(
+        loader,
+        /moveButton\.remove\(\)/
     );
 });
