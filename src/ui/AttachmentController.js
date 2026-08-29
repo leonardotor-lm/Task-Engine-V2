@@ -217,7 +217,10 @@ export class AttachmentController {
         }
 
         section.dataset.mobileCollapsed = "true";
-        section.open = draft;
+        const mobileEditor = window.matchMedia?.(
+            "(max-width: 760px)"
+        ).matches ?? false;
+        section.open = draft && !mobileEditor;
         section.innerHTML = `
             <summary>Adjuntos (${attachments.length})</summary>
             <div class="editorSectionBody attachmentSectionBody">

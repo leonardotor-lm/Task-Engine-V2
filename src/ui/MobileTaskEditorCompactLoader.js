@@ -44,6 +44,13 @@ if (!document.getElementById(overflowFixStyleId)) {
                 color: var(--color-danger) !important;
             }
 
+            .mobileTaskEditorCompactLayout
+                .mobileTaskEditorFooter {
+                position: static !important;
+                inset: auto !important;
+                z-index: auto !important;
+            }
+
             .mobileTaskEditorCompactOverflowNotes {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -116,23 +123,6 @@ if (!document.getElementById(overflowFixStyleId)) {
         }
     `;
     document.head.append(style);
-}
-
-function closeInitialAttachmentsPanel() {
-    document.querySelectorAll(
-        ".mobileTaskEditorCompactAttachments"
-    ).forEach(panel => {
-        if (
-            panel.dataset.mobileCompactInitialState ===
-            "closed"
-        ) {
-            return;
-        }
-
-        panel.open = false;
-        panel.dataset.mobileCompactInitialState =
-            "closed";
-    });
 }
 
 function getCompactDrawer() {
@@ -229,7 +219,6 @@ function relocateNotionNotes() {
 }
 
 function synchronizeCompactEditorOnce() {
-    closeInitialAttachmentsPanel();
     relocateMoveFallback();
     relocateNotionNotes();
 }
@@ -242,6 +231,20 @@ function scheduleBoundedSynchronization() {
         );
     });
 }
+
+function scheduleAfterUserInteraction() {
+    if (!window.matchMedia("(max-width: 760px)").matches) {
+        return;
+    }
+
+    scheduleBoundedSynchronization();
+}
+
+document.addEventListener(
+    "click",
+    scheduleAfterUserInteraction,
+    true
+);
 
 import("./MobileTaskEditorCompactEnhancer.js")
     .then(scheduleBoundedSynchronization);

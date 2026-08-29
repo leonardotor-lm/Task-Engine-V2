@@ -18,6 +18,14 @@ const loader = await readFile(
     "utf8"
 );
 
+const attachmentController = await readFile(
+    new URL(
+        "../src/ui/AttachmentController.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 const styles = await readFile(
     new URL(
         "../styles/task-editor-mobile-compact.css",
@@ -80,18 +88,48 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     );
 });
 
-test("Adjuntos inicia cerrado y sólo se abre por acción del usuario", () => {
+test("Adjuntos nace cerrado en móvil desde su controlador de origen", () => {
     assert.match(
-        loader,
-        /\.mobileTaskEditorCompactAttachments/
+        attachmentController,
+        /const mobileEditor = window\.matchMedia\?\./
     );
     assert.match(
+        attachmentController,
+        /section\.open = draft && !mobileEditor/
+    );
+    assert.doesNotMatch(
         loader,
-        /panel\.open = false/
+        /closeInitialAttachmentsPanel|mobileCompactUserIntent|panel\.open = false/
+    );
+});
+
+test("Más acciones usa una caja de scroll con altura real de viewport", () => {
+    assert.match(
+        styles,
+        /mobileTaskEditorCompactOverflow[\s\S]*height:\s*calc\([\s\S]*100dvh - 66px - env\(safe-area-inset-bottom\)[\s\S]*\)/
     );
     assert.match(
+        styles,
+        /mobileTaskEditorCompactOverflow[\s\S]*max-height:\s*none/
+    );
+    assert.match(
+        styles,
+        /mobileTaskEditorCompactOverflow[\s\S]*overflow-y:\s*auto/
+    );
+});
+
+test("Cancelar y Guardar forman parte del flujo normal del editor", () => {
+    assert.match(
         loader,
-        /mobileCompactInitialState/
+        /\.mobileTaskEditorFooter[\s\S]*position:\s*static\s*!important/
+    );
+    assert.match(
+        enhancer,
+        /save\.textContent = "Guardar"/
+    );
+    assert.match(
+        enhancer,
+        /cancel\.textContent = "Cancelar"/
     );
 });
 
@@ -103,14 +141,6 @@ test("las acciones administrativas pasan al menú y Guardar queda en el pie", ()
     assert.match(
         enhancer,
         /primary\?\.querySelector\("#toggleTask"\)/
-    );
-    assert.match(
-        enhancer,
-        /save\.textContent = "Guardar"/
-    );
-    assert.match(
-        enhancer,
-        /cancel\.textContent = "Cancelar"/
     );
 });
 
@@ -126,6 +156,21 @@ test("el cargador no observa continuamente el DOM", () => {
     assert.match(
         loader,
         /\[0, 40, 120\]/
+    );
+});
+
+test("las correcciones auxiliares se reejecutan al abrir o interactuar con el editor", () => {
+    assert.match(
+        loader,
+        /function scheduleAfterUserInteraction/
+    );
+    assert.match(
+        loader,
+        /document\.addEventListener\([\s\S]*"click"[\s\S]*scheduleAfterUserInteraction/
+    );
+    assert.match(
+        loader,
+        /scheduleAfterUserInteraction[\s\S]*scheduleBoundedSynchronization\(\)/
     );
 });
 
