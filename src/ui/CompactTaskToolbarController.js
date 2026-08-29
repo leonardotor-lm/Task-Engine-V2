@@ -142,6 +142,14 @@ export class CompactTaskToolbarController
 
     }
 
+    getToggleLabel(toolbar) {
+
+        return toolbar?.open
+            ? "Ocultar ↑"
+            : "Mostrar ↓";
+
+    }
+
     prepareMobileToggle(toolbar) {
 
         const summary = toolbar?.querySelector(
@@ -163,9 +171,18 @@ export class CompactTaskToolbarController
         );
 
         const updateLabel = () => {
-            summary.textContent = toolbar.open
-                ? "Ocultar"
-                : "Opciones";
+            const label = this.getToggleLabel(toolbar);
+            summary.textContent = label;
+            const headingToggle = document.querySelector(
+                ".mobileTaskToolbarHeadingToggle"
+            );
+            if (headingToggle) {
+                headingToggle.textContent = label;
+                headingToggle.setAttribute(
+                    "aria-expanded",
+                    String(Boolean(toolbar.open))
+                );
+            }
         };
 
         updateLabel();
@@ -179,6 +196,74 @@ export class CompactTaskToolbarController
                 updateLabel
             );
         }
+
+    }
+
+    decorateHeadingToggle(toolbar) {
+
+        const summary = document.querySelector(
+            ".taskViewSummary"
+        );
+
+        if (!toolbar || !summary) {
+            toolbar?.classList.remove(
+                "mobileTaskToolbarHeadingToggleReady"
+            );
+            return;
+        }
+
+        let items = summary.querySelector(
+            ":scope > .mobileTaskToolbarSummaryItems"
+        );
+
+        if (!items) {
+            items = document.createElement("span");
+            items.className =
+                "mobileTaskToolbarSummaryItems";
+
+            Array.from(summary.children)
+                .filter(element =>
+                    element.classList.contains(
+                        "taskViewSummaryItem"
+                    )
+                )
+                .forEach(element => {
+                    items.append(element);
+                });
+
+            summary.prepend(items);
+        }
+
+        let button = summary.querySelector(
+            ":scope > .mobileTaskToolbarHeadingToggle"
+        );
+
+        if (!button) {
+            button = document.createElement("button");
+            button.type = "button";
+            button.className =
+                "mobileTaskToolbarHeadingToggle";
+            button.setAttribute(
+                "aria-label",
+                "Mostrar u ocultar controles de la lista"
+            );
+            button.addEventListener("click", () => {
+                toolbar.open = !toolbar.open;
+                this.setMobileToolbarExpanded(
+                    toolbar.open
+                );
+            });
+            summary.append(button);
+        }
+
+        button.textContent = this.getToggleLabel(toolbar);
+        button.setAttribute(
+            "aria-expanded",
+            String(Boolean(toolbar.open))
+        );
+        toolbar.classList.add(
+            "mobileTaskToolbarHeadingToggleReady"
+        );
 
     }
 
@@ -196,6 +281,7 @@ export class CompactTaskToolbarController
         if (!toolbar || !body) return;
 
         this.prepareMobileToggle(toolbar);
+        this.decorateHeadingToggle(toolbar);
         this.decorateFiltersButton();
         this.decorateSelect(
             document.getElementById("taskSort"),
