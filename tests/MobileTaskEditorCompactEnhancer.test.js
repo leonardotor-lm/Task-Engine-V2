@@ -144,10 +144,18 @@ test("las acciones administrativas pasan al menú y Guardar queda en el pie", ()
     );
 });
 
-test("el cargador no observa continuamente el DOM", () => {
+test("las correcciones auxiliares reaccionan sólo a inserciones relevantes del editor", () => {
+    assert.match(
+        loader,
+        /new MutationObserver\([\s\S]*handleEditorMutations/
+    );
+    assert.match(
+        loader,
+        /childList:\s*true/
+    );
     assert.doesNotMatch(
         loader,
-        /new MutationObserver/
+        /document\.addEventListener\([\s\S]*"click"/
     );
     assert.match(
         loader,
@@ -159,22 +167,22 @@ test("el cargador no observa continuamente el DOM", () => {
     );
 });
 
-test("las correcciones auxiliares se reejecutan al abrir o interactuar con el editor", () => {
+test("Mover nunca se elimina si Más acciones todavía no está listo", () => {
     assert.match(
         loader,
-        /function scheduleAfterUserInteraction/
+        /function relocateMoveFallback/
     );
     assert.match(
         loader,
-        /document\.addEventListener\([\s\S]*"click"[\s\S]*scheduleAfterUserInteraction/
+        /mobileTaskEditorMoveTool/
     );
-    assert.match(
+    assert.doesNotMatch(
         loader,
-        /scheduleAfterUserInteraction[\s\S]*scheduleBoundedSynchronization\(\)/
+        /moveButton\.remove\(\)/
     );
 });
 
-test("Notas de Notion se integra de forma compacta en Más acciones", () => {
+test("Notas de Notion se integra sin cerrar la sección durante la interacción", () => {
     assert.match(
         loader,
         /function relocateNotionNotes/
@@ -187,7 +195,7 @@ test("Notas de Notion se integra de forma compacta en Más acciones", () => {
         loader,
         /mobileTaskEditorCompactOverflowNotes/
     );
-    assert.match(
+    assert.doesNotMatch(
         loader,
         /notionSection\.open = false/
     );
