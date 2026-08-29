@@ -125,6 +125,12 @@ if (!document.getElementById(overflowFixStyleId)) {
     document.head.append(style);
 }
 
+const MOBILE_LAYOUT_MEDIA = "(max-width: 760px)";
+
+function isMobileViewport() {
+    return window.matchMedia(MOBILE_LAYOUT_MEDIA).matches;
+}
+
 function getCompactDrawer() {
     return document.querySelector(
         ".mobileTaskEditorCompactLayout:not(.recoveryPanel)"
@@ -162,25 +168,28 @@ function ensureOverflowSection(
 
 function relocateMoveFallback() {
     const drawer = getCompactDrawer();
-    const grid = drawer?.querySelector(
-        ".mobileTaskEditorToolGrid"
-    );
-
-    if (!drawer || !grid) return;
-
-    const moveButton = Array.from(
-        grid.querySelectorAll(".mobileTaskEditorToolButton")
-    ).find(button =>
-        button.textContent.trim() === "Mover"
-    );
-
-    if (!moveButton) return;
-
     const overflowPanel = getOverflowPanel(drawer);
 
-    if (!overflowPanel) {
-        moveButton.remove();
-        return;
+    if (!drawer || !overflowPanel) return false;
+
+    const moveButton =
+        drawer.querySelector(".mobileTaskEditorMoveTool") ??
+        Array.from(
+            drawer.querySelectorAll(
+                ".mobileTaskEditorToolButton"
+            )
+        ).find(button =>
+            button.textContent.trim() === "Mover"
+        );
+
+    if (!moveButton) return false;
+
+    if (
+        moveButton.closest(
+            ".mobileTaskEditorCompactOverflowOptions"
+        )
+    ) {
+        return true;
     }
 
     const options = ensureOverflowSection(
@@ -190,6 +199,7 @@ function relocateMoveFallback() {
     );
 
     options.append(moveButton);
+    return true;
 }
 
 function relocateNotionNotes() {
@@ -203,7 +213,6 @@ function relocateNotionNotes() {
         return false;
     }
 
-    notionSection.open = false;
     notionSection.classList.add(
         "mobileTaskEditorCompactOverflowNotes"
     );
@@ -219,6 +228,8 @@ function relocateNotionNotes() {
 }
 
 function synchronizeCompactEditorOnce() {
+    if (!isMobileViewport()) return;
+
     relocateMoveFallback();
     relocateNotionNotes();
 }
@@ -232,19 +243,48 @@ function scheduleBoundedSynchronization() {
     });
 }
 
-function scheduleAfterUserInteraction() {
-    if (!window.matchMedia("(max-width: 760px)").matches) {
-        return;
-    }
+function containsRelevantEditorAddition(node) {
+    if (!(node instanceof Element)) return false;
 
-    scheduleBoundedSynchronization();
+    return Boolean(
+        node.matches?.(
+            ".mobileTaskEditorLayout, " +
+            ".mobileTaskEditorCompactLayout, " +
+            ".mobileTaskEditorCompactOverflowPanel, " +
+            ".mobileTaskEditorMoveTool, " +
+            ".editorNotionSection"
+        ) ||
+        node.querySelector?.(
+            ".mobileTaskEditorLayout, " +
+            ".mobileTaskEditorCompactLayout, " +
+            ".mobileTaskEditorCompactOverflowPanel, " +
+            ".mobileTaskEditorMoveTool, " +
+            ".editorNotionSection"
+        )
+    );
 }
 
-document.addEventListener(
-    "click",
-    scheduleAfterUserInteraction,
-    true
+function handleEditorMutations(mutations) {
+    if (!isMobileViewport()) return;
+
+    const hasRelevantAddition = mutations.some(
+        mutation => Array.from(mutation.addedNodes)
+            .some(containsRelevantEditorAddition)
+    );
+
+    if (hasRelevantAddition) {
+        scheduleBoundedSynchronization();
+    }
+}
+
+const editorObserver = new MutationObserver(
+    handleEditorMutations
 );
+
+editorObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+});
 
 import("./MobileTaskEditorCompactEnhancer.js")
     .then(scheduleBoundedSynchronization);
