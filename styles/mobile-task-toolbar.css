@@ -19,11 +19,58 @@
         border-radius: 0;
         background: transparent;
         color: var(--color-text-secondary);
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 1.2;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.35;
         text-align: right;
         cursor: pointer;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"].mobileTaskToolbarHeadingToggleReady
+        > .mobileTaskToolbarToggle {
+        display: none;
+    }
+
+    .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: baseline;
+        column-gap: 10px;
+        width: 100%;
+    }
+
+    .mobileTaskToolbarSummaryItems {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 8px;
+        min-width: 0;
+    }
+
+    .mobileTaskToolbarHeadingToggle {
+        align-self: start;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-text-secondary);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.35;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .mobileTaskToolbarHeadingToggle:hover,
+    .mobileTaskToolbarHeadingToggle:active,
+    .mobileTaskToolbarHeadingToggle:focus-visible {
+        color: var(--color-accent-strong);
+    }
+
+    .mobileTaskToolbarHeadingToggle:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
     }
 
     #taskContextToolbar[data-viewport-mode="mobile"]
