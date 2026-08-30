@@ -4,6 +4,7 @@ import {
 import {
     enhanceCompactMobileTaskEditor
 } from "./MobileTaskEditorCompactEnhancer.js";
+import { Icon } from "./Icon.js";
 
 const COMPACT_STYLESHEET =
     "styles/task-editor-mobile-compact.css";
@@ -11,21 +12,6 @@ const DENSITY_STYLESHEET =
     "styles/task-editor-mobile-density.css";
 const DEVICE_FIXES_STYLESHEET =
     "styles/task-editor-mobile-device-fixes.css";
-
-const NOTES_ICON = `
-    <svg
-        class="mobileTaskEditorCompactIcon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        aria-hidden="true"
-        focusable="false">
-        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 18.5Z"></path>
-        <path d="M8 7h8"></path>
-        <path d="M8 11h8"></path>
-        <path d="M8 15h5"></path>
-    </svg>
-`;
 
 export class UnifiedMobileTaskEditorController
     extends MobileTaskEditorLayoutController {
@@ -124,7 +110,10 @@ export class UnifiedMobileTaskEditorController
             "mobileTaskEditorCompactSummary"
         );
         summary.innerHTML = `
-            ${NOTES_ICON}
+            ${Icon.render(
+                "note",
+                "mobileTaskEditorCompactIcon"
+            )}
             <span class="mobileTaskEditorCompactLabel">
                 Notas
             </span>
