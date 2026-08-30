@@ -10,9 +10,15 @@ const CACHEABLE_EXTERNAL_ORIGINS = new Set([
     "https://fonts.googleapis.com",
     "https://fonts.gstatic.com"
 ]);
+const MOBILE_STABILITY_ASSETS = [
+    "./styles/mobile-density.css",
+    "./styles/task-editor-mobile-density.css",
+    "./styles/task-editor-mobile-device-fixes.css"
+];
 const APP_SHELL = [
     "./",
-    ...self.__PWA_ASSETS
+    ...self.__PWA_ASSETS,
+    ...MOBILE_STABILITY_ASSETS
 ];
 
 self.addEventListener("install", event => {
