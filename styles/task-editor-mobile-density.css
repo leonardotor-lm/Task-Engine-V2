@@ -1,0 +1,105 @@
+@media (max-width: 760px) {
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorDescriptionField
+        #taskDescriptionEdit {
+        height: 42px;
+        min-height: 42px;
+        padding: 9px 12px;
+        resize: vertical;
+        line-height: 1.35;
+    }
+
+    .mobileTaskEditorCompactSummary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPicker
+        .searchableMultiSelectManager
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorRecurrenceTool
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactAttachments
+        > summary {
+        min-height: 60px;
+        height: 60px;
+        padding: 5px 4px;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorToolGrid {
+        gap: 4px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSummary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPicker
+        .searchableMultiSelectManager
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorRecurrenceTool
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments
+        > summary {
+        gap: 3px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .taskEditorHeader button,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowSummary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactPanelClose,
+    .mobileTaskEditorLayout
+        .mobileTaskEditorPanelClose,
+    .mobileTaskEditorLayout
+        button.iconButton,
+    .mobileTaskEditorLayout
+        button.responsiveIconButton {
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .taskEditorHeader button,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowSummary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactPanelClose {
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        min-height: 38px;
+        padding: 0;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSummary:hover,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSummary:active,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPicker
+        .searchableMultiSelectManager
+        > summary:hover,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorRecurrenceTool
+        > summary:hover,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorAttachments
+        > summary:hover {
+        border: 0 !important;
+        background: var(--color-surface-hover) !important;
+    }
+
+}
