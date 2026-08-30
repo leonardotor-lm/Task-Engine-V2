@@ -62,12 +62,10 @@
     }
 
     .taskListTitleSummary {
-        display: flex;
+        display: block;
         flex: 1 1 auto;
-        flex-wrap: nowrap;
-        align-items: center;
         min-width: 0;
-        gap: 0;
+        width: 100%;
     }
 
     .taskListTitleSummary > h2 {
@@ -76,11 +74,10 @@
 
     .taskViewSummary,
     .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
-        display: flex;
-        flex: 1 1 auto;
-        flex-wrap: nowrap;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 22px;
         align-items: center;
-        width: auto;
+        width: 100% !important;
         min-width: 0;
         gap: 3px;
         font-size: 11px;
@@ -88,8 +85,7 @@
     }
 
     .mobileTaskToolbarSummaryItems {
-        display: inline-flex;
-        flex: 1 1 auto;
+        display: flex;
         flex-wrap: nowrap;
         align-items: center;
         min-width: 0;
@@ -108,12 +104,12 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        flex: 0 0 22px;
+        justify-self: end;
         width: 22px;
         min-width: 22px;
         height: 24px;
         min-height: 24px;
-        margin-left: 2px;
+        margin: 0;
         padding: 0;
         border: 0 !important;
         border-radius: 0;
