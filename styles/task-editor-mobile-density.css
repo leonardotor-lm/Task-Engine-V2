@@ -144,6 +144,14 @@
         padding: 0 !important;
     }
 
+    /* El panel compacto ya aporta título y cierre: ocultar la cabecera heredada. */
+    .mobileTaskEditorCompactPanel
+        > .mobileTaskEditorPanelHeader,
+    .mobileTaskEditorCompactPanel
+        > .quickActionsSheetHeader {
+        display: none !important;
+    }
+
     .mobileTaskEditorCompactToolBody,
     .mobileTaskEditorPanel
         .searchableMultiSelectManagerBody,
@@ -220,12 +228,59 @@
         gap: 6px !important;
     }
 
+    /* La X ya cumple la función de cancelar/cerrar en selectores simples. */
+    .mobileTaskEditorCompactPanel
+        .searchableMultiSelectManagerActions
+        > button:last-child {
+        display: none !important;
+    }
+
+    .mobileTaskEditorCompactPanel
+        .searchableMultiSelectManagerActions {
+        grid-template-columns: 1fr !important;
+    }
+
     .mobileTaskEditorRecurrenceTool
         .recurrenceDialogActions {
         bottom: -10px !important;
         gap: 6px !important;
         margin: 2px -10px -10px !important;
         padding: 8px 10px 10px !important;
+    }
+
+    /* Programación sí confirma un conjunto: distinguir 'Aplicar' de guardar la tarea. */
+    .mobileTaskEditorRecurrenceTool
+        .recurrenceDialogActions
+        > button:first-child {
+        font-size: 0 !important;
+    }
+
+    .mobileTaskEditorRecurrenceTool
+        .recurrenceDialogActions
+        > button:first-child::after {
+        content: "Aplicar";
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Adjuntos: evitar texto explicativo redundante antes de la acción principal. */
+    .mobileTaskEditorCompactAttachments
+        > .mobileTaskEditorCompactPanel
+        > .fieldHelp:first-of-type,
+    .mobileTaskEditorCompactAttachments
+        > .mobileTaskEditorCompactPanel
+        > .editorSectionBody
+        > .fieldHelp:first-child {
+        display: none !important;
+    }
+
+    .mobileTaskEditorCompactAttachments
+        .fieldHelp,
+    .mobileTaskEditorCompactAttachments
+        .syncErrorHint {
+        margin: 2px 0 0 !important;
+        font-size: 11px !important;
+        line-height: 1.3;
     }
 
     /* Más acciones: contenido ajustado, sin estiramiento ni tarjetas por opción. */
