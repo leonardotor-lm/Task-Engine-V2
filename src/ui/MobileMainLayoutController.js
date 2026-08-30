@@ -57,6 +57,8 @@ export class MobileMainLayoutController {
 
     applyLayout(state = {}) {
 
+        this.syncMobileViewTitle();
+
         const taskButton = this.document?.getElementById(
             "openTaskCreation"
         );
@@ -108,6 +110,31 @@ export class MobileMainLayoutController {
                 "mobileFloatingTaskButton"
             );
             layout.append(goalButton);
+        }
+
+    }
+
+    syncMobileViewTitle() {
+
+        if (!this.isMobile()) return;
+
+        const mobileTitle = this.document?.querySelector(
+            ".mobileHeader strong"
+        );
+        const viewTitle = this.document?.querySelector(
+            ".taskListHeading h2"
+        );
+
+        if (!mobileTitle || !viewTitle) return;
+
+        const title = String(
+            viewTitle.textContent ?? ""
+        )
+            .replace(/\s+\(\d+\)$/, "")
+            .trim();
+
+        if (title) {
+            mobileTitle.textContent = title;
         }
 
     }
