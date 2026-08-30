@@ -74,12 +74,12 @@
 
     .taskViewSummary,
     .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) 22px;
-        align-items: center;
+        position: relative;
+        display: block !important;
+        box-sizing: border-box;
         width: 100% !important;
         min-width: 0;
-        gap: 3px;
+        padding-right: 26px;
         font-size: 11px;
         line-height: 1.25;
     }
@@ -88,9 +88,10 @@
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
+        width: max-content;
+        max-width: 100%;
         min-width: 0;
         gap: 0 2px;
-        overflow: hidden;
         white-space: nowrap;
     }
 
@@ -100,11 +101,12 @@
     }
 
     .mobileTaskToolbarHeadingToggle {
-        position: relative;
+        position: absolute;
+        top: 50%;
+        right: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        justify-self: end;
         width: 22px;
         min-width: 22px;
         height: 24px;
@@ -117,20 +119,16 @@
         box-shadow: none !important;
         font-size: 0;
         line-height: 1;
+        transform: translateY(-50%);
     }
 
     .mobileTaskToolbarHeadingToggle::before {
-        width: 7px;
-        height: 7px;
-        border-right: 1.5px solid currentColor;
-        border-bottom: 1.5px solid currentColor;
-        content: "";
-        transform: translateY(-2px) rotate(45deg);
-        transform-origin: center;
+        display: none;
     }
 
-    .mobileTaskToolbarHeadingToggle[aria-expanded="true"]::before {
-        transform: translateY(2px) rotate(225deg);
+    .mobileTaskToolbarHeadingToggle .mobileTaskToolbarIcon {
+        width: 16px;
+        height: 16px;
     }
 
     .taskListHeadingActions {
