@@ -12,6 +12,21 @@ const DENSITY_STYLESHEET =
 const DEVICE_FIXES_STYLESHEET =
     "styles/task-editor-mobile-device-fixes.css";
 
+const NOTES_ICON = `
+    <svg
+        class="mobileTaskEditorCompactIcon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        aria-hidden="true"
+        focusable="false">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 18.5Z"></path>
+        <path d="M8 7h8"></path>
+        <path d="M8 11h8"></path>
+        <path d="M8 15h5"></path>
+    </svg>
+`;
+
 export class UnifiedMobileTaskEditorController
     extends MobileTaskEditorLayoutController {
 
@@ -64,6 +79,94 @@ export class UnifiedMobileTaskEditorController
         }
     }
 
+    promoteNotionNotes(drawer) {
+        const notes = drawer?.querySelector(
+            ".editorNotionSection"
+        );
+        const grid = drawer?.querySelector(
+            ".mobileTaskEditorToolGrid"
+        );
+
+        if (
+            !notes ||
+            !grid ||
+            notes.classList.contains(
+                "mobileTaskEditorNotesTool"
+            )
+        ) {
+            return;
+        }
+
+        const summary = notes.querySelector(
+            ":scope > summary"
+        );
+        const body = notes.querySelector(
+            ":scope > .editorSectionBody"
+        );
+
+        if (!summary || !body) return;
+
+        notes.classList.add(
+            "mobileTaskEditorCompactTool",
+            "mobileTaskEditorCompactTransient",
+            "mobileTaskEditorNotesTool"
+        );
+        summary.classList.add(
+            "mobileTaskEditorCompactSummary"
+        );
+        summary.innerHTML = `
+            ${NOTES_ICON}
+            <span class="mobileTaskEditorCompactLabel">
+                Notas
+            </span>
+        `;
+        body.classList.add(
+            "mobileTaskEditorCompactPanel"
+        );
+
+        if (
+            !body.querySelector(
+                ":scope > .mobileTaskEditorCompactPanelHeader"
+            )
+        ) {
+            const header = document.createElement("div");
+            header.className =
+                "mobileTaskEditorCompactPanelHeader";
+
+            const title = document.createElement("strong");
+            title.textContent = "Notas";
+
+            const close = document.createElement("button");
+            close.type = "button";
+            close.className =
+                "mobileTaskEditorCompactPanelClose";
+            close.setAttribute(
+                "aria-label",
+                "Cerrar notas"
+            );
+            close.textContent = "×";
+            close.addEventListener("click", () => {
+                notes.open = false;
+                summary.focus();
+            });
+
+            header.append(title, close);
+            body.prepend(header);
+        }
+
+        notes.addEventListener("toggle", () => {
+            if (!notes.open) return;
+
+            drawer.querySelectorAll(
+                ".mobileTaskEditorCompactTransient[open]"
+            ).forEach(panel => {
+                if (panel !== notes) panel.open = false;
+            });
+        });
+
+        grid.append(notes);
+    }
+
     enhanceEditor() {
         super.enhanceEditor();
 
@@ -80,5 +183,6 @@ export class UnifiedMobileTaskEditorController
         if (!drawer) return;
 
         enhanceCompactMobileTaskEditor(drawer);
+        this.promoteNotionNotes(drawer);
     }
 }
