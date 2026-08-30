@@ -9,6 +9,8 @@ const COMPACT_STYLESHEET =
     "styles/task-editor-mobile-compact.css";
 const DENSITY_STYLESHEET =
     "styles/task-editor-mobile-density.css";
+const DEVICE_FIXES_STYLESHEET =
+    "styles/task-editor-mobile-device-fixes.css";
 
 export class UnifiedMobileTaskEditorController
     extends MobileTaskEditorLayoutController {
@@ -21,7 +23,8 @@ export class UnifiedMobileTaskEditorController
     preloadCompactStylesheets() {
         for (const href of [
             COMPACT_STYLESHEET,
-            DENSITY_STYLESHEET
+            DENSITY_STYLESHEET,
+            DEVICE_FIXES_STYLESHEET
         ]) {
             if (
                 document.querySelector(
