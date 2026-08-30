@@ -131,3 +131,33 @@ test("el editor móvil compacta iconos y deja la descripción en una línea inic
         /taskEditorHeader button,[\s\S]*?border:\s*0 !important;[\s\S]*?background:\s*transparent !important;/
     );
 });
+
+test("los popovers del editor móvil comparten densidad y cabecera", () => {
+    assert.match(
+        editorDensity,
+        /details\[open\][\s\S]*?mobileTaskEditorCompactPanel,[\s\S]*?gap:\s*6px !important;[\s\S]*?padding:\s*0 10px 10px !important;/
+    );
+    assert.match(
+        editorDensity,
+        /mobileTaskEditorCompactPanelHeader,[\s\S]*?min-height:\s*42px !important;[\s\S]*?padding:\s*2px 6px 2px 10px !important;/
+    );
+    assert.match(
+        editorDensity,
+        /mobileTaskEditorCompactPanelClose,[\s\S]*?width:\s*38px !important;[\s\S]*?height:\s*38px !important;/
+    );
+});
+
+test("los popovers reducen espacios internos sin achicar en exceso los campos", () => {
+    assert.match(
+        editorDensity,
+        /mobileTaskEditorProperty > input,[\s\S]*?min-height:\s*42px !important;[\s\S]*?padding:\s*7px 9px !important;/
+    );
+    assert.match(
+        editorDensity,
+        /mobileTaskEditorPickerSelection\s*\{[\s\S]*?gap:\s*2px !important;[\s\S]*?padding-bottom:\s*4px !important;/
+    );
+    assert.match(
+        editorDensity,
+        /recurrenceDialogActions\s*\{[\s\S]*?gap:\s*6px !important;[\s\S]*?padding:\s*8px 10px 10px !important;/
+    );
+});
