@@ -1,0 +1,46 @@
+@media (max-width: 760px) {
+
+    /*
+     * Ajustes observados en viewport móvil real.
+     * Esta capa se carga después de compactación y densidad para resolver
+     * diferencias de composición que no aparecen siempre en la emulación.
+     */
+
+    /* La cabecera del popover debe preceder incluso a bloques inyectados luego,
+       como Recordatorio dentro de Programación. */
+    .mobileTaskEditorCompactPanel
+        > .mobileTaskEditorCompactPanelHeader {
+        order: -100 !important;
+    }
+
+    /* Adjuntos: impedir que el label-botón exceda el ancho útil del panel. */
+    .mobileTaskEditorCompactAttachments
+        .attachmentUploadControl {
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    /*
+     * Mientras un popover está abierto, las acciones globales del editor
+     * desaparecen visualmente. Evita confundir Guardar/Cancelar de la tarea
+     * con las acciones propias del panel transitorio.
+     */
+    .mobileTaskEditorCompactLayout:has(
+        .mobileTaskEditorCompactTransient[open]
+    ) .mobileTaskEditorFooter {
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* El panel debe permanecer siempre por encima del contenido del editor. */
+    .mobileTaskEditorCompactLayout
+        details[open]
+        > .mobileTaskEditorCompactPanel {
+        z-index: 140 !important;
+    }
+
+}
