@@ -62,7 +62,7 @@ test("los controles icónicos móviles pierden el contorno y la barra se compact
     );
     assert.match(
         styles,
-        /\.mobileTaskToolbarAction,[\s\S]*?width:\s*38px !important;[\s\S]*?border:\s*0;/
+        /#taskContextToolbar\[data-viewport-mode="mobile"\][\s\S]*?button,[\s\S]*?border:\s*0 !important;[\s\S]*?background:\s*transparent !important;/
     );
     assert.match(
         styles,
@@ -70,10 +70,25 @@ test("los controles icónicos móviles pierden el contorno y la barra se compact
     );
 });
 
+test("el resumen y el control de expansión permanecen en una sola fila", () => {
+    assert.match(
+        styles,
+        /\.taskListTitleSummary\s*\{[\s\S]*?flex-wrap:\s*nowrap;/
+    );
+    assert.match(
+        styles,
+        /\.taskViewSummary,[\s\S]*?flex-wrap:\s*nowrap;[\s\S]*?width:\s*auto;/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskToolbarSummaryItems\s*\{[\s\S]*?flex-wrap:\s*nowrap;[\s\S]*?white-space:\s*nowrap;/
+    );
+});
+
 test("el control de la barra usa un chevron compacto sin texto visible", () => {
     assert.match(
         styles,
-        /\.mobileTaskToolbarHeadingToggle\s*\{[\s\S]*?width:\s*24px;[\s\S]*?font-size:\s*0;/
+        /\.mobileTaskToolbarHeadingToggle\s*\{[\s\S]*?width:\s*22px;[\s\S]*?font-size:\s*0;/
     );
     assert.match(
         styles,
