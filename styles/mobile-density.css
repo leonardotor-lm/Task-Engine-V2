@@ -129,6 +129,18 @@
         height: 16px;
     }
 
+    #taskContextToolbar[data-viewport-mode="mobile"].mobileTaskToolbarHeadingToggleReady
+        > .mobileTaskToolbarToggle {
+        display: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
     .taskListHeadingActions {
         gap: 1px;
         margin-left: auto;
@@ -210,6 +222,11 @@
         background: transparent !important;
         box-shadow: none !important;
         outline-offset: 1px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"].mobileTaskToolbarHeadingToggleReady
+        > .mobileTaskToolbarToggle {
+        display: none !important;
     }
 
     #taskContextToolbar[data-viewport-mode="mobile"]
