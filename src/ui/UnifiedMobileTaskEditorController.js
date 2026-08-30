@@ -106,6 +106,15 @@ export class UnifiedMobileTaskEditorController
 
         if (!summary || !body) return;
 
+        const previousContainer = notes.closest(
+            ".mobileTaskEditorCompactOverflowNotesContainer"
+        );
+        const previousTitle =
+            previousContainer?.previousElementSibling;
+
+        notes.classList.remove(
+            "mobileTaskEditorCompactOverflowNotes"
+        );
         notes.classList.add(
             "mobileTaskEditorCompactTool",
             "mobileTaskEditorCompactTransient",
@@ -165,6 +174,16 @@ export class UnifiedMobileTaskEditorController
         });
 
         grid.append(notes);
+        previousContainer?.remove();
+
+        if (
+            previousTitle?.classList.contains(
+                "mobileTaskEditorCompactOverflowTitle"
+            ) &&
+            previousTitle.textContent?.trim() === "Notas"
+        ) {
+            previousTitle.remove();
+        }
     }
 
     enhanceEditor() {
