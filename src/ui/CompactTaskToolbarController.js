@@ -29,6 +29,12 @@ const MOBILE_ICONS = Object.freeze({
         <circle cx="5" cy="12" r="1"></circle>
         <circle cx="12" cy="12" r="1"></circle>
         <circle cx="19" cy="12" r="1"></circle>
+    `,
+    chevronDown: `
+        <path d="m7 10 5 5 5-5"></path>
+    `,
+    chevronUp: `
+        <path d="m7 14 5-5 5 5"></path>
     `
 });
 
@@ -152,11 +158,51 @@ export class CompactTaskToolbarController
 
     }
 
-    getToggleLabel(toolbar) {
+    getToggleIcon(toolbar) {
 
         return toolbar?.open
-            ? "Ocultar ↑"
-            : "Mostrar ↓";
+            ? "chevronUp"
+            : "chevronDown";
+
+    }
+
+    getToggleAccessibleLabel(toolbar) {
+
+        return toolbar?.open
+            ? "Ocultar controles de la lista"
+            : "Mostrar controles de la lista";
+
+    }
+
+    renderToggleIcon(toolbar) {
+
+        return renderMobileIcon(
+            this.getToggleIcon(toolbar)
+        );
+
+    }
+
+    updateToggleElement(element, toolbar) {
+
+        if (!element) return;
+
+        const accessibleLabel =
+            this.getToggleAccessibleLabel(toolbar);
+
+        element.innerHTML =
+            this.renderToggleIcon(toolbar);
+        element.setAttribute(
+            "aria-label",
+            accessibleLabel
+        );
+        element.setAttribute(
+            "title",
+            accessibleLabel
+        );
+        element.setAttribute(
+            "aria-expanded",
+            String(Boolean(toolbar?.open))
+        );
 
     }
 
@@ -171,28 +217,18 @@ export class CompactTaskToolbarController
         summary.classList.add(
             "mobileTaskToolbarToggle"
         );
-        summary.setAttribute(
-            "aria-label",
-            "Mostrar u ocultar controles de la lista"
-        );
-        summary.setAttribute(
-            "title",
-            "Controles de la lista"
-        );
 
         const updateLabel = () => {
-            const label = this.getToggleLabel(toolbar);
-            summary.textContent = label;
-            const headingToggle = document.querySelector(
-                ".mobileTaskToolbarHeadingToggle"
+            this.updateToggleElement(
+                summary,
+                toolbar
             );
-            if (headingToggle) {
-                headingToggle.textContent = label;
-                headingToggle.setAttribute(
-                    "aria-expanded",
-                    String(Boolean(toolbar.open))
-                );
-            }
+            this.updateToggleElement(
+                document.querySelector(
+                    ".mobileTaskToolbarHeadingToggle"
+                ),
+                toolbar
+            );
         };
 
         updateLabel();
@@ -253,10 +289,6 @@ export class CompactTaskToolbarController
             button.type = "button";
             button.className =
                 "mobileTaskToolbarHeadingToggle";
-            button.setAttribute(
-                "aria-label",
-                "Mostrar u ocultar controles de la lista"
-            );
             button.addEventListener("click", () => {
                 toolbar.open = !toolbar.open;
                 this.setMobileToolbarExpanded(
@@ -266,10 +298,9 @@ export class CompactTaskToolbarController
             summary.append(button);
         }
 
-        button.textContent = this.getToggleLabel(toolbar);
-        button.setAttribute(
-            "aria-expanded",
-            String(Boolean(toolbar.open))
+        this.updateToggleElement(
+            button,
+            toolbar
         );
         toolbar.classList.add(
             "mobileTaskToolbarHeadingToggleReady"
