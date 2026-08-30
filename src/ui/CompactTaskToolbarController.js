@@ -156,6 +156,30 @@ export class CompactTaskToolbarController
         this.prepareMobileToggle(toolbar);
         this.decorateMobileControls(state);
 
+        const finalizeHeadingToggle = () => {
+            const currentToolbar =
+                this.document?.getElementById?.(
+                    "taskContextToolbar"
+                );
+
+            if (
+                !toolbar ||
+                currentToolbar !== toolbar
+            ) {
+                return;
+            }
+
+            this.decorateHeadingToggle(toolbar);
+        };
+
+        if (typeof queueMicrotask === "function") {
+            queueMicrotask(finalizeHeadingToggle);
+        } else {
+            Promise.resolve().then(
+                finalizeHeadingToggle
+            );
+        }
+
     }
 
     getToggleIcon(toolbar) {
@@ -250,8 +274,17 @@ export class CompactTaskToolbarController
         const summary = document.querySelector(
             ".taskViewSummary"
         );
+        const originalToggle = toolbar?.querySelector(
+            ":scope > .mobileTaskToolbarToggle"
+        );
 
         if (!toolbar || !summary) {
+            if (originalToggle) {
+                originalToggle.hidden = false;
+                originalToggle.style.removeProperty(
+                    "display"
+                );
+            }
             toolbar?.classList.remove(
                 "mobileTaskToolbarHeadingToggleReady"
             );
@@ -309,6 +342,12 @@ export class CompactTaskToolbarController
             button,
             toolbar
         );
+
+        if (originalToggle) {
+            originalToggle.hidden = true;
+            originalToggle.style.display = "none";
+        }
+
         toolbar.classList.add(
             "mobileTaskToolbarHeadingToggleReady"
         );
