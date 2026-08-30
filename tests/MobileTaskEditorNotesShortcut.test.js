@@ -59,3 +59,22 @@ test("Notas usa el mismo panel transitorio que el resto del editor", () => {
         /panel !== notes/
     );
 });
+
+test("al promover Notas se elimina su copia visual en Más acciones", () => {
+    assert.match(
+        controller,
+        /mobileTaskEditorCompactOverflowNotesContainer/
+    );
+    assert.match(
+        controller,
+        /classList\.remove\([\s\S]*mobileTaskEditorCompactOverflowNotes/
+    );
+    assert.match(
+        controller,
+        /previousContainer\?\.remove\(\)/
+    );
+    assert.match(
+        controller,
+        /previousTitle\.remove\(\)/
+    );
+});
