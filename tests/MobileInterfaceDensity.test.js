@@ -38,6 +38,13 @@ const editorDensity = await readFile(
     ),
     "utf8"
 );
+const editorDeviceFixes = await readFile(
+    new URL(
+        "../styles/task-editor-mobile-device-fixes.css",
+        import.meta.url
+    ),
+    "utf8"
+);
 
 test("la interfaz móvil carga la capa de densidad al final de los estilos funcionales", () => {
     assert.match(
@@ -106,14 +113,18 @@ test("el chevron móvil se integra luego de que exista el resumen de la vista", 
     );
 });
 
-test("el editor móvil carga una capa posterior de densidad", () => {
+test("el editor móvil carga las capas compacta, de densidad y de dispositivo", () => {
     assert.match(
         editorController,
         /task-editor-mobile-density\.css/
     );
     assert.match(
         editorController,
-        /COMPACT_STYLESHEET,[\s\S]*DENSITY_STYLESHEET/
+        /task-editor-mobile-device-fixes\.css/
+    );
+    assert.match(
+        editorController,
+        /COMPACT_STYLESHEET,[\s\S]*DENSITY_STYLESHEET,[\s\S]*DEVICE_FIXES_STYLESHEET/
     );
 });
 
@@ -146,4 +157,22 @@ test("los popovers reducen espacios internos sin achicar en exceso los campos", 
     assert.ok(editorDensity.includes("gap: 2px !important;"));
     assert.ok(editorDensity.includes("padding-bottom: 4px !important;"));
     assert.ok(editorDensity.includes("padding: 8px 10px 10px !important;"));
+});
+
+test("los ajustes de dispositivo mantienen cabecera arriba y adjuntos dentro del panel", () => {
+    assert.match(
+        editorDeviceFixes,
+        /mobileTaskEditorCompactPanelHeader[\s\S]*?order:\s*-100 !important;/
+    );
+    assert.match(
+        editorDeviceFixes,
+        /attachmentUploadControl[\s\S]*?box-sizing:\s*border-box !important;[\s\S]*?width:\s*100% !important;[\s\S]*?max-width:\s*100% !important;/
+    );
+});
+
+test("un popover abierto oculta las acciones globales del editor móvil", () => {
+    assert.match(
+        editorDeviceFixes,
+        /:has\([\s\S]*mobileTaskEditorCompactTransient\[open\][\s\S]*\)[\s\S]*mobileTaskEditorFooter[\s\S]*visibility:\s*hidden !important;[\s\S]*pointer-events:\s*none !important;/
+    );
 });
