@@ -7,28 +7,35 @@ import {
 
 const COMPACT_STYLESHEET =
     "styles/task-editor-mobile-compact.css";
+const DENSITY_STYLESHEET =
+    "styles/task-editor-mobile-density.css";
 
 export class UnifiedMobileTaskEditorController
     extends MobileTaskEditorLayoutController {
 
     start() {
-        this.preloadCompactStylesheet();
+        this.preloadCompactStylesheets();
         super.start();
     }
 
-    preloadCompactStylesheet() {
-        if (
-            document.querySelector(
-                `link[href="${COMPACT_STYLESHEET}"]`
-            )
-        ) {
-            return;
-        }
+    preloadCompactStylesheets() {
+        for (const href of [
+            COMPACT_STYLESHEET,
+            DENSITY_STYLESHEET
+        ]) {
+            if (
+                document.querySelector(
+                    `link[href="${href}"]`
+                )
+            ) {
+                continue;
+            }
 
-        const stylesheet = document.createElement("link");
-        stylesheet.rel = "stylesheet";
-        stylesheet.href = COMPACT_STYLESHEET;
-        document.head.append(stylesheet);
+            const stylesheet = document.createElement("link");
+            stylesheet.rel = "stylesheet";
+            stylesheet.href = href;
+            document.head.append(stylesheet);
+        }
     }
 
     bindTransientPanels() {
