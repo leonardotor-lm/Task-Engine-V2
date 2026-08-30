@@ -92,12 +92,35 @@
     }
 
     .mobileTaskToolbarHeadingToggle {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 24px;
+        width: 24px;
+        min-width: 24px;
+        height: 28px;
         min-height: 28px;
-        padding: 0 2px;
+        padding: 0;
         border: 0;
         border-radius: 0;
         background: transparent;
-        font-size: 11px;
+        font-size: 0;
+        line-height: 1;
+    }
+
+    .mobileTaskToolbarHeadingToggle::before {
+        width: 7px;
+        height: 7px;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        content: "";
+        transform: translateY(-2px) rotate(45deg);
+        transform-origin: center;
+    }
+
+    .mobileTaskToolbarHeadingToggle[aria-expanded="true"]::before {
+        transform: translateY(2px) rotate(225deg);
     }
 
     .taskListHeadingActions {
