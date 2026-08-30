@@ -280,9 +280,15 @@ export class CompactTaskToolbarController
             summary.prepend(items);
         }
 
-        let button = summary.querySelector(
+        let button = items.querySelector(
             ":scope > .mobileTaskToolbarHeadingToggle"
         );
+
+        if (!button) {
+            button = summary.querySelector(
+                ":scope > .mobileTaskToolbarHeadingToggle"
+            );
+        }
 
         if (!button) {
             button = document.createElement("button");
@@ -295,8 +301,9 @@ export class CompactTaskToolbarController
                     toolbar.open
                 );
             });
-            summary.append(button);
         }
+
+        items.append(button);
 
         this.updateToggleElement(
             button,
