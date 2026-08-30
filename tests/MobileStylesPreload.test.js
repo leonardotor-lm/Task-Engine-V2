@@ -21,10 +21,10 @@ test("los estilos del editor móvil se cargan antes del primer render", () => {
         'href="styles/task-editor-mobile-device-fixes.css"'
     );
 
-    assert.ok(moduleIndex >= 0);
     assert.ok(compactIndex >= 0);
     assert.ok(densityIndex > compactIndex);
     assert.ok(deviceFixesIndex > densityIndex);
+    assert.ok(moduleIndex > deviceFixesIndex);
 
     assert.equal(
         (index.match(/task-editor-mobile-compact\.css/g) ?? []).length,
