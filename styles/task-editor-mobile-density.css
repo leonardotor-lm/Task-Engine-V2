@@ -102,6 +102,133 @@
         background: var(--color-surface-hover) !important;
     }
 
+    /* Criterio único para todos los paneles transitorios del editor. */
+    .mobileTaskEditorCompactLayout
+        details[open]
+        > .mobileTaskEditorCompactPanel,
+    .mobileTaskEditorLayout
+        details[open]
+        > .mobileTaskEditorPanel {
+        gap: 6px !important;
+        padding: 0 10px 10px !important;
+        max-height: min(68dvh, 520px) !important;
+        border-radius: 8px !important;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactPanelHeader,
+    .mobileTaskEditorLayout
+        .mobileTaskEditorPanelHeader {
+        min-height: 42px !important;
+        margin: 0 -10px 2px !important;
+        padding: 2px 6px 2px 10px !important;
+        gap: 6px !important;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactPanelHeader strong,
+    .mobileTaskEditorLayout
+        .mobileTaskEditorPanelHeader strong {
+        font-size: 14px;
+        font-weight: 650;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactPanelClose,
+    .mobileTaskEditorLayout
+        .mobileTaskEditorPanelClose {
+        width: 38px !important;
+        min-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 !important;
+    }
+
+    .mobileTaskEditorCompactToolBody,
+    .mobileTaskEditorPanel
+        .searchableMultiSelectManagerBody,
+    .mobileTaskEditorPanel
+        .taskMoveManagerBody {
+        gap: 4px !important;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty +
+        .mobileTaskEditorProperty {
+        margin-top: 2px !important;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty > label,
+    .mobileTaskEditorPanel > label,
+    .mobileTaskEditorPanel legend,
+    .mobileTaskEditorPanel
+        .searchableMultiSelectManagerBody
+        > label,
+    .mobileTaskEditorPanel
+        .taskMoveManagerBody label {
+        font-size: 11px !important;
+        line-height: 1.2;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty > input,
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorProperty > select,
+    .mobileTaskEditorPanel input,
+    .mobileTaskEditorPanel select,
+    .mobileTaskEditorPanel button:not(
+        .mobileTaskEditorPanelClose
+    ) {
+        min-height: 42px !important;
+        height: 42px;
+        padding: 7px 9px !important;
+        border-radius: 5px !important;
+        font-size: 14px;
+    }
+
+    .mobileTaskEditorPickerSelection {
+        gap: 2px !important;
+        padding-bottom: 4px !important;
+    }
+
+    .mobileTaskEditorPickerSelection
+        .searchableMultiSelectChip {
+        min-height: 38px;
+        padding: 2px 0 !important;
+    }
+
+    .mobileTaskEditorPickerSelection
+        button.searchableMultiSelectRemove {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        flex-basis: 38px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+
+    .mobileTaskEditorPanel
+        .searchableMultiSelectManagerActions,
+    .mobileTaskEditorRecurrenceTool
+        .recurrenceIntervalControl,
+    .mobileTaskEditorRecurrenceTool
+        .postponeControls > div {
+        gap: 6px !important;
+    }
+
+    .mobileTaskEditorRecurrenceTool
+        .recurrenceDialogActions {
+        bottom: -10px !important;
+        gap: 6px !important;
+        margin: 2px -10px -10px !important;
+        padding: 8px 10px 10px !important;
+    }
+
+    /* Más acciones: contenido ajustado, sin estiramiento ni tarjetas por opción. */
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactOverflow
         > .mobileTaskEditorCompactPanel {
@@ -111,8 +238,8 @@
         max-height: calc(
             100dvh - 58px - env(safe-area-inset-bottom)
         ) !important;
-        padding: 0 10px 10px;
-        gap: 4px;
+        padding: 0 10px 10px !important;
+        gap: 4px !important;
         scroll-padding-bottom: 10px;
     }
 
@@ -124,16 +251,8 @@
     }
 
     .mobileTaskEditorCompactLayout
-        .mobileTaskEditorCompactOverflow
-        .mobileTaskEditorCompactPanelHeader {
-        min-height: 42px;
-        margin: 0 -10px 2px;
-        padding: 2px 6px 2px 10px;
-    }
-
-    .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactOverflowTitle {
-        margin: 5px 0 2px;
+        margin: 4px 0 1px;
         font-size: 10px;
     }
 
@@ -150,7 +269,7 @@
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactOverflowOptions
         .mobileTaskEditorProjectProperty {
-        min-height: 44px;
+        min-height: 42px;
         margin: 0;
     }
 
@@ -160,11 +279,14 @@
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactOverflowOptions
         .projectTaskControl {
-        min-height: 44px;
-        height: 44px;
+        min-height: 42px;
+        height: 42px;
         margin: 0;
-        padding-top: 5px;
-        padding-bottom: 5px;
+        padding: 4px 2px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
     }
 
 }
