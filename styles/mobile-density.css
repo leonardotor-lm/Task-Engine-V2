@@ -1,0 +1,280 @@
+@media (max-width: 760px) {
+
+    .layout {
+        padding-top: calc(46px + env(safe-area-inset-top));
+    }
+
+    .mobileHeader {
+        min-height: calc(46px + env(safe-area-inset-top));
+        gap: 6px;
+        padding:
+            calc(3px + env(safe-area-inset-top))
+            calc(8px + env(safe-area-inset-right))
+            3px
+            calc(6px + env(safe-area-inset-left));
+        border-bottom: 0;
+    }
+
+    .mobileHeader strong {
+        min-width: 0;
+        overflow: hidden;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobileMenuButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        min-height: 38px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .mobileMenuButton:hover,
+    .mobileMenuButton:active,
+    .mobileMenuButton:focus-visible {
+        border: 0;
+        background: transparent;
+        color: var(--color-accent-strong);
+    }
+
+    .content {
+        height: calc(
+            100dvh - 46px - env(safe-area-inset-top)
+        );
+        padding: 6px 8px 10px;
+    }
+
+    .taskListHeading {
+        align-items: center;
+        gap: 3px;
+        margin-bottom: 4px;
+        padding: 0 2px;
+    }
+
+    .taskListTitleSummary {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 0;
+    }
+
+    .taskListTitleSummary > h2 {
+        display: none;
+    }
+
+    .taskViewSummary {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 11px;
+        line-height: 1.25;
+    }
+
+    .taskViewSummary:has(.mobileTaskToolbarHeadingToggle) {
+        gap: 3px;
+    }
+
+    .mobileTaskToolbarSummaryItems {
+        gap: 0 2px;
+    }
+
+    .mobileTaskToolbarSummaryItems
+        .taskViewSummaryItem:not(:first-child)::before {
+        margin-right: 2px;
+    }
+
+    .mobileTaskToolbarHeadingToggle {
+        min-height: 28px;
+        padding: 0 2px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        font-size: 11px;
+    }
+
+    .taskListHeadingActions {
+        gap: 1px;
+        margin-left: auto;
+    }
+
+    .taskListHeadingActions .responsiveIconButton,
+    .taskMetadataToggle {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        min-height: 32px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .taskListHeadingActions .responsiveIconButton:hover,
+    .taskListHeadingActions .responsiveIconButton:active,
+    .taskListHeadingActions .responsiveIconButton:focus-visible {
+        border: 0;
+        background: transparent;
+    }
+
+    .taskList {
+        gap: 0;
+    }
+
+    .task {
+        border-top: 0 !important;
+        border-right: 0 !important;
+        border-bottom: 0 !important;
+        border-left: 0 !important;
+        box-shadow: none;
+    }
+
+    .task + .task {
+        border-top: 0 !important;
+    }
+
+    .taskGroupHeader {
+        margin: 10px 0 3px;
+        padding: 2px 4px;
+        border: 0;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .taskGroupHeader:first-child {
+        margin-top: 4px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarAction,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMoreSummary,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore
+        .taskContextToolbarIconButton {
+        flex-basis: 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px;
+        min-height: 38px;
+        padding: 0 !important;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelect > select {
+        width: 38px;
+        min-width: 38px;
+        max-width: 38px;
+        height: 38px;
+        min-height: 38px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarAction.active,
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore[open]
+        > .mobileTaskToolbarMoreSummary {
+        border: 0;
+        background: var(--color-accent-soft);
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        > .taskContextToolbarBody {
+        gap: 2px;
+        padding: 2px 0 4px;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarMore
+        > .taskContextToolbarUtilities {
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid var(--color-border);
+        border-radius: 7px;
+    }
+
+    .quickMoreActions > summary {
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        min-height: 38px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .quickMoreMenu {
+        gap: 4px;
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .quickMoreMenu button,
+    .quickMoreMenu select,
+    .quickMoreMenu input,
+    .quickMoreMenu summary {
+        min-height: 40px;
+        padding: 7px 8px;
+    }
+
+    .quickActionsSheetHeader {
+        top: -8px;
+        margin: -8px -8px 2px;
+        padding: 6px 8px;
+    }
+
+    .quickActionsSheetHeader .closeQuickActions {
+        width: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    dialog,
+    .dialogPanel,
+    .taskToolsDialogPanel,
+    .settingsDialogPanel,
+    .advancedSearchDialogPanel {
+        --transient-surface-padding: 10px;
+        --transient-surface-gap: 6px;
+    }
+
+    dialog button.responsiveIconButton,
+    dialog .iconButton,
+    .taskDrawer .responsiveIconButton,
+    .taskDrawer .iconButton {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .taskEditorHeader {
+        margin-bottom: 10px;
+        padding: 6px 8px;
+    }
+
+    .taskEditorActions,
+    .taskEditorSection,
+    .taskEditorFieldGroup {
+        gap: 5px;
+    }
+
+}
