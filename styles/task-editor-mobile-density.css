@@ -106,6 +106,7 @@
         .mobileTaskEditorCompactOverflow
         > .mobileTaskEditorCompactPanel {
         top: 50px;
+        bottom: auto !important;
         height: auto !important;
         max-height: calc(
             100dvh - 58px - env(safe-area-inset-bottom)
