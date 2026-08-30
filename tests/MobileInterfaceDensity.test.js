@@ -69,3 +69,18 @@ test("los controles icónicos móviles pierden el contorno y la barra se compact
         /\.quickMoreMenu\s*\{[\s\S]*?gap:\s*4px;[\s\S]*?padding:\s*8px;/
     );
 });
+
+test("el control de la barra usa un chevron compacto sin texto visible", () => {
+    assert.match(
+        styles,
+        /\.mobileTaskToolbarHeadingToggle\s*\{[\s\S]*?width:\s*24px;[\s\S]*?font-size:\s*0;/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskToolbarHeadingToggle::before\s*\{[\s\S]*?border-right:\s*1\.5px solid currentColor;[\s\S]*?rotate\(45deg\)/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskToolbarHeadingToggle\[aria-expanded="true"\]::before\s*\{[\s\S]*?rotate\(225deg\)/
+    );
+});
