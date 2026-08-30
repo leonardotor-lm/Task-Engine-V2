@@ -102,4 +102,68 @@
         background: var(--color-surface-hover) !important;
     }
 
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflow
+        > .mobileTaskEditorCompactPanel {
+        top: 50px;
+        height: auto !important;
+        max-height: calc(
+            100dvh - 58px - env(safe-area-inset-bottom)
+        ) !important;
+        padding: 0 10px 10px;
+        gap: 4px;
+        scroll-padding-bottom: 10px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflow
+        > .mobileTaskEditorCompactPanel::after {
+        display: none;
+        content: none;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflow
+        .mobileTaskEditorCompactPanelHeader {
+        min-height: 42px;
+        margin: 0 -10px 2px;
+        padding: 2px 6px 2px 10px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowTitle {
+        margin: 5px 0 2px;
+        font-size: 10px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowOptions,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowActions {
+        gap: 2px;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowOptions
+        .mobileTaskEditorWaitingProperty,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowOptions
+        .mobileTaskEditorProjectProperty {
+        min-height: 44px;
+        margin: 0;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowOptions
+        .waitingTaskControl,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactOverflowOptions
+        .projectTaskControl {
+        min-height: 44px;
+        height: 44px;
+        margin: 0;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
 }
