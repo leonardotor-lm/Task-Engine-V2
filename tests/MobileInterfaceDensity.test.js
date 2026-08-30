@@ -17,6 +17,27 @@ const controller = await readFile(
     ),
     "utf8"
 );
+const compactToolbarController = await readFile(
+    new URL(
+        "../src/ui/CompactTaskToolbarController.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+const editorController = await readFile(
+    new URL(
+        "../src/ui/UnifiedMobileTaskEditorController.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+const editorDensity = await readFile(
+    new URL(
+        "../styles/task-editor-mobile-density.css",
+        import.meta.url
+    ),
+    "utf8"
+);
 
 test("la interfaz móvil carga la capa de densidad al final de los estilos funcionales", () => {
     assert.match(
@@ -70,32 +91,43 @@ test("los controles icónicos móviles pierden el contorno y la barra se compact
     );
 });
 
-test("el resumen y el control de expansión permanecen en una sola fila", () => {
+test("el chevron móvil se integra luego de que exista el resumen de la vista", () => {
     assert.match(
-        styles,
-        /\.taskListTitleSummary\s*\{[\s\S]*?flex-wrap:\s*nowrap;/
+        compactToolbarController,
+        /queueMicrotask\([\s\S]*?decorateHeadingToggle/
+    );
+    assert.match(
+        compactToolbarController,
+        /items\.append\(button\)/
     );
     assert.match(
         styles,
-        /\.taskViewSummary,[\s\S]*?flex-wrap:\s*nowrap;[\s\S]*?width:\s*auto;/
-    );
-    assert.match(
-        styles,
-        /\.mobileTaskToolbarSummaryItems\s*\{[\s\S]*?flex-wrap:\s*nowrap;[\s\S]*?white-space:\s*nowrap;/
+        /mobileTaskToolbarHeadingToggleReady[\s\S]*?mobileTaskToolbarToggle[\s\S]*?display:\s*none !important;/
     );
 });
 
-test("el control de la barra usa un chevron compacto sin texto visible", () => {
+test("el editor móvil carga una capa posterior de densidad", () => {
     assert.match(
-        styles,
-        /\.mobileTaskToolbarHeadingToggle\s*\{[\s\S]*?width:\s*22px;[\s\S]*?font-size:\s*0;/
+        editorController,
+        /task-editor-mobile-density\.css/
     );
     assert.match(
-        styles,
-        /\.mobileTaskToolbarHeadingToggle::before\s*\{[\s\S]*?border-right:\s*1\.5px solid currentColor;[\s\S]*?rotate\(45deg\)/
+        editorController,
+        /COMPACT_STYLESHEET,[\s\S]*DENSITY_STYLESHEET/
+    );
+});
+
+test("el editor móvil compacta iconos y deja la descripción en una línea inicial", () => {
+    assert.match(
+        editorDensity,
+        /#taskDescriptionEdit\s*\{[\s\S]*?height:\s*42px;[\s\S]*?min-height:\s*42px;/
     );
     assert.match(
-        styles,
-        /\.mobileTaskToolbarHeadingToggle\[aria-expanded="true"\]::before\s*\{[\s\S]*?rotate\(225deg\)/
+        editorDensity,
+        /mobileTaskEditorCompactSummary,[\s\S]*?min-height:\s*60px;[\s\S]*?border:\s*0 !important;/
+    );
+    assert.match(
+        editorDensity,
+        /taskEditorHeader button,[\s\S]*?border:\s*0 !important;[\s\S]*?background:\s*transparent !important;/
     );
 });
