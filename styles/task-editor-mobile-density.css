@@ -263,22 +263,52 @@
         font-weight: 600;
     }
 
-    /* Adjuntos: evitar texto explicativo redundante antes de la acción principal. */
+    /* Adjuntos: acción primero y toda la ayuda agrupada debajo. */
     .mobileTaskEditorCompactAttachments
-        > .mobileTaskEditorCompactPanel
-        > .fieldHelp:first-of-type,
-    .mobileTaskEditorCompactAttachments
-        > .mobileTaskEditorCompactPanel
-        > .editorSectionBody
-        > .fieldHelp:first-child {
-        display: none !important;
+        > .mobileTaskEditorCompactPanel {
+        gap: 4px !important;
     }
 
     .mobileTaskEditorCompactAttachments
-        .fieldHelp,
+        > .mobileTaskEditorCompactPanel
+        > .mobileTaskEditorCompactPanelHeader {
+        order: 0;
+    }
+
     .mobileTaskEditorCompactAttachments
-        .syncErrorHint {
+        .attachmentUploadControl {
+        order: 1;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
         margin: 2px 0 0 !important;
+        padding: 7px 9px !important;
+        text-align: center !important;
+    }
+
+    .mobileTaskEditorCompactAttachments
+        .attachmentFileInput {
+        order: 1;
+    }
+
+    .mobileTaskEditorCompactAttachments
+        .attachmentEmptyMessage,
+    .mobileTaskEditorCompactAttachments
+        .attachmentConnectionNotice,
+    .mobileTaskEditorCompactAttachments
+        .attachmentLimits {
+        order: 2;
+        margin: 0 !important;
+        color: var(--color-text-muted);
+        font-size: 11px !important;
+        line-height: 1.3;
+    }
+
+    .mobileTaskEditorCompactAttachments
+        .attachmentOperationStatus {
+        order: 3;
+        margin: 0 !important;
         font-size: 11px !important;
         line-height: 1.3;
     }
