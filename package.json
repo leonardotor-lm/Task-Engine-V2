@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "generate:pwa-assets": "node scripts/generate-pwa-assets.mjs",
-    "test": "node --test tests/CssArchitecture.test.js tests/MobileInterfaceDensity.test.js tests/MobilePwaStability.test.js tests/MobileStylesPreload.test.js tests/MobileTaskEditorCompactEnhancer.test.js tests/MobileTaskEditorCompactMove.test.js tests/MobileTaskEditorNotesShortcut.test.js tests/NotionMobileLayout.test.js tests/PwaSupport.test.js",
+    "test": "node --test",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
