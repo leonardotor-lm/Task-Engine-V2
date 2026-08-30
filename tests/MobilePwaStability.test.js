@@ -14,7 +14,7 @@ test("la PWA precarga las hojas críticas de la interfaz móvil", () => {
         "./styles/task-editor-mobile-device-fixes.css"
     ]) {
         assert.ok(
-            serviceWorker.includes(`\"${stylesheet}\"`),
+            serviceWorker.includes(`"${stylesheet}"`),
             `Falta ${stylesheet} en el app shell móvil`
         );
     }
