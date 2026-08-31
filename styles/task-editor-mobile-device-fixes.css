@@ -6,24 +6,6 @@
      * diferencias de composición que no aparecen siempre en la emulación.
      */
 
-    /* Aprovechar un poco más el ancho útil sin perder respiración lateral. */
-    .mobileTaskEditorCompactLayout {
-        padding-right: 10px !important;
-        padding-left: 10px !important;
-    }
-
-    .mobileTaskEditorCompactLayout > .taskEditorHeader {
-        margin-right: -10px !important;
-        margin-left: -10px !important;
-    }
-
-    .mobileTaskEditorCompactLayout > .mobileTaskEditorFooter {
-        margin-right: -10px !important;
-        margin-left: -10px !important;
-        padding-right: 10px !important;
-        padding-left: 10px !important;
-    }
-
     /* La cabecera del popover debe preceder incluso a bloques inyectados luego,
        como Recordatorio dentro de Programación. */
     .mobileTaskEditorCompactPanel
