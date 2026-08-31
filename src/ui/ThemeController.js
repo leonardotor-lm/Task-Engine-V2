@@ -20,6 +20,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Rosa"
     },
     {
+        id: "rose-2",
+        label: "Rosa 2"
+    },
+    {
         id: "dark",
         label: "Oscuro"
     },
