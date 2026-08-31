@@ -20,6 +20,7 @@ const VALID_THEMES = new Set([
     "paper",
     "high-contrast",
     "ink-blue",
+    "rose",
     "dark",
     "retro-dark",
     "terminal-80"

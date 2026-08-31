@@ -177,6 +177,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/themes/paper.css",
     "./styles/themes/high-contrast.css",
     "./styles/themes/ink-blue.css",
+    "./styles/themes/rose.css",
     "./styles/themes/terminal-80.css",
     "./styles/view-task-summary.css",
     "./styles/waiting.css"
