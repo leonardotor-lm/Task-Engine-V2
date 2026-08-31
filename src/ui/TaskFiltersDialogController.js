@@ -1,3 +1,21 @@
+function renderFilterIcon() {
+
+    return `
+        <svg
+            class="icon mobileTaskToolbarIcon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            aria-hidden="true"
+            focusable="false">
+            <path d="M4 5h16"></path>
+            <path d="M7 12h10"></path>
+            <path d="M10 19h4"></path>
+        </svg>
+    `;
+
+}
+
 export class TaskFiltersDialogController {
 
     constructor(
@@ -25,6 +43,8 @@ export class TaskFiltersDialogController {
             this.clearDismissalBindings();
             originalRender(state);
             this.removeVisibleSortLabel();
+            this.decorateFilterTrigger(state);
+            this.moveClearButtonIntoFilters();
             this.bindDialogDismissal();
 
         };
@@ -67,6 +87,56 @@ export class TaskFiltersDialogController {
         container.className = wrapper.className;
         container.append(select);
         wrapper.replaceWith(container);
+
+    }
+
+    decorateFilterTrigger(state = {}) {
+
+        const button = this.document?.getElementById(
+            "openTaskTools"
+        );
+
+        if (!button) return;
+
+        const filtersActive = Object.values(
+            state.taskFilters ?? {}
+        ).some(Boolean);
+        const label = filtersActive
+            ? "Filtrar tareas; hay filtros activos"
+            : "Filtrar tareas";
+
+        button.classList.add(
+            "taskContextToolbarIconButton"
+        );
+        button.classList.toggle(
+            "active",
+            filtersActive
+        );
+        button.dataset.active = String(filtersActive);
+        button.setAttribute("aria-label", label);
+        button.setAttribute("title", label);
+        button.innerHTML = renderFilterIcon();
+
+    }
+
+    moveClearButtonIntoFilters() {
+
+        const dialog = this.document?.getElementById(
+            "taskToolsDialog"
+        );
+        const filterSection = dialog?.querySelector(
+            ".taskFilters"
+        );
+        const clearButton = dialog?.querySelector(
+            "#clearTaskFilters"
+        );
+
+        if (!filterSection || !clearButton) return;
+
+        clearButton.classList.add(
+            "taskFilterClearAction"
+        );
+        filterSection.append(clearButton);
 
     }
 
