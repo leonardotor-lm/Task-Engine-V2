@@ -16,6 +16,11 @@ const DEVICE_FIXES_STYLESHEET =
 export class UnifiedMobileTaskEditorController
     extends MobileTaskEditorLayoutController {
 
+    constructor(...args) {
+        super(...args);
+        this.mobileEditorObserver = null;
+    }
+
     start() {
         this.preloadCompactStylesheets();
         super.start();
@@ -73,14 +78,19 @@ export class UnifiedMobileTaskEditorController
             ".mobileTaskEditorToolGrid"
         );
 
+        if (!notes || !grid) {
+            return false;
+        }
+
         if (
-            !notes ||
-            !grid ||
             notes.classList.contains(
                 "mobileTaskEditorNotesTool"
             )
         ) {
-            return;
+            if (notes.parentElement !== grid) {
+                grid.append(notes);
+            }
+            return true;
         }
 
         const summary = notes.querySelector(
@@ -90,7 +100,7 @@ export class UnifiedMobileTaskEditorController
             ":scope > .editorSectionBody"
         );
 
-        if (!summary || !body) return;
+        if (!summary || !body) return false;
 
         const previousContainer = notes.closest(
             ".mobileTaskEditorCompactOverflowNotesContainer"
@@ -143,8 +153,11 @@ export class UnifiedMobileTaskEditorController
                 "Cerrar notas"
             );
             close.textContent = "×";
-            close.addEventListener("click", () => {
+            close.addEventListener("click", event => {
+                event.preventDefault();
+                event.stopPropagation();
                 notes.open = false;
+                body.hidden = true;
                 summary.focus();
             });
 
@@ -153,6 +166,7 @@ export class UnifiedMobileTaskEditorController
         }
 
         notes.addEventListener("toggle", () => {
+            body.hidden = !notes.open;
             if (!notes.open) return;
 
             drawer.querySelectorAll(
@@ -162,6 +176,7 @@ export class UnifiedMobileTaskEditorController
             });
         });
 
+        body.hidden = !notes.open;
         grid.append(notes);
         previousContainer?.remove();
 
@@ -173,6 +188,117 @@ export class UnifiedMobileTaskEditorController
         ) {
             previousTitle.remove();
         }
+
+        return true;
+    }
+
+    ensureProgrammingIcon(drawer) {
+        const summary = drawer?.querySelector(
+            ".mobileTaskEditorRecurrenceTool > summary"
+        );
+
+        if (!summary) return false;
+
+        summary.classList.add(
+            "mobileTaskEditorCompactSummary",
+            "mobileTaskEditorProgrammingSummary"
+        );
+        summary.setAttribute(
+            "aria-label",
+            "Programación"
+        );
+        summary.setAttribute(
+            "title",
+            "Programación"
+        );
+
+        const compactIcon = summary.querySelector(
+            ":scope > .mobileTaskEditorCompactIcon"
+        );
+        const visibleLabel = summary.querySelector(
+            ":scope > .mobileTaskEditorCompactLabel"
+        );
+
+        if (compactIcon) {
+            visibleLabel?.remove();
+            return true;
+        }
+
+        summary.innerHTML = Icon.render(
+            "clock",
+            "mobileTaskEditorCompactIcon"
+        );
+
+        return true;
+    }
+
+    bindCompactCloseButtons(drawer) {
+        drawer?.querySelectorAll(
+            ".mobileTaskEditorCompactPanelClose"
+        ).forEach(button => {
+            if (
+                button.dataset.compactCloseBound === "true"
+            ) {
+                return;
+            }
+
+            button.dataset.compactCloseBound = "true";
+            button.addEventListener(
+                "click",
+                event => {
+                    const details = button.closest("details");
+                    const body = button.closest(
+                        ".mobileTaskEditorCompactPanel"
+                    );
+
+                    if (!details) return;
+
+                    event.preventDefault();
+                    event.stopPropagation();
+                    details.open = false;
+                    if (body) body.hidden = true;
+                    details.querySelector(
+                        ":scope > summary"
+                    )?.focus();
+                },
+                true
+            );
+        });
+    }
+
+    reconcileCompactEditor(drawer) {
+        enhanceCompactMobileTaskEditor(drawer);
+        this.ensureProgrammingIcon(drawer);
+        this.promoteNotionNotes(drawer);
+        this.bindCompactCloseButtons(drawer);
+    }
+
+    observeCompactEditor(drawer) {
+        this.mobileEditorObserver?.disconnect?.();
+        this.mobileEditorObserver = null;
+
+        const Observer =
+            this.window?.MutationObserver ??
+            globalThis.MutationObserver;
+
+        if (typeof Observer !== "function") return;
+
+        this.mobileEditorObserver = new Observer(() => {
+            if (!drawer.isConnected) {
+                this.mobileEditorObserver?.disconnect?.();
+                this.mobileEditorObserver = null;
+                return;
+            }
+
+            this.ensureProgrammingIcon(drawer);
+            this.promoteNotionNotes(drawer);
+            this.bindCompactCloseButtons(drawer);
+        });
+
+        this.mobileEditorObserver.observe(drawer, {
+            childList: true,
+            subtree: true
+        });
     }
 
     enhanceEditor() {
@@ -181,6 +307,8 @@ export class UnifiedMobileTaskEditorController
         if (
             !window.matchMedia("(max-width: 760px)").matches
         ) {
+            this.mobileEditorObserver?.disconnect?.();
+            this.mobileEditorObserver = null;
             return;
         }
 
@@ -190,7 +318,7 @@ export class UnifiedMobileTaskEditorController
 
         if (!drawer) return;
 
-        enhanceCompactMobileTaskEditor(drawer);
-        this.promoteNotionNotes(drawer);
+        this.reconcileCompactEditor(drawer);
+        this.observeCompactEditor(drawer);
     }
 }

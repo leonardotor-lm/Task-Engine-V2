@@ -51,7 +51,7 @@
         height: calc(
             100dvh - 46px - env(safe-area-inset-top)
         );
-        padding: 6px 8px 10px;
+        padding: 6px 6px 10px;
     }
 
     .taskListHeading {
@@ -171,6 +171,7 @@
     }
 
     .task {
+        padding: 10px 6px;
         border-top: 0 !important;
         border-right: 0 !important;
         border-bottom: 0 !important;

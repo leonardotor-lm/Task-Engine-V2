@@ -44,3 +44,26 @@
     }
 
 }
+
+/*
+ * Si el editor se abrió en vertical y luego el teléfono rota, el DOM sigue
+ * siendo compacto aunque el ancho supere 760 px. Mantener el tamaño de los
+ * SVG evita que los iconos adopten dimensiones intrínsecas gigantes.
+ */
+@media (orientation: landscape) and (max-height: 760px) {
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactIcon {
+        width: 22px !important;
+        height: 22px !important;
+        max-width: 22px !important;
+        max-height: 22px !important;
+        flex: 0 0 22px !important;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSummary {
+        min-width: 0 !important;
+    }
+
+}

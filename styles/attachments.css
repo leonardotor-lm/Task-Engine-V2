@@ -45,6 +45,27 @@
     font-size: 0.85rem;
 }
 
+.taskAttachmentIndicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 1;
+}
+
+.taskAttachmentIndicator .taskAttachmentIcon {
+    display: block;
+    flex: 0 0 14px;
+    width: 14px !important;
+    min-width: 14px !important;
+    max-width: 14px !important;
+    height: 14px !important;
+    min-height: 14px !important;
+    max-height: 14px !important;
+}
+
 .removeTaskAttachment {
     flex: 0 0 auto;
     padding: 0.4rem 0.65rem;
