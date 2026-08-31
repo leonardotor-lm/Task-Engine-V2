@@ -43,18 +43,26 @@ test("la barra móvil permanece colapsable y mantiene un disparador compacto", (
     );
     assert.match(
         controller,
-        /Mostrar ↓|Ocultar ↑/
+        /Mostrar controles de la lista|Ocultar controles de la lista/
+    );
+    assert.match(
+        controller,
+        /chevronDown|chevronUp/
     );
 });
 
-test("los controles móviles se decoran en el mismo ciclo de construcción", () => {
+test("los controles móviles se decoran durante la construcción y completan el encabezado de forma segura", () => {
     assert.match(
         controller,
         /this\.prepareMobileToggle\(toolbar\);\s*this\.decorateMobileControls\(state\);/
     );
-    assert.doesNotMatch(
+    assert.match(
         controller,
         /queueMicrotask|Promise\.resolve\(\)\.then/
+    );
+    assert.match(
+        controller,
+        /this\.decorateHeadingToggle\(toolbar\)/
     );
 });
 
