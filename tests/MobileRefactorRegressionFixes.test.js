@@ -125,14 +125,14 @@ test("la rotación horizontal limita los iconos compactos", () => {
     );
 });
 
-test("la lista móvil reduce su margen lateral sin alterar el editor", () => {
+test("la lista móvil reduce margen lateral y separación vertical sin alterar el editor", () => {
     assert.match(
         mobileDensity,
         /\.content[\s\S]*padding:\s*6px 6px 10px/
     );
     assert.match(
         mobileDensity,
-        /\.task\s*\{[\s\S]*padding:\s*10px 6px/
+        /\.task\s*\{[\s\S]*padding:\s*6px 6px/
     );
     assert.doesNotMatch(
         deviceFixes,
