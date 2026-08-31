@@ -16,6 +16,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Azul tinta"
     },
     {
+        id: "rose",
+        label: "Rosa"
+    },
+    {
         id: "dark",
         label: "Oscuro"
     },
