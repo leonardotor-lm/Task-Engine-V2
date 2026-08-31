@@ -54,6 +54,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-checkbox-alignment.css",
             "styles/mobile-density.css",
             "styles/themes/retro-dark.css",
+            "styles/themes/retro-dark-2.css",
             "styles/themes/paper.css",
             "styles/themes/high-contrast.css",
             "styles/themes/ink-blue.css",
