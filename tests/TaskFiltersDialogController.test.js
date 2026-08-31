@@ -67,7 +67,7 @@ test("detecta clics fuera del diálogo y sobre su fondo", () => {
 
 });
 
-test("carga el cierre accesible y elimina el título visible de Orden", async () => {
+test("carga el cierre accesible y simplifica el estado de filtros rápidos", async () => {
 
     const main = await readFile(
         new URL("../src/main.js", import.meta.url),
@@ -93,6 +93,27 @@ test("carga el cierre accesible y elimina el título visible de Orden", async ()
     assert.match(controller, /pointerdown/);
     assert.match(controller, /onCloseTaskTools/);
     assert.match(controller, /removeVisibleSortLabel/);
+    assert.match(controller, /decorateFilterTrigger/);
+    assert.match(
+        controller,
+        /Object\.values\([\s\S]*state\.taskFilters/
+    );
+    assert.match(
+        controller,
+        /taskContextToolbarIconButton/
+    );
+    assert.match(
+        controller,
+        /button\.classList\.toggle\([\s\S]*"active"/
+    );
+    assert.match(
+        controller,
+        /moveClearButtonIntoFilters/
+    );
+    assert.match(
+        controller,
+        /filterSection\.append\(clearButton\)/
+    );
     assert.match(controller, /aria-label/);
 
 });
