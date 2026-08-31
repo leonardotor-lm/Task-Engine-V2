@@ -21,6 +21,7 @@ const VALID_THEMES = new Set([
     "high-contrast",
     "ink-blue",
     "rose",
+    "rose-2",
     "dark",
     "retro-dark",
     "retro-dark-2",
