@@ -52,10 +52,80 @@ export class AttachmentController {
                     : state;
 
             originalRender(renderedState);
+            this.renderTaskIndicators();
             this.renderSection(renderedState);
             this.bindPermanentDeletion(renderedState);
 
         };
+
+    }
+
+    renderTaskIndicators() {
+
+        const service = this.app?.taskService;
+        if (!service) return;
+
+        document.querySelectorAll(
+            ".task[data-id]"
+        ).forEach(row => {
+            const task = service.getTaskById?.(
+                row.dataset.id
+            );
+            const attachments = Array.isArray(
+                task?.attachments
+            )
+                ? task.attachments
+                : [];
+
+            if (!attachments.length) return;
+
+            const title = row.querySelector(
+                ".taskTitle"
+            );
+
+            if (
+                !title ||
+                title.querySelector(
+                    ":scope > .taskAttachmentIndicator"
+                )
+            ) {
+                return;
+            }
+
+            const indicator = document.createElement(
+                "span"
+            );
+            indicator.className =
+                "taskAttachmentIndicator";
+            indicator.setAttribute(
+                "title",
+                attachments.length === 1
+                    ? "1 adjunto"
+                    : `${attachments.length} adjuntos`
+            );
+            indicator.setAttribute(
+                "aria-label",
+                attachments.length === 1
+                    ? "La tarea tiene 1 adjunto"
+                    : `La tarea tiene ${attachments.length} adjuntos`
+            );
+            indicator.innerHTML = `
+                <svg
+                    class="icon taskAttachmentIcon"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    aria-hidden="true"
+                    focusable="false">
+                    <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+            `;
+
+            title.prepend(indicator);
+        });
 
     }
 
@@ -573,8 +643,7 @@ export class AttachmentController {
 
         if (!await Dialog.confirmAsync(message, {
             title: "Eliminar definitivamente",
-            confirmLabel: "Continuar",
-            variant: "danger"
+            confirmLabel: "Continuar"
         })) return false;
 
         return Dialog.confirmAsync(
