@@ -79,13 +79,29 @@ export class AttachmentController {
 
             if (!attachments.length) return;
 
-            const title = row.querySelector(
-                ".taskTitle"
+            const taskBody = row.querySelector(
+                ".taskBody"
+            );
+            let metadata = row.querySelector(
+                ".taskMeta"
             );
 
+            if (!metadata) {
+                const titleLine = row.querySelector(
+                    ".taskTitleLine"
+                );
+
+                if (!taskBody || !titleLine) return;
+
+                metadata = document.createElement(
+                    "div"
+                );
+                metadata.className = "taskMeta";
+                titleLine.after(metadata);
+            }
+
             if (
-                !title ||
-                title.querySelector(
+                metadata.querySelector(
                     ":scope > .taskAttachmentIndicator"
                 )
             ) {
@@ -109,6 +125,9 @@ export class AttachmentController {
                     ? "La tarea tiene 1 adjunto"
                     : `La tarea tiene ${attachments.length} adjuntos`
             );
+            indicator.style.display = "inline-flex";
+            indicator.style.alignItems = "center";
+            indicator.style.flex = "0 0 auto";
             indicator.innerHTML = `
                 <svg
                     class="icon taskAttachmentIcon"
@@ -124,7 +143,7 @@ export class AttachmentController {
                 </svg>
             `;
 
-            title.prepend(indicator);
+            metadata.prepend(indicator);
         });
 
     }
