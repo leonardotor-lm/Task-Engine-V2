@@ -1,4 +1,4 @@
-/* Alineación óptica de los controles principales en las filas de tareas. */
+/* Alineación óptica y densidad contextual de las filas de tareas. */
 
 .taskHeader > .taskCompleteCheckbox {
     margin-top: 4px;
@@ -17,6 +17,19 @@
 .taskHeader:has(.taskHierarchyPath)
     > .toggleSubtasksSpacer {
     transform: translateY(20px);
+}
+
+/*
+ * El espacio vertical acompaña al contenido visible:
+ * sin breadcrumb se compacta el borde superior y
+ * sin metadatos se compacta el borde inferior.
+ */
+.task:not(:has(.taskHierarchyPath)) {
+    padding-top: 3px !important;
+}
+
+.task:not(:has(.taskMeta)) {
+    padding-bottom: 3px !important;
 }
 
 @media (max-width: 760px) {
@@ -38,6 +51,10 @@
     .taskHeader:has(.taskHierarchyPath)
         > .toggleSubtasksSpacer {
         transform: translateY(19px);
+    }
+
+    .task:not(:has(.taskHierarchyPath)):not(:has(.taskMeta)) {
+        min-height: 0;
     }
 
 }
