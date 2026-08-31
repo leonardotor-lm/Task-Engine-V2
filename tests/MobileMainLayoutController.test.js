@@ -50,7 +50,19 @@ test("la aplicación carga la adaptación principal para celular", async () => {
     );
     assert.match(
         controller,
-        /taskButton\.hidden = Boolean\([\s\S]*?goalsView/
+        /const projectView = state\.view === "project";/
+    );
+    assert.match(
+        controller,
+        /getElementById\(\s*"openProjectTaskCreation"\s*\)/
+    );
+    assert.match(
+        controller,
+        /taskButton\.hidden = Boolean\([\s\S]*?goalsView[\s\S]*?projectView/
+    );
+    assert.match(
+        controller,
+        /if \(projectView && projectTaskButton\)[\s\S]*?mobileFloatingTaskButton[\s\S]*?layout\.append\(projectTaskButton\)/
     );
     assert.match(
         controller,

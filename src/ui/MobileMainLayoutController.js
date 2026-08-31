@@ -62,15 +62,21 @@ export class MobileMainLayoutController {
         const taskButton = this.document?.getElementById(
             "openTaskCreation"
         );
+        const projectTaskButton = this.document?.getElementById(
+            "openProjectTaskCreation"
+        );
         const goalButton = this.document?.getElementById(
             "openGoalCreation"
         );
 
-        if (!taskButton && !goalButton) return;
+        if (!taskButton && !projectTaskButton && !goalButton) return;
 
         if (!this.isMobile()) {
             if (taskButton) {
                 this.restoreDesktopButton(taskButton);
+            }
+            if (projectTaskButton) {
+                this.restoreProjectButton(projectTaskButton);
             }
             return;
         }
@@ -82,6 +88,7 @@ export class MobileMainLayoutController {
         if (!layout) return;
 
         const goalsView = state.view === "goals";
+        const projectView = state.view === "project";
 
         if (taskButton) {
             taskButton.classList.add(
@@ -97,12 +104,34 @@ export class MobileMainLayoutController {
             );
             taskButton.hidden = Boolean(
                 goalsView ||
+                projectView ||
                 state.selectedTask ||
                 state.goalEditorOpen ||
                 state.bulkSelectionMode
             );
 
             layout.append(taskButton);
+        }
+
+        if (projectView && projectTaskButton) {
+            projectTaskButton.classList.add(
+                "mobileFloatingTaskButton"
+            );
+            projectTaskButton.setAttribute(
+                "aria-label",
+                "Agregar subtarea"
+            );
+            projectTaskButton.setAttribute(
+                "title",
+                "Agregar subtarea"
+            );
+            projectTaskButton.hidden = Boolean(
+                state.selectedTask ||
+                state.goalEditorOpen ||
+                state.bulkSelectionMode
+            );
+
+            layout.append(projectTaskButton);
         }
 
         if (goalsView && goalButton) {
@@ -156,6 +185,34 @@ export class MobileMainLayoutController {
                 button
             );
         }
+
+    }
+
+    restoreProjectButton(button) {
+
+        button.classList.remove(
+            "mobileFloatingTaskButton"
+        );
+        button.hidden = false;
+
+        const actions = this.document?.querySelector(
+            ".taskListHeadingActions"
+        );
+        const bulkButton = this.document?.getElementById(
+            "toggleBulkMode"
+        );
+
+        if (!actions) return;
+
+        if (bulkButton?.parentElement === actions) {
+            actions.insertBefore(
+                button,
+                bulkButton
+            );
+            return;
+        }
+
+        actions.append(button);
 
     }
 
