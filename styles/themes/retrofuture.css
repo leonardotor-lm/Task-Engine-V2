@@ -1,0 +1,226 @@
+:root[data-theme="retrofuture"] {
+    --color-text: #2b2430;
+    --color-text-subtle: #51465a;
+    --color-text-secondary: #665d70;
+    --color-text-muted: #77717c;
+    --color-surface: #d7dbd8;
+    --color-surface-subtle: #c6cbc8;
+    --color-surface-hover: #d0c9d2;
+    --color-border: #a59faa;
+    --color-border-strong: #7e7088;
+    --color-accent: #f28a1d;
+    --color-accent-strong: #e96d2a;
+    --color-accent-soft: #e8b49d;
+    --color-accent-muted: #d96655;
+    --color-on-accent: #2b2430;
+    --color-on-dark: #ffffff;
+    --color-focus-ring: #716bc5;
+    --color-danger: #9c3158;
+    --color-danger-soft: #e7c2cb;
+    --disabled-opacity: 0.5;
+    --interface-radius: 7px;
+
+    --ui-font:
+        Inter,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.35;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 7px;
+    --task-padding-x: 8px;
+    --compact-gap: 6px;
+    --transient-surface-border:
+        1px solid var(--color-border-strong);
+    --transient-surface-radius: 9px;
+    --transient-surface-shadow:
+        0 8px 20px rgb(43 36 48 / 16%);
+    --transient-dialog-shadow:
+        0 16px 36px rgb(43 36 48 / 22%);
+    --transient-backdrop:
+        rgb(43 36 48 / 40%);
+    --transient-surface-gap: 6px;
+    --transient-surface-padding: 10px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
+}
+
+:root[data-theme="retrofuture"],
+:root[data-theme="retrofuture"] body,
+:root[data-theme="retrofuture"] #app,
+:root[data-theme="retrofuture"] .layout,
+:root[data-theme="retrofuture"] .content {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="retrofuture"] .details,
+:root[data-theme="retrofuture"] .mobileHeader {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+}
+
+:root[data-theme="retrofuture"] .sidebar {
+    background: #746bc2;
+    color: #f6f3f6;
+    border-right-color: #544a83;
+}
+
+:root[data-theme="retrofuture"] .sidebar h1,
+:root[data-theme="retrofuture"] .sidebar h2,
+:root[data-theme="retrofuture"] .sidebar h3,
+:root[data-theme="retrofuture"] .sidebar label,
+:root[data-theme="retrofuture"] .sidebar .settingsHint {
+    color: #f6f3f6;
+}
+
+:root[data-theme="retrofuture"] .sidebar .settingsHint {
+    opacity: 0.8;
+}
+
+:root[data-theme="retrofuture"] .sidebarButton {
+    color: #f6f3f6;
+    background: transparent;
+    border-color: transparent;
+    border-radius: 7px;
+}
+
+:root[data-theme="retrofuture"] .sidebarButton:hover {
+    background: #847bd0;
+}
+
+:root[data-theme="retrofuture"] .sidebarButton.active {
+    background: #f28a1d;
+    color: #2b2430;
+    border-color: #e96d2a;
+}
+
+:root[data-theme="retrofuture"] .sidebar .sidebarTaskCount,
+:root[data-theme="retrofuture"] .sidebar .sidebarNavigationGroup > summary,
+:root[data-theme="retrofuture"] .sidebar .customFiltersSection > summary,
+:root[data-theme="retrofuture"] .sidebar .sidebarSectionLabel,
+:root[data-theme="retrofuture"] .sidebar .sidebarNavigationGroup > summary *,
+:root[data-theme="retrofuture"] .sidebar .customFiltersSection > summary * {
+    color: #EC008C !important;
+}
+
+:root[data-theme="retrofuture"] .sidebar .sidebarNavigationGroup > summary svg,
+:root[data-theme="retrofuture"] .sidebar .customFiltersSection > summary svg {
+    color: #EC008C !important;
+    stroke: currentColor;
+}
+
+:root[data-theme="retrofuture"] .sidebar .settingsDialog,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog h1,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog h2,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog h3,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog label,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsHint,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsToggleControl,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsToggleControl span,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsDialogHeader,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsDialogBody,
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsDialogFooter {
+    color: #2b2430 !important;
+}
+
+:root[data-theme="retrofuture"] .sidebar .settingsDialog .settingsHint {
+    opacity: 1;
+    color: #51465a !important;
+}
+
+:root[data-theme="retrofuture"] .task {
+    border-bottom-color: #a59faa;
+    color: var(--color-text);
+    background: transparent;
+}
+
+:root[data-theme="retrofuture"] .task:hover {
+    background: #d0c9d2;
+}
+
+:root[data-theme="retrofuture"] .task.bulkSelectedTask,
+:root[data-theme="retrofuture"] .advancedSearchActiveNotice,
+:root[data-theme="retrofuture"] .bulkToolbar {
+    background: #e7b79f;
+    border-color: #e96d2a;
+}
+
+:root[data-theme="retrofuture"] .settingsToolPanel,
+:root[data-theme="retrofuture"] dialog,
+:root[data-theme="retrofuture"] .taskDrawer,
+:root[data-theme="retrofuture"] .searchableSelectMenu,
+:root[data-theme="retrofuture"] .searchableMultiSelectManagerBody {
+    border-color: #7e7088;
+    background: #d7dbd8;
+    color: #2b2430;
+}
+
+:root[data-theme="retrofuture"] button,
+:root[data-theme="retrofuture"] input,
+:root[data-theme="retrofuture"] select,
+:root[data-theme="retrofuture"] textarea {
+    border-color: #7e7088;
+    background-color: #d7dbd8;
+    color: #2b2430;
+    border-radius: 7px;
+}
+
+:root[data-theme="retrofuture"] input::placeholder,
+:root[data-theme="retrofuture"] textarea::placeholder {
+    color: #77717c;
+    opacity: 1;
+}
+
+:root[data-theme="retrofuture"] .sidebar input,
+:root[data-theme="retrofuture"] .sidebar select,
+:root[data-theme="retrofuture"] .sidebar textarea {
+    background: #d7dbd8;
+    color: #2b2430;
+    border-color: #6e6380;
+}
+
+:root[data-theme="retrofuture"] .primaryAction {
+    border-color: #d96655;
+    background: #f28a1d;
+    color: #2b2430;
+}
+
+:root[data-theme="retrofuture"] .primaryAction:not(:disabled):hover {
+    background: #e96d2a;
+}
+
+:root[data-theme="retrofuture"] .secondaryAction,
+:root[data-theme="retrofuture"] .tertiaryAction {
+    border-color: #7e7088;
+    background: #ced3d0;
+    color: #2b2430;
+}
+
+:root[data-theme="retrofuture"] .dangerAction {
+    border-color: #9c3158;
+    color: #9c3158;
+}
+
+:root[data-theme="retrofuture"] a {
+    color: #51465a;
+}
+
+:root[data-theme="retrofuture"] :focus-visible {
+    outline-color: #716bc5;
+}
+
+:root[data-theme="retrofuture"] ::selection {
+    background: #716bc5;
+    color: #ffffff;
+}
+
+:root[data-theme="retrofuture"] * {
+    scrollbar-color: #7e7088 #c6cbc8;
+}
