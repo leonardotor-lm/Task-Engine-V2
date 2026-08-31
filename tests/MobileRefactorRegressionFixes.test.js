@@ -26,6 +26,14 @@ const deviceFixes = await readFile(
     "utf8"
 );
 
+const mobileDensity = await readFile(
+    new URL(
+        "../styles/mobile-density.css",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 test("las tareas con adjuntos recuperan un indicador visible en metadatos", () => {
     assert.match(
         attachmentController,
@@ -102,7 +110,7 @@ test("las X de los paneles compactos cierran su details de forma explícita", ()
     );
 });
 
-test("la rotación horizontal limita iconos y el editor usa menos margen lateral", () => {
+test("la rotación horizontal limita los iconos compactos", () => {
     assert.match(
         deviceFixes,
         /orientation:\s*landscape/
@@ -115,7 +123,18 @@ test("la rotación horizontal limita iconos y el editor usa menos margen lateral
         deviceFixes,
         /mobileTaskEditorCompactIcon[\s\S]*width:\s*22px\s*!important/
     );
+});
+
+test("la lista móvil reduce su margen lateral sin alterar el editor", () => {
     assert.match(
+        mobileDensity,
+        /\.content[\s\S]*padding:\s*6px 6px 10px/
+    );
+    assert.match(
+        mobileDensity,
+        /\.task\s*\{[\s\S]*padding:\s*10px 6px/
+    );
+    assert.doesNotMatch(
         deviceFixes,
         /mobileTaskEditorCompactLayout[\s\S]*padding-left:\s*10px\s*!important/
     );
