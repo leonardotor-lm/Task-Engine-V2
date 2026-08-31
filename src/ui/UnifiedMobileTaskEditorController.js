@@ -199,23 +199,6 @@ export class UnifiedMobileTaskEditorController
 
         if (!summary) return false;
 
-        const compactIcon = summary.querySelector(
-            ":scope > .mobileTaskEditorCompactIcon"
-        );
-        const hasVisibleLabel = Boolean(
-            summary.querySelector(
-                ":scope > .mobileTaskEditorCompactLabel"
-            )
-        );
-
-        if (
-            compactIcon &&
-            !hasVisibleLabel &&
-            summary.childElementCount === 1
-        ) {
-            return true;
-        }
-
         summary.classList.add(
             "mobileTaskEditorCompactSummary",
             "mobileTaskEditorProgrammingSummary"
@@ -228,8 +211,21 @@ export class UnifiedMobileTaskEditorController
             "title",
             "Programación"
         );
+
+        const compactIcon = summary.querySelector(
+            ":scope > .mobileTaskEditorCompactIcon"
+        );
+        const visibleLabel = summary.querySelector(
+            ":scope > .mobileTaskEditorCompactLabel"
+        );
+
+        if (compactIcon) {
+            visibleLabel?.remove();
+            return true;
+        }
+
         summary.innerHTML = Icon.render(
-            "repeat",
+            "clock",
             "mobileTaskEditorCompactIcon"
         );
 
