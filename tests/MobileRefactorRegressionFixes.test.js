@@ -26,7 +26,7 @@ const deviceFixes = await readFile(
     "utf8"
 );
 
-test("las tareas con adjuntos recuperan un indicador visible", () => {
+test("las tareas con adjuntos recuperan un indicador visible en metadatos", () => {
     assert.match(
         attachmentController,
         /renderTaskIndicators\(\)/
@@ -40,6 +40,14 @@ test("las tareas con adjuntos recuperan un indicador visible", () => {
         /taskAttachmentIcon/
     );
     assert.match(
+        attachmentController,
+        /metadata\.prepend\(indicator\)/
+    );
+    assert.match(
+        attachmentController,
+        /titleLine\.after\(metadata\)/
+    );
+    assert.doesNotMatch(
         attachmentController,
         /title\.prepend\(indicator\)/
     );
