@@ -199,6 +199,23 @@ export class UnifiedMobileTaskEditorController
 
         if (!summary) return false;
 
+        const compactIcon = summary.querySelector(
+            ":scope > .mobileTaskEditorCompactIcon"
+        );
+        const hasVisibleLabel = Boolean(
+            summary.querySelector(
+                ":scope > .mobileTaskEditorCompactLabel"
+            )
+        );
+
+        if (
+            compactIcon &&
+            !hasVisibleLabel &&
+            summary.childElementCount === 1
+        ) {
+            return true;
+        }
+
         summary.classList.add(
             "mobileTaskEditorCompactSummary",
             "mobileTaskEditorProgrammingSummary"
