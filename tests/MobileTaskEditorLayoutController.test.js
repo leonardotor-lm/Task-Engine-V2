@@ -53,7 +53,7 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
     );
     assert.match(
         unifiedController,
-        /preloadCompactStylesheet\(\)/
+        /preloadCompactStylesheets\(\)/
     );
     assert.match(
         unifiedController,
