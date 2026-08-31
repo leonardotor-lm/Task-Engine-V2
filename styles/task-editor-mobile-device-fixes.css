@@ -6,6 +6,24 @@
      * diferencias de composición que no aparecen siempre en la emulación.
      */
 
+    /* Aprovechar un poco más el ancho útil sin perder respiración lateral. */
+    .mobileTaskEditorCompactLayout {
+        padding-right: 10px !important;
+        padding-left: 10px !important;
+    }
+
+    .mobileTaskEditorCompactLayout > .taskEditorHeader {
+        margin-right: -10px !important;
+        margin-left: -10px !important;
+    }
+
+    .mobileTaskEditorCompactLayout > .mobileTaskEditorFooter {
+        margin-right: -10px !important;
+        margin-left: -10px !important;
+        padding-right: 10px !important;
+        padding-left: 10px !important;
+    }
+
     /* La cabecera del popover debe preceder incluso a bloques inyectados luego,
        como Recordatorio dentro de Programación. */
     .mobileTaskEditorCompactPanel
@@ -41,6 +59,29 @@
         details[open]
         > .mobileTaskEditorCompactPanel {
         z-index: 140 !important;
+    }
+
+}
+
+/*
+ * Si el editor se abrió en vertical y luego el teléfono rota, el DOM sigue
+ * siendo compacto aunque el ancho supere 760 px. Mantener el tamaño de los
+ * SVG evita que los iconos adopten dimensiones intrínsecas gigantes.
+ */
+@media (orientation: landscape) and (max-height: 760px) {
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactIcon {
+        width: 22px !important;
+        height: 22px !important;
+        max-width: 22px !important;
+        max-height: 22px !important;
+        flex: 0 0 22px !important;
+    }
+
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSummary {
+        min-width: 0 !important;
     }
 
 }
