@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap");
+
+:root[data-theme="rose"] {
+    --color-text: #3f2733;
+    --color-text-subtle: #624653;
+    --color-text-secondary: #7a5a69;
+    --color-text-muted: #987787;
+    --color-surface: #ffffff;
+    --color-surface-subtle: #fff8fb;
+    --color-surface-hover: #fff0f6;
+    --color-border: #eed7e2;
+    --color-border-strong: #deb9cb;
+    --color-accent: #db2777;
+    --color-accent-strong: #be185d;
+    --color-accent-soft: #fce7f3;
+    --color-accent-muted: #f9d4e5;
+    --color-on-accent: #ffffff;
+    --color-on-dark: #ffffff;
+    --color-focus-ring: #be185d;
+    --color-danger: #b42346;
+    --color-danger-soft: #fff0f3;
+    --disabled-opacity: 0.52;
+    --interface-radius: 8px;
+
+    --ui-font:
+        "Nunito Sans",
+        "Avenir Next",
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    --ui-font-size: 15px;
+    --ui-line-height: 1.45;
+    --panel-padding: 14px;
+    --content-padding: 18px;
+    --task-padding-y: 9px;
+    --task-padding-x: 10px;
+    --compact-gap: 7px;
+    --transient-surface-border:
+        1px solid var(--color-border);
+    --transient-surface-radius: 10px;
+    --transient-surface-shadow:
+        0 12px 32px rgb(90 28 57 / 12%);
+    --transient-dialog-shadow:
+        0 20px 52px rgb(90 28 57 / 18%);
+    --transient-backdrop:
+        rgb(63 39 51 / 28%);
+    --transient-surface-gap: 7px;
+    --transient-surface-padding: 11px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
+}
+
+:root[data-theme="rose"],
+:root[data-theme="rose"] body,
+:root[data-theme="rose"] #app,
+:root[data-theme="rose"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose"] body,
+:root[data-theme="rose"] button,
+:root[data-theme="rose"] input,
+:root[data-theme="rose"] select,
+:root[data-theme="rose"] textarea,
+:root[data-theme="rose"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="rose"] body {
+    color-scheme: light;
+    letter-spacing: 0.002em;
+}
+
+:root[data-theme="rose"] .sidebar,
+:root[data-theme="rose"] .content,
+:root[data-theme="rose"] .details,
+:root[data-theme="rose"] .mobileHeader {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="rose"] button,
+:root[data-theme="rose"] input,
+:root[data-theme="rose"] select,
+:root[data-theme="rose"] textarea {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose"] input::placeholder,
+:root[data-theme="rose"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="rose"] button:not(:disabled):hover,
+:root[data-theme="rose"] .sidebarButton:hover,
+:root[data-theme="rose"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="rose"] .sidebarButton {
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="rose"] .sidebarButton.active {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="rose"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose"] .task.bulkSelectedTask {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="rose"] .advancedSearchActiveNotice,
+:root[data-theme="rose"] .bulkToolbar,
+:root[data-theme="rose"] .settingsToolPanel {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="rose"] dialog,
+:root[data-theme="rose"] .taskDrawer,
+:root[data-theme="rose"] .searchableSelectMenu,
+:root[data-theme="rose"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose"] .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="rose"] .primaryAction:not(:disabled):hover {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
+}
+
+:root[data-theme="rose"] .secondaryAction,
+:root[data-theme="rose"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="rose"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="rose"] ::selection {
+    background: var(--color-accent-muted);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose"] * {
+    scrollbar-color: #d79bb8 #fff8fb;
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="rose"] {
+        --ui-font-size: 16px;
+        --ui-line-height: 1.42;
+        --content-padding: 12px;
+        --task-padding-y: 9px;
+        --task-padding-x: 6px;
+        --compact-gap: 6px;
+    }
+
+    :root[data-theme="rose"] .task {
+        font-size: 15.5px;
+        line-height: 1.38;
+    }
+
+    :root[data-theme="rose"] .taskGroupTitle,
+    :root[data-theme="rose"] .taskGroupHeader {
+        font-weight: 700;
+    }
+}
