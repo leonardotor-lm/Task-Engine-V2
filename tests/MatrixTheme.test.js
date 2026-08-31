@@ -38,7 +38,8 @@ test("Matrix conserva la base terminal y refuerza la estética verde", () => {
     assert.match(matrixCss, /:root\[data-theme="matrix"\]/);
     assert.match(matrixCss, /--color-surface-subtle:\s*#010302/);
     assert.match(matrixCss, /--color-accent:\s*#00ff41/);
-    assert.match(matrixCss, /"Source Code Pro"/);
+    assert.match(matrixCss, /family=Share\+Tech\+Mono/);
+    assert.match(matrixCss, /--ui-font:\s*"Share Tech Mono"/);
     assert.match(matrixCss, /repeating-linear-gradient/);
     assert.match(matrixCss, /text-shadow:/);
 });
