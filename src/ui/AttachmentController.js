@@ -643,7 +643,8 @@ export class AttachmentController {
 
         if (!await Dialog.confirmAsync(message, {
             title: "Eliminar definitivamente",
-            confirmLabel: "Continuar"
+            confirmLabel: "Continuar",
+            variant: "danger"
         })) return false;
 
         return Dialog.confirmAsync(
