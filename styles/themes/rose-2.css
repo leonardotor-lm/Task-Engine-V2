@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap");
+
+:root[data-theme="rose-2"] {
+    --color-text: #3f2733;
+    --color-text-subtle: #624653;
+    --color-text-secondary: #7a5a69;
+    --color-text-muted: #987787;
+    --color-surface: #ffffff;
+    --color-surface-subtle: #fff8fb;
+    --color-surface-hover: #fff0f6;
+    --color-border: #eed7e2;
+    --color-border-strong: #deb9cb;
+    --color-accent: #db2777;
+    --color-accent-strong: #be185d;
+    --color-accent-soft: #fce7f3;
+    --color-accent-muted: #f9d4e5;
+    --color-on-accent: #ffffff;
+    --color-on-dark: #ffffff;
+    --color-focus-ring: #be185d;
+    --color-danger: #b42346;
+    --color-danger-soft: #fff0f3;
+    --disabled-opacity: 0.52;
+    --interface-radius: 8px;
+
+    --ui-font:
+        "Lexend",
+        "Avenir Next",
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    --ui-font-size: 15px;
+    --ui-line-height: 1.45;
+    --panel-padding: 14px;
+    --content-padding: 18px;
+    --task-padding-y: 9px;
+    --task-padding-x: 10px;
+    --compact-gap: 7px;
+    --transient-surface-border:
+        1px solid var(--color-border);
+    --transient-surface-radius: 10px;
+    --transient-surface-shadow:
+        0 12px 32px rgb(90 28 57 / 12%);
+    --transient-dialog-shadow:
+        0 20px 52px rgb(90 28 57 / 18%);
+    --transient-backdrop:
+        rgb(63 39 51 / 28%);
+    --transient-surface-gap: 7px;
+    --transient-surface-padding: 11px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
+}
+
+:root[data-theme="rose-2"],
+:root[data-theme="rose-2"] body,
+:root[data-theme="rose-2"] #app,
+:root[data-theme="rose-2"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose-2"] body,
+:root[data-theme="rose-2"] button,
+:root[data-theme="rose-2"] input,
+:root[data-theme="rose-2"] select,
+:root[data-theme="rose-2"] textarea,
+:root[data-theme="rose-2"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="rose-2"] body {
+    color-scheme: light;
+    letter-spacing: 0.002em;
+}
+
+:root[data-theme="rose-2"] .sidebar,
+:root[data-theme="rose-2"] .content,
+:root[data-theme="rose-2"] .details,
+:root[data-theme="rose-2"] .mobileHeader {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="rose-2"] button,
+:root[data-theme="rose-2"] input,
+:root[data-theme="rose-2"] select,
+:root[data-theme="rose-2"] textarea {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose-2"] input::placeholder,
+:root[data-theme="rose-2"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="rose-2"] button:not(:disabled):hover,
+:root[data-theme="rose-2"] .sidebarButton:hover,
+:root[data-theme="rose-2"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="rose-2"] .sidebarButton {
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="rose-2"] .sidebarButton.active {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="rose-2"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose-2"] .task.bulkSelectedTask {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="rose-2"] .advancedSearchActiveNotice,
+:root[data-theme="rose-2"] .bulkToolbar,
+:root[data-theme="rose-2"] .settingsToolPanel {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="rose-2"] dialog,
+:root[data-theme="rose-2"] .taskDrawer,
+:root[data-theme="rose-2"] .searchableSelectMenu,
+:root[data-theme="rose-2"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose-2"] .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="rose-2"] .primaryAction:not(:disabled):hover {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
+}
+
+:root[data-theme="rose-2"] .secondaryAction,
+:root[data-theme="rose-2"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose-2"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="rose-2"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="rose-2"] ::selection {
+    background: var(--color-accent-muted);
+    color: var(--color-text);
+}
+
+:root[data-theme="rose-2"] * {
+    scrollbar-color: #d79bb8 #fff8fb;
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="rose-2"] {
+        --ui-font-size: 16px;
+        --ui-line-height: 1.42;
+        --content-padding: 12px;
+        --task-padding-y: 9px;
+        --task-padding-x: 6px;
+        --compact-gap: 6px;
+    }
+
+    :root[data-theme="rose-2"] .task {
+        font-size: 15.5px;
+        line-height: 1.38;
+    }
+
+    :root[data-theme="rose-2"] .taskGroupTitle,
+    :root[data-theme="rose-2"] .taskGroupHeader {
+        font-weight: 700;
+    }
+}
