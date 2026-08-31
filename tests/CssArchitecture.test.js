@@ -59,6 +59,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/themes/high-contrast.css",
             "styles/themes/ink-blue.css",
             "styles/themes/rose.css",
+            "styles/themes/rose-2.css",
             "styles/themes/terminal-80.css"
         ]
     );
