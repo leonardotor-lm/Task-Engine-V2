@@ -117,24 +117,105 @@ function entityContent(value) {
 
 }
 
-function taskContentWithoutOrder(value) {
+function taskContent(value) {
 
-    if (
-        !value ||
-        typeof value !== "object" ||
-        Array.isArray(value)
-    ) {
+    if (!isEntityObject(value)) {
         return value;
     }
 
     const {
         updatedAt,
         version,
-        manualOrder,
         ...content
     } = value;
 
     return content;
+
+}
+
+function mergeTaskContentByField(
+    base,
+    local,
+    remote
+) {
+
+    const keys = new Set([
+        ...Object.keys(base),
+        ...Object.keys(local),
+        ...Object.keys(remote)
+    ]);
+    const value = {};
+
+    for (const key of keys) {
+
+        const result = mergeValue(
+            base[key],
+            local[key],
+            remote[key]
+        );
+
+        if (result.conflict) {
+            return {
+                conflict: true,
+                value: undefined
+            };
+        }
+
+        if (result.value !== undefined) {
+            value[key] = result.value;
+        }
+
+    }
+
+    return {
+        conflict: false,
+        value
+    };
+
+}
+
+function isInitialTaskVersion(value) {
+
+    return isEntityObject(value) &&
+        Number(value.version) === 1;
+
+}
+
+function isEvolutionOfInitialTask(
+    initial,
+    evolved
+) {
+
+    return isInitialTaskVersion(initial) &&
+        isEntityObject(evolved) &&
+        initial.id === evolved.id &&
+        initial.createdAt === evolved.createdAt &&
+        Number(evolved.version) > 1 &&
+        String(evolved.updatedAt ?? "") >=
+            String(initial.updatedAt ?? "");
+
+}
+
+function mergeTaskCreatedAfterBase(local, remote) {
+
+    if (isEvolutionOfInitialTask(local, remote)) {
+        return {
+            conflict: false,
+            value: remote
+        };
+    }
+
+    if (isEvolutionOfInitialTask(remote, local)) {
+        return {
+            conflict: false,
+            value: local
+        };
+    }
+
+    return {
+        conflict: true,
+        value: undefined
+    };
 
 }
 
@@ -209,6 +290,17 @@ function mergeTaskEntityValue(base, local, remote) {
     }
 
     if (
+        base === undefined &&
+        isEntityObject(local) &&
+        isEntityObject(remote)
+    ) {
+        return mergeTaskCreatedAfterBase(
+            local,
+            remote
+        );
+    }
+
+    if (
         !isEntityObject(base) ||
         !isEntityObject(local) ||
         !isEntityObject(remote)
@@ -216,28 +308,17 @@ function mergeTaskEntityValue(base, local, remote) {
         return direct;
     }
 
-    const contentResult = mergeValue(
-        taskContentWithoutOrder(base),
-        taskContentWithoutOrder(local),
-        taskContentWithoutOrder(remote)
-    );
-    const orderResult = mergeValue(
-        base.manualOrder,
-        local.manualOrder,
-        remote.manualOrder
+    const contentResult = mergeTaskContentByField(
+        taskContent(base),
+        taskContent(local),
+        taskContent(remote)
     );
 
-    if (
-        contentResult.conflict ||
-        orderResult.conflict
-    ) {
+    if (contentResult.conflict) {
         return direct;
     }
 
-    const mergedContent = {
-        ...contentResult.value,
-        manualOrder: orderResult.value
-    };
+    const mergedContent = contentResult.value;
 
     if (same(mergedContent, entityContent(local))) {
         return {
