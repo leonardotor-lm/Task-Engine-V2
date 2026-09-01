@@ -301,6 +301,54 @@ test("quitar una etiqueta mantiene abierto el selector del editor", async ({ pag
     await expect(manager).toHaveAttribute("open", "");
 });
 
+test("Notas mantiene Crear nota visible dentro del viewport móvil", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([{
+                id: "tarea-notas-movil",
+                title: "Tarea con notas",
+                status: "PENDING",
+                notionPageId: null,
+                notionPageUrl: null
+            }])
+        );
+    });
+
+    await page.goto("/");
+    await page.locator("#showAll").evaluate(
+        button => button.click()
+    );
+    await page.locator(
+        '.task[data-id="tarea-notas-movil"] .taskBody'
+    ).click();
+
+    const notes = page.locator(
+        ".mobileTaskEditorNotesTool"
+    );
+    await notes.locator(":scope > summary").click();
+
+    const panel = notes.locator(
+        ":scope > .mobileTaskEditorCompactPanel"
+    );
+    const create = panel.locator(
+        "#createNotionTaskNote"
+    );
+
+    await expect(panel).toBeVisible();
+    await expect(create).toBeVisible();
+
+    const panelBox = await panel.boundingBox();
+    const createBox = await create.boundingBox();
+
+    expect(panelBox).not.toBeNull();
+    expect(createBox).not.toBeNull();
+    expect(panelBox.x).toBeGreaterThanOrEqual(0);
+    expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(360);
+    expect(createBox.y + createBox.height).toBeLessThanOrEqual(740);
+});
+
 test("el aviso de tarea completada se cierra automáticamente", async ({ page }) => {
     await page.goto("/");
     await page.locator("#showAll").click();

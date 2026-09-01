@@ -44,6 +44,50 @@
     }
 
     /*
+     * Notas conserva reglas móviles heredadas de la sección colapsable
+     * (display:block y width:100%). Al promoverla a panel fijo esas reglas
+     * agrandan el cuerpo y empujan Crear/Abrir nota fuera del viewport.
+     */
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorNotesTool[open]
+        > .mobileTaskEditorCompactPanel {
+        display: grid !important;
+        grid-template-rows: auto auto auto;
+        align-content: start;
+        box-sizing: border-box;
+        width: auto !important;
+        min-width: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: min(68dvh, 520px) !important;
+        padding: 0 10px 10px !important;
+    }
+
+    .mobileTaskEditorNotesTool
+        > .mobileTaskEditorCompactPanel
+        > .fieldHelp,
+    .mobileTaskEditorNotesTool
+        > .mobileTaskEditorCompactPanel
+        > .syncErrorHint {
+        margin: 4px 0 !important;
+    }
+
+    .mobileTaskEditorNotesTool
+        > .mobileTaskEditorCompactPanel
+        > .secondaryAction,
+    .mobileTaskEditorNotesTool
+        > .mobileTaskEditorCompactPanel
+        > .taskEditorActions {
+        position: static !important;
+        display: grid !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        margin: 2px 0 0 !important;
+        visibility: visible !important;
+    }
+
+    /*
      * Los selectores de etiquetas y objetivos pueden reconstruir el summary
      * después de abrir el editor. Nunca permitir que sus textos internos
      * ensanchen una celda de la grilla mientras se reconcilia el icono.
