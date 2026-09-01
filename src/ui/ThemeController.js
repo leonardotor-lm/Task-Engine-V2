@@ -38,6 +38,10 @@ const AVAILABLE_THEMES = Object.freeze([
     {
         id: "terminal-80",
         label: "Terminal 80"
+    },
+    {
+        id: "matrix",
+        label: "Matrix"
     }
 ]);
 

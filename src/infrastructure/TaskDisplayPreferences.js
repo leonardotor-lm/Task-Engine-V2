@@ -25,7 +25,8 @@ const VALID_THEMES = new Set([
     "dark",
     "retro-dark",
     "retro-dark-2",
-    "terminal-80"
+    "terminal-80",
+    "matrix"
 ]);
 
 export class TaskDisplayPreferences {

@@ -1,0 +1,249 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+
+:root[data-theme="matrix"] {
+    --color-text: #79ff9a;
+    --color-text-subtle: #4ee879;
+    --color-text-secondary: #2fdc66;
+    --color-text-muted: #1a8f43;
+    --color-surface: #030806;
+    --color-surface-subtle: #010302;
+    --color-surface-hover: #06130b;
+    --color-border: #0b4d23;
+    --color-border-strong: #118f3f;
+    --color-accent: #00ff41;
+    --color-accent-strong: #70ff92;
+    --color-accent-soft: #052d13;
+    --color-accent-muted: #08451c;
+    --color-on-accent: #001b08;
+    --color-on-dark: #a5ffb9;
+    --color-focus-ring: #00ff41;
+    --color-danger: #ff6555;
+    --color-danger-soft: #32110e;
+    --disabled-opacity: 0.48;
+    --interface-radius: 0;
+    --ui-font: "Share Tech Mono", ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.38;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 7px;
+    --task-padding-x: 8px;
+    --compact-gap: 6px;
+    --transient-surface-border: 1px solid var(--color-border-strong);
+    --transient-surface-radius: 0;
+    --transient-surface-shadow: 0 0 22px rgb(0 255 65 / 13%);
+    --transient-dialog-shadow: 0 0 40px rgb(0 255 65 / 18%);
+    --transient-backdrop: rgb(0 3 1 / 82%);
+    --transient-surface-gap: 6px;
+    --transient-surface-padding: 10px;
+    --transient-header-padding: 12px 14px;
+    --transient-body-padding: 14px;
+    --transient-actions-padding: 10px 14px;
+}
+
+:root[data-theme="matrix"],
+:root[data-theme="matrix"] body,
+:root[data-theme="matrix"] #app,
+:root[data-theme="matrix"] .layout {
+    background-color: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="matrix"] body,
+:root[data-theme="matrix"] button,
+:root[data-theme="matrix"] input,
+:root[data-theme="matrix"] select,
+:root[data-theme="matrix"] textarea,
+:root[data-theme="matrix"] dialog {
+    font-family: var(--ui-font);
+    font-weight: 400;
+}
+
+:root[data-theme="matrix"] body {
+    color-scheme: dark;
+    letter-spacing: 0.008em;
+    word-spacing: -0.06em;
+    text-shadow: 0 0 3px rgb(0 255 65 / 22%), 0 0 8px rgb(0 255 65 / 7%);
+    background-image: radial-gradient(circle at 50% -20%, rgb(0 255 65 / 7%), transparent 46%), repeating-linear-gradient(180deg, rgb(0 255 65 / 0%) 0, rgb(0 255 65 / 0%) 3px, rgb(0 255 65 / 2.5%) 4px);
+}
+
+:root[data-theme="matrix"] h1,
+:root[data-theme="matrix"] h2,
+:root[data-theme="matrix"] h3,
+:root[data-theme="matrix"] .mobileHeader strong,
+:root[data-theme="matrix"] .sidebarHeader,
+:root[data-theme="matrix"] .sidebarTitle {
+    color: var(--color-accent);
+    font-weight: 400;
+    letter-spacing: 0.025em;
+    text-shadow: 0 0 4px rgb(0 255 65 / 52%), 0 0 12px rgb(0 255 65 / 15%);
+}
+
+:root[data-theme="matrix"] .sidebar,
+:root[data-theme="matrix"] .content,
+:root[data-theme="matrix"] .details,
+:root[data-theme="matrix"] .mobileHeader {
+    background: rgb(1 5 3 / 96%);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="matrix"] .sidebar {
+    border-right-color: var(--color-border-strong);
+    box-shadow: 8px 0 30px rgb(0 255 65 / 4%);
+}
+
+:root[data-theme="matrix"] .details {
+    border-left-color: var(--color-border-strong);
+}
+
+:root[data-theme="matrix"] button,
+:root[data-theme="matrix"] input,
+:root[data-theme="matrix"] select,
+:root[data-theme="matrix"] textarea {
+    border-color: var(--color-border-strong);
+    border-radius: 0;
+    background-color: #020604;
+    color: var(--color-text);
+    box-shadow: inset 0 0 10px rgb(0 255 65 / 2%);
+}
+
+:root[data-theme="matrix"] input[type="checkbox"]:not(.bulkTaskCheckbox) {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    box-sizing: border-box;
+    width: 1.2em;
+    height: 1.2em;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-subtle);
+    color: var(--color-on-accent);
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+:root[data-theme="matrix"] input[type="checkbox"]:not(.bulkTaskCheckbox)::before {
+    content: "";
+    width: 0.66em;
+    height: 0.66em;
+    background: currentColor;
+    clip-path: polygon(14% 44%, 0 58%, 39% 100%, 100% 18%, 84% 5%, 38% 72%);
+    transform: scale(0);
+    transform-origin: center;
+}
+
+:root[data-theme="matrix"] input[type="checkbox"]:not(.bulkTaskCheckbox):checked {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+}
+
+:root[data-theme="matrix"] input[type="checkbox"]:not(.bulkTaskCheckbox):checked::before {
+    transform: scale(1);
+}
+
+:root[data-theme="matrix"] input::placeholder,
+:root[data-theme="matrix"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="matrix"] button:not(:disabled):hover,
+:root[data-theme="matrix"] .sidebarButton:hover,
+:root[data-theme="matrix"] .task:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="matrix"] .sidebarButton {
+    color: var(--color-text-secondary);
+    border-radius: 0;
+}
+
+:root[data-theme="matrix"] .sidebarButton.active {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    box-shadow: inset 3px 0 0 var(--color-accent), 0 0 12px rgb(0 255 65 / 8%);
+}
+
+:root[data-theme="matrix"] .task {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text);
+    font-size: 13px;
+    line-height: 1.34;
+}
+
+:root[data-theme="matrix"] .task.bulkSelectedTask {
+    background: var(--color-accent-soft);
+}
+
+:root[data-theme="matrix"] .advancedSearchActiveNotice,
+:root[data-theme="matrix"] .bulkToolbar,
+:root[data-theme="matrix"] .settingsToolPanel {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="matrix"] dialog,
+:root[data-theme="matrix"] .taskDrawer,
+:root[data-theme="matrix"] .searchableSelectMenu,
+:root[data-theme="matrix"] .searchableMultiSelectManagerBody {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--transient-dialog-shadow);
+}
+
+:root[data-theme="matrix"] .primaryAction {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    text-shadow: none;
+    box-shadow: 0 0 12px rgb(0 255 65 / 20%);
+}
+
+:root[data-theme="matrix"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 18px rgb(0 255 65 / 30%);
+}
+
+:root[data-theme="matrix"] .secondaryAction,
+:root[data-theme="matrix"] .tertiaryAction {
+    border-color: var(--color-border-strong);
+    background: #020604;
+    color: var(--color-text);
+}
+
+:root[data-theme="matrix"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+    text-shadow: 0 0 4px rgb(255 101 85 / 24%);
+}
+
+:root[data-theme="matrix"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="matrix"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+    box-shadow: 0 0 0 1px var(--color-focus-ring), 0 0 12px rgb(0 255 65 / 30%);
+}
+
+:root[data-theme="matrix"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    text-shadow: none;
+}
+
+:root[data-theme="matrix"] * {
+    scrollbar-color: var(--color-border-strong) var(--color-surface-subtle);
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="matrix"] .task {
+        font-size: 12.5px;
+        line-height: 1.32;
+    }
+}
