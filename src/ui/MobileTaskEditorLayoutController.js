@@ -683,8 +683,8 @@ export class MobileTaskEditorLayoutController {
     groupActions(drawer) {
 
         const actions = drawer.querySelector(
-            ".taskEditorActions"
-        );
+            "#saveTask"
+        )?.closest(".taskEditorActions");
 
         if (!actions) return;
 
