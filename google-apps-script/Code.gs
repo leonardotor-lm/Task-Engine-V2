@@ -120,6 +120,60 @@ function handleRequest_(event, method) {
 
         if (
             method === "POST" &&
+            action === "gptGetContext"
+        ) {
+            return jsonResponse_(
+                gptGetContext_()
+            );
+        }
+
+        if (
+            method === "POST" &&
+            action === "gptSearchTasks"
+        ) {
+            return jsonResponse_(
+                gptSearchTasks_(body.input || {})
+            );
+        }
+
+        if (
+            method === "POST" &&
+            action === "gptGetTask"
+        ) {
+            return jsonResponse_(
+                gptGetTask_(body.input || {})
+            );
+        }
+
+        if (
+            method === "POST" &&
+            action === "gptCreateTask"
+        ) {
+            return jsonResponse_(
+                gptCreateTask_(body.input || {})
+            );
+        }
+
+        if (
+            method === "POST" &&
+            action === "gptUpdateTask"
+        ) {
+            return jsonResponse_(
+                gptUpdateTask_(body.input || {})
+            );
+        }
+
+        if (
+            method === "POST" &&
+            action === "gptCompleteTask"
+        ) {
+            return jsonResponse_(
+                gptCompleteTask_(body.input || {})
+            );
+        }
+
+        if (
+            method === "POST" &&
             action === "notionStatus"
         ) {
             return jsonResponse_(

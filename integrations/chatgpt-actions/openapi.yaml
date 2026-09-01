@@ -1,0 +1,307 @@
+openapi: 3.1.0
+info:
+  title: Task Engine Actions
+  description: Consulta y modifica de forma controlada la base personal de Task Engine.
+  version: 1.0.0
+servers:
+  - url: https://REEMPLAZAR-POR-TU-WORKER.workers.dev
+security:
+  - bearerAuth: []
+paths:
+  /v1/context:
+    post:
+      operationId: getTaskEngineContext
+      summary: Obtener organización y cantidades de Task Engine
+      description: Devuelve áreas, contextos, etiquetas, objetivos y cantidades por estado.
+      x-openai-isConsequential: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        "200":
+          description: Contexto actual
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextResponse"
+  /v1/tasks/search:
+    post:
+      operationId: searchTaskEngineTasks
+      summary: Buscar y contar tareas
+      description: Busca tareas con filtros y devuelve el total y una página de resultados.
+      x-openai-isConsequential: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskSearch"
+      responses:
+        "200":
+          description: Resultados de búsqueda
+          content:
+            application/json:
+              schema:
+                type: object
+  /v1/tasks/get:
+    post:
+      operationId: getTaskEngineTask
+      summary: Obtener una tarea por identificador
+      description: Lee la versión más reciente de una tarea antes de analizarla o modificarla.
+      x-openai-isConsequential: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [taskId]
+              additionalProperties: false
+              properties:
+                taskId:
+                  type: string
+      responses:
+        "200":
+          description: Tarea actual
+          content:
+            application/json:
+              schema:
+                type: object
+  /v1/tasks/create:
+    post:
+      operationId: createTaskEngineTask
+      summary: Crear una tarea
+      description: Crea una tarea después de que el usuario confirme sus datos.
+      x-openai-isConsequential: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTask"
+      responses:
+        "200":
+          description: Tarea creada
+          content:
+            application/json:
+              schema:
+                type: object
+  /v1/tasks/update:
+    post:
+      operationId: updateTaskEngineTask
+      summary: Editar una tarea
+      description: Modifica campos permitidos si la versión consultada todavía es la actual.
+      x-openai-isConsequential: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTask"
+      responses:
+        "200":
+          description: Tarea actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+  /v1/tasks/complete:
+    post:
+      operationId: completeTaskEngineTask
+      summary: Completar una tarea
+      description: Completa una tarea activa si la versión consultada todavía es la actual.
+      x-openai-isConsequential: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VersionedTaskAction"
+      responses:
+        "200":
+          description: Tarea completada
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ContextResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        revision:
+          type: integer
+        counts:
+          type: object
+        areas:
+          type: array
+          items:
+            $ref: "#/components/schemas/NamedEntity"
+        contexts:
+          type: array
+          items:
+            $ref: "#/components/schemas/NamedEntity"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/NamedEntity"
+        goals:
+          type: array
+          items:
+            type: object
+    NamedEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          type: [string, "null"]
+    TaskSearch:
+      type: object
+      additionalProperties: false
+      properties:
+        query:
+          type: string
+        status:
+          type: string
+          enum: [INBOX, PENDING, COMPLETED, ARCHIVED, DELETED]
+        areaId:
+          type: [string, "null"]
+        contextId:
+          type: [string, "null"]
+        tagId:
+          type: string
+        goalId:
+          type: string
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 4
+        isWaiting:
+          type: boolean
+        hasDueDate:
+          type: boolean
+        dueFrom:
+          type: string
+          format: date
+        dueTo:
+          type: string
+          format: date
+        offset:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+    CreateTask:
+      type: object
+      required: [requestId, title]
+      additionalProperties: false
+      properties:
+        requestId:
+          type: string
+          description: UUID nuevo y estable para este intento lógico de creación.
+        title:
+          type: string
+        description:
+          type: string
+        areaId:
+          type: [string, "null"]
+        contextId:
+          type: [string, "null"]
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 4
+        tagIds:
+          type: array
+          items:
+            type: string
+        goalIds:
+          type: array
+          items:
+            type: string
+        isWaiting:
+          type: boolean
+        startDate:
+          type: [string, "null"]
+          format: date
+        dueDate:
+          type: [string, "null"]
+          format: date
+        dueTime:
+          type: [string, "null"]
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+    UpdateTask:
+      type: object
+      required: [requestId, taskId, expectedVersion, changes]
+      additionalProperties: false
+      properties:
+        requestId:
+          type: string
+        taskId:
+          type: string
+        expectedVersion:
+          type: integer
+          minimum: 1
+        changes:
+          type: object
+          minProperties: 1
+          additionalProperties: false
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            areaId:
+              type: [string, "null"]
+            contextId:
+              type: [string, "null"]
+            priority:
+              type: integer
+              minimum: 0
+              maximum: 4
+            tagIds:
+              type: array
+              items:
+                type: string
+            goalIds:
+              type: array
+              items:
+                type: string
+            isWaiting:
+              type: boolean
+            startDate:
+              type: [string, "null"]
+              format: date
+            dueDate:
+              type: [string, "null"]
+              format: date
+            dueTime:
+              type: [string, "null"]
+              pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+    VersionedTaskAction:
+      type: object
+      required: [requestId, taskId, expectedVersion]
+      additionalProperties: false
+      properties:
+        requestId:
+          type: string
+        taskId:
+          type: string
+        expectedVersion:
+          type: integer
+          minimum: 1

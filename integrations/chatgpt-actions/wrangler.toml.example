@@ -1,0 +1,6 @@
+name = "task-engine-chatgpt-actions"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Guardá TASK_ENGINE_ACCOUNTS como secreto, nunca en este archivo:
+# npx wrangler secret put TASK_ENGINE_ACCOUNTS
