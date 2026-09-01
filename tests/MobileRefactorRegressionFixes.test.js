@@ -50,6 +50,14 @@ const taskInterface = await readFile(
     "utf8"
 );
 
+const mobileLayoutController = await readFile(
+    new URL(
+        "../src/ui/MobileTaskEditorLayoutController.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 test("las tareas con adjuntos recuperan un indicador visible en metadatos", () => {
     assert.match(
         attachmentController,
@@ -112,6 +120,17 @@ test("Notas ajusta su panel al contenido y mantiene visible la acción", () => {
     assert.match(
         deviceFixes,
         /> \.secondaryAction,[\s\S]*visibility:\s*visible\s*!important/
+    );
+});
+
+test("el pie móvil no captura las acciones Abrir y Desvincular de Notas", () => {
+    assert.match(
+        mobileLayoutController,
+        /querySelector\([\s\S]*"#saveTask"[\s\S]*\)\?\.closest\("\.taskEditorActions"\)/
+    );
+    assert.doesNotMatch(
+        mobileLayoutController,
+        /const actions = drawer\.querySelector\(\s*"\.taskEditorActions"/
     );
 });
 

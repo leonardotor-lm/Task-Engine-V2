@@ -349,6 +349,53 @@ test("Notas mantiene Crear nota visible dentro del viewport móvil", async ({ pa
     expect(createBox.y + createBox.height).toBeLessThanOrEqual(740);
 });
 
+test("Notas mantiene Abrir nota visible cuando ya existe un vínculo", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.addInitScript(() => {
+        localStorage.setItem(
+            "task-engine-v2",
+            JSON.stringify([{
+                id: "tarea-nota-vinculada",
+                title: "Tarea con nota vinculada",
+                status: "PENDING",
+                notionPageId: "pagina-notion",
+                notionPageUrl:
+                    "https://www.notion.so/pagina-notion"
+            }])
+        );
+    });
+
+    await page.goto("/");
+    await page.locator("#showAll").evaluate(
+        button => button.click()
+    );
+    await page.locator(
+        '.task[data-id="tarea-nota-vinculada"] .taskBody'
+    ).click();
+
+    const notes = page.locator(
+        ".mobileTaskEditorNotesTool"
+    );
+    await notes.locator(":scope > summary").click();
+
+    const panel = notes.locator(
+        ":scope > .mobileTaskEditorCompactPanel"
+    );
+    const open = panel.locator("#openNotionTaskNote");
+    const unlink = panel.locator("#unlinkNotionTaskNote");
+
+    await expect(open).toBeVisible();
+    await expect(unlink).toBeVisible();
+    await expect(open).toHaveAttribute(
+        "href",
+        "https://www.notion.so/pagina-notion"
+    );
+
+    const openBox = await open.boundingBox();
+    expect(openBox).not.toBeNull();
+    expect(openBox.y + openBox.height).toBeLessThanOrEqual(740);
+});
+
 test("el aviso de tarea completada se cierra automáticamente", async ({ page }) => {
     await page.goto("/");
     await page.locator("#showAll").click();
