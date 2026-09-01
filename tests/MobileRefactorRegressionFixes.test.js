@@ -34,6 +34,22 @@ const mobileDensity = await readFile(
     "utf8"
 );
 
+const compactEnhancer = await readFile(
+    new URL(
+        "../src/ui/MobileTaskEditorCompactEnhancer.js",
+        import.meta.url
+    ),
+    "utf8"
+);
+
+const taskInterface = await readFile(
+    new URL(
+        "../styles/task-interface.css",
+        import.meta.url
+    ),
+    "utf8"
+);
+
 test("las tareas con adjuntos recuperan un indicador visible en metadatos", () => {
     assert.match(
         attachmentController,
@@ -77,6 +93,43 @@ test("Notas se reconcilia como herramienta visible del editor móvil", () => {
     assert.match(
         unifiedMobileEditor,
         /MutationObserver/
+    );
+});
+
+test("los selectores asíncronos recuperan icono y descartan texto desbordado", () => {
+    assert.match(
+        unifiedMobileEditor,
+        /reconcileCompactPickers\(drawer\)/
+    );
+    assert.match(
+        unifiedMobileEditor,
+        /\["taskTags", "Etiquetas", "tags"\]/
+    );
+    assert.match(
+        unifiedMobileEditor,
+        /\["taskGoals", "Objetivo", "goals"\]/
+    );
+    assert.match(
+        unifiedMobileEditor,
+        /summary\.replaceChildren\(\)/
+    );
+});
+
+test("Mover conserva abierto el panel padre de Más acciones", () => {
+    assert.match(
+        compactEnhancer,
+        /!panel\.contains\(current\)/
+    );
+});
+
+test("la hoja de acciones oculta controles que podrían atravesarla", () => {
+    assert.match(
+        taskInterface,
+        /body:has\(\.quickMoreActions\[open\]\)[\s\S]*\.quickMoreActions:not\(\[open\]\) > summary/
+    );
+    assert.match(
+        taskInterface,
+        /body:has\(\.quickMoreActions\[open\]\)[\s\S]*#openTaskCreation/
     );
 });
 

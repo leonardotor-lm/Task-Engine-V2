@@ -179,6 +179,10 @@ function renderIcon(name) {
     `;
 }
 
+export function renderCompactMobileTaskEditorIcon(name) {
+    return renderIcon(name);
+}
+
 function formatDueSummary(dateValue, timeValue) {
     if (!dateValue) return "Sin fecha";
 
@@ -522,7 +526,12 @@ function bindPanels(drawer) {
     const toggleHandlers = [];
     const closeOthers = current => {
         panels().forEach(panel => {
-            if (panel !== current) panel.open = false;
+            if (
+                panel !== current &&
+                !panel.contains(current)
+            ) {
+                panel.open = false;
+            }
         });
     };
 

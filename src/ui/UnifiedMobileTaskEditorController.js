@@ -2,7 +2,8 @@ import {
     MobileTaskEditorLayoutController
 } from "./MobileTaskEditorLayoutController.js";
 import {
-    enhanceCompactMobileTaskEditor
+    enhanceCompactMobileTaskEditor,
+    renderCompactMobileTaskEditorIcon
 } from "./MobileTaskEditorCompactEnhancer.js";
 import { Icon } from "./Icon.js";
 
@@ -232,6 +233,65 @@ export class UnifiedMobileTaskEditorController
         return true;
     }
 
+    reconcileCompactPickers(drawer) {
+        const pickerDefinitions = [
+            ["taskTags", "Etiquetas", "tags"],
+            ["taskGoals", "Objetivo", "goals"]
+        ];
+
+        for (const [pickerId, label, icon] of
+            pickerDefinitions) {
+            const picker = drawer?.querySelector(
+                `[data-picker-id="${pickerId}"]`
+            );
+            const details = picker?.querySelector(
+                ".searchableMultiSelectManager"
+            );
+            const summary = details?.querySelector(
+                ":scope > summary"
+            );
+
+            if (!picker || !details || !summary) continue;
+
+            picker.classList.add(
+                "mobileTaskEditorCompactTool"
+            );
+            summary.classList.add(
+                "mobileTaskEditorCompactSummary"
+            );
+
+            const currentIcon = summary.querySelector(
+                ":scope > .mobileTaskEditorCompactIcon"
+            );
+            const currentLabel = summary.querySelector(
+                ":scope > .mobileTaskEditorCompactLabel"
+            );
+
+            if (
+                currentIcon &&
+                currentLabel?.textContent?.trim() === label
+            ) {
+                continue;
+            }
+
+            const count = summary.querySelector(
+                ":scope > .mobileTaskEditorPickerCount"
+            );
+            summary.replaceChildren();
+            summary.insertAdjacentHTML(
+                "beforeend",
+                renderCompactMobileTaskEditorIcon(icon)
+            );
+
+            const labelElement = document.createElement("span");
+            labelElement.className =
+                "mobileTaskEditorCompactLabel";
+            labelElement.textContent = label;
+            summary.append(labelElement);
+            if (count) summary.append(count);
+        }
+    }
+
     bindCompactCloseButtons(drawer) {
         drawer?.querySelectorAll(
             ".mobileTaskEditorCompactPanelClose"
@@ -269,6 +329,7 @@ export class UnifiedMobileTaskEditorController
     reconcileCompactEditor(drawer) {
         enhanceCompactMobileTaskEditor(drawer);
         this.ensureProgrammingIcon(drawer);
+        this.reconcileCompactPickers(drawer);
         this.promoteNotionNotes(drawer);
         this.bindCompactCloseButtons(drawer);
     }
@@ -291,6 +352,7 @@ export class UnifiedMobileTaskEditorController
             }
 
             this.ensureProgrammingIcon(drawer);
+            this.reconcileCompactPickers(drawer);
             this.promoteNotionNotes(drawer);
             this.bindCompactCloseButtons(drawer);
         });
