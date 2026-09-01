@@ -96,6 +96,25 @@ test("Notas se reconcilia como herramienta visible del editor móvil", () => {
     );
 });
 
+test("Notas ajusta su panel al contenido y mantiene visible la acción", () => {
+    assert.match(
+        deviceFixes,
+        /mobileTaskEditorNotesTool\[open\][\s\S]*display:\s*grid\s*!important/
+    );
+    assert.match(
+        deviceFixes,
+        /mobileTaskEditorNotesTool\[open\][\s\S]*width:\s*auto\s*!important/
+    );
+    assert.match(
+        deviceFixes,
+        /mobileTaskEditorNotesTool\[open\][\s\S]*height:\s*auto\s*!important/
+    );
+    assert.match(
+        deviceFixes,
+        /> \.secondaryAction,[\s\S]*visibility:\s*visible\s*!important/
+    );
+});
+
 test("los selectores asíncronos recuperan icono y descartan texto desbordado", () => {
     assert.match(
         unifiedMobileEditor,
