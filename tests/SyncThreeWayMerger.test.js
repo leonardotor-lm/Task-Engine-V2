@@ -295,7 +295,7 @@ test("fusiona la migración entre clientes nuevos y anteriores", () => {
 
 });
 
-test("mantiene el conflicto si junto con la migración cambió contenido real", () => {
+test("fusiona una migración con un cambio real compatible", () => {
 
     const baseBackup = backup({
         tasks: [task()]
@@ -322,10 +322,14 @@ test("mantiene el conflicto si junto con la migración cambió contenido real", 
         remoteBackup
     });
 
-    assert.equal(result.backup, null);
-    assert.deepEqual(
-        result.conflicts,
-        ["tasks:task-1"]
+    assert.deepEqual(result.conflicts, []);
+    assert.equal(
+        result.backup.data.tasks[0].title,
+        "Proyecto modificado"
+    );
+    assert.equal(
+        result.backup.data.tasks[0].isProject,
+        true
     );
 
 });
