@@ -43,6 +43,24 @@
         z-index: 140 !important;
     }
 
+    /*
+     * Los selectores de etiquetas y objetivos pueden reconstruir el summary
+     * después de abrir el editor. Nunca permitir que sus textos internos
+     * ensanchen una celda de la grilla mientras se reconcilia el icono.
+     */
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorToolGrid > *,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorPicker,
+    .mobileTaskEditorCompactLayout
+        .searchableMultiSelectManager,
+    .mobileTaskEditorCompactLayout
+        .searchableMultiSelectManager > summary {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: hidden;
+    }
+
 }
 
 /*

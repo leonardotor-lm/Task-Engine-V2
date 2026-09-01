@@ -423,6 +423,21 @@
         background: var(--color-accent-strong);
     }
 
+    /*
+     * La hoja de acciones pertenece al DOM de una tarea. Mientras está
+     * abierta, ocultar los disparadores hermanos y la acción flotante evita
+     * que atraviesen visualmente la superficie fija del panel.
+     */
+    body:has(.quickMoreActions[open])
+        .quickMoreActions:not([open]) > summary,
+    body:has(.quickMoreActions[open])
+        #openTaskCreation,
+    body:has(.quickMoreActions[open])
+        .mobileFloatingTaskButton {
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
     #openTaskCreation .createActionIcon,
     #openTaskCreation .icon,
     .mobileFloatingTaskButton .createActionIcon,
