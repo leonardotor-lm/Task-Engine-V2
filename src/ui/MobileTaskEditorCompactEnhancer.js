@@ -305,6 +305,48 @@ function createFieldTool({
     return details;
 }
 
+function addDateClearAction(
+    field,
+    inputId,
+    accessibleLabel
+) {
+    const input = field?.querySelector(`#${inputId}`);
+    if (!input) return;
+
+    field.classList.add(
+        "mobileTaskEditorDateProperty"
+    );
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "mobileTaskEditorDateClear";
+    button.textContent = "Quitar";
+    button.setAttribute("aria-label", accessibleLabel);
+
+    const sync = () => {
+        button.hidden = !input.value || input.disabled;
+    };
+
+    button.addEventListener("click", () => {
+        input.value = "";
+        input.dispatchEvent(new Event(
+            "input",
+            { bubbles: true }
+        ));
+        input.dispatchEvent(new Event(
+            "change",
+            { bubbles: true }
+        ));
+        sync();
+        input.focus();
+    });
+
+    input.addEventListener("input", sync);
+    input.addEventListener("change", sync);
+    field.append(button);
+    sync();
+}
+
 function decorateExistingTool(
     tool,
     {
@@ -613,6 +655,17 @@ export function enhanceCompactMobileTaskEditor(drawer) {
         const timeField = properties.querySelector(
             "#taskDueTime"
         )?.closest(".mobileTaskEditorProperty");
+
+        addDateClearAction(
+            startField,
+            "taskStartDate",
+            "Quitar fecha de inicio"
+        );
+        addDateClearAction(
+            dueField,
+            "taskDueDate",
+            "Quitar fecha y hora de vencimiento"
+        );
 
         const priority = createFieldTool({
             fields: [priorityField],

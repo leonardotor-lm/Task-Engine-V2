@@ -87,6 +87,25 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     );
 });
 
+test("Inicio y vencimiento pueden quitarse sin depender del selector nativo", () => {
+    assert.match(
+        enhancer,
+        /addDateClearAction\(\s*startField,\s*"taskStartDate"/
+    );
+    assert.match(
+        enhancer,
+        /addDateClearAction\(\s*dueField,\s*"taskDueDate"/
+    );
+    assert.match(
+        enhancer,
+        /input\.dispatchEvent\(new Event\([\s\S]*"change"/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskEditorDateClear[\s\S]*color:\s*var\(--color-danger\)/
+    );
+});
+
 test("Adjuntos nace cerrado en móvil desde su controlador de origen", () => {
     assert.match(
         attachmentController,
