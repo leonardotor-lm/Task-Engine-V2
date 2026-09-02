@@ -32,17 +32,18 @@
     border-left: 3px solid var(--color-text-muted);
 }
 
-.waitingTaskBadge {
+.waitingTaskIndicator {
     display: inline-flex;
     align-items: center;
-    width: fit-content;
-    margin-top: 3px;
-    padding: 2px 6px;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    color: var(--color-text-secondary);
-    font-size: 0.72rem;
-    line-height: 1.2;
+    flex: 0 0 auto;
+    color: var(--color-warning);
+    line-height: 1;
+}
+
+.waitingTaskIcon {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2;
 }
 
 @media (max-width: 760px) {

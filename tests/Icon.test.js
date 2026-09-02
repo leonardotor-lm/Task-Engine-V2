@@ -22,6 +22,7 @@ test("ofrece la familia inicial de íconos", () => {
             "chevron-left",
             "corner-down-right",
             "clock",
+            "hand",
             "repeat",
             "menu",
             "check",

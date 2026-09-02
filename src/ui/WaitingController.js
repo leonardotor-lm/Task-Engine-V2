@@ -1,5 +1,6 @@
 import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { Icon } from "./Icon.js";
 
 const WAITING_SEARCH_PATTERN =
     /(?:en\s*espera|enespera|iswaiting|waiting)\s*:/i;
@@ -482,20 +483,37 @@ export class WaitingController {
 
             row.classList.add("waitingTaskRow");
 
-            const title = row.querySelector(
-                ".taskTitle"
+            const taskBody = row.querySelector(
+                ".taskBody"
             );
 
             if (
-                title &&
+                taskBody &&
                 !row.querySelector(
-                    ".waitingTaskBadge"
+                    ".waitingTaskIndicator"
                 )
             ) {
-                title.insertAdjacentHTML(
-                    "afterend",
-                    `<span class="waitingTaskBadge">
-                        En espera
+
+                let metadata = taskBody.querySelector(
+                    ".taskMeta"
+                );
+
+                if (!metadata) {
+                    metadata = document.createElement("div");
+                    metadata.className = "taskMeta";
+                    taskBody.append(metadata);
+                }
+
+                metadata.insertAdjacentHTML(
+                    "afterbegin",
+                    `<span
+                        class="waitingTaskIndicator"
+                        title="En espera"
+                        aria-label="En espera">
+                        ${Icon.render(
+                            "hand",
+                            "waitingTaskIcon"
+                        )}
                     </span>`
                 );
             }

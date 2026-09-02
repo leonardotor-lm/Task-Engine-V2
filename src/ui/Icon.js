@@ -72,6 +72,14 @@ const icons = Object.freeze({
         <path d="M12 6v6h4"></path>
     `,
 
+    hand: `
+        <path d="M18 11V6a2 2 0 0 0-4 0v5"></path>
+        <path d="M14 10V4a2 2 0 1 0-4 0v6"></path>
+        <path d="M10 10.5V6a2 2 0 1 0-4 0v8"></path>
+        <path d="M6 14v-2a2 2 0 1 0-4 0v2"></path>
+        <path d="M18 8a2 2 0 1 1 4 0v6a10 10 0 0 1-10 10h-2a10 10 0 0 1-7.1-2.9L3 19"></path>
+    `,
+
     repeat: `
         <path d="m2 9 3-3 3 3"></path>
         <path d="M13 18H7a2 2 0 0 1-2-2V6"></path>
