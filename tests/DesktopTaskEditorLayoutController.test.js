@@ -82,11 +82,23 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     );
     assert.match(
         controller,
-        /"Recurrencia"/
+        /"Programación"/
     );
     assert.match(
         controller,
         /summary\.textContent = "Mover"/
+    );
+    assert.match(
+        controller,
+        /Etiquetas,Programación,Objetivos,Mover,Adjuntos,Notas,Subtareas,Opciones/
+    );
+    assert.match(
+        controller,
+        /createOptionsTool/
+    );
+    assert.match(
+        controller,
+        /:scope > \.taskEditorActions/
     );
     assert.doesNotMatch(
         controller,
@@ -184,6 +196,14 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
     assert.match(
         styles,
         /\.desktopTaskEditorPopover\s*\{/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorWideTool/
+    );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorOpensUp/
     );
     assert.match(
         styles,

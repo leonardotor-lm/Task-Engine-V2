@@ -93,6 +93,10 @@ export class DesktopTaskEditorLayoutController {
             drawer.querySelector(
                 ".editorSubtasksSection"
             );
+        const notesSection =
+            drawer.querySelector(
+                ".editorNotionSection"
+            );
 
         this.prepareTextAndHints(
             primarySection
@@ -112,16 +116,15 @@ export class DesktopTaskEditorLayoutController {
             organizationSection,
             recurrenceSection,
             attachmentsSection,
+            notesSection,
             subtasksSection,
             tagsField: layout.tagsField,
             goalsField: layout.goalsField,
-            moveField: layout.moveField
+            moveField: layout.moveField,
+            waitingField: layout.waitingField,
+            projectField: layout.projectField
         });
         this.groupActions(drawer);
-        this.markRemainingSections({
-            attachmentsSection,
-            subtasksSection
-        });
         this.bindTransientPanels(drawer);
 
     }
@@ -302,7 +305,6 @@ export class DesktopTaskEditorLayoutController {
             waitingField.classList.add(
                 "desktopTaskEditorWaitingProperty"
             );
-            properties.append(waitingField);
         }
 
         const projectField =
@@ -314,7 +316,6 @@ export class DesktopTaskEditorLayoutController {
             projectField.classList.add(
                 "desktopTaskEditorProjectProperty"
             );
-            properties.append(projectField);
         }
 
         const tagsField =
@@ -373,7 +374,9 @@ export class DesktopTaskEditorLayoutController {
             primarySurface,
             tagsField,
             goalsField,
-            moveField
+            moveField,
+            waitingField,
+            projectField
         };
 
     }
@@ -520,10 +523,13 @@ export class DesktopTaskEditorLayoutController {
         organizationSection,
         recurrenceSection,
         attachmentsSection,
+        notesSection,
         subtasksSection,
         tagsField,
         goalsField,
-        moveField
+        moveField,
+        waitingField,
+        projectField
     }) {
 
         const row = document.createElement("div");
@@ -537,15 +543,43 @@ export class DesktopTaskEditorLayoutController {
             "Herramientas de la tarea"
         );
 
-        if (tagsField) row.append(tagsField);
-        if (goalsField) row.append(goalsField);
+        row.dataset.desktopToolOrder =
+            "Etiquetas,Programación,Objetivos,Mover,Adjuntos,Notas,Subtareas,Opciones";
+
+        const availableTags = tagsField?.querySelector(
+            ".searchableMultiSelectManager"
+        ) ? tagsField : null;
+        const availableGoals = goalsField?.querySelector(
+            ".searchableMultiSelectManager"
+        ) ? goalsField : null;
+        if (!availableTags) tagsField?.remove();
+        if (!availableGoals) goalsField?.remove();
+
+        row.append(
+            availableTags ?? this.createUnavailableTool(
+                "Etiquetas",
+                "Las etiquetas no están disponibles"
+            )
+        );
 
         if (recurrenceSection) {
             this.configureRecurrence(
                 recurrenceSection
             );
             row.append(recurrenceSection);
+        } else {
+            row.append(this.createUnavailableTool(
+                "Programación",
+                "La programación no está disponible"
+            ));
         }
+
+        row.append(
+            availableGoals ?? this.createUnavailableTool(
+                "Objetivos",
+                "Los objetivos no están disponibles"
+            )
+        );
 
         if (moveField) {
             row.append(moveField);
@@ -562,15 +596,37 @@ export class DesktopTaskEditorLayoutController {
             row.append(unavailableMove);
         }
 
-        const reference =
-            attachmentsSection ??
-            subtasksSection;
+        row.append(this.configureSectionTool({
+            section: attachmentsSection,
+            label: "Adjuntos",
+            wide: true,
+            countSelector: ".attachmentItem",
+            unavailableReason:
+                "Los adjuntos no están disponibles"
+        }));
+        row.append(this.configureSectionTool({
+            section: notesSection,
+            label: "Notas",
+            wide: true,
+            activeSelector:
+                "#openNotionTaskNote, #unlinkNotionTaskNote",
+            unavailableReason:
+                "Las notas no están disponibles"
+        }));
+        row.append(this.configureSectionTool({
+            section: subtasksSection,
+            label: "Subtareas",
+            wide: true,
+            countSelector: ".editorSubtaskList > li",
+            unavailableReason:
+                "Las subtareas no están disponibles"
+        }));
+        row.append(this.createOptionsTool({
+            waitingField,
+            projectField
+        }));
 
-        if (reference) {
-            reference.before(row);
-        } else {
-            anchor.after(row);
-        }
+        anchor.after(row);
 
         organizationSection.remove();
 
@@ -593,16 +649,217 @@ export class DesktopTaskEditorLayoutController {
         );
 
         if (summary) {
-            summary.textContent = "Recurrencia";
+            summary.textContent = "Programación";
         }
 
         if (body) {
             this.decoratePopover(
                 section,
                 body,
-                "Recurrencia"
+                "Programación"
             );
         }
+
+        const apply = section.querySelector(
+            "#saveRecurrence"
+        );
+        if (apply) apply.textContent = "Aplicar";
+
+        this.addActiveIndicator({
+            details: section,
+            active: Boolean(
+                section.querySelector(
+                    '.recurrenceIndicator, .postponementSummary'
+                )
+            ),
+            label:
+                "La tarea tiene programación activa"
+        });
+
+    }
+
+    configureSectionTool({
+        section,
+        label,
+        wide = false,
+        countSelector = null,
+        activeSelector = null,
+        unavailableReason
+    }) {
+
+        if (!section) {
+            return this.createUnavailableTool(
+                label,
+                unavailableReason
+            );
+        }
+
+        section.classList.add(
+            "desktopTaskEditorTool",
+            "desktopTaskEditorSectionTool",
+            "desktopTaskEditorTransient"
+        );
+        if (wide) {
+            section.classList.add(
+                "desktopTaskEditorWideTool",
+                "desktopTaskEditorOpensUp"
+            );
+        }
+        section.open = false;
+
+        const summary = section.querySelector(
+            ":scope > summary"
+        );
+        const body = section.querySelector(
+            ":scope > .editorSectionBody"
+        );
+
+        if (summary) summary.textContent = label;
+        if (body) this.decoratePopover(
+            section,
+            body,
+            label
+        );
+
+        if (countSelector) {
+            this.addCountIndicator({
+                details: section,
+                count: section.querySelectorAll(
+                    countSelector
+                ).length,
+                label
+            });
+        } else if (activeSelector) {
+            this.addActiveIndicator({
+                details: section,
+                active: Boolean(
+                    section.querySelector(activeSelector)
+                ),
+                label: `${label} vinculadas`
+            });
+        }
+
+        return section;
+
+    }
+
+    createOptionsTool({
+        waitingField,
+        projectField
+    }) {
+
+        if (!waitingField && !projectField) {
+            return this.createUnavailableTool(
+                "Opciones",
+                "Las opciones no están disponibles"
+            );
+        }
+
+        const details = document.createElement("details");
+        details.className =
+            "desktopTaskEditorTool desktopTaskEditorOptionsTool desktopTaskEditorTransient desktopTaskEditorOpensUp";
+        const summary = document.createElement("summary");
+        summary.textContent = "Opciones";
+        const body = document.createElement("div");
+        body.className = "editorSectionBody";
+
+        if (waitingField) body.append(waitingField);
+        if (projectField) body.append(projectField);
+        details.append(summary, body);
+        this.decoratePopover(details, body, "Opciones");
+
+        const waiting = waitingField?.querySelector(
+            "#taskIsWaiting"
+        );
+        const project = projectField?.querySelector(
+            "#taskIsProject"
+        );
+        const update = () => {
+            summary.querySelectorAll(
+                ".desktopTaskEditorStateIndicator"
+            ).forEach(node => node.remove());
+            if (waiting?.checked) {
+                this.appendStateIndicator({
+                    summary,
+                    className: "isWaiting",
+                    text: "!",
+                    label: "Tarea en espera"
+                });
+            }
+            if (project?.checked) {
+                this.appendStateIndicator({
+                    summary,
+                    className: "isProject",
+                    text: "P",
+                    label: "Tarea configurada como proyecto"
+                });
+            }
+            summary.classList.toggle(
+                "hasActiveContent",
+                Boolean(waiting?.checked || project?.checked)
+            );
+        };
+        waiting?.addEventListener("change", update);
+        project?.addEventListener("change", update);
+        update();
+
+        return details;
+
+    }
+
+    createUnavailableTool(label, reason) {
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.disabled = true;
+        button.className = "desktopTaskEditorToolButton";
+        button.textContent = label;
+        button.title = reason;
+        button.setAttribute("aria-label", `${label}: ${reason}`);
+        return button;
+
+    }
+
+    addCountIndicator({ details, count, label }) {
+
+        const summary = details.querySelector(":scope > summary");
+        if (!summary) return;
+        const indicator = document.createElement("span");
+        indicator.className = "desktopTaskEditorPickerCount";
+        indicator.textContent = String(count);
+        indicator.setAttribute(
+            "aria-label",
+            `${count} ${label.toLowerCase()}`
+        );
+        summary.append(indicator);
+        summary.classList.toggle("hasActiveContent", count > 0);
+
+    }
+
+    addActiveIndicator({ details, active, label }) {
+
+        if (!active) return;
+        const summary = details.querySelector(":scope > summary");
+        if (!summary) return;
+        this.appendStateIndicator({
+            summary,
+            className: "isActive",
+            text: "•",
+            label
+        });
+        summary.classList.add("hasActiveContent");
+
+    }
+
+    appendStateIndicator({ summary, className, text, label }) {
+
+        const indicator = document.createElement("span");
+        indicator.className =
+            `desktopTaskEditorStateIndicator ${className}`;
+        indicator.textContent = text;
+        indicator.setAttribute("aria-label", label);
+        indicator.title = label;
+        summary.append(indicator);
 
     }
 
@@ -618,6 +875,18 @@ export class DesktopTaskEditorLayoutController {
 
         const synchronizeVisibility = () => {
             body.hidden = !details.open;
+            if (
+                details.open &&
+                details.classList.contains(
+                    "desktopTaskEditorOpensUp"
+                )
+            ) {
+                const available = Math.max(
+                    160,
+                    details.getBoundingClientRect().top - 16
+                );
+                body.style.maxHeight = `${available}px`;
+            }
         };
 
         details.addEventListener(
@@ -666,20 +935,6 @@ export class DesktopTaskEditorLayoutController {
 
     }
 
-    markRemainingSections({
-        attachmentsSection,
-        subtasksSection
-    }) {
-
-        attachmentsSection?.classList.add(
-            "desktopTaskEditorAttachments"
-        );
-        subtasksSection?.classList.add(
-            "desktopTaskEditorSubtasks"
-        );
-
-    }
-
     extractField({
         container,
         controlId,
@@ -709,7 +964,7 @@ export class DesktopTaskEditorLayoutController {
     groupActions(drawer) {
 
         const actions = drawer.querySelector(
-            ".taskEditorActions"
+            ":scope > .taskEditorActions"
         );
 
         if (!actions) return;
@@ -813,6 +1068,9 @@ export class DesktopTaskEditorLayoutController {
                         !panel.contains(event.target)
                     ) {
                         panel.open = false;
+                        panel.querySelector(
+                            ":scope > summary"
+                        )?.focus();
                     }
                 });
             },
