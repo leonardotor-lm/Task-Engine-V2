@@ -59,3 +59,22 @@ test("el esquema usa Bearer y limita las búsquedas", () => {
     assert.match(schema, /maximum: 100/);
     assert.doesNotMatch(schema, /TASK_ENGINE_TOKEN/);
 });
+
+test("el esquema mantiene expuesta la consulta de contexto", () => {
+    const start = schema.indexOf("  /v1/context:");
+    const end = schema.indexOf("\n  /v1/", start + 1);
+    const section = schema.slice(start, end);
+
+    assert.match(section, /operationId: getTaskEngineContext/);
+    assert.match(section, /required: \[scope\]/);
+    assert.match(section, /enum: \[all\]/);
+});
+
+test("todas las respuestas de tareas describen sus propiedades", () => {
+    assert.match(schema, /PublicTask:/);
+    assert.equal(
+        (schema.match(/\$ref: "#\/components\/schemas\/PublicTask"/g) || [])
+            .length,
+        5
+    );
+});

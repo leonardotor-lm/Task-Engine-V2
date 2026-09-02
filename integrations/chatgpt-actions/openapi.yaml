@@ -20,7 +20,13 @@ paths:
           application/json:
             schema:
               type: object
+              required: [scope]
               additionalProperties: false
+              properties:
+                scope:
+                  type: string
+                  enum: [all]
+                  description: Usar siempre all para obtener la organización general.
       responses:
         "200":
           description: Contexto actual
@@ -59,6 +65,15 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                ok:
+                  type: boolean
+                total:
+                  type: integer
+                tasks:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/PublicTask"
               required: [taskId]
               additionalProperties: false
               properties:
@@ -69,8 +84,13 @@ paths:
           description: Tarea actual
           content:
             application/json:
-              schema:
-                type: object
+            schema:
+              type: object
+              properties:
+                ok:
+                  type: boolean
+                task:
+                  $ref: "#/components/schemas/PublicTask"
   /v1/tasks/create:
     post:
       operationId: createTaskEngineTask
@@ -88,8 +108,13 @@ paths:
           description: Tarea creada
           content:
             application/json:
-              schema:
-                type: object
+            schema:
+              type: object
+              properties:
+                ok:
+                  type: boolean
+                task:
+                  $ref: "#/components/schemas/PublicTask"
   /v1/tasks/update:
     post:
       operationId: updateTaskEngineTask
@@ -107,8 +132,13 @@ paths:
           description: Tarea actualizada
           content:
             application/json:
-              schema:
-                type: object
+            schema:
+              type: object
+              properties:
+                ok:
+                  type: boolean
+                task:
+                  $ref: "#/components/schemas/PublicTask"
   /v1/tasks/complete:
     post:
       operationId: completeTaskEngineTask
@@ -126,8 +156,13 @@ paths:
           description: Tarea completada
           content:
             application/json:
-              schema:
-                type: object
+            schema:
+              type: object
+              properties:
+                ok:
+                  type: boolean
+                task:
+                  $ref: "#/components/schemas/PublicTask"
 components:
   securitySchemes:
     bearerAuth:
@@ -168,6 +203,40 @@ components:
           type: string
         color:
           type: [string, "null"]
+    PublicTask:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        areaId:
+          type: [string, "null"]
+        contextId:
+          type: [string, "null"]
+        priority:
+          type: integer
+        tagIds:
+          type: array
+          items:
+            type: string
+        goalIds:
+          type: array
+          items:
+            type: string
+        isWaiting:
+          type: boolean
+        dueDate:
+          type: [string, "null"]
+          format: date
+        dueTime:
+          type: [string, "null"]
+        version:
+          type: integer
     TaskSearch:
       type: object
       additionalProperties: false
