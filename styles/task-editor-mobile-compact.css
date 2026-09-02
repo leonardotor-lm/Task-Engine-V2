@@ -416,6 +416,34 @@
         font-size: 14px;
     }
 
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorDateProperty {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 8px;
+    }
+
+    .mobileTaskEditorCompactToolBody
+        .mobileTaskEditorDateProperty > label {
+        grid-column: 1 / -1;
+    }
+
+    .mobileTaskEditorDateClear {
+        min-width: 64px;
+        min-height: 44px;
+        padding: 7px 9px;
+        border: 0;
+        background: transparent;
+        color: var(--color-danger);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .mobileTaskEditorDateClear[hidden] {
+        display: none;
+    }
+
     .mobileTaskEditorCompactOverflow
         > .mobileTaskEditorCompactPanel {
         top: 58px;
