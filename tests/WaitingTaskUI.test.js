@@ -25,7 +25,9 @@ test("incorpora la vista En espera y el control del editor", () => {
     assert.match(controller, /showWaiting/);
     assert.match(controller, /En espera/);
     assert.match(controller, /taskIsWaiting/);
-    assert.match(controller, /waitingTaskBadge/);
+    assert.match(controller, /waitingTaskIndicator/);
+    assert.match(controller, /\.taskMeta/);
+    assert.match(controller, /Icon\.render\(\s*"hand"/);
     assert.match(main, /WaitingController/);
 
 });
@@ -51,7 +53,8 @@ test("documenta el criterio en el modal", () => {
 test("incluye estilos adaptados para el control", () => {
 
     assert.match(styles, /\.waitingTaskEditorField/);
-    assert.match(styles, /\.waitingTaskBadge/);
+    assert.match(styles, /\.waitingTaskIndicator/);
+    assert.match(styles, /color:\s*var\(--color-warning\)/);
     assert.match(styles, /@media \(max-width: 760px\)/);
 
 });
