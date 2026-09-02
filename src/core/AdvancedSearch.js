@@ -81,6 +81,10 @@ const FIELD_ALIASES = Object.freeze({
     tienefecha: "hasDueDate",
     hasstartdate: "hasStartDate",
     tieneinicio: "hasStartDate",
+    hasnote: "hasNote",
+    tienenota: "hasNote",
+    hasnotionnote: "hasNote",
+    tienenotanotion: "hasNote",
     duetime: "dueTime",
     hora: "dueTime",
     hasduetime: "hasDueTime",
@@ -1290,6 +1294,16 @@ function matchesField(task, node, context) {
             const expected = parseBoolean(node.value);
             return expected !== null &&
                 Boolean(task.startDate) === expected;
+        }
+
+        case "hasNote": {
+            const expected = parseBoolean(node.value);
+            const hasLinkedNote = Boolean(
+                task.notionPageId &&
+                task.notionPageUrl
+            );
+            return expected !== null &&
+                hasLinkedNote === expected;
         }
 
         case "dueTime":

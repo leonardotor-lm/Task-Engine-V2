@@ -71,7 +71,9 @@ function task(overrides = {}) {
         parentTaskId: overrides.parentTaskId ?? null,
         recurrence: overrides.recurrence ?? null,
         postponements: overrides.postponements ?? [],
-        attachments: overrides.attachments ?? []
+        attachments: overrides.attachments ?? [],
+        notionPageId: overrides.notionPageId ?? null,
+        notionPageUrl: overrides.notionPageUrl ?? null
     };
 
 }
@@ -106,6 +108,30 @@ test("busca específicamente en título y descripción", () => {
     assert.equal(
         matches(item, "titulo:bibliografia"),
         false
+    );
+
+});
+
+test("filtra tareas según tengan una nota de Notion vinculada", () => {
+
+    const linked = task({
+        notionPageId: "notion-page",
+        notionPageUrl:
+            "https://www.notion.so/notion-page"
+    });
+    const incompleteLink = task({
+        notionPageId: "notion-page"
+    });
+
+    assert.equal(matches(linked, "tieneNota:sí"), true);
+    assert.equal(matches(linked, "tieneNota:no"), false);
+    assert.equal(
+        matches(incompleteLink, "tieneNota:sí"),
+        false
+    );
+    assert.equal(
+        matches(incompleteLink, "hasNote:false"),
+        true
     );
 
 });
