@@ -1,8 +1,23 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import { Task } from "../src/domain/Task.js";
 import { TaskList } from "../src/ui/TaskList.js";
+
+const styles = await readFile(
+    new URL("../styles.css", import.meta.url),
+    "utf8"
+);
+
+test("el acceso rápido para posponer no muestra un contorno permanente", () => {
+
+    assert.match(
+        styles,
+        /\.quickPostpone > summary\s*\{[\s\S]*?width:\s*28px;[\s\S]*?border:\s*1px solid transparent;[\s\S]*?background:\s*transparent;/
+    );
+
+});
 
 test("ofrece fechas válidas para posponer rápidamente", () => {
 

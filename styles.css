@@ -2498,14 +2498,16 @@ textarea,
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    padding: 1px 6px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 4px;
-    background: var(--color-surface);
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
     color: var(--color-text-secondary);
     cursor: pointer;
-    font-weight: 700;
     list-style: none;
 }
 
@@ -2515,8 +2517,14 @@ textarea,
 
 .quickPostpone > summary:hover,
 .quickPostpone > summary:focus-visible {
-    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
     color: var(--color-accent);
+}
+
+.quickPostpone[open] > summary,
+.quickPostpone > summary:active {
+    background: var(--color-accent-muted);
+    color: var(--color-accent-strong);
 }
 
 .quickPostponeMenu {
