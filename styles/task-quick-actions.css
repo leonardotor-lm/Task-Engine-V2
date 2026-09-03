@@ -1,5 +1,9 @@
 /* Quick task actions */
 
+.quickAddSubtask {
+    border: 0;
+}
+
 .quickPostponeMenu {
     box-sizing: border-box;
     width: 248px;
