@@ -104,6 +104,8 @@
     opacity: 1;
 }
 
+/* Títulos principales: barra lateral y vista central */
+:root[data-theme="winter-night-flat"] .sidebarBrand h3,
 :root[data-theme="winter-night-flat"] .sidebar h1,
 :root[data-theme="winter-night-flat"] .sidebar h2,
 :root[data-theme="winter-night-flat"] .sidebarTitle,
@@ -118,7 +120,7 @@
 :root[data-theme="winter-night-flat"] .viewTitle,
 :root[data-theme="winter-night-flat"] .mainViewTitle,
 :root[data-theme="winter-night-flat"] .mobileHeaderTitle {
-    color: var(--color-accent);
+    color: #fe7f2d !important;
 }
 
 :root[data-theme="winter-night-flat"] .sidebarButton {
