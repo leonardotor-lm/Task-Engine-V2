@@ -203,6 +203,24 @@ test("persiste el tema Things móvil", () => {
 
 });
 
+test("persiste el tema Lavanda", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("lavender-mobile"),
+        "lavender-mobile"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "lavender-mobile"
+    );
+
+});
+
 test("rechaza temas visuales desconocidos", () => {
 
     const preferences =
