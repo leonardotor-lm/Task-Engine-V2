@@ -1,0 +1,284 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root[data-theme="winter-night"] {
+    --color-text: #f2e7d2;
+    --color-text-subtle: #d9ccb6;
+    --color-text-secondary: #afc0c6;
+    --color-text-muted: #8fa3ad;
+    --color-surface: #1d2746;
+    --color-surface-subtle: #151b3a;
+    --color-surface-hover: #2a3657;
+    --color-border: #33415f;
+    --color-border-strong: #556984;
+    --color-accent: #e6a536;
+    --color-accent-strong: #f0b94f;
+    --color-accent-soft: #3a3340;
+    --color-accent-muted: #564729;
+    --color-on-accent: #182238;
+    --color-on-dark: #f2e7d2;
+    --color-focus-ring: #e6a536;
+    --color-danger: #ef8b7d;
+    --color-danger-soft: #492e35;
+    --disabled-opacity: 0.48;
+    --interface-radius: 12px;
+
+    --winter-cream: #e8d8bc;
+    --winter-cream-light: #f1e6d2;
+    --winter-blue: #24304f;
+    --winter-mist: #6f8796;
+    --winter-sky: #afc0c6;
+
+    --ui-font:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.4;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 8px;
+    --task-padding-x: 8px;
+    --compact-gap: 7px;
+
+    --transient-surface-border:
+        1px solid rgb(85 105 132 / 78%);
+    --transient-surface-radius: 16px;
+    --transient-surface-shadow:
+        0 16px 34px rgb(4 9 24 / 32%);
+    --transient-dialog-shadow:
+        0 24px 60px rgb(4 9 24 / 42%);
+    --transient-backdrop:
+        rgb(7 12 28 / 62%);
+    --transient-surface-gap: 8px;
+    --transient-surface-padding: 12px;
+    --transient-header-padding: 13px 15px;
+    --transient-body-padding: 15px;
+    --transient-actions-padding: 11px 15px;
+}
+
+:root[data-theme="winter-night"],
+:root[data-theme="winter-night"] body,
+:root[data-theme="winter-night"] #app,
+:root[data-theme="winter-night"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="winter-night"] body,
+:root[data-theme="winter-night"] button,
+:root[data-theme="winter-night"] input,
+:root[data-theme="winter-night"] select,
+:root[data-theme="winter-night"] textarea,
+:root[data-theme="winter-night"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="winter-night"] body {
+    color-scheme: dark;
+    letter-spacing: -0.003em;
+}
+
+:root[data-theme="winter-night"] .sidebar,
+:root[data-theme="winter-night"] .content,
+:root[data-theme="winter-night"] .details,
+:root[data-theme="winter-night"] .mobileHeader {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="winter-night"] button,
+:root[data-theme="winter-night"] input,
+:root[data-theme="winter-night"] select,
+:root[data-theme="winter-night"] textarea {
+    border-color: var(--color-border);
+    background-color: var(--winter-blue);
+    color: var(--color-text);
+}
+
+:root[data-theme="winter-night"] input::placeholder,
+:root[data-theme="winter-night"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="winter-night"] .sidebarButton {
+    color: var(--color-text-subtle);
+    border-radius: 11px;
+}
+
+:root[data-theme="winter-night"] .sidebarButton:hover,
+:root[data-theme="winter-night"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="winter-night"] .sidebarButton.active {
+    background: var(--color-accent-muted);
+    color: var(--winter-cream-light);
+}
+
+:root[data-theme="winter-night"] .task {
+    color: var(--color-text);
+    border-bottom-color: var(--color-border);
+}
+
+:root[data-theme="winter-night"] .task.bulkSelectedTask,
+:root[data-theme="winter-night"] .advancedSearchActiveNotice,
+:root[data-theme="winter-night"] .bulkToolbar {
+    background: #293451;
+}
+
+:root[data-theme="winter-night"] .settingsToolPanel,
+:root[data-theme="winter-night"] dialog,
+:root[data-theme="winter-night"] .taskDrawer,
+:root[data-theme="winter-night"] .searchableSelectMenu,
+:root[data-theme="winter-night"] .searchableMultiSelectManagerBody {
+    background: #202b49;
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+}
+
+:root[data-theme="winter-night"] .primaryAction {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgb(230 165 54 / 18%);
+}
+
+:root[data-theme="winter-night"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
+}
+
+:root[data-theme="winter-night"] .secondaryAction,
+:root[data-theme="winter-night"] .tertiaryAction {
+    background: var(--winter-blue);
+    border-color: var(--color-border);
+    color: var(--color-text-subtle);
+}
+
+:root[data-theme="winter-night"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="winter-night"] a {
+    color: var(--winter-cream);
+}
+
+:root[data-theme="winter-night"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="winter-night"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="winter-night"] * {
+    scrollbar-color: var(--winter-mist) var(--color-surface-subtle);
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="winter-night"] {
+        --ui-font-size: 15px;
+        --ui-line-height: 1.43;
+        --content-padding: 12px;
+        --task-padding-y: 9px;
+        --task-padding-x: 7px;
+        --interface-radius: 15px;
+        --transient-surface-radius: 20px;
+        --transient-surface-shadow:
+            0 18px 38px rgb(4 9 24 / 36%);
+    }
+
+    :root[data-theme="winter-night"],
+    :root[data-theme="winter-night"] body,
+    :root[data-theme="winter-night"] #app,
+    :root[data-theme="winter-night"] .layout {
+        background:
+            linear-gradient(
+                180deg,
+                #121833 0%,
+                #1c2845 100%
+            );
+    }
+
+    :root[data-theme="winter-night"] .content {
+        background: rgb(21 27 58 / 92%);
+    }
+
+    :root[data-theme="winter-night"] .mobileHeader {
+        background: rgb(18 24 51 / 94%);
+        border-bottom-color: transparent;
+        box-shadow: 0 1px 0 rgb(241 230 210 / 8%);
+        backdrop-filter: blur(12px);
+    }
+
+    :root[data-theme="winter-night"] .task {
+        border-bottom-color: transparent;
+        font-size: 16px;
+        line-height: 1.36;
+        border-radius: 13px;
+    }
+
+    :root[data-theme="winter-night"] .task:hover {
+        background: transparent;
+    }
+
+    :root[data-theme="winter-night"] .task.bulkSelectedTask {
+        background: #2b3857;
+        border-radius: 13px;
+    }
+
+    :root[data-theme="winter-night"] .sidebar {
+        background:
+            linear-gradient(
+                180deg,
+                #1d2948 0%,
+                #151b3a 100%
+            );
+    }
+
+    :root[data-theme="winter-night"] .sidebarButton {
+        border-color: transparent;
+        font-weight: 500;
+    }
+
+    :root[data-theme="winter-night"] button {
+        border-radius: 12px;
+    }
+
+    :root[data-theme="winter-night"] .taskDrawer,
+    :root[data-theme="winter-night"] dialog,
+    :root[data-theme="winter-night"] .searchableSelectMenu,
+    :root[data-theme="winter-night"] .searchableMultiSelectManagerBody {
+        border-color: rgb(85 105 132 / 74%);
+        border-radius: 20px;
+        box-shadow: var(--transient-surface-shadow);
+    }
+
+    :root[data-theme="winter-night"] .advancedSearchActiveNotice {
+        background: #32465b;
+        border-color: transparent;
+    }
+
+    :root[data-theme="winter-night"] .bulkToolbar {
+        background: #2a3756;
+        border-color: transparent;
+    }
+
+    :root[data-theme="winter-night"] .settingsToolPanel {
+        background: #202b49;
+    }
+
+    :root[data-theme="winter-night"] .settingsToolPanel:nth-of-type(2n) {
+        background: #24304f;
+    }
+}
