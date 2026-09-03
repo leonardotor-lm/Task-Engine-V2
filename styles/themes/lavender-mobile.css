@@ -1,10 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root[data-theme="lavender-mobile"] {
-    --color-text: #2d2933;
-    --color-text-subtle: #544e5e;
-    --color-text-secondary: #746d7f;
-    --color-text-muted: #90889a;
+    --color-text: #35283f;
+    --color-text-subtle: #3d3148;
+    --color-text-secondary: #62546f;
+    --color-text-muted: #84778f;
     --color-surface: #fffdfd;
     --color-surface-subtle: #f5f1f6;
     --color-surface-hover: #f0ebf5;
