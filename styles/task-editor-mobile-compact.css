@@ -217,6 +217,9 @@
         > summary,
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorAttachments
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorSubtasks
         > summary {
         display: flex;
         flex-direction: column;
@@ -241,6 +244,9 @@
 
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactAttachments
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSubtasks
         > summary {
         border: 1px solid var(--color-border) !important;
         border-radius: 8px !important;
@@ -250,6 +256,9 @@
     .mobileTaskEditorCompactSummary::-webkit-details-marker,
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorAttachments
+        > summary::-webkit-details-marker,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorSubtasks
         > summary::-webkit-details-marker {
         display: none;
     }
@@ -317,7 +326,11 @@
 
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorSubtasks {
-        margin-top: 14px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
     }
 
     .mobileTaskEditorCompactPanel,

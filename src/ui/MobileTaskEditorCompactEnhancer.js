@@ -26,6 +26,13 @@ const ICONS = Object.freeze({
     attachments: `
         <path d="m20.5 11.5-8.9 8.9a5 5 0 0 1-7.1-7.1l9.6-9.6a3.5 3.5 0 0 1 5 5l-9.7 9.7a2 2 0 0 1-2.8-2.8l8.9-8.9"></path>
     `,
+    subtasks: `
+        <path d="M6 5h12"></path>
+        <path d="M6 12h8"></path>
+        <path d="M6 19h5"></path>
+        <path d="M18 15v8"></path>
+        <path d="M14 19h8"></path>
+    `,
     goals: `
         <circle cx="12" cy="12" r="9"></circle>
         <circle cx="12" cy="12" r="5"></circle>
@@ -716,6 +723,9 @@ export function enhanceCompactMobileTaskEditor(drawer) {
         const attachments = drawer.querySelector(
             ".mobileTaskEditorAttachments"
         );
+        const subtasks = drawer.querySelector(
+            ".mobileTaskEditorSubtasks"
+        );
 
         if (attachments) {
             attachments.classList.add(
@@ -745,13 +755,49 @@ export function enhanceCompactMobileTaskEditor(drawer) {
             );
         }
 
+        if (subtasks) {
+            subtasks.classList.add(
+                "mobileTaskEditorCompactTool",
+                "mobileTaskEditorCompactSubtasks"
+            );
+            subtasks.open = false;
+            const summary = subtasks.querySelector(
+                ":scope > summary"
+            );
+            if (summary) {
+                const count = subtasks.querySelectorAll(
+                    ".editorSubtaskList > li"
+                ).length;
+                summary.classList.add(
+                    "mobileTaskEditorCompactSummary"
+                );
+                summary.innerHTML = `
+                    ${renderIcon("subtasks")}
+                    <span class="mobileTaskEditorCompactLabel">
+                        Subtareas
+                    </span>
+                    ${count > 0
+                        ? `<span class="mobileTaskEditorCompactValue">${count}</span>`
+                        : ""}
+                `;
+            }
+            configureTransient(
+                subtasks,
+                subtasks.querySelector(
+                    ":scope > .editorSectionBody"
+                ),
+                "Subtareas"
+            );
+        }
+
         [
             priority,
             due,
             tags,
             programming,
             attachments,
-            goals
+            goals,
+            subtasks
         ].filter(Boolean)
             .forEach(tool => grid.append(tool));
     }
