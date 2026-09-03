@@ -12,6 +12,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Things móvil"
     },
     {
+        id: "lavender-mobile",
+        label: "Lavanda"
+    },
+    {
         id: "high-contrast",
         label: "Alto contraste"
     },
