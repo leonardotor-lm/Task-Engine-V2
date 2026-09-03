@@ -1,7 +1,9 @@
 /* Quick task actions */
 
 .quickAddSubtask {
-    border: 0;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
 .quickPostponeMenu {
