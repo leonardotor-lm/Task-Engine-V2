@@ -135,7 +135,8 @@ export class TaskService {
 
         if (
             data.isProject === false &&
-            this.getDirectSubtasks(id).length > 0
+            this.getDirectSubtasks(id)
+                .some(subtask => !subtask.isDeleted())
         ) {
             throw new Error(
                 "Una tarea con subtareas debe seguir siendo un proyecto."
@@ -1699,6 +1700,7 @@ export class TaskService {
         const tasks = this.repository.getAll();
         const parentIds = new Set(
             tasks
+                .filter(task => !task.isDeleted())
                 .map(task => task.parentTaskId)
                 .filter(Boolean)
         );
