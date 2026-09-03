@@ -6,6 +6,12 @@
     box-shadow: none !important;
 }
 
+.projectPinnedIcon,
+.projectPinActionIcon,
+.projectPinSectionIcon {
+    --icon-size: 16px;
+}
+
 .quickPostponeMenu {
     box-sizing: border-box;
     width: 248px;
