@@ -185,6 +185,24 @@ test("persiste el tema Retro Dark", () => {
 
 });
 
+test("persiste el tema Things móvil", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("things-mobile"),
+        "things-mobile"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "things-mobile"
+    );
+
+});
+
 test("rechaza temas visuales desconocidos", () => {
 
     const preferences =
