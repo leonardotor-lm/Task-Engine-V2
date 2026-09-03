@@ -5,16 +5,16 @@
     --color-text-subtle: #ddd9d0;
     --color-text-secondary: #b8c4cf;
     --color-text-muted: #8799aa;
-    --color-surface: #143051;
-    --color-surface-subtle: #0f253f;
-    --color-surface-hover: #1b416d;
-    --color-border: #2d4d6c;
-    --color-border-strong: #4e6c87;
+    --color-surface: #102844;
+    --color-surface-subtle: #0b1d31;
+    --color-surface-hover: #173a60;
+    --color-border: #294764;
+    --color-border-strong: #456581;
     --color-accent: #fe7f2d;
     --color-accent-strong: #ff9554;
     --color-accent-soft: #3a2d29;
     --color-accent-muted: #513524;
-    --color-on-accent: #10263e;
+    --color-on-accent: #0d2238;
     --color-on-dark: #f5f2eb;
     --color-focus-ring: #fe7f2d;
     --color-danger: #ef8b7d;
@@ -22,9 +22,9 @@
     --disabled-opacity: 0.48;
     --interface-radius: 0px;
 
-    --winter-flat-blue: #17385e;
-    --winter-flat-blue-deep: #0f253f;
-    --winter-flat-blue-hover: #1b416d;
+    --winter-flat-blue: #143453;
+    --winter-flat-blue-deep: #0b1d31;
+    --winter-flat-blue-hover: #173a60;
     --winter-flat-mist: #8799aa;
 
     --ui-font:
@@ -147,7 +147,7 @@
 :root[data-theme="winter-night-flat"] .task.bulkSelectedTask,
 :root[data-theme="winter-night-flat"] .advancedSearchActiveNotice,
 :root[data-theme="winter-night-flat"] .bulkToolbar {
-    background: #1b416d;
+    background: #173a60;
     border-radius: 0;
 }
 
@@ -157,7 +157,7 @@
 :root[data-theme="winter-night-flat"] .searchableSelectMenu,
 :root[data-theme="winter-night-flat"] .searchableMultiSelectManagerBody,
 :root[data-theme="winter-night-flat"] .taskEditorPopover {
-    background: #17385e;
+    background: #143453;
     border-color: var(--color-border-strong);
     color: var(--color-text);
     border-radius: 0;
