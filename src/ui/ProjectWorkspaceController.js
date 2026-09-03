@@ -132,9 +132,17 @@ export class ProjectWorkspaceController {
 
     prunePinnedProjects() {
 
-        const validProjectIds =
+        const getActiveProjectRoots =
             this.app.taskService
-                .getActiveProjectRoots()
+                ?.getActiveProjectRoots;
+
+        if (typeof getActiveProjectRoots !== "function") {
+            return;
+        }
+
+        const validProjectIds =
+            getActiveProjectRoots
+                .call(this.app.taskService)
                 .map(project => project.id);
 
         this.pinPreferences.prune(
