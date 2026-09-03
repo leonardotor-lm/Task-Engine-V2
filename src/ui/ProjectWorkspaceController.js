@@ -1,16 +1,21 @@
 import { View } from "../core/View.js";
+import {
+    ProjectPinPreferences
+} from "../infrastructure/ProjectPinPreferences.js";
 
 export class ProjectWorkspaceController {
 
     constructor(
         app,
         {
-            documentRef = globalThis.document
+            documentRef = globalThis.document,
+            pinPreferences = new ProjectPinPreferences()
         } = {}
     ) {
 
         this.app = app;
         this.document = documentRef;
+        this.pinPreferences = pinPreferences;
 
     }
 
@@ -25,7 +30,7 @@ export class ProjectWorkspaceController {
 
         mainView.render = state => {
 
-            const renderedState =
+            let renderedState =
                 state.view === View.PROJECT
                     ? {
                         ...state,
@@ -36,8 +41,20 @@ export class ProjectWorkspaceController {
                     }
                     : state;
 
+            if (state.view === View.PROJECTS) {
+                this.prunePinnedProjects();
+                renderedState = {
+                    ...renderedState,
+                    tasks: this.orderPinnedProjectTrees(
+                        renderedState.tasks ?? []
+                    )
+                };
+            }
+
             originalRender(renderedState);
+            this.decorateProjectPins(renderedState);
             this.bindProjectNavigation(renderedState);
+            this.bindProjectPinActions(renderedState);
 
         };
 
@@ -107,6 +124,373 @@ export class ProjectWorkspaceController {
             };
 
         }
+
+    }
+
+    prunePinnedProjects() {
+
+        const validProjectIds =
+            this.app.taskService
+                .getActiveProjectRoots()
+                .map(project => project.id);
+
+        this.pinPreferences.prune(
+            validProjectIds
+        );
+
+    }
+
+    orderPinnedProjectTrees(tasks) {
+
+        const taskById = new Map(
+            tasks.map(task => [task.id, task])
+        );
+        const roots = tasks.filter(task =>
+            !task.parentTaskId ||
+            !taskById.has(task.parentTaskId)
+        );
+        const rootIds = new Set(
+            roots.map(task => task.id)
+        );
+        const pinnedRoots = roots.filter(task =>
+            this.pinPreferences.isPinned(task.id)
+        );
+        const regularRoots = roots.filter(task =>
+            !this.pinPreferences.isPinned(task.id)
+        );
+
+        return [
+            ...pinnedRoots,
+            ...regularRoots,
+            ...tasks.filter(task =>
+                !rootIds.has(task.id)
+            )
+        ];
+
+    }
+
+    decorateProjectPins(state) {
+
+        if (state.view === View.PROJECTS) {
+            this.decorateProjectsList(state);
+        }
+
+        if (state.view === View.PROJECT) {
+            this.decorateProjectWorkspace(state);
+        }
+
+    }
+
+    decorateProjectsList(state) {
+
+        const taskList = this.document
+            ?.querySelector?.(
+                ".content .taskList"
+            );
+
+        if (!taskList) return;
+
+        const tasks = state.tasks ?? [];
+        const taskById = new Map(
+            tasks.map(task => [task.id, task])
+        );
+        const roots = tasks.filter(task =>
+            !task.parentTaskId ||
+            !taskById.has(task.parentTaskId)
+        );
+        const rootIds = new Set(
+            roots.map(task => task.id)
+        );
+        const rows = Array.from(
+            taskList.querySelectorAll(
+                ":scope > li.task"
+            )
+        );
+        const rowsById = new Map(
+            rows.map(row => [
+                row.dataset.id,
+                row
+            ])
+        );
+        const pinnedRoots = roots.filter(task =>
+            this.pinPreferences.isPinned(task.id)
+        );
+        const regularRoots = roots.filter(task =>
+            !this.pinPreferences.isPinned(task.id)
+        );
+
+        for (const project of roots) {
+
+            const row = rowsById.get(project.id);
+
+            if (!row) continue;
+
+            const pinned =
+                this.pinPreferences.isPinned(
+                    project.id
+                );
+
+            if (pinned) {
+                const title = row.querySelector(
+                    ".taskTitle"
+                );
+
+                if (title) {
+                    const indicator =
+                        this.document.createElement(
+                            "span"
+                        );
+                    indicator.className =
+                        "projectPinnedIndicator";
+                    indicator.textContent = "📌";
+                    indicator.title =
+                        "Proyecto anclado";
+                    indicator.setAttribute(
+                        "aria-label",
+                        "Proyecto anclado"
+                    );
+                    indicator.style.marginRight =
+                        "0.35rem";
+                    title.prepend(indicator);
+                }
+            }
+
+            const menu = row.querySelector(
+                ".quickMoreMenu"
+            );
+
+            if (menu) {
+                const action =
+                    this.createPinActionButton(
+                        project,
+                        pinned
+                    );
+                menu.prepend(action);
+            }
+
+        }
+
+        if (pinnedRoots.length === 0) {
+            return;
+        }
+
+        const firstPinnedRow = rowsById.get(
+            pinnedRoots[0].id
+        );
+
+        if (firstPinnedRow) {
+            taskList.insertBefore(
+                this.createPinSectionHeader(
+                    "Anclados",
+                    true
+                ),
+                firstPinnedRow
+            );
+        }
+
+        if (regularRoots.length > 0) {
+            const firstRegularRow = rowsById.get(
+                regularRoots[0].id
+            );
+
+            if (firstRegularRow) {
+                taskList.insertBefore(
+                    this.createPinSectionHeader(
+                        "Otros proyectos"
+                    ),
+                    firstRegularRow
+                );
+            }
+        }
+
+        for (const row of rows) {
+            const task = taskById.get(
+                row.dataset.id
+            );
+
+            if (
+                task &&
+                !rootIds.has(task.id)
+            ) {
+                row.classList.add(
+                    "projectPinDescendant"
+                );
+            }
+        }
+
+    }
+
+    decorateProjectWorkspace(state) {
+
+        const project = state.projectTask;
+
+        if (!this.isPinEligible(project)) {
+            return;
+        }
+
+        const actions = this.document
+            ?.querySelector?.(
+                ".projectWorkspace .taskListHeadingActions"
+            );
+
+        if (!actions) return;
+
+        const pinned =
+            this.pinPreferences.isPinned(
+                project.id
+            );
+        const button =
+            this.createPinActionButton(
+                project,
+                pinned,
+                true
+            );
+
+        actions.prepend(button);
+
+    }
+
+    createPinActionButton(
+        project,
+        pinned,
+        headingAction = false
+    ) {
+
+        const button =
+            this.document.createElement(
+                "button"
+            );
+        const label = pinned
+            ? "Desanclar proyecto"
+            : "Anclar proyecto";
+
+        button.type = "button";
+        button.className = headingAction
+            ? "quickToggleProjectPin secondaryAction projectHeadingAction responsiveIconButton"
+            : "quickToggleProjectPin";
+        button.dataset.id = project.id;
+        button.title = label;
+        button.setAttribute(
+            "aria-label",
+            label
+        );
+
+        if (headingAction) {
+            const icon =
+                this.document.createElement(
+                    "span"
+                );
+            icon.className =
+                "responsiveButtonIcon";
+            icon.textContent = "📌";
+            icon.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            const text =
+                this.document.createElement(
+                    "span"
+                );
+            text.className =
+                "responsiveButtonLabel";
+            text.textContent = label;
+
+            button.append(icon, text);
+        } else {
+            button.textContent = label;
+        }
+
+        return button;
+
+    }
+
+    createPinSectionHeader(
+        label,
+        pinned = false
+    ) {
+
+        const header =
+            this.document.createElement("li");
+        const title =
+            this.document.createElement("strong");
+
+        header.className =
+            "projectPinSectionHeader";
+        header.style.cssText = [
+            "list-style:none",
+            "padding:0.75rem 0.35rem 0.35rem",
+            "font-size:0.86rem",
+            "font-weight:700",
+            "letter-spacing:0.01em"
+        ].join(";");
+
+        title.textContent = pinned
+            ? `📌 ${label}`
+            : label;
+        header.append(title);
+
+        return header;
+
+    }
+
+    bindProjectPinActions() {
+
+        this.document
+            ?.querySelectorAll?.(
+                ".quickToggleProjectPin"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.toggleProjectPin(
+                            button.dataset.id
+                        );
+                    }
+                );
+
+            });
+
+    }
+
+    toggleProjectPin(projectId) {
+
+        const project = this.app.taskService
+            .getTaskById(projectId);
+
+        if (!this.isPinEligible(project)) {
+            this.pinPreferences.setPinned(
+                projectId,
+                false
+            );
+            return false;
+        }
+
+        const pinned =
+            this.pinPreferences.toggle(
+                project.id
+            );
+
+        this.app.render();
+
+        return pinned;
+
+    }
+
+    isPinEligible(project) {
+
+        return Boolean(
+            project &&
+            project.isProject &&
+            !project.parentTaskId &&
+            !project.isCompleted?.() &&
+            !project.isArchived?.() &&
+            !project.isDeleted?.()
+        );
 
     }
 
