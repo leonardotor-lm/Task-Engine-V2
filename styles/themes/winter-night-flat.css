@@ -1,0 +1,294 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap");
+
+:root[data-theme="winter-night-flat"] {
+    --color-text: #f5f2eb;
+    --color-text-subtle: #ddd9d0;
+    --color-text-secondary: #b8c4cf;
+    --color-text-muted: #8799aa;
+    --color-surface: #143051;
+    --color-surface-subtle: #0f253f;
+    --color-surface-hover: #1b416d;
+    --color-border: #2d4d6c;
+    --color-border-strong: #4e6c87;
+    --color-accent: #fe7f2d;
+    --color-accent-strong: #ff9554;
+    --color-accent-soft: #3a2d29;
+    --color-accent-muted: #513524;
+    --color-on-accent: #10263e;
+    --color-on-dark: #f5f2eb;
+    --color-focus-ring: #fe7f2d;
+    --color-danger: #ef8b7d;
+    --color-danger-soft: #492e35;
+    --disabled-opacity: 0.48;
+    --interface-radius: 0px;
+
+    --winter-flat-blue: #17385e;
+    --winter-flat-blue-deep: #0f253f;
+    --winter-flat-blue-hover: #1b416d;
+    --winter-flat-mist: #8799aa;
+
+    --ui-font:
+        Lexend,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.4;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 8px;
+    --task-padding-x: 8px;
+    --compact-gap: 7px;
+
+    --transient-surface-border: 1px solid var(--color-border-strong);
+    --transient-surface-radius: 0px;
+    --transient-surface-shadow: none;
+    --transient-dialog-shadow: none;
+    --transient-backdrop: rgb(5 16 28 / 68%);
+    --transient-surface-gap: 8px;
+    --transient-surface-padding: 12px;
+    --transient-header-padding: 13px 15px;
+    --transient-body-padding: 15px;
+    --transient-actions-padding: 11px 15px;
+}
+
+:root[data-theme="winter-night-flat"],
+:root[data-theme="winter-night-flat"] body,
+:root[data-theme="winter-night-flat"] #app,
+:root[data-theme="winter-night-flat"] .layout {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+}
+
+:root[data-theme="winter-night-flat"] body,
+:root[data-theme="winter-night-flat"] button,
+:root[data-theme="winter-night-flat"] input,
+:root[data-theme="winter-night-flat"] select,
+:root[data-theme="winter-night-flat"] textarea,
+:root[data-theme="winter-night-flat"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="winter-night-flat"] body {
+    color-scheme: dark;
+    letter-spacing: -0.003em;
+}
+
+:root[data-theme="winter-night-flat"] .sidebar,
+:root[data-theme="winter-night-flat"] .content,
+:root[data-theme="winter-night-flat"] .details,
+:root[data-theme="winter-night-flat"] .mobileHeader {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="winter-night-flat"] button,
+:root[data-theme="winter-night-flat"] input,
+:root[data-theme="winter-night-flat"] select,
+:root[data-theme="winter-night-flat"] textarea {
+    border-color: var(--color-border);
+    background-color: var(--winter-flat-blue);
+    color: var(--color-text);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+:root[data-theme="winter-night-flat"] input::placeholder,
+:root[data-theme="winter-night-flat"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="winter-night-flat"] .sidebar h1,
+:root[data-theme="winter-night-flat"] .sidebar h2,
+:root[data-theme="winter-night-flat"] .sidebarTitle,
+:root[data-theme="winter-night-flat"] .sidebarHeader h1,
+:root[data-theme="winter-night-flat"] .sidebarHeader h2,
+:root[data-theme="winter-night-flat"] .content > h1,
+:root[data-theme="winter-night-flat"] .content > h2,
+:root[data-theme="winter-night-flat"] .contentHeader h1,
+:root[data-theme="winter-night-flat"] .contentHeader h2,
+:root[data-theme="winter-night-flat"] .viewHeader h1,
+:root[data-theme="winter-night-flat"] .viewHeader h2,
+:root[data-theme="winter-night-flat"] .viewTitle,
+:root[data-theme="winter-night-flat"] .mainViewTitle,
+:root[data-theme="winter-night-flat"] .mobileHeaderTitle {
+    color: var(--color-accent);
+}
+
+:root[data-theme="winter-night-flat"] .sidebarButton {
+    color: var(--color-text-subtle);
+    border-radius: 0;
+}
+
+:root[data-theme="winter-night-flat"] .sidebarButton:hover,
+:root[data-theme="winter-night-flat"] .task:hover {
+    background: var(--color-surface-hover);
+}
+
+:root[data-theme="winter-night-flat"] .sidebarButton.active {
+    background: var(--color-accent-muted);
+    color: var(--color-text);
+}
+
+:root[data-theme="winter-night-flat"] .task {
+    color: var(--color-text);
+    border-bottom-color: var(--color-border);
+    border-radius: 0;
+}
+
+:root[data-theme="winter-night-flat"] .task.bulkSelectedTask,
+:root[data-theme="winter-night-flat"] .advancedSearchActiveNotice,
+:root[data-theme="winter-night-flat"] .bulkToolbar {
+    background: #1b416d;
+    border-radius: 0;
+}
+
+:root[data-theme="winter-night-flat"] .settingsToolPanel,
+:root[data-theme="winter-night-flat"] dialog,
+:root[data-theme="winter-night-flat"] .taskDrawer,
+:root[data-theme="winter-night-flat"] .searchableSelectMenu,
+:root[data-theme="winter-night-flat"] .searchableMultiSelectManagerBody,
+:root[data-theme="winter-night-flat"] .taskEditorPopover {
+    background: #17385e;
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+:root[data-theme="winter-night-flat"] .primaryAction {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+:root[data-theme="winter-night-flat"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
+}
+
+:root[data-theme="winter-night-flat"] .secondaryAction,
+:root[data-theme="winter-night-flat"] .tertiaryAction {
+    background: var(--winter-flat-blue);
+    border-color: var(--color-border);
+    color: var(--color-text-subtle);
+}
+
+:root[data-theme="winter-night-flat"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="winter-night-flat"] .floatingActionButton,
+:root[data-theme="winter-night-flat"] .addTaskButton,
+:root[data-theme="winter-night-flat"] .fab,
+:root[data-theme="winter-night-flat"] [data-action="add-task"] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: none;
+}
+
+:root[data-theme="winter-night-flat"] a {
+    color: var(--color-accent-strong);
+}
+
+:root[data-theme="winter-night-flat"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="winter-night-flat"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="winter-night-flat"] * {
+    scrollbar-color: var(--winter-flat-mist) var(--color-surface-subtle);
+}
+
+:root[data-theme="winter-night-flat"] *,
+:root[data-theme="winter-night-flat"] *::before,
+:root[data-theme="winter-night-flat"] *::after {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="winter-night-flat"] {
+        --ui-font-size: 15px;
+        --ui-line-height: 1.43;
+        --content-padding: 12px;
+        --task-padding-y: 9px;
+        --task-padding-x: 7px;
+        --interface-radius: 0px;
+        --transient-surface-radius: 0px;
+        --transient-surface-shadow: none;
+    }
+
+    :root[data-theme="winter-night-flat"],
+    :root[data-theme="winter-night-flat"] body,
+    :root[data-theme="winter-night-flat"] #app,
+    :root[data-theme="winter-night-flat"] .layout {
+        background: var(--color-surface-subtle);
+    }
+
+    :root[data-theme="winter-night-flat"] .content,
+    :root[data-theme="winter-night-flat"] .mobileHeader,
+    :root[data-theme="winter-night-flat"] .sidebar {
+        background: var(--color-surface);
+        backdrop-filter: none;
+    }
+
+    :root[data-theme="winter-night-flat"] .mobileHeader {
+        border-bottom-color: var(--color-border);
+    }
+
+    :root[data-theme="winter-night-flat"] .task {
+        border-bottom-color: transparent;
+        font-size: 16px;
+        line-height: 1.36;
+    }
+
+    :root[data-theme="winter-night-flat"] .task:hover {
+        background: transparent;
+    }
+
+    :root[data-theme="winter-night-flat"] .task.bulkSelectedTask {
+        background: var(--winter-flat-blue-hover);
+    }
+
+    :root[data-theme="winter-night-flat"] .sidebarButton {
+        border-color: transparent;
+        font-weight: 500;
+    }
+
+    :root[data-theme="winter-night-flat"] .taskDrawer,
+    :root[data-theme="winter-night-flat"] dialog,
+    :root[data-theme="winter-night-flat"] .searchableSelectMenu,
+    :root[data-theme="winter-night-flat"] .searchableMultiSelectManagerBody,
+    :root[data-theme="winter-night-flat"] .taskEditorPopover {
+        border-color: var(--color-border-strong);
+        box-shadow: none;
+    }
+
+    :root[data-theme="winter-night-flat"] .advancedSearchActiveNotice,
+    :root[data-theme="winter-night-flat"] .bulkToolbar {
+        background: var(--winter-flat-blue-hover);
+        border-color: transparent;
+    }
+
+    :root[data-theme="winter-night-flat"] .settingsToolPanel,
+    :root[data-theme="winter-night-flat"] .settingsToolPanel:nth-of-type(2n) {
+        background: var(--winter-flat-blue);
+    }
+}
