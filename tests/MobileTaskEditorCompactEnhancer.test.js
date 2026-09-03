@@ -62,14 +62,15 @@ test("Área y Contexto permanecen visibles como organización primaria", () => {
     );
 });
 
-test("las propiedades secundarias se presentan como seis accesos compactos", () => {
+test("las propiedades secundarias se presentan como siete accesos compactos", () => {
     for (const label of [
         "Prioridad",
         "Vencimiento",
         "Etiquetas",
         "Programación",
         "Adjuntos",
-        "Objetivo"
+        "Objetivo",
+        "Subtareas"
     ]) {
         assert.match(
             enhancer,
@@ -84,6 +85,29 @@ test("las propiedades secundarias se presentan como seis accesos compactos", () 
     assert.match(
         styles,
         /mobileTaskEditorCompactSummary[\s\S]*height:\s*82px/
+    );
+});
+
+test("Subtareas se integra en la grilla y abre su panel transitorio", () => {
+    assert.match(
+        enhancer,
+        /const subtasks = drawer\.querySelector\([\s\S]*"\.mobileTaskEditorSubtasks"/
+    );
+    assert.match(
+        enhancer,
+        /renderIcon\("subtasks"\)/
+    );
+    assert.match(
+        enhancer,
+        /configureTransient\([\s\S]*subtasks[\s\S]*"Subtareas"/
+    );
+    assert.match(
+        enhancer,
+        /goals,\s*subtasks/
+    );
+    assert.match(
+        styles,
+        /mobileTaskEditorCompactSubtasks[\s\S]*> summary/
     );
 });
 
