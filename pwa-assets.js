@@ -70,6 +70,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/infrastructure/CustomFilterRepository.js",
     "./src/infrastructure/GoalRepository.js",
     "./src/infrastructure/NotionSyncRetryRepository.js",
+    "./src/infrastructure/ProjectPinPreferences.js",
     "./src/infrastructure/SyncBaseSnapshotRepository.js",
     "./src/infrastructure/SyncConfig.js",
     "./src/infrastructure/TagRepository.js",
