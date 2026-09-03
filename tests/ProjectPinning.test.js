@@ -157,7 +157,7 @@ test("detecta agrupamiento activo en la vista Proyectos", () => {
             get(viewKey) {
                 assert.equal(
                     viewKey,
-                    "view:PROJECTS"
+                    "view:projects"
                 );
                 return "AREA";
             }
