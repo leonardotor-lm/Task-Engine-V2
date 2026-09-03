@@ -149,6 +149,48 @@ test("ordena primero los árboles de proyectos anclados", () => {
 
 });
 
+test("detecta agrupamiento activo en la vista Proyectos", () => {
+
+    const app = {
+        taskService: {},
+        taskGroupingPreferencesRepository: {
+            get(viewKey) {
+                assert.equal(
+                    viewKey,
+                    "view:PROJECTS"
+                );
+                return "AREA";
+            }
+        }
+    };
+
+    const controller =
+        new ProjectWorkspaceController(
+            app,
+            {
+                documentRef: null,
+                pinPreferences:
+                    new ProjectPinPreferences(
+                        createStorage()
+                    )
+            }
+        );
+
+    assert.equal(
+        controller.isProjectsGroupingActive(),
+        true
+    );
+
+    app.taskGroupingPreferencesRepository.get =
+        () => "NONE";
+
+    assert.equal(
+        controller.isProjectsGroupingActive(),
+        false
+    );
+
+});
+
 test("sólo permite anclar proyectos principales activos", () => {
 
     const controller =
