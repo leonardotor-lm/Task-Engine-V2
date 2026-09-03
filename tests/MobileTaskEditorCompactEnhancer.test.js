@@ -128,6 +128,14 @@ test("Subtareas comparte el acabado sin contorno de las herramientas móviles", 
         densityStyles,
         /mobileTaskEditorSubtasks[\s\S]*> summary:hover[\s\S]*border:\s*0 !important;/
     );
+    assert.match(
+        styles,
+        /mobileTaskEditorCompactSubtasks\s*[\s\S]*> summary\s*\{[\s\S]*border:\s*0 !important;[\s\S]*background:\s*transparent !important;[\s\S]*box-shadow:\s*none !important;/
+    );
+    assert.doesNotMatch(
+        styles,
+        /mobileTaskEditorCompactAttachments\s*[\s\S]*> summary,\s*[\s\S]*mobileTaskEditorCompactSubtasks/
+    );
 });
 
 test("Inicio y vencimiento pueden quitarse sin depender del selector nativo", () => {
