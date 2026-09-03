@@ -111,6 +111,25 @@ test("Subtareas se integra en la grilla y abre su panel transitorio", () => {
     );
 });
 
+test("Subtareas comparte el acabado sin contorno de las herramientas móviles", async () => {
+    const densityStyles = await readFile(
+        new URL(
+            "../styles/task-editor-mobile-density.css",
+            import.meta.url
+        ),
+        "utf8"
+    );
+
+    assert.match(
+        densityStyles,
+        /mobileTaskEditorCompactSubtasks[\s\S]*> summary[\s\S]*border:\s*0 !important;[\s\S]*background:\s*transparent !important;/
+    );
+    assert.match(
+        densityStyles,
+        /mobileTaskEditorSubtasks[\s\S]*> summary:hover[\s\S]*border:\s*0 !important;/
+    );
+});
+
 test("Inicio y vencimiento pueden quitarse sin depender del selector nativo", () => {
     assert.match(
         enhancer,
