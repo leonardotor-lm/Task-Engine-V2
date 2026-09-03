@@ -43,12 +43,15 @@ export class ProjectWorkspaceController {
 
             if (state.view === View.PROJECTS) {
                 this.prunePinnedProjects();
-                renderedState = {
-                    ...renderedState,
-                    tasks: this.orderPinnedProjectTrees(
-                        renderedState.tasks ?? []
-                    )
-                };
+
+                if (!this.isProjectsGroupingActive()) {
+                    renderedState = {
+                        ...renderedState,
+                        tasks: this.orderPinnedProjectTrees(
+                            renderedState.tasks ?? []
+                        )
+                    };
+                }
             }
 
             originalRender(renderedState);
@@ -140,6 +143,19 @@ export class ProjectWorkspaceController {
 
     }
 
+    isProjectsGroupingActive() {
+
+        const repository =
+            this.app.taskGroupingPreferencesRepository;
+
+        if (!repository?.get) return false;
+
+        return repository.get(
+            `view:${View.PROJECTS}`
+        ) !== "NONE";
+
+    }
+
     orderPinnedProjectTrees(tasks) {
 
         const taskById = new Map(
@@ -190,6 +206,8 @@ export class ProjectWorkspaceController {
 
         if (!taskList) return;
 
+        const groupingActive =
+            this.isProjectsGroupingActive();
         const tasks = state.tasks ?? [];
         const taskById = new Map(
             tasks.map(task => [task.id, task])
@@ -242,15 +260,22 @@ export class ProjectWorkspaceController {
                         );
                     indicator.className =
                         "projectPinnedIndicator";
-                    indicator.textContent = "📌";
                     indicator.title =
                         "Proyecto anclado";
                     indicator.setAttribute(
                         "aria-label",
                         "Proyecto anclado"
                     );
-                    indicator.style.marginRight =
-                        "0.35rem";
+                    indicator.style.cssText = [
+                        "display:inline-flex",
+                        "align-items:center",
+                        "margin-right:0.35rem",
+                        "vertical-align:middle"
+                    ].join(";");
+                    indicator.innerHTML =
+                        this.renderPinIcon(
+                            "projectPinnedIcon"
+                        );
                     title.prepend(indicator);
                 }
             }
@@ -265,12 +290,27 @@ export class ProjectWorkspaceController {
                         project,
                         pinned
                     );
-                menu.prepend(action);
+                const menuHeader =
+                    menu.querySelector(
+                        ".quickActionsSheetHeader"
+                    );
+
+                if (menuHeader) {
+                    menuHeader.insertAdjacentElement(
+                        "afterend",
+                        action
+                    );
+                } else {
+                    menu.prepend(action);
+                }
             }
 
         }
 
-        if (pinnedRoots.length === 0) {
+        if (
+            groupingActive ||
+            pinnedRoots.length === 0
+        ) {
             return;
         }
 
@@ -382,11 +422,10 @@ export class ProjectWorkspaceController {
                 );
             icon.className =
                 "responsiveButtonIcon";
-            icon.textContent = "📌";
-            icon.setAttribute(
-                "aria-hidden",
-                "true"
-            );
+            icon.innerHTML =
+                this.renderPinIcon(
+                    "projectPinActionIcon"
+                );
 
             const text =
                 this.document.createElement(
@@ -402,6 +441,29 @@ export class ProjectWorkspaceController {
         }
 
         return button;
+
+    }
+
+    renderPinIcon(className = "") {
+
+        const classes = [
+            "icon",
+            className
+        ].filter(Boolean).join(" ");
+
+        return `
+            <svg
+                class="${classes}"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                aria-hidden="true"
+                focusable="false">
+                <path d="M12 17v5"></path>
+                <path d="M5 17h14"></path>
+                <path d="M6 3h12l-2 7 3 3H5l3-3z"></path>
+            </svg>
+        `;
 
     }
 
@@ -425,9 +487,22 @@ export class ProjectWorkspaceController {
             "letter-spacing:0.01em"
         ].join(";");
 
-        title.textContent = pinned
-            ? `📌 ${label}`
-            : label;
+        if (pinned) {
+            title.style.cssText = [
+                "display:inline-flex",
+                "align-items:center",
+                "gap:0.4rem"
+            ].join(";");
+            title.innerHTML =
+                `${this.renderPinIcon(
+                    "projectPinSectionIcon"
+                )}<span></span>`;
+            title.querySelector("span")
+                .textContent = label;
+        } else {
+            title.textContent = label;
+        }
+
         header.append(title);
 
         return header;
