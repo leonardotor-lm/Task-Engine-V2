@@ -23,6 +23,9 @@
         > summary,
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactAttachments
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorCompactSubtasks
         > summary {
         min-height: 60px;
         height: 60px;
@@ -49,6 +52,9 @@
         > summary,
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorAttachments
+        > summary,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorSubtasks
         > summary {
         gap: 3px;
     }
@@ -97,6 +103,9 @@
         > summary:hover,
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorAttachments
+        > summary:hover,
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorSubtasks
         > summary:hover {
         border: 0 !important;
         background: var(--color-surface-hover) !important;
