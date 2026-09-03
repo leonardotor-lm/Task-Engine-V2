@@ -217,5 +217,9 @@ test("la aplicación carga la estructura minimalista del editor de escritorio", 
         styles,
         /\.desktopTaskEditorFooter/
     );
+    assert.match(
+        styles,
+        /\.desktopTaskEditorLayout #closeTaskEditor\s*\{[\s\S]*?border:\s*0;/
+    );
 
 });

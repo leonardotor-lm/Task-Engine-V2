@@ -17,6 +17,11 @@
         font-weight: 600;
     }
 
+    .desktopTaskEditorLayout #closeTaskEditor {
+        border: 0;
+        background: transparent;
+    }
+
     .desktopTaskEditorLayout .taskParentContext {
         margin-bottom: 7px;
     }
