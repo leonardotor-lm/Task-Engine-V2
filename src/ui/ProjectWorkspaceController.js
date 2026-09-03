@@ -55,9 +55,15 @@ export class ProjectWorkspaceController {
             }
 
             originalRender(renderedState);
-            this.decorateProjectPins(renderedState);
             this.bindProjectNavigation(renderedState);
-            this.bindProjectPinActions(renderedState);
+
+            if (
+                renderedState.view === View.PROJECTS ||
+                renderedState.view === View.PROJECT
+            ) {
+                this.decorateProjectPins(renderedState);
+                this.bindProjectPinActions();
+            }
 
         };
 
