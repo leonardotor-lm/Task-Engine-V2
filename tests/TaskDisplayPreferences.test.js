@@ -221,6 +221,24 @@ test("persiste el tema Lavanda", () => {
 
 });
 
+test("persiste el tema Noche de invierno", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.setTheme("winter-night"),
+        "winter-night"
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .getTheme(),
+        "winter-night"
+    );
+
+});
+
 test("rechaza temas visuales desconocidos", () => {
 
     const preferences =
