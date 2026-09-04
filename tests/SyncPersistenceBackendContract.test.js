@@ -100,6 +100,9 @@ test("Apps Script conserva historial filtros y preferencias en un round trip", (
                 due: ""
             }
         },
+        projectPinPreferences: {
+            "project-1": true
+        },
         displayPreferences: {
             sidebarTitle: "Tareas de Leo"
         }
@@ -120,6 +123,9 @@ test("Apps Script conserva historial filtros y preferencias en un round trip", (
     ));
     assert.ok(types.includes(
         "taskFilterPreferences"
+    ));
+    assert.ok(types.includes(
+        "projectPinPreferences"
     ));
     assert.ok(types.includes(
         "displayPreferences"
@@ -146,6 +152,11 @@ test("Apps Script conserva historial filtros y preferencias en un round trip", (
         restored.taskFilterPreferences,
         sourceSnapshot.data
             .taskFilterPreferences
+    );
+    assert.deepEqual(
+        restored.projectPinPreferences,
+        sourceSnapshot.data
+            .projectPinPreferences
     );
     assert.deepEqual(
         restored.displayPreferences,
@@ -176,6 +187,9 @@ test("loadSnapshot reconstruye el mismo contrato persistido en la revisión acti
                 "view:TODAY": "DUE_DATE"
             },
             taskFilterPreferences: {},
+            projectPinPreferences: {
+                "project-load": true
+            },
             displayPreferences: {
                 sidebarTitle: "Trabajo"
             }
@@ -247,6 +261,10 @@ test("loadSnapshot reconstruye el mismo contrato persistido en la revisión acti
     assert.deepEqual(
         result.data.data.taskFilterPreferences,
         {}
+    );
+    assert.deepEqual(
+        result.data.data.projectPinPreferences,
+        { "project-load": true }
     );
     assert.equal(
         result.data.data.displayPreferences
@@ -344,6 +362,7 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
             activityEvents: [],
             taskSortPreferences: {},
             taskFilterPreferences: {},
+            projectPinPreferences: {},
             displayPreferences: {}
         }),
         8
@@ -378,6 +397,13 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
     assert.equal(
         hasOwn(
             restored,
+            "projectPinPreferences"
+        ),
+        true
+    );
+    assert.equal(
+        hasOwn(
+            restored,
             "displayPreferences"
         ),
         true
@@ -391,6 +417,10 @@ test("una revisión nueva conserva vacíos explícitos como borrados deliberados
     );
     assert.deepEqual(
         restored.taskFilterPreferences,
+        {}
+    );
+    assert.deepEqual(
+        restored.projectPinPreferences,
         {}
     );
     assert.deepEqual(
@@ -427,6 +457,13 @@ test("una revisión histórica sin esquema omite datos opcionales en vez de borr
         hasOwn(
             restored,
             "taskFilterPreferences"
+        ),
+        false
+    );
+    assert.equal(
+        hasOwn(
+            restored,
+            "projectPinPreferences"
         ),
         false
     );
@@ -559,6 +596,25 @@ test("valida el título lateral antes de escribirlo en Sheets", () => {
                 }
             }),
             13
+        ),
+        error =>
+            error.code === "INVALID_SNAPSHOT"
+    );
+
+});
+
+test("rechaza proyectos anclados inválidos antes de escribirlos en Sheets", () => {
+
+    const backend = loadBackend();
+
+    assert.throws(
+        () => backend.snapshotToRows_(
+            snapshot({
+                projectPinPreferences: {
+                    "project-1": false
+                }
+            }),
+            14
         ),
         error =>
             error.code === "INVALID_SNAPSHOT"
