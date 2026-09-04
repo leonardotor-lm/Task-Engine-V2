@@ -166,6 +166,27 @@ export function createSyncFingerprint(
     if (
         Object.prototype.hasOwnProperty.call(
             data,
+            "projectPinPreferences"
+        )
+    ) {
+
+        const preferences =
+            normalizePreferences(
+                data.projectPinPreferences,
+                "Los proyectos anclados están incompletos."
+            );
+        const entries = Object.entries(preferences);
+
+        if (entries.length > 0) {
+            fingerprint.projectPinPreferences =
+                stableValue(preferences);
+        }
+
+    }
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            data,
             "displayPreferences"
         )
     ) {
