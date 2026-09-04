@@ -1,7 +1,12 @@
 import { TaskSort } from "./TaskSorting.js";
+import {
+    ProjectPinPreferences
+} from "../infrastructure/ProjectPinPreferences.js";
 
 const STARTED_FLAG =
     "__taskEngineOptionalSyncDataStarted";
+const PROJECT_PIN_LIFECYCLE_FLAG =
+    "__taskEngineProjectPinLifecycleStarted";
 
 const VALID_SORTS = new Set(
     Object.values(TaskSort)
@@ -21,6 +26,9 @@ export class SyncOptionalDataBridge {
     constructor(app) {
 
         this.app = app;
+        this.projectPinPreferences =
+            app?.projectPinPreferences ??
+            new ProjectPinPreferences();
 
     }
 
@@ -54,6 +62,42 @@ export class SyncOptionalDataBridge {
             }
 
             normalized[viewKey] = sort;
+
+        }
+
+        return normalized;
+
+    }
+
+    validateProjectPinPreferences(preferences) {
+
+        if (
+            !preferences ||
+            typeof preferences !== "object" ||
+            Array.isArray(preferences)
+        ) {
+            throw new Error(
+                "La copia contiene proyectos anclados inválidos."
+            );
+        }
+
+        const normalized = {};
+
+        for (
+            const [projectId, pinned] of
+            Object.entries(preferences)
+        ) {
+
+            if (
+                !String(projectId).trim() ||
+                pinned !== true
+            ) {
+                throw new Error(
+                    "La copia contiene un proyecto anclado inválido."
+                );
+            }
+
+            normalized[String(projectId).trim()] = true;
 
         }
 
@@ -101,6 +145,8 @@ export class SyncOptionalDataBridge {
 
     start() {
 
+        this.wrapProjectPinLifecycle();
+
         const backupService =
             this.app?.backupService;
         const sortPreferences =
@@ -135,6 +181,77 @@ export class SyncOptionalDataBridge {
 
     }
 
+    wrapProjectPinLifecycle() {
+
+        const taskService = this.app?.taskService;
+
+        if (
+            !taskService ||
+            taskService[PROJECT_PIN_LIFECYCLE_FLAG]
+        ) {
+            return;
+        }
+
+        taskService[PROJECT_PIN_LIFECYCLE_FLAG] = true;
+
+        for (
+            const methodName of [
+                "updateTask",
+                "completeTasks",
+                "archiveTasks",
+                "deleteTasks"
+            ]
+        ) {
+
+            const original = taskService[methodName];
+
+            if (typeof original !== "function") {
+                continue;
+            }
+
+            taskService[methodName] = (...args) => {
+                const result = original.apply(
+                    taskService,
+                    args
+                );
+
+                this.pruneProjectPins();
+
+                return result;
+            };
+
+        }
+
+    }
+
+    pruneProjectPins() {
+
+        const getActiveProjectRoots =
+            this.app?.taskService
+                ?.getActiveProjectRoots;
+
+        if (typeof getActiveProjectRoots !== "function") {
+            return;
+        }
+
+        this.projectPinPreferences.prune(
+            getActiveProjectRoots
+                .call(this.app.taskService)
+                .map(project => project.id)
+        );
+
+    }
+
+    getProjectPinPreferenceMap() {
+
+        return Object.fromEntries(
+            this.projectPinPreferences
+                .getPinnedProjectIds()
+                .map(projectId => [projectId, true])
+        );
+
+    }
+
     wrapCreateBackup(
         backupService,
         sortPreferences,
@@ -157,6 +274,8 @@ export class SyncOptionalDataBridge {
                     ...backup.data,
                     taskSortPreferences:
                         sortPreferences.getAll(),
+                    projectPinPreferences:
+                        this.getProjectPinPreferenceMap(),
                     displayPreferences: {
                         ...(sidebarTitle
                             ? { sidebarTitle }
@@ -193,6 +312,11 @@ export class SyncOptionalDataBridge {
                     rawData,
                     "taskSortPreferences"
                 );
+            const hasProjectPinPreferences =
+                hasOwn(
+                    rawData,
+                    "projectPinPreferences"
+                );
             const hasDisplayPreferences =
                 hasOwn(
                     rawData,
@@ -225,6 +349,13 @@ export class SyncOptionalDataBridge {
                     )
                     : null;
 
+            data.projectPinPreferences =
+                hasProjectPinPreferences
+                    ? this.validateProjectPinPreferences(
+                        rawData.projectPinPreferences
+                    )
+                    : null;
+
             data.displayPreferences =
                 hasDisplayPreferences
                     ? this.validateDisplayPreferences(
@@ -253,6 +384,15 @@ export class SyncOptionalDataBridge {
             replaceAll: preferences =>
                 sortPreferences.replaceAll(
                     preferences,
+                    { throwOnError: true }
+                )
+        };
+        const pinRepository = {
+            getAll: () =>
+                this.getProjectPinPreferenceMap(),
+            replaceAll: preferences =>
+                this.projectPinPreferences.replaceAll(
+                    Object.keys(preferences ?? {}),
                     { throwOnError: true }
                 )
         };
@@ -292,6 +432,16 @@ export class SyncOptionalDataBridge {
                 operations.push([
                     sortRepository,
                     data.taskSortPreferences
+                ]);
+            }
+
+            if (
+                data.projectPinPreferences !== null &&
+                data.projectPinPreferences !== undefined
+            ) {
+                operations.push([
+                    pinRepository,
+                    data.projectPinPreferences
                 ]);
             }
 
