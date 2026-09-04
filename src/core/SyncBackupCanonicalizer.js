@@ -88,6 +88,7 @@ const OPTIONAL_SERIALIZERS = {
 const OPTIONAL_PREFERENCES = [
     "taskSortPreferences",
     "taskFilterPreferences",
+    "projectPinPreferences",
     "displayPreferences"
 ];
 
