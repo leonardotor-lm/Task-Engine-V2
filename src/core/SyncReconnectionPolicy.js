@@ -33,6 +33,7 @@ const OPTIONAL_COLLECTIONS = [
 const OPTIONAL_PREFERENCES = [
     "taskSortPreferences",
     "taskFilterPreferences",
+    "projectPinPreferences",
     "displayPreferences"
 ];
 
