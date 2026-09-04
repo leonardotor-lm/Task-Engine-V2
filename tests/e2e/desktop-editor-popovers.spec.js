@@ -137,6 +137,34 @@ test("los popovers son exclusivos, contenidos y recuperan el foco", async ({ pag
     await expect(attachmentsButton).toBeFocused();
 });
 
+test("Programación se abre completa dentro del editor y del viewport", async ({ page }) => {
+    await openEditor(page);
+    const planning = page.locator(
+        ".desktopTaskEditorRecurrenceTool"
+    );
+
+    await planning.locator(":scope > summary").click();
+    await expect(planning).toHaveAttribute("open", "");
+
+    const panel = planning.locator(
+        ":scope > .desktopTaskEditorPopover"
+    );
+    const [panelBox, drawerBox] = await Promise.all([
+        panel.boundingBox(),
+        page.locator(".desktopTaskEditorLayout").boundingBox()
+    ]);
+
+    expect(panelBox.x).toBeGreaterThanOrEqual(drawerBox.x);
+    expect(panelBox.x + panelBox.width)
+        .toBeLessThanOrEqual(drawerBox.x + drawerBox.width);
+    expect(panelBox.y).toBeGreaterThanOrEqual(0);
+    expect(panelBox.y + panelBox.height).toBeLessThanOrEqual(800);
+    expect(await panel.evaluate(node =>
+        node.scrollHeight <= node.clientHeight ||
+        getComputedStyle(node).overflowY === "auto"
+    )).toBe(true);
+});
+
 test("el editor móvil conserva su estructura propia", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => {
