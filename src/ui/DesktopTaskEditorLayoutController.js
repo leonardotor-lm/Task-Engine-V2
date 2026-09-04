@@ -637,7 +637,8 @@ export class DesktopTaskEditorLayoutController {
         section.classList.add(
             "desktopTaskEditorRecurrenceTool",
             "desktopTaskEditorTool",
-            "desktopTaskEditorTransient"
+            "desktopTaskEditorTransient",
+            "desktopTaskEditorOpensUp"
         );
         section.open = false;
 
