@@ -12,6 +12,17 @@
     --icon-size: 16px;
 }
 
+.quickActionsSheetHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.quickActionsSheetHeader .closeQuickActions {
+    margin-left: auto;
+}
+
 .quickMoreMenu > .quickToggleProjectPin {
     box-sizing: border-box;
     width: 100%;
