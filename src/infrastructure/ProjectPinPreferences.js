@@ -6,6 +6,24 @@ export class ProjectPinPreferences {
         this.storage = storage;
     }
 
+    normalizeProjectIds(projectIds) {
+
+        if (!Array.isArray(projectIds)) {
+            throw new Error(
+                "La lista de proyectos anclados es inválida."
+            );
+        }
+
+        return [
+            ...new Set(
+                projectIds
+                    .map(value => String(value ?? "").trim())
+                    .filter(Boolean)
+            )
+        ];
+
+    }
+
     getPinnedProjectIds() {
 
         if (!this.storage) return [];
@@ -15,15 +33,7 @@ export class ProjectPinPreferences {
                 this.storage.getItem(STORAGE_KEY) ?? "[]"
             );
 
-            if (!Array.isArray(parsed)) return [];
-
-            return [
-                ...new Set(
-                    parsed
-                        .map(value => String(value ?? "").trim())
-                        .filter(Boolean)
-                )
-            ];
+            return this.normalizeProjectIds(parsed);
         } catch {
             return [];
         }
@@ -35,12 +45,39 @@ export class ProjectPinPreferences {
             .includes(String(projectId ?? ""));
     }
 
+    replaceAll(
+        projectIds,
+        { throwOnError = false } = {}
+    ) {
+
+        const normalized =
+            this.normalizeProjectIds(projectIds);
+
+        if (!this.storage) {
+            return normalized;
+        }
+
+        try {
+            this.storage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(normalized)
+            );
+        } catch (error) {
+            if (throwOnError) {
+                throw error;
+            }
+        }
+
+        return normalized;
+
+    }
+
     setPinned(projectId, pinned) {
 
         const normalizedId =
             String(projectId ?? "").trim();
 
-        if (!normalizedId || !this.storage) {
+        if (!normalizedId) {
             return false;
         }
 
@@ -54,10 +91,7 @@ export class ProjectPinPreferences {
             ids.delete(normalizedId);
         }
 
-        this.storage.setItem(
-            STORAGE_KEY,
-            JSON.stringify([...ids])
-        );
+        this.replaceAll([...ids]);
 
         return ids.has(normalizedId);
 
@@ -72,21 +106,16 @@ export class ProjectPinPreferences {
 
     prune(validProjectIds) {
 
-        if (!this.storage) return [];
-
         const validIds = new Set(
-            [...validProjectIds]
-                .map(value => String(value ?? "").trim())
-                .filter(Boolean)
+            this.normalizeProjectIds([
+                ...validProjectIds
+            ])
         );
 
         const nextIds = this.getPinnedProjectIds()
             .filter(id => validIds.has(id));
 
-        this.storage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(nextIds)
-        );
+        this.replaceAll(nextIds);
 
         return nextIds;
 
