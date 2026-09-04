@@ -873,6 +873,7 @@ function rowsToSnapshotData_(rows) {
         if (
             type === "taskSortPreferences" ||
             type === "taskFilterPreferences" ||
+            type === "projectPinPreferences" ||
             type === "displayPreferences"
         ) {
 
@@ -1017,6 +1018,41 @@ function rowsToSnapshotData_(rows) {
         data.taskFilterPreferences =
             specialPayloads
                 .taskFilterPreferences;
+
+    }
+
+    if (
+        optionalFields.projectPinPreferences ===
+            true
+    ) {
+
+        if (
+            !hasOwn_(
+                specialPayloads,
+                "projectPinPreferences"
+            )
+        ) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "Faltan proyectos anclados en la revisión remota."
+            );
+        }
+
+        try {
+            validateProjectPinPreferences_(
+                specialPayloads
+                    .projectPinPreferences
+            );
+        } catch (error) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "La hoja contiene proyectos anclados inválidos."
+            );
+        }
+
+        data.projectPinPreferences =
+            specialPayloads
+                .projectPinPreferences;
 
     }
 
@@ -1232,6 +1268,11 @@ function snapshotToRows_(
                 snapshot.data,
                 "taskFilterPreferences"
             ),
+        projectPinPreferences:
+            hasOwn_(
+                snapshot.data,
+                "projectPinPreferences"
+            ),
         displayPreferences:
             hasOwn_(
                 snapshot.data,
@@ -1244,6 +1285,7 @@ function snapshotToRows_(
         optionalFields.activityEvents ||
         optionalFields.taskSortPreferences ||
         optionalFields.taskFilterPreferences ||
+        optionalFields.projectPinPreferences ||
         optionalFields.displayPreferences;
 
     if (hasOptionalFields) {
@@ -1305,6 +1347,26 @@ function snapshotToRows_(
                 .SYNC_SCHEMA_VERSION,
             "",
             filterPayload
+        ]);
+
+    }
+
+    if (optionalFields.projectPinPreferences) {
+
+        var projectPinPayload = JSON.stringify(
+            snapshot.data.projectPinPreferences
+        );
+
+        assertPayloadSize_(projectPinPayload);
+
+        rows.push([
+            revision,
+            "projectPinPreferences",
+            "preferences",
+            TASK_ENGINE_SETTINGS
+                .SYNC_SCHEMA_VERSION,
+            "",
+            projectPinPayload
         ]);
 
     }
@@ -1463,6 +1525,17 @@ function validateSnapshot_(snapshot) {
     if (
         hasOwn_(
             snapshot.data,
+            "projectPinPreferences"
+        )
+    ) {
+        validateProjectPinPreferences_(
+            snapshot.data.projectPinPreferences
+        );
+    }
+
+    if (
+        hasOwn_(
+            snapshot.data,
             "displayPreferences"
         )
     ) {
@@ -1605,6 +1678,38 @@ function validateTaskFilterPreferences_(
                 }
 
             });
+
+        });
+
+}
+
+function validateProjectPinPreferences_(
+    preferences
+) {
+
+    if (
+        !preferences ||
+        typeof preferences !== "object" ||
+        Array.isArray(preferences)
+    ) {
+        throw protocolError_(
+            "INVALID_SNAPSHOT",
+            "La copia contiene proyectos anclados inválidos."
+        );
+    }
+
+    Object.keys(preferences)
+        .forEach(function(projectId) {
+
+            if (
+                !projectId.trim() ||
+                preferences[projectId] !== true
+            ) {
+                throw protocolError_(
+                    "INVALID_SNAPSHOT",
+                    "La copia contiene un proyecto anclado inválido."
+                );
+            }
 
         });
 
