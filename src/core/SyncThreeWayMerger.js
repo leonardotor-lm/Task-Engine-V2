@@ -18,6 +18,7 @@ const OPTIONAL_COLLECTIONS = [
 const PREFERENCE_MAPS = [
     "taskSortPreferences",
     "taskFilterPreferences",
+    "projectPinPreferences",
     "displayPreferences"
 ];
 
