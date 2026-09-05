@@ -171,11 +171,11 @@ test("Adjuntos nace cerrado en móvil desde su controlador de origen", () => {
 test("Opciones ocupa una celda visible y abre un panel temático", () => {
     assert.match(
         styles,
-        /\.mobileTaskEditorCompactOverflow\s*\{[\s\S]*?width:\s*auto;/
+        /> \.mobileTaskEditorCompactOverflow\s*\{[\s\S]*?width:\s*100%;[\s\S]*?min-width:\s*0;/
     );
     assert.match(
         styles,
-        /\.mobileTaskEditorCompactOverflowSummary\s*\{[\s\S]*?width:\s*100%;/
+        /\.mobileTaskEditorCompactSummary,[\s\S]*?width:\s*100%;[\s\S]*?height:\s*82px;/
     );
     assert.match(
         styles,
@@ -191,6 +191,15 @@ test("Opciones vuelve a la grilla móvil con una etiqueta visible", () => {
     assert.match(
         enhancer,
         /mobileTaskEditorCompactLabel[\s\S]*Opciones/
+    );
+    assert.match(
+        enhancer,
+        /options:[\s\S]*M4 21v-7[\s\S]*M18 16h4/
+    );
+    assert.match(enhancer, /renderIcon\("options"\)/);
+    assert.doesNotMatch(
+        enhancer,
+        /<circle cx="12" cy="5" r="1"><\/circle>/
     );
     assert.match(enhancer, /grid\.append\(details\)/);
     assert.doesNotMatch(enhancer, /header\.append\(details\)/);
