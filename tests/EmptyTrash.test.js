@@ -103,4 +103,23 @@ test("Papelera muestra Vaciar papelera sólo cuando contiene tareas", () => {
         /id="emptyTrash"/
     );
 
+    const renderedTrash = router.render({
+        ...baseState,
+        tasks: [deleted],
+        allTasks: [deleted]
+    });
+
+    assert.match(
+        renderedTrash,
+        /id="emptyTrash"[\s\S]*responsiveIconButton/
+    );
+    assert.match(
+        renderedTrash,
+        /aria-label="Vaciar papelera"/
+    );
+    assert.match(
+        renderedTrash,
+        /responsiveButtonIcon[\s\S]*<svg/
+    );
+
 });
