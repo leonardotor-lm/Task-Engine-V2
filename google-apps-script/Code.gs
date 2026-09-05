@@ -13,7 +13,11 @@ var TASK_ENGINE_SETTINGS = Object.freeze({
     MAX_ATTACHMENT_BYTES: 3 * 1024 * 1024,
     MAX_ATTACHMENT_NAME_LENGTH: 180,
     RATE_LIMIT_WINDOW_SECONDS: 60,
-    MAX_REQUESTS_PER_WINDOW: 120
+    MAX_REQUESTS_PER_WINDOW: 120,
+    COMPACTION_MAX_ROWS: 50000,
+    COMPACTION_REVISIONS_TO_KEEP: 5,
+    MAINTENANCE_TRIGGER_HANDLER:
+        "runTaskEngineMaintenance"
 });
 
 function setupTaskEngine() {
@@ -26,6 +30,48 @@ function setupTaskEngine() {
         spreadsheetId: spreadsheet.getId(),
         spreadsheetName: spreadsheet.getName()
     };
+
+}
+
+function installTaskEngineMaintenance() {
+
+    var handler =
+        TASK_ENGINE_SETTINGS
+            .MAINTENANCE_TRIGGER_HANDLER;
+
+    ScriptApp.getProjectTriggers()
+        .forEach(function(trigger) {
+            if (
+                trigger.getHandlerFunction() ===
+                    handler
+            ) {
+                ScriptApp.deleteTrigger(trigger);
+            }
+        });
+
+    ScriptApp.newTrigger(handler)
+        .timeBased()
+        .everyDays(1)
+        .atHour(3)
+        .create();
+
+    return {
+        installed: true,
+        handler: handler,
+        frequency: "DAILY"
+    };
+
+}
+
+function runTaskEngineMaintenance() {
+
+    return compactTaskEngineStorage_(false);
+
+}
+
+function compactTaskEngineStorage() {
+
+    return compactTaskEngineStorage_(true);
 
 }
 
@@ -823,6 +869,277 @@ function getRevisionRows_(
             6
         )
         .getValues();
+
+}
+
+function getRecentRevisionRows_(
+    dataSheet,
+    currentRevision,
+    revisionsToKeep
+) {
+
+    var rows = [];
+    var firstRevision = Math.max(
+        1,
+        currentRevision - revisionsToKeep + 1
+    );
+
+    for (
+        var revision = firstRevision;
+        revision <= currentRevision;
+        revision += 1
+    ) {
+        rows = rows.concat(
+            getRevisionRows_(
+                dataSheet,
+                revision
+            )
+        );
+    }
+
+    return rows;
+
+}
+
+function createCompactionBackup_(
+    currentRevision,
+    currentRows,
+    exportedAt
+) {
+
+    var backup = {
+        format:
+            TASK_ENGINE_SETTINGS.BACKUP_FORMAT,
+        version:
+            TASK_ENGINE_SETTINGS.BACKUP_VERSION,
+        exportedAt:
+            exportedAt ||
+            new Date().toISOString(),
+        data: rowsToSnapshotData_(currentRows)
+    };
+
+    validateSnapshot_(backup);
+
+    var timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-");
+    var name =
+        "task-engine-compaction-backup-rev-" +
+        currentRevision +
+        "-" + timestamp + ".json";
+
+    var file = DriveApp.createFile(
+        name,
+        JSON.stringify(backup),
+        "application/json"
+    );
+
+    return {
+        id: file.getId(),
+        name: file.getName(),
+        url: file.getUrl()
+    };
+
+}
+
+function compactTaskEngineStorage_(force) {
+
+    var lock = LockService.getScriptLock();
+
+    if (!lock.tryLock(20000)) {
+        throw protocolError_(
+            "SERVER_BUSY",
+            "El almacenamiento está ocupado. Intentá nuevamente."
+        );
+    }
+
+    var spreadsheet = null;
+    var temporarySheet = null;
+    var originalSheet = null;
+    var originalName = "";
+    var replacementActivated = false;
+
+    try {
+
+        spreadsheet = getSpreadsheet_();
+        var storage = ensureStorage_(spreadsheet);
+        originalSheet = storage.dataSheet;
+        var originalRows = originalSheet
+            .getLastRow();
+
+        if (
+            !force &&
+            originalRows <=
+                TASK_ENGINE_SETTINGS
+                    .COMPACTION_MAX_ROWS
+        ) {
+            return {
+                compacted: false,
+                reason: "BELOW_THRESHOLD",
+                rows: originalRows
+            };
+        }
+
+        var currentRevision =
+            getRevision_(storage.metaSheet);
+
+        if (currentRevision === 0) {
+            return {
+                compacted: false,
+                reason: "EMPTY_STORAGE",
+                rows: originalRows
+            };
+        }
+
+        var currentRows = getRevisionRows_(
+            originalSheet,
+            currentRevision
+        );
+
+        if (currentRows.length === 0) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "No se encontró la revisión activa antes de compactar."
+            );
+        }
+
+        var backup = createCompactionBackup_(
+            currentRevision,
+            currentRows,
+            storage.metaSheet
+                .getRange(2, 2)
+                .getDisplayValue()
+        );
+        var retainedRows =
+            getRecentRevisionRows_(
+                originalSheet,
+                currentRevision,
+                TASK_ENGINE_SETTINGS
+                    .COMPACTION_REVISIONS_TO_KEEP
+            );
+
+        var suffix = String(Date.now());
+        var temporaryName =
+            "TaskEngineData_compacting_" +
+            suffix;
+        originalName =
+            "TaskEngineData_previous_" +
+            suffix;
+
+        temporarySheet =
+            spreadsheet.insertSheet(
+                temporaryName
+            );
+        var outputRows = [[
+            "revision",
+            "type",
+            "id",
+            "version",
+            "updatedAt",
+            "payload"
+        ]].concat(retainedRows);
+
+        temporarySheet
+            .getRange(
+                1,
+                1,
+                outputRows.length,
+                6
+            )
+            .setValues(outputRows);
+        temporarySheet.setFrozenRows(1);
+
+        var verificationRows =
+            getRevisionRows_(
+                temporarySheet,
+                currentRevision
+            );
+
+        if (
+            verificationRows.length !==
+                currentRows.length ||
+            JSON.stringify(
+                rowsToSnapshotData_(
+                    verificationRows
+                )
+            ) !== JSON.stringify(
+                rowsToSnapshotData_(
+                    currentRows
+                )
+            )
+        ) {
+            throw protocolError_(
+                "COMPACTION_FAILED",
+                "La revisión activa no superó la verificación de compactación."
+            );
+        }
+
+        originalSheet.setName(originalName);
+        temporarySheet.setName(
+            TASK_ENGINE_SETTINGS.DATA_SHEET
+        );
+        replacementActivated = true;
+        SpreadsheetApp.flush();
+
+        var previousSheetRetained = false;
+
+        try {
+            spreadsheet.deleteSheet(originalSheet);
+        } catch (error) {
+            previousSheetRetained = true;
+            console.warn(
+                "La hoja anterior quedó conservada como " +
+                originalName + "."
+            );
+        }
+
+        return {
+            compacted: true,
+            revision: currentRevision,
+            rowsBefore: originalRows,
+            rowsAfter: outputRows.length,
+            revisionsKept:
+                TASK_ENGINE_SETTINGS
+                    .COMPACTION_REVISIONS_TO_KEEP,
+            backup: backup,
+            previousSheetRetained:
+                previousSheetRetained
+        };
+
+    } catch (error) {
+
+        if (
+            originalSheet &&
+            originalName &&
+            !spreadsheet.getSheetByName(
+                TASK_ENGINE_SETTINGS.DATA_SHEET
+            )
+        ) {
+            originalSheet.setName(
+                TASK_ENGINE_SETTINGS.DATA_SHEET
+            );
+        }
+
+        if (
+            temporarySheet &&
+            !replacementActivated
+        ) {
+            try {
+                spreadsheet.deleteSheet(
+                    temporarySheet
+                );
+            } catch (cleanupError) {
+                console.warn(
+                    "No se pudo quitar la hoja temporal de compactación."
+                );
+            }
+        }
+
+        throw error;
+
+    } finally {
+        lock.releaseLock();
+    }
 
 }
 
