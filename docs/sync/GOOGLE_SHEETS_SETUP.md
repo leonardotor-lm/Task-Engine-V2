@@ -99,6 +99,19 @@ La URL `/exec` se mantiene.
 
 Las actualizaciones que incorporen adjuntos pueden solicitar una nueva autorización de Drive. Si Google la muestra al probar la primera subida, aceptala desde la misma cuenta propietaria del despliegue.
 
+### Mantenimiento del historial
+
+El backend puede compactar `TaskEngineData` para evitar que el historial acumulado vuelva lenta la sincronización. La operación crea primero una copia JSON de la revisión activa en Drive, conserva las últimas cinco revisiones completas, verifica que la revisión activa pueda reconstruirse sin diferencias y recién entonces reemplaza la hoja de datos.
+
+Después de actualizar `Code.gs`:
+
+1. ejecutá una vez `compactTaskEngineStorage` desde el editor de Apps Script para compactar el historial existente;
+2. comprobá que la aplicación siga mostrando la revisión y los datos esperados;
+3. ejecutá una vez `installTaskEngineMaintenance` para instalar el mantenimiento diario;
+4. aceptá los permisos de Drive y de activadores que solicite Google.
+
+El mantenimiento automático sólo actúa cuando la hoja supera las 50.000 filas. No se ejecuta dentro de una solicitud normal de sincronización. Si no puede eliminar la hoja anterior después del reemplazo, la conserva con un nombre `TaskEngineData_previous_*` para permitir su revisión manual.
+
 ### Actualización del contrato de persistencia
 
 Las versiones del backend que incorporan el esquema de persistencia `2` deben volver a desplegarse en Apps Script. Actualizar solamente el frontend no modifica el código que está ejecutando la URL `/exec`.
