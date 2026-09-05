@@ -16,6 +16,8 @@ export class ProjectWorkspaceController {
         this.app = app;
         this.document = documentRef;
         this.pinPreferences = pinPreferences;
+        this.projectExpansionSnapshot = null;
+        this.lastRenderedView = null;
 
     }
 
@@ -29,6 +31,15 @@ export class ProjectWorkspaceController {
             mainView.render.bind(mainView);
 
         mainView.render = state => {
+
+            if (
+                this.lastRenderedView === View.PROJECT &&
+                state.view !== View.PROJECT
+            ) {
+                this.restoreProjectExpansionState();
+            }
+
+            this.lastRenderedView = state.view;
 
             let renderedState =
                 state.view === View.PROJECT
@@ -101,6 +112,7 @@ export class ProjectWorkspaceController {
                     this.app.currentView !==
                         View.PROJECT
                 ) {
+                    this.captureProjectExpansionState();
                     this.app.projectOriginCustomFilterId =
                         this.app.currentCustomFilterId ??
                         null;
@@ -713,6 +725,36 @@ export class ProjectWorkspaceController {
         this.app.projectTaskCreationOpen = false;
         this.app.inlineSubtaskParentId = null;
         this.app.selectedTask = null;
+
+    }
+
+    captureProjectExpansionState() {
+
+        this.projectExpansionSnapshot = new Set(
+            this.app.expandedTaskIds ?? []
+        );
+
+    }
+
+    restoreProjectExpansionState() {
+
+        if (!this.projectExpansionSnapshot) return;
+
+        const expandedTaskIds =
+            this.app.expandedTaskIds;
+
+        if (expandedTaskIds?.clear && expandedTaskIds?.add) {
+            expandedTaskIds.clear();
+
+            for (
+                const id of
+                this.projectExpansionSnapshot
+            ) {
+                expandedTaskIds.add(id);
+            }
+        }
+
+        this.projectExpansionSnapshot = null;
 
     }
 

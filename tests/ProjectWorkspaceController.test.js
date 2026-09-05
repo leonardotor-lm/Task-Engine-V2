@@ -323,6 +323,62 @@ test("la raíz del breadcrumb vuelve directamente a la vista de origen", () => {
 
 });
 
+test("volver de un proyecto restaura la expansión previa de la lista", () => {
+
+    const project = {
+        id: "project",
+        parentTaskId: null,
+        isProject: true
+    };
+    const child = {
+        id: "child",
+        parentTaskId: project.id
+    };
+    const otherProjectId = "other-project";
+    const { app } = createApp({
+        tasks: [project, child],
+        currentView: View.PROJECTS,
+        previousProjectView: View.PROJECTS
+    });
+
+    app.expandedTaskIds.add(otherProjectId);
+
+    const controller = new ProjectWorkspaceController(
+        app,
+        { documentRef: null }
+    );
+
+    controller.start();
+    app.mainView.render({
+        view: View.PROJECTS,
+        tasks: [project, child]
+    });
+    app.mainView.callbacks.onOpenProject(project.id);
+    app.expandedTaskIds.add(project.id);
+    app.expandedTaskIds.add(child.id);
+    app.mainView.render({
+        view: View.PROJECT,
+        expandedTaskIds: app.expandedTaskIds
+    });
+
+    app.currentView = View.PROJECTS;
+    app.mainView.render({
+        view: View.PROJECTS,
+        tasks: [project, child],
+        expandedTaskIds: app.expandedTaskIds
+    });
+
+    assert.deepEqual(
+        [...app.expandedTaskIds],
+        [otherProjectId]
+    );
+    assert.equal(
+        controller.projectExpansionSnapshot,
+        null
+    );
+
+});
+
 test("la raíz reaplica el filtro guardado de origen", () => {
 
     const filter = {
