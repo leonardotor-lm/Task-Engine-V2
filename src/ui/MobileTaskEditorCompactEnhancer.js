@@ -446,17 +446,25 @@ function appendNotionNotes(drawer, body) {
 }
 
 function createOverflow(drawer, grid) {
-    const header = drawer.querySelector(".taskEditorHeader");
-    if (!header) return null;
+    if (!grid) return null;
 
     const details = document.createElement("details");
-    details.className = "mobileTaskEditorCompactOverflow";
+    details.className =
+        "mobileTaskEditorCompactTool " +
+        "mobileTaskEditorCompactOverflow";
 
     const summary = document.createElement("summary");
-    summary.className = "mobileTaskEditorCompactOverflowSummary";
-    summary.setAttribute("aria-label", "Más acciones");
-    summary.setAttribute("title", "Más acciones");
-    summary.innerHTML = renderIcon("more");
+    summary.className =
+        "mobileTaskEditorCompactSummary " +
+        "mobileTaskEditorCompactOverflowSummary";
+    summary.setAttribute("aria-label", "Opciones");
+    summary.setAttribute("title", "Opciones");
+    summary.innerHTML = `
+        ${renderIcon("more")}
+        <span class="mobileTaskEditorCompactLabel">
+            Opciones
+        </span>
+    `;
 
     const body = document.createElement("div");
     body.className = "mobileTaskEditorCompactOverflowPanel";
@@ -529,8 +537,8 @@ function createOverflow(drawer, grid) {
     if (body.childElementCount === 0) return null;
 
     details.append(summary, body);
-    header.append(details);
-    configureTransient(details, body, "Más acciones");
+    grid.append(details);
+    configureTransient(details, body, "Opciones");
     return details;
 }
 

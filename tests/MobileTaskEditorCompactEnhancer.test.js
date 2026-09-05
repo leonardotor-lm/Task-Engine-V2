@@ -168,19 +168,32 @@ test("Adjuntos nace cerrado en móvil desde su controlador de origen", () => {
     );
 });
 
-test("Más acciones usa una caja de scroll con altura real de viewport", () => {
+test("Opciones ocupa una celda visible y abre un panel temático", () => {
     assert.match(
         styles,
-        /mobileTaskEditorCompactOverflow[\s\S]*height:\s*calc\([\s\S]*100dvh - 66px - env\(safe-area-inset-bottom\)[\s\S]*\)/
+        /\.mobileTaskEditorCompactOverflow\s*\{[\s\S]*?width:\s*auto;/
     );
     assert.match(
         styles,
-        /mobileTaskEditorCompactOverflow[\s\S]*max-height:\s*none/
+        /\.mobileTaskEditorCompactOverflowSummary\s*\{[\s\S]*?width:\s*100%;/
     );
     assert.match(
         styles,
-        /mobileTaskEditorCompactOverflow[\s\S]*overflow-y:\s*auto/
+        /details\[open\] > \.mobileTaskEditorCompactPanel[\s\S]*?background:\s*var\(--color-surface\)/
     );
+});
+
+test("Opciones vuelve a la grilla móvil con una etiqueta visible", () => {
+    assert.match(
+        enhancer,
+        /"mobileTaskEditorCompactTool " \+\s*"mobileTaskEditorCompactOverflow"/
+    );
+    assert.match(
+        enhancer,
+        /mobileTaskEditorCompactLabel[\s\S]*Opciones/
+    );
+    assert.match(enhancer, /grid\.append\(details\)/);
+    assert.doesNotMatch(enhancer, /header\.append\(details\)/);
 });
 
 test("Cancelar y Guardar forman parte del flujo normal del editor", () => {

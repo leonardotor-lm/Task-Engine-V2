@@ -322,7 +322,7 @@
         line-height: 1.3;
     }
 
-    /* Más acciones: contenido ajustado, sin estiramiento ni tarjetas por opción. */
+    /* Opciones: contenido ajustado, sin estiramiento ni tarjetas por opción. */
     .mobileTaskEditorCompactLayout
         .mobileTaskEditorCompactOverflow
         > .mobileTaskEditorCompactPanel {

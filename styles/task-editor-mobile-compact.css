@@ -31,18 +31,17 @@
 
     .mobileTaskEditorCompactOverflow {
         position: relative;
-        flex: 0 0 44px;
-        width: 44px;
+        width: auto;
         margin: 0;
     }
 
     .mobileTaskEditorCompactOverflowSummary {
-        display: flex;
+        display: grid;
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        width: 44px;
-        height: 44px;
+        width: 100%;
+        height: auto;
         list-style: none;
         cursor: pointer;
         color: var(--color-text);
@@ -461,33 +460,6 @@
 
     .mobileTaskEditorDateClear[hidden] {
         display: none;
-    }
-
-    .mobileTaskEditorCompactOverflow
-        > .mobileTaskEditorCompactPanel {
-        top: 58px;
-        right: 8px;
-        bottom: auto;
-        left: auto;
-        box-sizing: border-box;
-        width: min(310px, calc(100vw - 16px));
-        height: calc(
-            100dvh - 66px - env(safe-area-inset-bottom)
-        );
-        max-height: none;
-        padding-bottom: 0;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        scroll-padding-bottom: calc(28px + env(safe-area-inset-bottom));
-    }
-
-    .mobileTaskEditorCompactOverflow
-        > .mobileTaskEditorCompactPanel::after {
-        content: "";
-        display: block;
-        width: 100%;
-        height: calc(28px + env(safe-area-inset-bottom));
-        min-height: calc(28px + env(safe-area-inset-bottom));
     }
 
     .mobileTaskEditorCompactOverflowOptions,
