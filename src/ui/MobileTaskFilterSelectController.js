@@ -23,7 +23,7 @@ export class MobileTaskFilterSelectController {
         mainView.render = state => {
 
             originalRender(state);
-            this.enhanceMobileFilterSelects();
+            this.enhanceMobileSelects();
 
         };
 
@@ -39,17 +39,13 @@ export class MobileTaskFilterSelectController {
 
     }
 
-    enhanceMobileFilterSelects() {
+    enhanceMobileSelects() {
 
         if (!this.isMobileViewport()) return;
 
-        const form = this.document?.getElementById(
-            "taskFilterForm"
-        );
-
-        if (!form) return;
-
-        form.querySelectorAll("select").forEach(select => {
+        this.document?.querySelectorAll?.(
+            "#taskFilterForm select, #activitySearchForm select"
+        ).forEach(select => {
             this.enhanceSelect(select);
         });
 
