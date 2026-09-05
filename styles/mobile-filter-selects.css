@@ -1,6 +1,6 @@
 @media (max-width: 760px) {
 
-    .taskFilters .mobileFilterNativeSelect {
+    .mobileFilterNativeSelect {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -107,6 +107,16 @@
         background: var(--color-accent-soft);
         color: var(--color-accent-strong);
         font-weight: 600;
+    }
+
+    .activityCategory .mobileFilterSelect {
+        width: 100%;
+        margin: 0;
+    }
+
+    .activityCategory .mobileFilterSelectSummary {
+        height: 40px;
+        min-height: 40px;
     }
 
 }
