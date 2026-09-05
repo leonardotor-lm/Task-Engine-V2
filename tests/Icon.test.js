@@ -16,6 +16,7 @@ test("ofrece la familia inicial de íconos", () => {
             "eye-off",
             "more",
             "close",
+            "trash",
             "chevron-down",
             "chevron-up",
             "chevron-right",
