@@ -183,24 +183,21 @@ test("Opciones ocupa una celda visible y abre un panel temático", () => {
     );
 });
 
-test("Opciones vuelve a la grilla móvil con una etiqueta visible", () => {
+test("Más vuelve a la grilla móvil con un ícono simple", () => {
     assert.match(
         enhancer,
         /"mobileTaskEditorCompactTool " \+\s*"mobileTaskEditorCompactOverflow"/
     );
     assert.match(
         enhancer,
-        /mobileTaskEditorCompactLabel[\s\S]*Opciones/
+        /mobileTaskEditorCompactLabel[\s\S]*Más/
     );
     assert.match(
         enhancer,
-        /options:[\s\S]*M4 21v-7[\s\S]*M18 16h4/
+        /more:[\s\S]*circle cx="12" cy="12" r="9"[\s\S]*M8 12h8/
     );
-    assert.match(enhancer, /renderIcon\("options"\)/);
-    assert.doesNotMatch(
-        enhancer,
-        /<circle cx="12" cy="5" r="1"><\/circle>/
-    );
+    assert.match(enhancer, /renderIcon\("more"\)/);
+    assert.match(enhancer, /aria-label", "Más opciones"/);
     assert.match(enhancer, /grid\.append\(details\)/);
     assert.doesNotMatch(enhancer, /header\.append\(details\)/);
 });
