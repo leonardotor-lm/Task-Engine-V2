@@ -363,9 +363,25 @@ export class WaitingController {
             `taskToolsButton${this.showWaitingInArea
                 ? " active"
                 : ""}`;
-        button.textContent = this.showWaitingInArea
+        const label = this.showWaitingInArea
             ? "Ocultar en espera"
             : "Mostrar en espera";
+        button.setAttribute("aria-label", label);
+        button.setAttribute("title", label);
+        button.setAttribute(
+            "aria-pressed",
+            String(this.showWaitingInArea)
+        );
+        button.innerHTML = `
+            <span
+                class="taskContextToolbarWaitingIcon"
+                aria-hidden="true">
+                ${Icon.render("hand")}
+            </span>
+            <span class="taskContextToolbarWaitingLabel">
+                ${label}
+            </span>
+        `;
 
         controls.append(button);
 
