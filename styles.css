@@ -3975,11 +3975,39 @@ textarea,
     margin-bottom: 12px;
 }
 
-.goalStatusNavigation button.active {
+:root .goalsView .goalStatusNavigation button {
+    padding: 6px 9px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+:root .goalsView .goalStatusNavigation button:hover,
+:root .goalsView .goalStatusNavigation button:focus-visible {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+}
+
+:root .goalsView .goalStatusNavigation button.active {
     border-color: var(--color-accent);
     background: var(--color-accent-soft);
     color: var(--color-accent-strong);
     font-weight: 700;
+}
+
+:root .goalsView .createActionButton {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root .goalsView .createActionButton:hover,
+:root .goalsView .createActionButton:focus-visible {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
+    color: var(--color-on-accent);
 }
 
 .goalHistoryActions {
@@ -4048,18 +4076,21 @@ textarea,
     margin-bottom: 5px;
 }
 
-.openGoal {
+:root .goalsView .openGoal {
     padding: 0;
     border: 0;
     background: transparent;
-    color: #1e293b;
+    color: var(--color-text);
+    box-shadow: none;
     font: inherit;
     font-weight: 700;
     text-align: left;
     cursor: pointer;
 }
 
-.openGoal:hover {
+:root .goalsView .openGoal:hover,
+:root .goalsView .openGoal:focus-visible {
+    background: transparent;
     color: var(--color-accent-strong);
 }
 
