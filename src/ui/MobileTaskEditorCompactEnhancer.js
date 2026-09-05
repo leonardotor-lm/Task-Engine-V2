@@ -38,10 +38,16 @@ const ICONS = Object.freeze({
         <circle cx="12" cy="12" r="5"></circle>
         <circle cx="12" cy="12" r="1"></circle>
     `,
-    more: `
-        <circle cx="12" cy="5" r="1"></circle>
-        <circle cx="12" cy="12" r="1"></circle>
-        <circle cx="12" cy="19" r="1"></circle>
+    options: `
+        <path d="M4 21v-7"></path>
+        <path d="M4 10V3"></path>
+        <path d="M12 21v-9"></path>
+        <path d="M12 8V3"></path>
+        <path d="M20 21v-5"></path>
+        <path d="M20 12V3"></path>
+        <path d="M2 14h4"></path>
+        <path d="M10 8h4"></path>
+        <path d="M18 16h4"></path>
     `
 });
 
@@ -172,7 +178,7 @@ function ensureStyles() {
 }
 
 function renderIcon(name) {
-    const paths = ICONS[name] ?? ICONS.more;
+    const paths = ICONS[name] ?? ICONS.options;
     return `
         <svg
             class="mobileTaskEditorCompactIcon"
@@ -460,7 +466,7 @@ function createOverflow(drawer, grid) {
     summary.setAttribute("aria-label", "Opciones");
     summary.setAttribute("title", "Opciones");
     summary.innerHTML = `
-        ${renderIcon("more")}
+        ${renderIcon("options")}
         <span class="mobileTaskEditorCompactLabel">
             Opciones
         </span>

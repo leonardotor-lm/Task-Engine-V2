@@ -29,22 +29,13 @@
         display: none !important;
     }
 
-    .mobileTaskEditorCompactOverflow {
+    .mobileTaskEditorCompactLayout
+        .mobileTaskEditorToolGrid
+        > .mobileTaskEditorCompactOverflow {
         position: relative;
-        width: auto;
-        margin: 0;
-    }
-
-    .mobileTaskEditorCompactOverflowSummary {
-        display: grid;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
         width: 100%;
-        height: auto;
-        list-style: none;
-        cursor: pointer;
-        color: var(--color-text);
+        min-width: 0;
+        margin: 0;
     }
 
     .mobileTaskEditorCompactOverflowSummary::-webkit-details-marker {
