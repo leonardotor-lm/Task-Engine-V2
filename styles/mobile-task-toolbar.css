@@ -162,7 +162,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        overflow: visible;
     }
 
     #taskContextToolbar[data-viewport-mode="mobile"]
@@ -198,16 +198,28 @@
     #taskContextToolbar[data-viewport-mode="mobile"]
         .mobileTaskToolbarSelect > select {
         position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    #taskContextToolbar[data-viewport-mode="mobile"]
+        .mobileTaskToolbarSelectTrigger {
+        position: absolute;
         z-index: 2;
         inset: 0;
-        width: 44px;
-        min-width: 44px;
-        max-width: 44px;
-        height: 44px;
-        min-height: 44px;
+        width: 100%;
+        height: 100%;
         padding: 0;
         border: 0;
-        opacity: 0;
+        border-radius: inherit;
+        background: transparent;
+        color: inherit;
         cursor: pointer;
     }
 
@@ -215,6 +227,111 @@
         .mobileTaskToolbarSelect:focus-within {
         outline: 2px solid var(--color-accent);
         outline-offset: 2px;
+    }
+
+    .mobileTaskToolbarSelectDialog {
+        box-sizing: border-box;
+        width: min(calc(100vw - 24px), 430px);
+        max-height: min(72dvh, 560px);
+        padding: 0;
+        overflow: hidden;
+        border: var(--transient-surface-border);
+        border-radius: 14px;
+        background: var(--color-surface);
+        color: var(--color-text);
+        box-shadow: var(--transient-dialog-shadow);
+    }
+
+    .mobileTaskToolbarSelectDialog::backdrop {
+        background: rgb(0 0 0 / 52%);
+    }
+
+    .mobileTaskToolbarSelectDialogHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 14px 12px 18px;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-surface);
+    }
+
+    .mobileTaskToolbarSelectDialogHeader h2 {
+        margin: 0;
+        color: var(--color-text);
+        font-size: 18px;
+        line-height: 1.3;
+    }
+
+    .mobileTaskToolbarSelectDialogClose {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--transient-surface-radius);
+        background: var(--color-surface-hover);
+        color: var(--color-text);
+        font: inherit;
+        font-size: 28px;
+        font-weight: 300;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .mobileTaskToolbarSelectDialogOptions {
+        display: grid;
+        gap: 5px;
+        max-height: calc(min(72dvh, 560px) - 70px);
+        padding: 10px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .mobileTaskToolbarSelectDialogOption {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 22px;
+        align-items: center;
+        gap: 12px;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 12px;
+        border: 1px solid transparent;
+        border-radius: var(--transient-surface-radius);
+        background: transparent;
+        color: var(--color-text);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .mobileTaskToolbarSelectDialogOption:hover,
+    .mobileTaskToolbarSelectDialogOption:focus-visible {
+        background: var(--color-surface-hover);
+    }
+
+    .mobileTaskToolbarSelectDialogOption[aria-checked="true"] {
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-strong);
+        font-weight: 700;
+    }
+
+    .mobileTaskToolbarSelectDialogIndicator {
+        box-sizing: border-box;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--color-border-strong);
+        border-radius: 50%;
+    }
+
+    .mobileTaskToolbarSelectDialogOption[aria-checked="true"]
+        .mobileTaskToolbarSelectDialogIndicator {
+        border: 6px solid var(--color-accent);
     }
 
     #taskContextToolbar[data-viewport-mode="mobile"]
