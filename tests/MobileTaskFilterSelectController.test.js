@@ -58,11 +58,16 @@ test("la integración conserva el select real y evita el selector nativo visible
         /mobileTaskFilterSelectController\.start\(\)/
     );
     assert.match(controller, /taskFilterForm/);
+    assert.match(controller, /activitySearchForm/);
     assert.match(controller, /mobileFilterNativeSelect/);
     assert.match(controller, /mobileFilterSelectOption/);
     assert.match(controller, /select\.value = option\.value/);
     assert.match(styles, /@media \(max-width: 760px\)/);
     assert.match(styles, /\.mobileFilterSelectMenu/);
     assert.match(styles, /position: fixed/);
+    assert.match(
+        styles,
+        /\.activityCategory \.mobileFilterSelect/
+    );
 
 });
