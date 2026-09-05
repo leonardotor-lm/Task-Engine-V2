@@ -66,7 +66,7 @@ test("los controles móviles se decoran durante la construcción y completan el 
     );
 });
 
-test("filtros orden y agrupamiento se compactan sin cambiar sus controles", () => {
+test("filtros orden y agrupamiento se compactan conservando sus controles base", () => {
     assert.match(
         controller,
         /getElementById\("openTaskTools"\)/
@@ -88,8 +88,35 @@ test("filtros orden y agrupamiento se compactan sin cambiar sus controles", () =
         /\.mobileTaskToolbarSelect > select/
     );
     assert.match(
+        controller,
+        /mobileTaskToolbarNativeSelect/
+    );
+});
+
+test("orden y agrupamiento abren un selector móvil acorde al tema", () => {
+    assert.match(
+        controller,
+        /mobileTaskToolbarSelectTrigger/
+    );
+    assert.match(
+        controller,
+        /openSelectDialog\(/
+    );
+    assert.match(
+        controller,
+        /dialog\.showModal\(\)/
+    );
+    assert.match(
+        controller,
+        /new EventConstructor\([\s\S]*"change"[\s\S]*bubbles: true/
+    );
+    assert.match(
         styles,
-        /opacity:\s*0/
+        /\.mobileTaskToolbarSelectDialog::backdrop/
+    );
+    assert.match(
+        styles,
+        /\.mobileTaskToolbarSelectDialogOption\[aria-checked="true"\]/
     );
 });
 

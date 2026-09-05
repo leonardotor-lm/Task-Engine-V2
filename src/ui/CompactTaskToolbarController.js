@@ -503,8 +503,12 @@ export class CompactTaskToolbarController
         wrapper.classList.add(
             "mobileTaskToolbarSelect"
         );
+        wrapper.removeAttribute("for");
         wrapper.setAttribute("title", label);
         select.setAttribute("aria-label", label);
+        select.classList.add(
+            "mobileTaskToolbarNativeSelect"
+        );
 
         let iconElement = wrapper.querySelector(
             ":scope > .mobileTaskToolbarSelectIcon"
@@ -520,6 +524,146 @@ export class CompactTaskToolbarController
         }
 
         iconElement.innerHTML = renderMobileIcon(icon);
+
+        let trigger = wrapper.querySelector(
+            ":scope > .mobileTaskToolbarSelectTrigger"
+        );
+
+        if (!trigger) {
+            trigger = this.document.createElement("button");
+            trigger.type = "button";
+            trigger.className =
+                "mobileTaskToolbarSelectTrigger";
+            wrapper.append(trigger);
+        }
+
+        trigger.setAttribute("aria-label", label);
+        trigger.setAttribute("title", label);
+        trigger.setAttribute("aria-haspopup", "dialog");
+        trigger.setAttribute("aria-expanded", "false");
+
+        if (trigger.dataset.mobilePickerBound !== "true") {
+            trigger.dataset.mobilePickerBound = "true";
+            trigger.addEventListener("click", event => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.openSelectDialog(
+                    select,
+                    label,
+                    trigger
+                );
+            });
+        }
+
+    }
+
+    openSelectDialog(select, label, trigger) {
+
+        if (!select || !this.isMobileViewport()) return;
+
+        let dialog = this.document.getElementById(
+            "mobileTaskToolbarSelectDialog"
+        );
+
+        if (!dialog) {
+            dialog = this.document.createElement("dialog");
+            dialog.id = "mobileTaskToolbarSelectDialog";
+            dialog.className =
+                "mobileTaskToolbarSelectDialog";
+            this.document.body.append(dialog);
+        }
+
+        dialog.replaceChildren();
+        dialog.setAttribute("aria-label", label);
+
+        const header = this.document.createElement("header");
+        header.className =
+            "mobileTaskToolbarSelectDialogHeader";
+
+        const title = this.document.createElement("h2");
+        title.textContent = label;
+
+        const close = this.document.createElement("button");
+        close.type = "button";
+        close.className =
+            "mobileTaskToolbarSelectDialogClose";
+        close.setAttribute("aria-label", "Cerrar");
+        close.textContent = "×";
+        close.addEventListener("click", () => dialog.close());
+        header.append(title, close);
+
+        const options = this.document.createElement("div");
+        options.className =
+            "mobileTaskToolbarSelectDialogOptions";
+        options.setAttribute("role", "radiogroup");
+        options.setAttribute("aria-label", label);
+
+        Array.from(select.options).forEach(option => {
+            if (option.disabled || option.hidden) return;
+
+            const item = this.document.createElement("button");
+            item.type = "button";
+            item.className =
+                "mobileTaskToolbarSelectDialogOption";
+            item.dataset.value = option.value;
+            item.setAttribute("role", "radio");
+            item.setAttribute(
+                "aria-checked",
+                String(option.value === select.value)
+            );
+
+            const text = this.document.createElement("span");
+            text.textContent = option.textContent.trim();
+            const indicator = this.document.createElement("span");
+            indicator.className =
+                "mobileTaskToolbarSelectDialogIndicator";
+            indicator.setAttribute("aria-hidden", "true");
+            item.append(text, indicator);
+
+            item.addEventListener("click", () => {
+                select.value = option.value;
+                const EventConstructor =
+                    this.window?.Event ?? globalThis.Event;
+                select.dispatchEvent(
+                    new EventConstructor(
+                        "change",
+                        { bubbles: true }
+                    )
+                );
+                dialog.close();
+            });
+            options.append(item);
+        });
+
+        dialog.append(header, options);
+        trigger.setAttribute("aria-expanded", "true");
+
+        const restoreTrigger = () => {
+            trigger.setAttribute("aria-expanded", "false");
+            trigger.focus?.();
+        };
+        dialog.addEventListener(
+            "close",
+            restoreTrigger,
+            { once: true }
+        );
+        dialog.addEventListener(
+            "click",
+            event => {
+                if (event.target === dialog) dialog.close();
+            },
+            { once: true }
+        );
+
+        if (typeof dialog.showModal === "function") {
+            dialog.showModal();
+        } else {
+            dialog.setAttribute("open", "");
+        }
+
+        options.querySelector(
+            '[aria-checked="true"]'
+        )?.focus?.();
 
     }
 
