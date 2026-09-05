@@ -8,6 +8,7 @@ import { ActivityView } from "./ActivityView.js";
 import { StatisticsView } from "./StatisticsView.js";
 import { View } from "../core/View.js";
 import { escapeHtml } from "./escapeHtml.js";
+import { Icon } from "./Icon.js";
 
 export class ViewRouter {
 
@@ -212,8 +213,15 @@ export class ViewRouter {
                             <button
                                 id="emptyTrash"
                                 type="button"
-                                class="dangerAction">
-                                Vaciar papelera
+                                class="dangerAction responsiveIconButton"
+                                aria-label="Vaciar papelera"
+                                title="Vaciar papelera">
+                                <span class="responsiveButtonIcon">
+                                    ${Icon.render("trash")}
+                                </span>
+                                <span class="responsiveButtonLabel">
+                                    Vaciar papelera
+                                </span>
                             </button>
                         `
                         : ""
