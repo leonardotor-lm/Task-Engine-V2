@@ -44,7 +44,9 @@ export class MobileTaskFilterSelectController {
         if (!this.isMobileViewport()) return;
 
         this.document?.querySelectorAll?.(
-            "#taskFilterForm select, #activitySearchForm select"
+            "#taskFilterForm select, " +
+            "#activitySearchForm select, " +
+            "#taskArea, #taskContext"
         ).forEach(select => {
             this.enhanceSelect(select);
         });
