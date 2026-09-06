@@ -34,6 +34,14 @@ const styles = await readFile(
     ),
     "utf8"
 );
+
+const densityStyles = await readFile(
+    new URL(
+        "../styles/task-editor-mobile-density.css",
+        import.meta.url
+    ),
+    "utf8"
+);
 const index = await readFile(
     new URL("../index.html", import.meta.url),
     "utf8"
@@ -198,6 +206,10 @@ test("Más vuelve a la grilla móvil con un ícono simple", () => {
     );
     assert.match(enhancer, /renderIcon\("more"\)/);
     assert.match(enhancer, /aria-label", "Más opciones"/);
+    assert.doesNotMatch(
+        densityStyles,
+        /mobileTaskEditorCompactOverflowSummary,[\s\S]{0,180}width:\s*38px/
+    );
     assert.match(enhancer, /grid\.append\(details\)/);
     assert.doesNotMatch(enhancer, /header\.append\(details\)/);
 });
