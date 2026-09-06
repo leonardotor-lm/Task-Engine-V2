@@ -153,3 +153,25 @@ test("la aplicación carga la distribución específica del editor móvil", asyn
     );
 
 });
+
+test("Área y Contexto conservan su selector temático al reorganizarse", async () => {
+    const controller = await readFile(
+        new URL(
+            "../src/ui/MobileTaskEditorLayoutController.js",
+            import.meta.url
+        ),
+        "utf8"
+    );
+    assert.match(
+        controller,
+        /mobileFilterSelect\[data-for=\\?"\$\{controlId\}\\?"\]/
+    );
+    assert.match(
+        controller,
+        /if \(themedSelect\) field\.append\(themedSelect\)/
+    );
+    assert.match(
+        controller,
+        /field\.append\(label, control\)/
+    );
+});
