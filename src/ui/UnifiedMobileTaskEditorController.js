@@ -71,6 +71,14 @@ export class UnifiedMobileTaskEditorController
         }
     }
 
+    placeOverflowLast(grid) {
+        const overflow = grid?.querySelector(
+            ":scope > .mobileTaskEditorCompactOverflow"
+        );
+
+        if (overflow) grid.append(overflow);
+    }
+
     promoteNotionNotes(drawer) {
         const notes = drawer?.querySelector(
             ".editorNotionSection"
@@ -91,6 +99,7 @@ export class UnifiedMobileTaskEditorController
             if (notes.parentElement !== grid) {
                 grid.append(notes);
             }
+            this.placeOverflowLast(grid);
             return true;
         }
 
@@ -179,6 +188,7 @@ export class UnifiedMobileTaskEditorController
 
         body.hidden = !notes.open;
         grid.append(notes);
+        this.placeOverflowLast(grid);
         previousContainer?.remove();
 
         if (
