@@ -666,6 +666,9 @@ export class MobileTaskEditorLayoutController {
         const label = container.querySelector(
             `label[for="${controlId}"]`
         );
+        const themedSelect = container.querySelector(
+            `.mobileFilterSelect[data-for="${controlId}"]`
+        );
 
         if (!control || !label) {
             return null;
@@ -675,6 +678,7 @@ export class MobileTaskEditorLayoutController {
             document.createElement("div");
         field.className = className;
         field.append(label, control);
+        if (themedSelect) field.append(themedSelect);
 
         return field;
 
