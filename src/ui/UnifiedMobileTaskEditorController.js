@@ -76,7 +76,12 @@ export class UnifiedMobileTaskEditorController
             ":scope > .mobileTaskEditorCompactOverflow"
         );
 
-        if (overflow) grid.append(overflow);
+        if (
+            overflow &&
+            grid.lastElementChild !== overflow
+        ) {
+            grid.append(overflow);
+        }
     }
 
     promoteNotionNotes(drawer) {
