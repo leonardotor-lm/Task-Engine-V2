@@ -104,7 +104,7 @@ test("Notas se reconcilia como herramienta visible del editor móvil", () => {
     );
     assert.match(
         unifiedMobileEditor,
-        /if \(overflow\) grid\.append\(overflow\)/
+        /grid\.lastElementChild !== overflow[\s\S]*?grid\.append\(overflow\)/
     );
     assert.match(
         unifiedMobileEditor,
