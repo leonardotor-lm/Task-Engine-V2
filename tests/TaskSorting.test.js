@@ -17,6 +17,7 @@ function task(id, overrides = {}) {
         priority: overrides.priority ?? 0,
         dueDate: overrides.dueDate ?? null,
         dueTime: overrides.dueTime ?? null,
+        completedAt: overrides.completedAt ?? null,
         createdAt:
             overrides.createdAt ??
             "2026-07-24T10:00:00.000Z"
@@ -170,6 +171,39 @@ test("ordena por creación en ambas direcciones", () => {
             TaskSort.CREATED_OLDEST
         ).map(item => item.id),
         ["antigua", "nueva"]
+    );
+
+});
+
+test("puede ordenar completadas por su fecha de finalización", () => {
+
+    const completedFirst = task("completada-antes", {
+        createdAt: "2026-08-20T10:00:00.000Z",
+        completedAt: "2026-08-27T09:00:00.000Z"
+    });
+    const completedLast = task("completada-después", {
+        createdAt: "2026-08-10T10:00:00.000Z",
+        completedAt: "2026-08-27T18:00:00.000Z"
+    });
+
+    assert.deepEqual(
+        sortTaskTree(
+            [completedFirst, completedLast],
+            TaskSort.CREATED_NEWEST,
+            "2026-08-27",
+            "completedAt"
+        ).map(item => item.id),
+        ["completada-después", "completada-antes"]
+    );
+
+    assert.deepEqual(
+        sortTaskTree(
+            [completedLast, completedFirst],
+            TaskSort.CREATED_OLDEST,
+            "2026-08-27",
+            "completedAt"
+        ).map(item => item.id),
+        ["completada-antes", "completada-después"]
     );
 
 });
