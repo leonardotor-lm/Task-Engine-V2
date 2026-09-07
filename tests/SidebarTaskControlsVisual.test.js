@@ -109,6 +109,37 @@ test("Objetivos reutiliza filtros y orden sin agregar búsqueda lateral", () => 
 
 });
 
+test("Completadas conserva sólo filtros y órdenes pertinentes", () => {
+
+    const html = new Sidebar().render(
+        View.COMPLETED,
+        "",
+        [],
+        null,
+        [],
+        [],
+        {
+            areaId: "",
+            contextId: "",
+            tagId: "",
+            priority: "4",
+            due: "TODAY"
+        }
+    );
+
+    assert.match(html, /id="filterArea"/);
+    assert.match(html, /id="filterContext"/);
+    assert.match(html, /id="filterTag"/);
+    assert.doesNotMatch(html, /id="filterPriority"/);
+    assert.doesNotMatch(html, /id="filterDue"/);
+    assert.doesNotMatch(html, /value="MANUAL"/);
+    assert.doesNotMatch(html, /value="DUE_DATE"/);
+    assert.doesNotMatch(html, /value="PRIORITY"/);
+    assert.match(html, /value="CREATED_NEWEST"/);
+    assert.match(html, /value="CREATED_OLDEST"/);
+
+});
+
 test("los controles usan una jerarquía visual compacta", () => {
 
     assert.match(
