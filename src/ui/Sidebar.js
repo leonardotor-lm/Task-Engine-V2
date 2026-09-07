@@ -143,6 +143,17 @@ export class Sidebar {
             `
         ).join("");
 
+        const completedView =
+            activeView === View.COMPLETED;
+
+        const applicableTaskFilters = completedView
+            ? {
+                ...taskFilters,
+                priority: "",
+                due: ""
+            }
+            : taskFilters;
+
         const filters =
             taskToolViews.includes(activeView) &&
             !advancedSearchMode
@@ -183,48 +194,26 @@ export class Sidebar {
                             )}
                         </select>
 
-                        <label for="filterPriority">
-                            Prioridad
-                        </label>
-                        <select id="filterPriority">
-                            <option value="">
-                                Cualquiera
-                            </option>
-                            ${priorityOptions}
-                        </select>
+                        ${completedView ? "" : `
+                            <label for="filterPriority">
+                                Prioridad
+                            </label>
+                            <select id="filterPriority">
+                                <option value="">
+                                    Cualquiera
+                                </option>
+                                ${priorityOptions}
+                            </select>
 
-                        <label for="filterDue">Fecha</label>
-                        <select id="filterDue">
-                            <option value="">Cualquiera</option>
-                            <option
-                                value="TODAY"
-                                ${taskFilters.due === "TODAY"
-                                    ? "selected"
-                                    : ""}>
-                                Hoy
-                            </option>
-                            <option
-                                value="OVERDUE"
-                                ${taskFilters.due === "OVERDUE"
-                                    ? "selected"
-                                    : ""}>
-                                Atrasadas
-                            </option>
-                            <option
-                                value="UPCOMING"
-                                ${taskFilters.due === "UPCOMING"
-                                    ? "selected"
-                                    : ""}>
-                                Próximas
-                            </option>
-                            <option
-                                value="NO_DATE"
-                                ${taskFilters.due === "NO_DATE"
-                                    ? "selected"
-                                    : ""}>
-                                Sin fecha
-                            </option>
-                        </select>
+                            <label for="filterDue">Fecha</label>
+                            <select id="filterDue">
+                                <option value="">Cualquiera</option>
+                                <option value="TODAY" ${taskFilters.due === "TODAY" ? "selected" : ""}>Hoy</option>
+                                <option value="OVERDUE" ${taskFilters.due === "OVERDUE" ? "selected" : ""}>Atrasadas</option>
+                                <option value="UPCOMING" ${taskFilters.due === "UPCOMING" ? "selected" : ""}>Próximas</option>
+                                <option value="NO_DATE" ${taskFilters.due === "NO_DATE" ? "selected" : ""}>Sin fecha</option>
+                            </select>
+                        `}
 
                     </form>
 
@@ -248,6 +237,24 @@ export class Sidebar {
                             </label>
 
                             <select id="taskSort">
+
+                                ${completedView ? `
+                                <option
+                                    value="CREATED_NEWEST"
+                                    ${taskSort !== "CREATED_OLDEST"
+                                        ? "selected"
+                                        : ""}>
+                                    Más recientes
+                                </option>
+
+                                <option
+                                    value="CREATED_OLDEST"
+                                    ${taskSort === "CREATED_OLDEST"
+                                        ? "selected"
+                                        : ""}>
+                                    Más antiguas
+                                </option>
+                                ` : `
 
                                 <option
                                     value="MANUAL"
@@ -288,6 +295,8 @@ export class Sidebar {
                                         : ""}>
                                     Más antiguas
                                 </option>
+
+                                `}
 
                             </select>
 
@@ -1078,8 +1087,10 @@ export class Sidebar {
                             <button
                                 id="openTaskTools"
                                 type="button"
-                                class="taskToolsButton ${Object.values(taskFilters).some(Boolean) ||
-                                    taskSort !== "MANUAL"
+                                class="taskToolsButton ${Object.values(applicableTaskFilters).some(Boolean) ||
+                                    (completedView
+                                        ? taskSort === "CREATED_OLDEST"
+                                        : taskSort !== "MANUAL")
                                     ? "active"
                                     : ""}">
                                 Filtros rápidos
@@ -1122,7 +1133,7 @@ export class Sidebar {
                                     </button>
 
                                     ${filters &&
-                                        Object.values(taskFilters).some(Boolean)
+                                        Object.values(applicableTaskFilters).some(Boolean)
                                         ? `
                                             <button
                                                 id="clearTaskFilters"
