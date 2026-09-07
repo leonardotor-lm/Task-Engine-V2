@@ -47,6 +47,14 @@
         color: var(--color-accent-strong);
     }
 
+    .sidebarButton:not(.active) {
+        background-color: transparent !important;
+    }
+
+    .sidebarButton:not(.active):active {
+        background-color: var(--color-surface-hover) !important;
+    }
+
     .content {
         height: calc(
             100dvh - 46px - env(safe-area-inset-top)
