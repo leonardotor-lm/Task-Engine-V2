@@ -46,7 +46,8 @@ export class MobileTaskFilterSelectController {
         this.document?.querySelectorAll?.(
             "#taskFilterForm select, " +
             "#activitySearchForm select, " +
-            "#taskArea, #taskContext"
+            "#taskArea, #taskContext, " +
+            ".bulkToolbar > .bulkControl select"
         ).forEach(select => {
             this.enhanceSelect(select);
         });
