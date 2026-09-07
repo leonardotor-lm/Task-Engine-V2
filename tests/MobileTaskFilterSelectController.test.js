@@ -60,6 +60,10 @@ test("la integración conserva el select real y evita el selector nativo visible
     assert.match(controller, /taskFilterForm/);
     assert.match(controller, /activitySearchForm/);
     assert.match(controller, /#taskArea, #taskContext/);
+    assert.match(
+        controller,
+        /\.bulkToolbar > \.bulkControl select/
+    );
     assert.match(controller, /mobileFilterNativeSelect/);
     assert.match(controller, /mobileFilterSelectOption/);
     assert.match(controller, /select\.value = option\.value/);
@@ -77,6 +81,10 @@ test("la integración conserva el select real y evita el selector nativo visible
     assert.match(
         styles,
         /\.mobileTaskEditorContextField \.mobileFilterSelect/
+    );
+    assert.match(
+        styles,
+        /\.bulkToolbar > \.bulkControl \.mobileFilterSelect[\s\S]*?width:\s*100%;/
     );
     assert.match(
         styles,
