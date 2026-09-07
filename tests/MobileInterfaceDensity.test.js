@@ -98,6 +98,23 @@ test("los controles icónicos móviles pierden el contorno y la barra se compact
     );
 });
 
+test("la navegación móvil evita fondos permanentes sin imponer la geometría del tema", () => {
+    const rule = styles.match(
+        /\.sidebarButton:not\(\.active\)\s*\{([^}]*)\}/
+    );
+
+    assert.ok(rule);
+    assert.match(
+        rule[1],
+        /background-color:\s*transparent !important;/
+    );
+    assert.doesNotMatch(rule[1], /border(?:-radius)?\s*:/);
+    assert.match(
+        styles,
+        /\.sidebarButton:not\(\.active\):active\s*\{[\s\S]*?background-color:\s*var\(--color-surface-hover\) !important;/
+    );
+});
+
 test("el chevron móvil se integra luego de que exista el resumen de la vista", () => {
     assert.match(
         compactToolbarController,
