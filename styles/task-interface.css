@@ -473,6 +473,19 @@
         pointer-events: none !important;
     }
 
+    /*
+     * El panel se monta en body mientras está abierto para que Android no
+     * calcule el área táctil desde la posición de la fila desplazable.
+     */
+    body > .quickMoreMenuPortaled {
+        position: fixed;
+        z-index: 90;
+        top: auto;
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+    }
+
     #openTaskCreation .createActionIcon,
     #openTaskCreation .icon,
     .mobileFloatingTaskButton .createActionIcon,
