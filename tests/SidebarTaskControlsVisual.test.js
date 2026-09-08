@@ -94,6 +94,83 @@ test("la búsqueda simple precede al acceso avanzado", () => {
 
 });
 
+test("Dashboard abre Notion entre la búsqueda avanzada y Ejecución", () => {
+
+    const html = new Sidebar().render(
+        View.INBOX
+    );
+
+    assert.match(
+        html,
+        /id="openNotionDashboard"[\s\S]*?href="https:\/\/app\.notion\.com\/p\/Dashboard-3d584dccf42b80d5a402d648def18da0\?source=copy_link"/
+    );
+    assert.match(
+        html,
+        /id="openNotionDashboard"[\s\S]*?target="_blank"[\s\S]*?rel="noopener noreferrer"[\s\S]*?>\s*Dashboard\s*</
+    );
+    assert.ok(
+        html.indexOf("toggleAdvancedSearch") <
+        html.indexOf("openNotionDashboard")
+    );
+    assert.ok(
+        html.indexOf("openNotionDashboard") <
+        html.indexOf("Ejecución")
+    );
+
+});
+
+test("Dashboard puede ocultarse mediante una preferencia local", () => {
+
+    const visible = new Sidebar().render(
+        View.INBOX
+    );
+    const hidden = new Sidebar().render(
+        View.INBOX,
+        "",
+        [],
+        null,
+        [],
+        [],
+        {},
+        "MANUAL",
+        false,
+        false,
+        "",
+        0,
+        false,
+        "",
+        null,
+        false,
+        false,
+        false,
+        null,
+        false,
+        false,
+        "",
+        [],
+        null,
+        {},
+        false,
+        false,
+        true,
+        false,
+        null,
+        "",
+        false,
+        false
+    );
+
+    assert.match(
+        visible,
+        /id="openNotionDashboard"/
+    );
+    assert.doesNotMatch(
+        hidden,
+        /id="openNotionDashboard"/
+    );
+
+});
+
 test("Objetivos reutiliza filtros y orden sin agregar búsqueda lateral", () => {
 
     const html = new Sidebar().render(

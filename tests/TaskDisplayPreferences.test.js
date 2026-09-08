@@ -84,6 +84,28 @@ test("recuerda el título personalizado de la barra lateral", () => {
 
 });
 
+test("muestra Dashboard por defecto y recuerda su visibilidad local", () => {
+
+    const storage = new MemoryStorage();
+    const preferences =
+        new TaskDisplayPreferences(storage);
+
+    assert.equal(
+        preferences.isNotionDashboardVisible(),
+        true
+    );
+    assert.equal(
+        preferences.setNotionDashboardVisible(false),
+        false
+    );
+    assert.equal(
+        new TaskDisplayPreferences(storage)
+            .isNotionDashboardVisible(),
+        false
+    );
+
+});
+
 test("migra el nombre lateral de la primera versión", () => {
 
     const storage = new MemoryStorage();

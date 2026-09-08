@@ -453,7 +453,8 @@ export class MainView {
             showTaskMetadata,
             taskViewCounts,
             sidebarTitle,
-            sidebarTitleSaved
+            sidebarTitleSaved,
+            showNotionDashboard
         } = state;
 
         const applicationTitle =
@@ -519,7 +520,8 @@ export class MainView {
                     settingsDialogOpen,
                     settingsSection,
                     sidebarTitle,
-                    sidebarTitleSaved
+                    sidebarTitleSaved,
+                    showNotionDashboard
                 )}
 
                 ${this.viewRouter.render(state)}
@@ -1294,6 +1296,13 @@ export class MainView {
             closeMobileMenu
         );
 
+        document.getElementById(
+            "openNotionDashboard"
+        )?.addEventListener(
+            "click",
+            closeMobileMenu
+        );
+
         this.setupMobileBackNavigation(
             state
         );
@@ -1891,6 +1900,17 @@ export class MainView {
             if (saveStatus) {
                 saveStatus.hidden = true;
             }
+
+        });
+
+        document.getElementById(
+            "showNotionDashboard"
+        )?.addEventListener("change", event => {
+
+            this.callbacks
+                .onSetNotionDashboardVisibility(
+                    event.target.checked
+                );
 
         });
 
