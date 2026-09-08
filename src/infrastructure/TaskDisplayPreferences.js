@@ -7,6 +7,9 @@ const COMPLETED_STORAGE_KEY =
 const SIDEBAR_TITLE_STORAGE_KEY =
     "task-engine-v2-sidebar-title";
 
+const NOTION_DASHBOARD_VISIBILITY_STORAGE_KEY =
+    "task-engine-v2-show-notion-dashboard";
+
 const LEGACY_SIDEBAR_USER_NAME_STORAGE_KEY =
     "task-engine-v2-sidebar-user-name";
 
@@ -124,6 +127,28 @@ export class TaskDisplayPreferences {
         );
 
         return normalizedTitle;
+
+    }
+
+    isNotionDashboardVisible() {
+
+        return this.storage.getItem(
+            NOTION_DASHBOARD_VISIBILITY_STORAGE_KEY
+        ) !== "false";
+
+    }
+
+    setNotionDashboardVisible(visible) {
+
+        const normalizedVisible =
+            Boolean(visible);
+
+        this.storage.setItem(
+            NOTION_DASHBOARD_VISIBILITY_STORAGE_KEY,
+            String(normalizedVisible)
+        );
+
+        return normalizedVisible;
 
     }
 

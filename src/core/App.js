@@ -788,6 +788,17 @@ export class App {
 
             },
 
+            onSetNotionDashboardVisibility: visible => {
+
+                this.taskDisplayPreferences
+                    .setNotionDashboardVisible(
+                        visible
+                    );
+
+                this.render();
+
+            },
+
             onToggleTaskExpansion: (id) => {
 
                 const expandedTaskIds =
@@ -2944,6 +2955,9 @@ export class App {
                     .getSidebarTitle(),
             sidebarTitleSaved:
                 this.sidebarTitleSaved,
+            showNotionDashboard:
+                this.taskDisplayPreferences
+                    .isNotionDashboardVisible(),
             showCompletedTasks,
             taskViewCounts,
             activityEvents:

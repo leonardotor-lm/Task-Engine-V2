@@ -125,6 +125,15 @@ test("aplicación ofrece la instalación de la PWA", () => {
     assert.match(html, /<h3>Tareas de Leo<\/h3>/);
     assert.match(html, />\s*Guardado\s*<\/button>/);
     assert.match(html, /Nombre actualizado\./);
+    assert.match(html, /id="showNotionDashboard"/);
+    assert.match(
+        html,
+        /Mostrar acceso a Dashboard/
+    );
+    assert.match(
+        html,
+        /se guarda solamente en este dispositivo/
+    );
 
 });
 

@@ -119,6 +119,58 @@ test("Dashboard abre Notion entre la búsqueda avanzada y Ejecución", () => {
 
 });
 
+test("Dashboard puede ocultarse mediante una preferencia local", () => {
+
+    const visible = new Sidebar().render(
+        View.INBOX
+    );
+    const hidden = new Sidebar().render(
+        View.INBOX,
+        "",
+        [],
+        null,
+        [],
+        [],
+        {},
+        "MANUAL",
+        false,
+        false,
+        "",
+        0,
+        false,
+        "",
+        null,
+        false,
+        false,
+        false,
+        null,
+        false,
+        false,
+        "",
+        [],
+        null,
+        {},
+        false,
+        false,
+        true,
+        false,
+        null,
+        "",
+        false,
+        false
+    );
+
+    assert.match(
+        visible,
+        /id="openNotionDashboard"/
+    );
+    assert.doesNotMatch(
+        hidden,
+        /id="openNotionDashboard"/
+    );
+
+});
+
 test("Objetivos reutiliza filtros y orden sin agregar búsqueda lateral", () => {
 
     const html = new Sidebar().render(

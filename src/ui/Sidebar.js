@@ -38,7 +38,8 @@ export class Sidebar {
         settingsDialogOpen = false,
         settingsSection = null,
         sidebarTitle = "",
-        sidebarTitleSaved = false
+        sidebarTitleSaved = false,
+        showNotionDashboard = true
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -599,6 +600,22 @@ export class Sidebar {
 
                 </form>
 
+                <div class="notionDashboardPreference">
+                    <label for="showNotionDashboard">
+                        <input
+                            id="showNotionDashboard"
+                            type="checkbox"
+                            ${showNotionDashboard
+                                ? "checked"
+                                : ""}>
+                        <span>Mostrar acceso a Dashboard</span>
+                    </label>
+
+                    <p class="settingsHint">
+                        Esta preferencia se guarda solamente en este dispositivo.
+                    </p>
+                </div>
+
                 <div class="applicationInstallTools">
 
                     <h3>Instalación</h3>
@@ -907,15 +924,19 @@ export class Sidebar {
 
                 <nav>
 
-                    <a
-                        id="openNotionDashboard"
-                        class="sidebarButton notionDashboardLink"
-                        href="https://app.notion.com/p/Dashboard-3d584dccf42b80d5a402d648def18da0?source=copy_link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Abrir Dashboard en Notion">
-                        Dashboard
-                    </a>
+                    ${showNotionDashboard
+                        ? `
+                            <a
+                                id="openNotionDashboard"
+                                class="sidebarButton notionDashboardLink"
+                                href="https://app.notion.com/p/Dashboard-3d584dccf42b80d5a402d648def18da0?source=copy_link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Abrir Dashboard en Notion">
+                                Dashboard
+                            </a>
+                        `
+                        : ""}
 
                     <span class="sidebarSectionLabel">
                         Ejecución
