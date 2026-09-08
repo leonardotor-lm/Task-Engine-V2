@@ -128,6 +128,17 @@ const icons = Object.freeze({
         <polyline points="14 2 14 8 20 8"></polyline>
         <path d="M8 13h8"></path>
         <path d="M8 17h5"></path>
+    `,
+
+    link: `
+        <path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+        <path d="M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"></path>
+    `,
+
+    target: `
+        <circle cx="12" cy="12" r="9"></circle>
+        <circle cx="12" cy="12" r="5"></circle>
+        <circle cx="12" cy="12" r="1"></circle>
     `
 
 });

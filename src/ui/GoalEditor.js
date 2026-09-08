@@ -149,8 +149,12 @@ export class GoalEditor {
                         id="notionGoalNotesSection"
                         class="editorSection editorNotionGoalSection goalEditorTool"
                         data-mobile-collapsed="true">
-                        <summary class="goalEditorToolSummary">
-                            <span>Notas</span>
+                        <summary
+                            class="goalEditorToolSummary"
+                            aria-label="Notas"
+                            title="Notas">
+                            ${Icon.render("note", "goalEditorToolIcon")}
+                            <span class="goalEditorToolLabel">Notas</span>
                             <span class="goalEditorToolCount">
                                 ${goal.notionPageId ? 1 : 0}
                             </span>
@@ -214,8 +218,12 @@ export class GoalEditor {
 
                     <details
                         class="goalAssociationManager goalEditorTool">
-                        <summary class="goalEditorToolSummary">
-                            <span>Asociaciones</span>
+                        <summary
+                            class="goalEditorToolSummary"
+                            aria-label="Asociaciones"
+                            title="Asociaciones">
+                            ${Icon.render("link", "goalEditorToolIcon")}
+                            <span class="goalEditorToolLabel">Asociaciones</span>
                             <span class="goalEditorToolCount">
                                 ${directlyAssociated.length}
                             </span>
@@ -296,8 +304,12 @@ export class GoalEditor {
                     </details>
 
                     <details class="goalSubgoalsSection goalEditorTool">
-                        <summary class="goalEditorToolSummary">
-                            <span>Subobjetivos</span>
+                        <summary
+                            class="goalEditorToolSummary"
+                            aria-label="Subobjetivos"
+                            title="Subobjetivos">
+                            ${Icon.render("target", "goalEditorToolIcon")}
+                            <span class="goalEditorToolLabel">Subobjetivos</span>
                             <span class="goalEditorToolCount">
                                 ${directSubgoalCount}
                             </span>
@@ -335,8 +347,15 @@ export class GoalEditor {
                         ? `
                     <details class="goalHierarchySection goalEditorTool">
 
-                        <summary class="goalEditorToolSummary">
-                            <span>Organización</span>
+                        <summary
+                            class="goalEditorToolSummary"
+                            aria-label="Organización"
+                            title="Organización">
+                            ${Icon.render(
+                                "corner-down-right",
+                                "goalEditorToolIcon"
+                            )}
+                            <span class="goalEditorToolLabel">Organización</span>
                         </summary>
 
                         <div class="goalEditorToolPanel">

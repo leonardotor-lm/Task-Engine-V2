@@ -174,6 +174,10 @@
     display: none;
 }
 
+.goalEditorToolIcon {
+    display: none;
+}
+
 .goalEditorCompactLayout
     .goalEditorTool[open]
     > .goalEditorToolSummary,
@@ -448,14 +452,40 @@
 
     .goalEditorCompactLayout
         .goalEditorToolSummary {
-        height: 40px;
-        min-height: 40px;
-        padding: 5px 4px;
-        border-radius: 6px;
+        position: relative;
+        flex-direction: column;
+        height: 60px;
+        min-height: 60px;
+        gap: 3px;
+        padding: 4px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
         font-size: 12px;
     }
 
+    .goalEditorToolIcon {
+        display: block;
+        width: 22px;
+        min-width: 22px;
+        height: 22px;
+        color: var(--color-text);
+    }
+
+    .goalEditorToolLabel {
+        max-width: 100%;
+        overflow: hidden;
+        color: var(--color-text-subtle);
+        font-size: 11px;
+        line-height: 1.1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .goalEditorToolCount {
+        position: absolute;
+        top: 2px;
+        left: calc(50% + 8px);
         min-width: 17px;
         height: 17px;
         padding: 0 4px;
@@ -509,7 +539,7 @@
 @media (max-width: 460px) {
 
     .goalEditorToolGrid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .goalEditorFooter {

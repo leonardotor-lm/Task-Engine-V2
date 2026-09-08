@@ -48,6 +48,10 @@ test("el editor de objetivos carga su capa visual modular", async () => {
     );
     assert.match(
         goalStyles,
+        /@media \(max-width: 760px\)[\s\S]*?\.goalEditorToolIcon\s*\{[\s\S]*?display:\s*block/
+    );
+    assert.match(
+        goalStyles,
         /\.goalEditorFooter\s*\{[\s\S]*?position:\s*sticky/
     );
     assert.match(

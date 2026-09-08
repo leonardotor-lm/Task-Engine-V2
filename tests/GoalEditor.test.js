@@ -133,10 +133,14 @@ test("ordena la información las herramientas y el pie como el editor de tareas"
         title: "Secundario",
         parentGoalId: parent.id
     });
+    const alternativeParent = new Goal({
+        id: "alternative-parent",
+        title: "Alternativo"
+    });
 
     const html = new GoalEditor().render(
         parent,
-        [parent, child]
+        [parent, child, alternativeParent]
     );
 
     assert.match(
@@ -157,7 +161,26 @@ test("ordena la información las herramientas y el pie como el editor de tareas"
     );
     assert.match(
         html,
-        /<span>Subobjetivos<\/span>[\s\S]*class="goalEditorToolCount">\s*1/
+        /class="icon goalEditorToolIcon"[\s\S]*class="goalEditorToolLabel">Subobjetivos<\/span>[\s\S]*class="goalEditorToolCount">\s*1/
+    );
+
+    for (const label of [
+        "Notas",
+        "Asociaciones",
+        "Subobjetivos",
+        "Organización"
+    ]) {
+        assert.match(
+            html,
+            new RegExp(
+                `aria-label="${label}"[\\s\\S]*?goalEditorToolIcon`
+            )
+        );
+    }
+
+    assert.match(
+        html,
+        /id="subgoalForm"[\s\S]*placeholder="Nuevo subobjetivo"[\s\S]*>\s*Agregar\s*</
     );
 
 });
