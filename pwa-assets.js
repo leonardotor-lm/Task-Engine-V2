@@ -132,6 +132,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./src/ui/ProjectView.js",
     "./src/ui/ProjectWorkspaceController.js",
     "./src/ui/PwaController.js",
+    "./src/ui/QuickActionsPortalController.js",
     "./src/ui/RecurrenceLifecycleController.js",
     "./src/ui/SearchableMultiSelect.js",
     "./src/ui/SearchableSelect.js",

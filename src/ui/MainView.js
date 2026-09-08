@@ -6,6 +6,9 @@ import { View } from "../core/View.js";
 import { Dialog } from "../components/Dialog.js";
 import { ColorSelector } from "./ColorSelector.js";
 import { TaskSwipeController } from "./TaskSwipeController.js";
+import {
+    QuickActionsPortalController
+} from "./QuickActionsPortalController.js";
 import { hasTaskEditorChanges } from "./TaskEditorDraft.js";
 import { SearchableSelect } from "./SearchableSelect.js";
 import {
@@ -26,6 +29,8 @@ export class MainView {
         this.viewRouter = new ViewRouter();
         this.taskSwipeController =
             new TaskSwipeController();
+        this.quickActionsPortalController =
+            new QuickActionsPortalController();
         this.searchableSelect =
             new SearchableSelect();
         this.searchableMultiSelect =
@@ -404,6 +409,8 @@ export class MainView {
     }
 
     render(state) {
+
+        this.quickActionsPortalController.cleanup();
 
         const scrollState =
             this.captureScrollState();
@@ -3346,9 +3353,11 @@ export class MainView {
 
                         event.stopPropagation();
 
-                        button.closest(
-                            ".quickMoreActions"
-                        ).open = false;
+                        const owner =
+                            this.quickActionsPortalController
+                                .getOwner(button);
+
+                        if (owner) owner.open = false;
 
                     }
                 );
@@ -3364,9 +3373,9 @@ export class MainView {
                     event.stopPropagation();
 
                     this.callbacks.onSelectTask(
-                        button.closest(
-                            ".quickMoreActions"
-                        ).dataset.id
+                        this.quickActionsPortalController
+                            .getOwner(button)
+                            ?.dataset.id
                     );
 
                 });
@@ -3381,9 +3390,12 @@ export class MainView {
 
                     event.stopPropagation();
 
-                    const id = button.closest(
-                        ".quickMoreActions"
-                    ).dataset.id;
+                    const id =
+                        this.quickActionsPortalController
+                            .getOwner(button)
+                            ?.dataset.id;
+
+                    if (!id) return;
 
                     const hasSubtasks =
                         allTasks.some(
@@ -3495,9 +3507,9 @@ export class MainView {
 
                         this.callbacks
                             .onQuickSkipRecurringTask(
-                                button.closest(
-                                    ".quickMoreActions"
-                                ).dataset.id
+                                this.quickActionsPortalController
+                                    .getOwner(button)
+                                    ?.dataset.id
                             );
 
                     } catch (error) {
@@ -3532,9 +3544,9 @@ export class MainView {
 
                         this.callbacks
                             .onQuickEndRecurrence(
-                                button.closest(
-                                    ".quickMoreActions"
-                                ).dataset.id
+                                this.quickActionsPortalController
+                                    .getOwner(button)
+                                    ?.dataset.id
                             );
 
                     } catch (error) {
@@ -3568,9 +3580,9 @@ export class MainView {
                     try {
 
                         this.callbacks.onArchiveTask(
-                            button.closest(
-                                ".quickMoreActions"
-                            ).dataset.id
+                            this.quickActionsPortalController
+                                .getOwner(button)
+                                ?.dataset.id
                         );
 
                     } catch (error) {
@@ -3591,9 +3603,12 @@ export class MainView {
 
                     event.stopPropagation();
 
-                    const id = button.closest(
-                        ".quickMoreActions"
-                    ).dataset.id;
+                    const id =
+                        this.quickActionsPortalController
+                            .getOwner(button)
+                            ?.dataset.id;
+
+                    if (!id) return;
 
                     const hasSubtasks =
                         allTasks.some(
@@ -3633,6 +3648,8 @@ export class MainView {
                 );
 
             });
+
+            this.quickActionsPortalController.bind();
 
             document.querySelectorAll(
                 ".quickPostponePreset"
