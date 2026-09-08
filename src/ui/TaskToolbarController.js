@@ -1,4 +1,5 @@
 import { Icon } from "./Icon.js";
+import { View } from "../core/View.js";
 
 const MOBILE_TOOLBAR_STORAGE_KEY =
     "task-engine-v2-mobile-task-toolbar-expanded";
@@ -200,9 +201,16 @@ export class TaskToolbarController {
 
         if (filtersButton && filterSection) {
 
+            const filters = state.view === View.COMPLETED
+                ? {
+                    ...state.taskFilters,
+                    priority: "",
+                    due: ""
+                }
+                : state.taskFilters;
             const filtersActive =
                 Object.values(
-                    state.taskFilters ?? {}
+                    filters ?? {}
                 ).some(Boolean);
             const filterLabel = filtersActive
                 ? "Abrir filtros; hay filtros activos"

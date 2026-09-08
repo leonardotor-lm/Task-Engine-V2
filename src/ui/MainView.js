@@ -1733,10 +1733,10 @@ export class MainView {
                     .value,
                 priority: document
                     .getElementById("filterPriority")
-                    .value,
+                    ?.value ?? "",
                 due: document
                     .getElementById("filterDue")
-                    .value
+                    ?.value ?? ""
             });
 
         });

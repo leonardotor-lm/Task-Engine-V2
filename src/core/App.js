@@ -2415,6 +2415,20 @@ export class App {
 
     }
 
+    getApplicableTaskFilters() {
+
+        if (this.currentView !== View.COMPLETED) {
+            return this.taskFilters;
+        }
+
+        return {
+            ...this.taskFilters,
+            priority: "",
+            due: ""
+        };
+
+    }
+
     getVisibleTasks() {
 
         const today = this.getTodayString();
@@ -2682,6 +2696,9 @@ export class App {
             this.currentView !== View.PROJECT
         ) {
 
+            const effectiveTaskFilters =
+                this.getApplicableTaskFilters();
+
             visibleTasks = filterTaskTreeByCriteria(
                 visibleTasks,
                 {
@@ -2702,11 +2719,11 @@ export class App {
                             this.currentView ===
                                 View.AREA
                                 ? {
-                                    ...this.taskFilters,
+                                    ...effectiveTaskFilters,
                                     areaId:
                                         this.currentAreaId
                                 }
-                                : this.taskFilters
+                                : effectiveTaskFilters
                         ),
                     today: this.getTodayString()
                 }
@@ -2714,7 +2731,11 @@ export class App {
 
             visibleTasks = sortTaskTree(
                 visibleTasks,
-                this.taskSort
+                this.taskSort,
+                this.getTodayString(),
+                this.currentView === View.COMPLETED
+                    ? "completedAt"
+                    : "createdAt"
             );
 
         }
@@ -2903,9 +2924,10 @@ export class App {
                     .getAllFilters(),
             currentCustomFilterId:
                 this.currentCustomFilterId,
-            taskFilters: this.taskFilters,
+            taskFilters:
+                this.getApplicableTaskFilters(),
             filtersActive: hasActiveTaskFilters(
-                this.taskFilters
+                this.getApplicableTaskFilters()
             ),
             taskSort: this.taskSort,
             selectedTaskIds:

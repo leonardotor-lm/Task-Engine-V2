@@ -260,6 +260,48 @@ test("restaura el orden de la vista en cada render", () => {
 
 });
 
+test("Completadas usa recientes por defecto y descarta órdenes ajenos", () => {
+
+    const storage = createStorage();
+    const app = createApp();
+    app.currentView = View.COMPLETED;
+
+    const controller =
+        new TaskSortPreferencesController(
+            app,
+            { storage }
+        );
+
+    controller.start();
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.CREATED_NEWEST
+    );
+
+    controller.writeSort(
+        "view:completed",
+        TaskSort.PRIORITY
+    );
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.CREATED_NEWEST
+    );
+
+    app.mainView.callbacks.onChangeTaskSort(
+        TaskSort.CREATED_OLDEST
+    );
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.CREATED_OLDEST
+    );
+
+});
+
 test("usa el orden manual ante datos dañados o valores inválidos", () => {
 
     const storage = createStorage();

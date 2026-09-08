@@ -46,7 +46,8 @@ export function compareTasks(
     a,
     b,
     sort = TaskSort.MANUAL,
-    today = getLocalDateString()
+    today = getLocalDateString(),
+    chronologicalField = "createdAt"
 ) {
 
     switch (sort) {
@@ -99,8 +100,8 @@ export function compareTasks(
         case TaskSort.CREATED_NEWEST: {
 
             const dateDifference = compareText(
-                b.createdAt,
-                a.createdAt
+                b[chronologicalField],
+                a[chronologicalField]
             );
 
             return dateDifference ||
@@ -111,8 +112,8 @@ export function compareTasks(
         case TaskSort.CREATED_OLDEST: {
 
             const dateDifference = compareText(
-                a.createdAt,
-                b.createdAt
+                a[chronologicalField],
+                b[chronologicalField]
             );
 
             return dateDifference ||
@@ -131,7 +132,8 @@ export function compareTasks(
 export function sortTaskTree(
     tasks,
     sort = TaskSort.MANUAL,
-    today = getLocalDateString()
+    today = getLocalDateString(),
+    chronologicalField = "createdAt"
 ) {
 
     const tasksById = new Map(
@@ -172,7 +174,13 @@ export function sortTaskTree(
 
     const comparator = (a, b) => {
 
-        return compareTasks(a, b, sort, today) ||
+        return compareTasks(
+            a,
+            b,
+            sort,
+            today,
+            chronologicalField
+        ) ||
             originalPositions.get(a.id) -
             originalPositions.get(b.id);
 
