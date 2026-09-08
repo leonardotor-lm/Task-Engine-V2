@@ -1294,6 +1294,13 @@ export class MainView {
             closeMobileMenu
         );
 
+        document.getElementById(
+            "openNotionDashboard"
+        )?.addEventListener(
+            "click",
+            closeMobileMenu
+        );
+
         this.setupMobileBackNavigation(
             state
         );

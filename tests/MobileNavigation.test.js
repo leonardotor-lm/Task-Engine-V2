@@ -43,6 +43,11 @@ test("la interfaz incluye navegación móvil accesible", () => {
         /id="appSidebar"/
     );
 
+    assert.match(
+        mainView,
+        /getElementById\(\s*"openNotionDashboard"\s*\)[\s\S]*?addEventListener\(\s*"click",\s*closeMobileMenu/
+    );
+
 });
 
 test("la barra lateral se convierte en panel móvil", () => {

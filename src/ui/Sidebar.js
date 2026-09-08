@@ -907,6 +907,16 @@ export class Sidebar {
 
                 <nav>
 
+                    <a
+                        id="openNotionDashboard"
+                        class="sidebarButton notionDashboardLink"
+                        href="https://app.notion.com/p/Dashboard-3d584dccf42b80d5a402d648def18da0?source=copy_link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Abrir Dashboard en Notion">
+                        Dashboard
+                    </a>
+
                     <span class="sidebarSectionLabel">
                         Ejecución
                     </span>

@@ -94,6 +94,31 @@ test("la búsqueda simple precede al acceso avanzado", () => {
 
 });
 
+test("Dashboard abre Notion entre la búsqueda avanzada y Ejecución", () => {
+
+    const html = new Sidebar().render(
+        View.INBOX
+    );
+
+    assert.match(
+        html,
+        /id="openNotionDashboard"[\s\S]*?href="https:\/\/app\.notion\.com\/p\/Dashboard-3d584dccf42b80d5a402d648def18da0\?source=copy_link"/
+    );
+    assert.match(
+        html,
+        /id="openNotionDashboard"[\s\S]*?target="_blank"[\s\S]*?rel="noopener noreferrer"[\s\S]*?>\s*Dashboard\s*</
+    );
+    assert.ok(
+        html.indexOf("toggleAdvancedSearch") <
+        html.indexOf("openNotionDashboard")
+    );
+    assert.ok(
+        html.indexOf("openNotionDashboard") <
+        html.indexOf("Ejecución")
+    );
+
+});
+
 test("Objetivos reutiliza filtros y orden sin agregar búsqueda lateral", () => {
 
     const html = new Sidebar().render(
