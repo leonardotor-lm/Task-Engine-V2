@@ -161,6 +161,7 @@ self.__PWA_ASSETS = Object.freeze([
     "./styles/ai.css",
     "./styles/attachments.css",
     "./styles/goal-workspace.css",
+    "./styles/goal-editor.css",
     "./styles/manual-task-order.css",
     "./styles/mobile-filter-selects.css",
     "./styles/mobile-task-toolbar.css",

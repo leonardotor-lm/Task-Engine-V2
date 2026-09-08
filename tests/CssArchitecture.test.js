@@ -50,6 +50,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/task-editor-mobile-density.css",
             "styles/task-editor-mobile-device-fixes.css",
             "styles/goal-workspace.css",
+            "styles/goal-editor.css",
             "styles/statistics.css",
             "styles/task-checkbox-alignment.css",
             "styles/mobile-density.css",

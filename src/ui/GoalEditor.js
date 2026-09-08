@@ -45,6 +45,12 @@ export class GoalEditor {
                 !(task.goalIds ?? []).includes(goal.id)
         );
 
+        const directSubgoalCount = goals.filter(
+            item =>
+                item.parentGoalId === goal.id &&
+                item.status !== "DELETED"
+        ).length;
+
         const taskIdsWithChildren = new Set(
             tasks
                 .filter(task => task.parentTaskId !== null)
@@ -66,7 +72,7 @@ export class GoalEditor {
         };
 
         return `
-            <aside class="goalDrawer">
+            <aside class="goalDrawer goalEditorCompactLayout">
 
                 <header class="goalEditorHeader">
                     <h3>Editar objetivo</h3>
@@ -90,9 +96,13 @@ export class GoalEditor {
                     </button>
                 </header>
 
-                <form id="goalEditorForm">
+                <form
+                    id="goalEditorForm"
+                    class="goalEditorPrimary">
 
-                    <label for="goalTitleEdit">
+                    <label
+                        class="goalEditorVisuallyHidden"
+                        for="goalTitleEdit">
                         Título
                     </label>
 
@@ -103,42 +113,295 @@ export class GoalEditor {
                         maxlength="160"
                         required>
 
-                    <label for="goalDescriptionEdit">
+                    <label
+                        class="goalEditorVisuallyHidden"
+                        for="goalDescriptionEdit">
                         Descripción
                     </label>
 
                     <textarea
                         id="goalDescriptionEdit"
-                        rows="4">${escapeHtml(
+                        rows="2"
+                        placeholder="Descripción">${escapeHtml(
                             goal.description
                         )}</textarea>
 
-                    <label for="goalDueDateEdit">
-                        Fecha límite
-                    </label>
+                    <div class="goalEditorPlanning">
+                        <label for="goalDueDateEdit">
+                            Fecha límite
+                        </label>
 
-                    <input
-                        id="goalDueDateEdit"
-                        type="date"
-                        value="${escapeHtml(
-                            goal.dueDate ?? ""
-                        )}">
+                        <input
+                            id="goalDueDateEdit"
+                            type="date"
+                            value="${escapeHtml(
+                                goal.dueDate ?? ""
+                            )}">
+                    </div>
 
-                    <div class="goalEditorActions">
+                </form>
 
-                        <button
-                            type="submit"
-                            class="primaryAction">
-                            Guardar
-                        </button>
+                <div
+                    class="goalEditorToolGrid"
+                    data-goal-tool-order="Notas,Asociaciones,Subobjetivos,Organización">
 
-                        <button
-                            id="completeGoal"
-                            type="button"
-                            class="secondaryAction">
-                            Completar
-                        </button>
+                    <details
+                        id="notionGoalNotesSection"
+                        class="editorSection editorNotionGoalSection goalEditorTool"
+                        data-mobile-collapsed="true">
+                        <summary class="goalEditorToolSummary">
+                            <span>Notas</span>
+                            <span class="goalEditorToolCount">
+                                ${goal.notionPageId ? 1 : 0}
+                            </span>
+                        </summary>
 
+                        <div class="goalEditorToolPanel">
+                            <header class="goalEditorToolPanelHeader">
+                                <strong>Notas</strong>
+                                <button
+                                    type="button"
+                                    class="goalEditorToolPanelClose iconButton"
+                                    aria-label="Cerrar Notas"
+                                    title="Cerrar Notas">
+                                    ${Icon.render("close")}
+                                </button>
+                            </header>
+
+                            <div
+                                id="notionGoalNotesBody"
+                                class="editorSectionBody"
+                                data-goal-id="${escapeHtml(goal.id)}">
+                                <p class="fieldHelp">
+                                    La nota se edita en Notion. Task Engine guarda solamente el vínculo.
+                                </p>
+                                ${goal.notionPageId && goal.notionPageUrl
+                                    ? `
+                                        <div class="taskEditorActions">
+                                            <a
+                                                id="openNotionGoalNote"
+                                                class="secondaryAction"
+                                                href="${escapeHtml(goal.notionPageUrl)}"
+                                                target="_blank"
+                                                rel="noopener noreferrer">
+                                                Abrir nota
+                                            </a>
+                                            <button
+                                                id="unlinkNotionGoalNote"
+                                                type="button"
+                                                class="tertiaryAction">
+                                                Desvincular
+                                            </button>
+                                        </div>
+                                    `
+                                    : goal.status === "DELETED"
+                                        ? `
+                                            <p class="fieldHelp">
+                                                No se puede crear una nota nueva para un objetivo en Papelera.
+                                            </p>
+                                        `
+                                        : `
+                                            <button
+                                                id="createNotionGoalNote"
+                                                type="button"
+                                                class="secondaryAction">
+                                                Crear nota
+                                            </button>
+                                        `}
+                            </div>
+                        </div>
+                    </details>
+
+                    <details
+                        class="goalAssociationManager goalEditorTool">
+                        <summary class="goalEditorToolSummary">
+                            <span>Asociaciones</span>
+                            <span class="goalEditorToolCount">
+                                ${directlyAssociated.length}
+                            </span>
+                        </summary>
+
+                        <div class="goalEditorToolPanel">
+                            <header class="goalEditorToolPanelHeader">
+                                <strong>Gestionar asociaciones</strong>
+                                <button
+                                    type="button"
+                                    class="goalEditorToolPanelClose iconButton"
+                                    aria-label="Cerrar Asociaciones"
+                                    title="Cerrar Asociaciones">
+                                    ${Icon.render("close")}
+                                </button>
+                            </header>
+
+                            <div class="goalAssociationManagerBody">
+
+                                ${directlyAssociated.length > 0
+                                    ? `
+                                        <form id="goalTaskDetachForm">
+                                            ${this.searchableSelect.render({
+                                                id: "goalTaskDetachId",
+                                                label: "Quitar asociación",
+                                                placeholder:
+                                                    "Buscar entre las asociadas…",
+                                                options: directlyAssociated
+                                                    .map(task => ({
+                                                        value: task.id,
+                                                        label:
+                                                            `${typeLabel(task)}: ` +
+                                                            task.title
+                                                    }))
+                                            })}
+                                            <button
+                                                type="submit"
+                                                class="dangerAction">
+                                                Quitar
+                                            </button>
+                                        </form>
+                                    `
+                                    : `
+                                        <p class="emptyGoalTasks">
+                                            No hay asociaciones directas.
+                                        </p>
+                                    `}
+
+                                ${availableTasks.length > 0
+                                    ? `
+                                        <form id="goalTaskForm">
+                                            ${this.searchableSelect.render({
+                                                id: "goalTaskId",
+                                                label: "Agregar asociación",
+                                                placeholder:
+                                                    "Buscar tareas o proyectos…",
+                                                options: availableTasks
+                                                    .map(task => ({
+                                                        value: task.id,
+                                                        label:
+                                                            `${typeLabel(task)}: ` +
+                                                            task.title
+                                                    }))
+                                            })}
+                                            <button type="submit">
+                                                Asociar
+                                            </button>
+                                        </form>
+                                    `
+                                    : `
+                                        <p class="emptyGoalTasks">
+                                            No hay más tareas o proyectos disponibles.
+                                        </p>
+                                    `}
+
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="goalSubgoalsSection goalEditorTool">
+                        <summary class="goalEditorToolSummary">
+                            <span>Subobjetivos</span>
+                            <span class="goalEditorToolCount">
+                                ${directSubgoalCount}
+                            </span>
+                        </summary>
+
+                        <div class="goalEditorToolPanel">
+                            <header class="goalEditorToolPanelHeader">
+                                <strong>Subobjetivos</strong>
+                                <button
+                                    type="button"
+                                    class="goalEditorToolPanelClose iconButton"
+                                    aria-label="Cerrar Subobjetivos"
+                                    title="Cerrar Subobjetivos">
+                                    ${Icon.render("close")}
+                                </button>
+                            </header>
+
+                            <form id="subgoalForm">
+                                <input
+                                    id="subgoalTitle"
+                                    type="text"
+                                    placeholder="Nuevo subobjetivo"
+                                    maxlength="160"
+                                    required>
+
+                                <button type="submit">
+                                    Agregar
+                                </button>
+                            </form>
+                        </div>
+                    </details>
+
+                    ${possibleParents.length > 0 ||
+                        goal.parentGoalId
+                        ? `
+                    <details class="goalHierarchySection goalEditorTool">
+
+                        <summary class="goalEditorToolSummary">
+                            <span>Organización</span>
+                        </summary>
+
+                        <div class="goalEditorToolPanel">
+                            <header class="goalEditorToolPanelHeader">
+                                <strong>Organización</strong>
+                                <button
+                                    type="button"
+                                    class="goalEditorToolPanelClose iconButton"
+                                    aria-label="Cerrar Organización"
+                                    title="Cerrar Organización">
+                                    ${Icon.render("close")}
+                                </button>
+                            </header>
+
+                            <div class="goalHierarchySectionBody">
+                                ${possibleParents.length > 0
+                                    ? `
+                                        <form id="goalParentForm">
+                                            <select
+                                                id="goalParentId"
+                                                required>
+                                                <option value="">
+                                                    Mover a otro objetivo…
+                                                </option>
+                                                ${possibleParents
+                                                    .map(item => `
+                                                        <option
+                                                            value="${escapeHtml(item.id)}"
+                                                            ${item.id ===
+                                                                goal.parentGoalId
+                                                                ? "selected"
+                                                                : ""}>
+                                                            ${escapeHtml(item.title)}
+                                                        </option>
+                                                    `)
+                                                    .join("")}
+                                            </select>
+                                            <button type="submit">
+                                                Mover
+                                            </button>
+                                        </form>
+                                    `
+                                    : ""}
+
+                                ${goal.parentGoalId
+                                    ? `
+                                        <button
+                                            id="detachGoal"
+                                            type="button">
+                                            Convertir en objetivo principal
+                                        </button>
+                                    `
+                                    : ""}
+
+                            </div>
+                        </div>
+
+                    </details>
+                        `
+                        : ""}
+
+                </div>
+
+                <footer class="goalEditorFooter">
+                    <div class="goalEditorAdministrativeActions">
                         <button
                             id="archiveGoal"
                             type="button"
@@ -150,208 +413,26 @@ export class GoalEditor {
                             id="deleteGoalFromEditor"
                             type="button"
                             class="dangerAction">
-                            Mover a la papelera
+                            Eliminar
+                        </button>
+                    </div>
+
+                    <div class="goalEditorPrimaryActions">
+                        <button
+                            id="completeGoal"
+                            type="button"
+                            class="secondaryAction">
+                            Completar
                         </button>
 
-                    </div>
-
-                </form>
-
-                <details
-                    id="notionGoalNotesSection"
-                    class="editorSection editorNotionGoalSection"
-                    data-mobile-collapsed="true">
-                    <summary>Notas</summary>
-                    <div
-                        id="notionGoalNotesBody"
-                        class="editorSectionBody"
-                        data-goal-id="${escapeHtml(goal.id)}">
-                        <p class="fieldHelp">
-                            La nota se edita en Notion. Task Engine guarda solamente el vínculo.
-                        </p>
-                        ${goal.notionPageId && goal.notionPageUrl
-                            ? `
-                                <div class="taskEditorActions">
-                                    <a
-                                        id="openNotionGoalNote"
-                                        class="secondaryAction"
-                                        href="${escapeHtml(goal.notionPageUrl)}"
-                                        target="_blank"
-                                        rel="noopener noreferrer">
-                                        Abrir nota
-                                    </a>
-                                    <button
-                                        id="unlinkNotionGoalNote"
-                                        type="button"
-                                        class="tertiaryAction">
-                                        Desvincular
-                                    </button>
-                                </div>
-                            `
-                            : goal.status === "DELETED"
-                                ? `
-                                    <p class="fieldHelp">
-                                        No se puede crear una nota nueva para un objetivo en Papelera.
-                                    </p>
-                                `
-                                : `
-                                    <button
-                                        id="createNotionGoalNote"
-                                        type="button"
-                                        class="secondaryAction">
-                                        Crear nota
-                                    </button>
-                                `}
-                    </div>
-                </details>
-
-                <section class="goalTasksSection">
-
-                    <details class="goalAssociationManager">
-                        <summary>
-                            Gestionar asociaciones
-                            (${directlyAssociated.length})
-                        </summary>
-
-                        <div class="goalAssociationManagerBody">
-
-                            ${directlyAssociated.length > 0
-                                ? `
-                                    <form id="goalTaskDetachForm">
-                                        ${this.searchableSelect.render({
-                                            id: "goalTaskDetachId",
-                                            label: "Quitar asociación",
-                                            placeholder:
-                                                "Buscar entre las asociadas…",
-                                            options: directlyAssociated
-                                                .map(task => ({
-                                                    value: task.id,
-                                                    label:
-                                                        `${typeLabel(task)}: ` +
-                                                        task.title
-                                                }))
-                                        })}
-                                        <button
-                                            type="submit"
-                                            class="dangerAction">
-                                            Quitar
-                                        </button>
-                                    </form>
-                                `
-                                : `
-                                    <p class="emptyGoalTasks">
-                                        No hay asociaciones directas.
-                                    </p>
-                                `}
-
-                            ${availableTasks.length > 0
-                                ? `
-                                    <form id="goalTaskForm">
-                                        ${this.searchableSelect.render({
-                                            id: "goalTaskId",
-                                            label: "Agregar asociación",
-                                            placeholder:
-                                                "Buscar tareas o proyectos…",
-                                            options: availableTasks
-                                                .map(task => ({
-                                                    value: task.id,
-                                                    label:
-                                                        `${typeLabel(task)}: ` +
-                                                        task.title
-                                                }))
-                                        })}
-                                        <button type="submit">
-                                            Asociar
-                                        </button>
-                                    </form>
-                                `
-                                : `
-                                    <p class="emptyGoalTasks">
-                                        No hay más tareas o proyectos disponibles.
-                                    </p>
-                                `}
-
-                        </div>
-                    </details>
-
-                </section>
-
-                <section class="goalSubgoalsSection">
-
-                    <h4>Subobjetivos</h4>
-
-                    <form id="subgoalForm">
-
-                        <input
-                            id="subgoalTitle"
-                            type="text"
-                            placeholder="Nuevo subobjetivo"
-                            maxlength="160"
-                            required>
-
-                        <button type="submit">
-                            Agregar
+                        <button
+                            type="submit"
+                            class="primaryAction"
+                            form="goalEditorForm">
+                            Guardar cambios
                         </button>
-
-                    </form>
-
-                </section>
-
-                ${possibleParents.length > 0 ||
-                    goal.parentGoalId
-                    ? `
-                <details class="goalHierarchySection">
-
-                    <summary>
-                        Organización
-                    </summary>
-
-                    <div class="goalHierarchySectionBody">
-
-                        ${possibleParents.length > 0
-                            ? `
-                                <form id="goalParentForm">
-                                    <select
-                                        id="goalParentId"
-                                        required>
-                                        <option value="">
-                                            Mover a otro objetivo…
-                                        </option>
-                                        ${possibleParents
-                                            .map(item => `
-                                                <option
-                                                    value="${escapeHtml(item.id)}"
-                                                    ${item.id ===
-                                                        goal.parentGoalId
-                                                        ? "selected"
-                                                        : ""}>
-                                                    ${escapeHtml(item.title)}
-                                                </option>
-                                            `)
-                                            .join("")}
-                                    </select>
-                                    <button type="submit">
-                                        Mover
-                                    </button>
-                                </form>
-                            `
-                            : ""}
-
-                        ${goal.parentGoalId
-                            ? `
-                                <button
-                                    id="detachGoal"
-                                    type="button">
-                                    Convertir en objetivo principal
-                                </button>
-                            `
-                            : ""}
-
                     </div>
-
-                </details>
-                    `
-                    : ""}
+                </footer>
 
             </aside>
         `;
@@ -365,6 +446,115 @@ export class GoalEditor {
         );
         this.searchableSelect.bind(
             "goalTaskId"
+        );
+
+        this.bindToolPanels();
+
+    }
+
+    bindToolPanels() {
+
+        this.panelAbortController?.abort();
+        this.panelAbortController =
+            new AbortController();
+
+        const signal =
+            this.panelAbortController.signal;
+        const drawer = document.querySelector(
+            ".goalEditorCompactLayout"
+        );
+
+        if (!drawer) return;
+
+        const tools = [...drawer.querySelectorAll(
+            ".goalEditorTool"
+        )];
+
+        const closeTool = (
+            tool,
+            restoreFocus = false
+        ) => {
+
+            tool.open = false;
+
+            if (restoreFocus) {
+                tool.querySelector(
+                    ":scope > summary"
+                )?.focus();
+            }
+
+        };
+
+        for (const tool of tools) {
+
+            tool.addEventListener(
+                "toggle",
+                () => {
+
+                    if (!tool.open) return;
+
+                    for (const other of tools) {
+                        if (other !== tool) {
+                            other.open = false;
+                        }
+                    }
+
+                },
+                { signal }
+            );
+
+            tool.querySelector(
+                ".goalEditorToolPanelClose"
+            )?.addEventListener(
+                "click",
+                event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeTool(tool, true);
+                },
+                { signal }
+            );
+
+        }
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key !== "Escape") return;
+
+                const openTool = tools.find(
+                    tool => tool.open
+                );
+
+                if (!openTool) return;
+
+                event.preventDefault();
+                closeTool(openTool, true);
+
+            },
+            { signal }
+        );
+
+        document.addEventListener(
+            "click",
+            event => {
+
+                const openTool = tools.find(
+                    tool => tool.open
+                );
+
+                if (
+                    !openTool ||
+                    openTool.contains(event.target)
+                ) {
+                    return;
+                }
+
+                closeTool(openTool);
+
+            },
+            { signal }
         );
 
     }
