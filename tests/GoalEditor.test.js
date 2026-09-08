@@ -113,11 +113,74 @@ test("mantiene la organización bajo demanda", () => {
 
     assert.match(
         html,
-        /<details class="goalHierarchySection">/
+        /<details class="goalHierarchySection goalEditorTool">/
     );
     assert.doesNotMatch(
         html,
-        /<details class="goalHierarchySection"\s+open/
+        /<details class="goalHierarchySection goalEditorTool"\s+open/
+    );
+
+});
+
+test("ordena la información las herramientas y el pie como el editor de tareas", () => {
+
+    const parent = new Goal({
+        id: "parent",
+        title: "Principal"
+    });
+    const child = new Goal({
+        id: "child",
+        title: "Secundario",
+        parentGoalId: parent.id
+    });
+    const alternativeParent = new Goal({
+        id: "alternative-parent",
+        title: "Alternativo"
+    });
+
+    const html = new GoalEditor().render(
+        parent,
+        [parent, child, alternativeParent]
+    );
+
+    assert.match(
+        html,
+        /class="goalEditorPrimary"[\s\S]*class="goalEditorPlanning"[\s\S]*class="goalEditorToolGrid"[\s\S]*class="goalEditorFooter"/
+    );
+    assert.match(
+        html,
+        /data-goal-tool-order="Notas,Asociaciones,Subobjetivos,Organización"/
+    );
+    assert.match(
+        html,
+        /class="goalEditorAdministrativeActions"[\s\S]*id="archiveGoal"[\s\S]*id="deleteGoalFromEditor"/
+    );
+    assert.match(
+        html,
+        /class="goalEditorPrimaryActions"[\s\S]*id="completeGoal"[\s\S]*Guardar cambios/
+    );
+    assert.match(
+        html,
+        /class="icon goalEditorToolIcon"[\s\S]*class="goalEditorToolLabel">Subobjetivos<\/span>[\s\S]*class="goalEditorToolCount">\s*1/
+    );
+
+    for (const label of [
+        "Notas",
+        "Asociaciones",
+        "Subobjetivos",
+        "Organización"
+    ]) {
+        assert.match(
+            html,
+            new RegExp(
+                `aria-label="${label}"[\\s\\S]*?goalEditorToolIcon`
+            )
+        );
+    }
+
+    assert.match(
+        html,
+        /id="subgoalForm"[\s\S]*placeholder="Nuevo subobjetivo"[\s\S]*>\s*Agregar\s*</
     );
 
 });
@@ -158,5 +221,80 @@ test("administra las asociaciones desde el editor", () => {
     assert.match(html, /id="goalTaskForm"/);
     assert.match(html, /type="search"/);
     assert.match(html, /Buscar editorial/);
+
+});
+
+test("los paneles de herramientas son exclusivos y recuperan el foco", t => {
+
+    const previousDocument = globalThis.document;
+    const documentListeners = new Map();
+
+    const createTool = () => {
+
+        const listeners = new Map();
+        const summary = {
+            focused: false,
+            focus() { this.focused = true; }
+        };
+        const close = {
+            addEventListener(type, handler) {
+                listeners.set(`close:${type}`, handler);
+            }
+        };
+
+        return {
+            open: false,
+            listeners,
+            summary,
+            close,
+            addEventListener(type, handler) {
+                listeners.set(type, handler);
+            },
+            querySelector(selector) {
+                return selector === ":scope > summary"
+                    ? summary
+                    : close;
+            },
+            contains() { return false; }
+        };
+
+    };
+
+    const first = createTool();
+    const second = createTool();
+
+    globalThis.document = {
+        querySelector() {
+            return {
+                querySelectorAll() {
+                    return [first, second];
+                }
+            };
+        },
+        addEventListener(type, handler) {
+            documentListeners.set(type, handler);
+        }
+    };
+
+    t.after(() => {
+        globalThis.document = previousDocument;
+    });
+
+    new GoalEditor().bindToolPanels();
+
+    first.open = true;
+    second.open = true;
+    first.listeners.get("toggle")();
+
+    assert.equal(first.open, true);
+    assert.equal(second.open, false);
+
+    first.listeners.get("close:click")({
+        preventDefault() {},
+        stopPropagation() {}
+    });
+
+    assert.equal(first.open, false);
+    assert.equal(first.summary.focused, true);
 
 });

@@ -1,0 +1,568 @@
+/* Editor de objetivos alineado con la jerarquía visual del editor de tareas. */
+
+.goalEditorCompactLayout {
+    width: min(520px, calc(100vw - 220px));
+    padding: 0 18px 74px;
+}
+
+.goalEditorCompactLayout .goalEditorHeader {
+    position: sticky;
+    z-index: 30;
+    top: 0;
+    min-height: 42px;
+    margin: 0 -18px 8px;
+    padding: 7px 18px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.goalEditorCompactLayout .goalEditorHeader h3 {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.goalEditorCompactLayout #closeGoalEditor,
+.goalEditorCompactLayout .mobileGoalEditorSave {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.goalEditorCompactLayout .mobileGoalEditorSave {
+    display: none;
+}
+
+.goalEditorVisuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.goalEditorCompactLayout .goalEditorPrimary {
+    display: grid;
+    gap: 2px;
+}
+
+.goalEditorCompactLayout
+    #goalEditorForm.goalEditorPrimary
+    > input,
+.goalEditorCompactLayout
+    #goalEditorForm.goalEditorPrimary
+    > textarea {
+    box-sizing: border-box;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+}
+
+.goalEditorCompactLayout #goalTitleEdit {
+    height: 33px;
+    min-height: 33px;
+    padding: 3px 2px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.goalEditorCompactLayout #goalDescriptionEdit {
+    height: 42px;
+    min-height: 42px;
+    padding: 7px 2px;
+    resize: vertical;
+    color: var(--color-text-subtle);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.goalEditorCompactLayout
+    #goalEditorForm.goalEditorPrimary
+    > input:focus,
+.goalEditorCompactLayout
+    #goalEditorForm.goalEditorPrimary
+    > textarea:focus {
+    border-bottom-color: var(--color-accent);
+    outline: 0;
+}
+
+.goalEditorPlanning {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: min(220px, 50%);
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+}
+
+.goalEditorPlanning label {
+    margin: 0 0 3px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.goalEditorPlanning input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    padding: 4px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-surface);
+    color: var(--color-text-subtle);
+    font: inherit;
+    font-size: 12px;
+}
+
+.goalEditorToolGrid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+}
+
+.goalEditorCompactLayout .goalEditorTool,
+.goalEditorCompactLayout .goalTasksSection,
+.goalEditorCompactLayout .goalSubgoalsSection,
+.goalEditorCompactLayout .goalHierarchySection {
+    position: static;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.goalEditorCompactLayout .goalEditorToolSummary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 33px;
+    min-height: 33px;
+    padding: 4px 7px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-subtle);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+}
+
+.goalEditorCompactLayout
+    .goalEditorToolSummary::-webkit-details-marker {
+    display: none;
+}
+
+.goalEditorToolIcon {
+    display: none;
+}
+
+.goalEditorCompactLayout
+    .goalEditorTool[open]
+    > .goalEditorToolSummary,
+.goalEditorCompactLayout
+    .goalEditorToolSummary:hover,
+.goalEditorCompactLayout
+    .goalEditorToolSummary:focus-visible {
+    background: var(--color-surface-hover);
+}
+
+.goalEditorToolCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--color-surface-subtle);
+    color: var(--color-text-muted);
+    font-size: 10px;
+    line-height: 1;
+}
+
+.goalEditorToolPanel {
+    position: absolute;
+    z-index: 85;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    display: grid;
+    box-sizing: border-box;
+    max-height: min(68vh, 520px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    gap: 7px;
+    padding: 0 10px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    box-shadow: var(--transient-surface-shadow);
+}
+
+.goalEditorToolPanelHeader {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    margin: 0 -10px 2px;
+    padding: 2px 6px 2px 10px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.goalEditorToolPanelHeader strong {
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.goalEditorCompactLayout
+    .goalEditorToolPanelClose {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.goalEditorCompactLayout
+    .goalEditorToolPanel
+    .editorSectionBody,
+.goalEditorCompactLayout
+    .goalAssociationManagerBody,
+.goalEditorCompactLayout
+    .goalHierarchySectionBody {
+    display: grid;
+    gap: 7px;
+    padding: 0;
+}
+
+.goalEditorCompactLayout .fieldHelp,
+.goalEditorCompactLayout .emptyGoalTasks {
+    margin: 2px 0;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.goalEditorCompactLayout
+    .goalAssociationManagerBody {
+    gap: 12px;
+}
+
+.goalEditorCompactLayout
+    .goalAssociationManagerBody form,
+.goalEditorCompactLayout #subgoalForm,
+.goalEditorCompactLayout #goalParentForm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    margin: 0;
+}
+
+.goalEditorCompactLayout
+    .goalAssociationManagerBody
+    form {
+    grid-template-columns: 1fr;
+}
+
+.goalEditorCompactLayout
+    .goalEditorToolPanel input,
+.goalEditorCompactLayout
+    .goalEditorToolPanel select,
+.goalEditorCompactLayout
+    .goalEditorToolPanel button:not(
+        .goalEditorToolPanelClose
+    ),
+.goalEditorCompactLayout
+    .goalEditorToolPanel a {
+    box-sizing: border-box;
+    min-height: 36px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.goalEditorFooter {
+    position: sticky;
+    z-index: 25;
+    bottom: -74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 11px -18px -74px;
+    padding: 9px 18px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: 0 -4px 10px rgb(15 23 42 / 4%);
+}
+
+.goalEditorAdministrativeActions,
+.goalEditorPrimaryActions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.goalEditorFooter button {
+    box-sizing: border-box;
+    height: 32px;
+    min-height: 32px;
+    margin: 0;
+    padding: 4px 9px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.goalEditorAdministrativeActions
+    #archiveGoal,
+.goalEditorAdministrativeActions
+    #deleteGoalFromEditor {
+    border-color: transparent;
+    background: transparent;
+}
+
+.goalEditorAdministrativeActions
+    #archiveGoal {
+    color: var(--color-text-secondary);
+}
+
+.goalEditorAdministrativeActions
+    #deleteGoalFromEditor {
+    color: var(--color-danger);
+}
+
+.goalEditorPrimaryActions #completeGoal {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text-subtle);
+}
+
+.goalEditorPrimaryActions
+    button[type="submit"] {
+    min-width: 108px;
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+.goalEditorCompactLayout input:focus,
+.goalEditorCompactLayout select:focus,
+.goalEditorCompactLayout textarea:focus,
+.goalEditorCompactLayout summary:focus-visible,
+.goalEditorCompactLayout button:focus-visible,
+.goalEditorCompactLayout a:focus-visible {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-accent-muted);
+    outline-offset: 1px;
+}
+
+@media (max-width: 760px) {
+
+    .goalEditorCompactLayout {
+        width: 100vw;
+        padding:
+            0
+            14px
+            calc(74px + env(safe-area-inset-bottom));
+    }
+
+    .goalEditorCompactLayout .goalEditorHeader {
+        top: 0;
+        min-height: 48px;
+        margin: 0 -14px 8px;
+        padding:
+            calc(4px + env(safe-area-inset-top))
+            8px
+            4px;
+    }
+
+    .goalEditorCompactLayout .goalEditorHeader h3 {
+        flex: 1 1 auto;
+        margin: 0;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .goalEditorCompactLayout #closeGoalEditor {
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        min-height: 38px;
+    }
+
+    .goalEditorCompactLayout #goalTitleEdit {
+        height: 40px;
+        min-height: 40px;
+        padding: 6px 2px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .goalEditorCompactLayout #goalDescriptionEdit {
+        height: 42px;
+        min-height: 42px;
+        padding: 8px 2px;
+        font-size: 14px;
+    }
+
+    .goalEditorPlanning {
+        width: min(240px, 55%);
+    }
+
+    .goalEditorPlanning input {
+        height: 38px;
+        min-height: 38px;
+        font-size: 14px;
+    }
+
+    .goalEditorToolGrid {
+        gap: 5px;
+    }
+
+    .goalEditorCompactLayout
+        .goalEditorToolSummary {
+        position: relative;
+        flex-direction: column;
+        height: 60px;
+        min-height: 60px;
+        gap: 3px;
+        padding: 4px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        font-size: 12px;
+    }
+
+    .goalEditorToolIcon {
+        display: block;
+        width: 22px;
+        min-width: 22px;
+        height: 22px;
+        color: var(--color-text);
+    }
+
+    .goalEditorToolLabel {
+        max-width: 100%;
+        overflow: hidden;
+        color: var(--color-text-subtle);
+        font-size: 11px;
+        line-height: 1.1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .goalEditorToolCount {
+        position: absolute;
+        top: 2px;
+        left: calc(50% + 8px);
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+    }
+
+    .goalEditorToolPanel {
+        position: fixed;
+        z-index: 95;
+        top: auto;
+        right: 8px;
+        bottom: max(8px, env(safe-area-inset-bottom));
+        left: 8px;
+        max-height: min(68dvh, 520px);
+    }
+
+    .goalEditorCompactLayout
+        .goalEditorToolPanel input,
+    .goalEditorCompactLayout
+        .goalEditorToolPanel select,
+    .goalEditorCompactLayout
+        .goalEditorToolPanel button:not(
+            .goalEditorToolPanelClose
+        ),
+    .goalEditorCompactLayout
+        .goalEditorToolPanel a {
+        min-height: 42px;
+        font-size: 14px;
+    }
+
+    .goalEditorFooter {
+        bottom: calc(-74px - env(safe-area-inset-bottom));
+        margin:
+            11px
+            -14px
+            calc(-74px - env(safe-area-inset-bottom));
+        padding:
+            9px
+            14px
+            calc(9px + env(safe-area-inset-bottom));
+    }
+
+    .goalEditorFooter button {
+        height: 38px;
+        min-height: 38px;
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+}
+
+@media (max-width: 460px) {
+
+    .goalEditorToolGrid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .goalEditorFooter {
+        align-items: stretch;
+        gap: 5px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .goalEditorAdministrativeActions,
+    .goalEditorPrimaryActions {
+        gap: 2px;
+    }
+
+    .goalEditorFooter button {
+        padding-right: 6px;
+        padding-left: 6px;
+        font-size: 11px;
+    }
+
+    .goalEditorPrimaryActions
+        button[type="submit"] {
+        min-width: 94px;
+    }
+
+}
