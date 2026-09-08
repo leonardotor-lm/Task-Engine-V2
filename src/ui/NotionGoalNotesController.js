@@ -232,6 +232,24 @@ export class NotionGoalNotesController {
             ".editorNotionGoalSection"
         );
 
+        if (
+            existing?.classList?.contains(
+                "goalEditorTool"
+            )
+        ) {
+            const body = existing.querySelector(
+                "#notionGoalNotesBody"
+            );
+
+            if (body) {
+                body.innerHTML =
+                    this.getBodyHtml(goal);
+            }
+
+            this.bind(goal);
+            return;
+        }
+
         if (existing) existing.remove();
 
         const section =
@@ -258,6 +276,17 @@ export class NotionGoalNotesController {
 
     getSectionHtml(goal) {
 
+        return `
+            <summary>Notas</summary>
+            <div class="editorSectionBody">
+                ${this.getBodyHtml(goal)}
+            </div>
+        `;
+
+    }
+
+    getBodyHtml(goal) {
+
         const linked = Boolean(
             goal.notionPageId &&
             goal.notionPageUrl
@@ -270,58 +299,55 @@ export class NotionGoalNotesController {
                 : "";
 
         return `
-            <summary>Notas</summary>
-            <div class="editorSectionBody">
-                <p class="fieldHelp">
-                    La nota se edita en Notion. Task Engine guarda solamente el vínculo.
-                </p>
+            <p class="fieldHelp">
+                La nota se edita en Notion. Task Engine guarda solamente el vínculo.
+            </p>
 
-                ${error
+            ${error
+                ? `
+                    <p class="syncErrorHint" role="alert">
+                        ${escapeHtml(error)}
+                    </p>
+                `
+                : ""}
+
+            ${linked
+                ? `
+                    <div class="taskEditorActions">
+                        <a
+                            id="openNotionGoalNote"
+                            class="secondaryAction"
+                            href="${escapeHtml(goal.notionPageUrl)}"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Abrir nota
+                        </a>
+
+                        <button
+                            id="unlinkNotionGoalNote"
+                            type="button"
+                            class="tertiaryAction">
+                            Desvincular
+                        </button>
+                    </div>
+                `
+                : goal.status === "DELETED"
                     ? `
-                        <p class="syncErrorHint" role="alert">
-                            ${escapeHtml(error)}
+                        <p class="fieldHelp">
+                            No se puede crear una nota nueva para un objetivo en Papelera.
                         </p>
                     `
-                    : ""}
-
-                ${linked
-                    ? `
-                        <div class="taskEditorActions">
-                            <a
-                                id="openNotionGoalNote"
-                                class="secondaryAction"
-                                href="${escapeHtml(goal.notionPageUrl)}"
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                Abrir nota
-                            </a>
-
-                            <button
-                                id="unlinkNotionGoalNote"
-                                type="button"
-                                class="tertiaryAction">
-                                Desvincular
-                            </button>
-                        </div>
-                    `
-                    : goal.status === "DELETED"
-                        ? `
-                            <p class="fieldHelp">
-                                No se puede crear una nota nueva para un objetivo en Papelera.
-                            </p>
-                        `
-                        : `
-                            <button
-                                id="createNotionGoalNote"
-                                type="button"
-                                class="secondaryAction"
-                                ${creating ? "disabled" : ""}>
-                                ${creating
-                                    ? "Creando nota…"
-                                    : "Crear nota"}
-                            </button>
-                        `}
-            </div>
+                    : `
+                        <button
+                            id="createNotionGoalNote"
+                            type="button"
+                            class="secondaryAction"
+                            ${creating ? "disabled" : ""}>
+                            ${creating
+                                ? "Creando nota…"
+                                : "Crear nota"}
+                        </button>
+                    `}
         `;
 
     }
