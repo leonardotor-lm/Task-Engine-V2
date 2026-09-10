@@ -150,6 +150,8 @@ test("consulta contexto y busca tareas sin exponer vínculos privados", () => {
     assert.equal(organization.areas[0].name, "Docencia");
     assert.equal(result.total, 1);
     assert.equal(result.tasks[0].id, "task-1");
+    assert.equal(result.tasks[0].postponementCount, 0);
+    assert.deepEqual(result.tasks[0].postponements, []);
     assert.equal(
         Object.hasOwn(result.tasks[0], "notionPageUrl"),
         false
@@ -157,6 +159,44 @@ test("consulta contexto y busca tareas sin exponer vínculos privados", () => {
     assert.equal(
         Object.hasOwn(result.tasks[0], "attachments"),
         false
+    );
+});
+
+test("expone el historial de postergaciones necesario para analizar tareas", () => {
+    const { context } = loadBackend();
+
+    context.loadSnapshot_ = () => ({
+        ok: true,
+        revision: 4,
+        data: {
+            ...backup(),
+            data: {
+                ...backup().data,
+                tasks: [task({
+                    postponements: [{
+                        from: "2026-09-03",
+                        to: "2026-09-10",
+                        date: "2026-09-02T12:00:00.000Z"
+                    }]
+                })]
+            }
+        }
+    });
+
+    const result = plain(
+        context.gptSearchTasks_({
+            status: "PENDING"
+        })
+    );
+
+    assert.equal(result.tasks[0].postponementCount, 1);
+    assert.deepEqual(
+        result.tasks[0].postponements[0],
+        {
+            from: "2026-09-03",
+            to: "2026-09-10",
+            date: "2026-09-02T12:00:00.000Z"
+        }
     );
 });
 

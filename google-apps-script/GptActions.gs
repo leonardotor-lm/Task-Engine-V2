@@ -509,6 +509,16 @@ function gptPublicTask_(task) {
         startDate: task.startDate || null,
         dueDate: task.dueDate || null,
         dueTime: task.dueTime || null,
+        postponements: (task.postponements || [])
+            .map(function(postponement) {
+                return {
+                    from: postponement.from || null,
+                    to: postponement.to || null,
+                    date: postponement.date || null
+                };
+            }),
+        postponementCount:
+            (task.postponements || []).length,
         completedAt: task.completedAt || null,
         createdAt: task.createdAt,
         updatedAt: task.updatedAt,

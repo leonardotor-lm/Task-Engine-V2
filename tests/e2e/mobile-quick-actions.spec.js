@@ -26,7 +26,14 @@ test("la hoja móvil conserva alineados dibujo y toque desde cualquier fila", as
     });
 
     await page.goto("/");
+
+    const layout = page.locator(".layout");
+    const toggle = page.locator("#toggleMobileMenu");
+
+    await toggle.click();
+    await expect(layout).toHaveClass(/mobileMenuOpen/);
     await page.locator("#showAll").click();
+    await expect(layout).not.toHaveClass(/mobileMenuOpen/);
 
     const verifyCloseTarget = async taskId => {
 

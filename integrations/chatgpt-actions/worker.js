@@ -129,15 +129,24 @@ export async function handleRequest(
     }
 
     let result;
+    const upstreamStatus = upstream.status;
+    const upstreamContentType =
+        normalizeContentType(
+            upstream.headers.get("content-type")
+        );
 
     try {
-        result = await upstream.json();
+        result = JSON.parse(await upstream.text());
     } catch {
         return jsonResponse(
             502,
             errorBody(
                 "INVALID_UPSTREAM_RESPONSE",
-                "Task Engine devolvió una respuesta inválida."
+                "Task Engine devolvió una respuesta inválida.",
+                {
+                    upstreamStatus,
+                    upstreamContentType
+                }
             )
         );
     }
@@ -209,11 +218,24 @@ function safeEqual(first, second) {
 
 }
 
-function errorBody(code, message) {
-    return {
+function normalizeContentType(value) {
+    return String(value || "unknown")
+        .split(";", 1)[0]
+        .trim()
+        .toLowerCase() || "unknown";
+}
+
+function errorBody(code, message, details = null) {
+    const body = {
         ok: false,
         error: { code, message }
     };
+
+    if (details) {
+        body.error.details = details;
+    }
+
+    return body;
 }
 
 function jsonResponse(status, body) {

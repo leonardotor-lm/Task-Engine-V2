@@ -4,7 +4,7 @@ info:
   description: Consulta y modifica de forma controlada la base personal de Task Engine.
   version: 1.0.0
 servers:
-  - url: https://REEMPLAZAR-POR-TU-WORKER.workers.dev
+  - url: https://task-engine-chatgpt-actions.leonardotor.workers.dev
 security:
   - bearerAuth: []
 paths:
@@ -34,6 +34,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContextResponse"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
   /v1/tasks/search:
     post:
       operationId: searchTaskEngineTasks
@@ -52,7 +54,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/TaskSearchResponse"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
   /v1/tasks/get:
     post:
       operationId: getTaskEngineTask
@@ -65,15 +69,6 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                ok:
-                  type: boolean
-                total:
-                  type: integer
-                tasks:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/PublicTask"
               required: [taskId]
               additionalProperties: false
               properties:
@@ -84,13 +79,10 @@ paths:
           description: Tarea actual
           content:
             application/json:
-            schema:
-              type: object
-              properties:
-                ok:
-                  type: boolean
-                task:
-                  $ref: "#/components/schemas/PublicTask"
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
   /v1/tasks/create:
     post:
       operationId: createTaskEngineTask
@@ -108,13 +100,10 @@ paths:
           description: Tarea creada
           content:
             application/json:
-            schema:
-              type: object
-              properties:
-                ok:
-                  type: boolean
-                task:
-                  $ref: "#/components/schemas/PublicTask"
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
   /v1/tasks/update:
     post:
       operationId: updateTaskEngineTask
@@ -132,13 +121,10 @@ paths:
           description: Tarea actualizada
           content:
             application/json:
-            schema:
-              type: object
-              properties:
-                ok:
-                  type: boolean
-                task:
-                  $ref: "#/components/schemas/PublicTask"
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
   /v1/tasks/complete:
     post:
       operationId: completeTaskEngineTask
@@ -156,18 +142,22 @@ paths:
           description: Tarea completada
           content:
             application/json:
-            schema:
-              type: object
-              properties:
-                ok:
-                  type: boolean
-                task:
-                  $ref: "#/components/schemas/PublicTask"
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+  responses:
+    ErrorResponse:
+      description: Error controlado de Task Engine
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
     ContextResponse:
       type: object
@@ -205,6 +195,18 @@ components:
           type: [string, "null"]
     PublicTask:
       type: object
+      required:
+        - id
+        - title
+        - status
+        - priority
+        - tagIds
+        - goalIds
+        - isWaiting
+        - isProject
+        - postponements
+        - postponementCount
+        - version
       properties:
         id:
           type: string
@@ -230,13 +232,97 @@ components:
             type: string
         isWaiting:
           type: boolean
+        isProject:
+          type: boolean
+        parentTaskId:
+          type: [string, "null"]
+        startDate:
+          type: [string, "null"]
+          format: date
         dueDate:
           type: [string, "null"]
           format: date
         dueTime:
           type: [string, "null"]
+        postponements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Postponement"
+        postponementCount:
+          type: integer
+          minimum: 0
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         version:
           type: integer
+    Postponement:
+      type: object
+      properties:
+        from:
+          type: [string, "null"]
+          format: date
+        to:
+          type: [string, "null"]
+          format: date
+        date:
+          type: [string, "null"]
+          format: date-time
+    TaskSearchResponse:
+      type: object
+      required: [ok, total, offset, tasks]
+      properties:
+        ok:
+          type: boolean
+        revision:
+          type: integer
+        total:
+          type: integer
+        offset:
+          type: integer
+        nextOffset:
+          type: [integer, "null"]
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicTask"
+    TaskResponse:
+      type: object
+      required: [ok, task]
+      properties:
+        ok:
+          type: boolean
+        revision:
+          type: integer
+        task:
+          $ref: "#/components/schemas/PublicTask"
+    ErrorResponse:
+      type: object
+      required: [ok, error]
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              properties:
+                upstreamStatus:
+                  type: integer
+                upstreamContentType:
+                  type: string
     TaskSearch:
       type: object
       additionalProperties: false
@@ -245,7 +331,7 @@ components:
           type: string
         status:
           type: string
-          enum: [INBOX, PENDING, COMPLETED, ARCHIVED, DELETED]
+          enum: [INBOX, PENDING, COMPLETED, ARCHIVED, TRASH]
         areaId:
           type: [string, "null"]
         contextId:

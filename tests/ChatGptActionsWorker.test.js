@@ -59,6 +59,42 @@ test("enruta una consulta e inyecta el token fuera del modelo", async () => {
     });
 });
 
+test("diagnostica una respuesta no JSON sin exponer contenido sensible", async () => {
+    const response = await handleRequest(
+        request("/v1/tasks/search", {
+            status: "PENDING"
+        }),
+        environment(),
+        async () => new Response(
+            "<html>Google sign in token-super-secreto</html>",
+            {
+                status: 403,
+                headers: {
+                    "content-type": "text/html; charset=utf-8"
+                }
+            }
+        )
+    );
+    const body = await response.json();
+
+    assert.equal(response.status, 502);
+    assert.equal(
+        body.error.code,
+        "INVALID_UPSTREAM_RESPONSE"
+    );
+    assert.deepEqual(
+        body.error.details,
+        {
+            upstreamStatus: 403,
+            upstreamContentType: "text/html"
+        }
+    );
+    assert.doesNotMatch(
+        JSON.stringify(body),
+        /token-super-secreto|script\.google\.com/
+    );
+});
+
 test("rechaza credenciales desconocidas sin llamar Apps Script", async () => {
     let called = false;
     const unauthorized = request("/v1/context");

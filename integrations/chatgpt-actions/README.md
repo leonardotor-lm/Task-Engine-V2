@@ -22,7 +22,7 @@ No existe una operación para reemplazar la copia completa, archivar o borrar.
 [{"id":"leo","apiKey":"CLAVE-DE-LA-ACTION","endpoint":"URL-EXEC-DE-APPS-SCRIPT","token":"TOKEN-DE-TASK-ENGINE"}]
 ```
 
-5. Desplegá el Worker y reemplazá el servidor de ejemplo dentro de `openapi.yaml`.
+5. Desplegá el Worker. El esquema ya apunta a `task-engine-chatgpt-actions.leonardotor.workers.dev`.
 6. Creá un GPT personalizado, pegá `GPT_INSTRUCTIONS.md` en sus instrucciones e importá `openapi.yaml` como Action.
 7. En autenticación elegí API Key, tipo Bearer, y guardá `CLAVE-DE-LA-ACTION`.
 
@@ -40,3 +40,18 @@ Para otra base se agrega otra entrada a `TASK_ENGINE_ACCOUNTS`, con una API key,
 6. Completala usando la nueva versión.
 
 Conservá una copia de seguridad antes de la primera prueba sobre la base real.
+
+## Diagnóstico de respuestas inválidas
+
+Si el Worker devuelve `INVALID_UPSTREAM_RESPONSE`, la solicitud llegó al
+Worker pero Apps Script respondió con un contenido que no era JSON. El error
+incluye solamente dos datos seguros: el estado HTTP (`upstreamStatus`) y el
+tipo de contenido (`upstreamContentType`). Nunca incluye la URL privada, el
+token ni el cuerpo recibido.
+
+- `text/html` con estado `401` o `403`: revisá quién puede acceder al despliegue de Apps Script.
+- `text/html` con estado `404`: revisá que `TASK_ENGINE_ACCOUNTS` conserve la URL `/exec` vigente.
+- `text/html` con estado `200`: revisá redirecciones o una página intermedia de Google.
+
+Después de modificar el Worker, volvé a desplegarlo. Después de modificar
+`openapi.yaml`, reemplazá el esquema de la Action dentro del editor del GPT.
