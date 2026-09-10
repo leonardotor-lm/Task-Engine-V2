@@ -27,25 +27,17 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ## Prioridad actual
 
-### Integración GPT ↔ Task Engine — PR #444
-
-- **Estado:** en desarrollo.
-- Reparar `INVALID_UPSTREAM_RESPONSE` y estabilizar la consulta desde el GPT personalizado.
-- La PR incluye correcciones de OpenAPI, diagnóstico seguro, historial de postergaciones e instrucciones del GPT.
-- Después de fusionar, requiere desplegar la versión correspondiente de Apps Script y del Worker y actualizar esquema/instrucciones de la Action.
-- Cerrar sólo después de validar consultas reales desde el GPT.
-
 ### Mantenimiento automático y backups — #445
 
-- **Estado:** pendiente.
+- **Estado:** en desarrollo.
 - Completar la segunda etapa del mantenimiento automático iniciada con la PR #423.
-- Generar backups JSON automáticos en Google Drive.
-- Guardarlos en una carpeta específica de mantenimiento.
-- Separar respaldos por instalación/usuario para no mezclar bases.
-- Definir rotación y conservación de respaldos.
-- Incorporar controles periódicos de integridad y diagnóstico.
+- La implementación en curso genera backups JSON diarios y mensuales en Google Drive.
+- La carpeta `Mantenimiento y respaldos` separa cada base mediante su nombre y un fragmento estable del ID.
+- La rotación conserva 45 copias diarias, 12 mensuales, 20 previas a compactación y 90 diagnósticos; las copias manuales no se rotan.
+- Cada archivo se valida antes y después de escribirlo en Drive.
 - Mantener un enfoque conservador, sin borrados destructivos automáticos de datos de usuario.
-- Documentar y probar restauración desde respaldos.
+- La restauración valida primero el archivo, crea una copia manual de seguridad y registra los datos restaurados como una revisión nueva.
+- Falta publicar, activar y verificar el ciclo real en Apps Script antes de cerrar el issue.
 
 ## Mejoras funcionales aprobadas — 10/09/2026
 
@@ -111,6 +103,7 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ## Capacidades que no deben volver al backlog sin una regresión concreta
 
+- Integración GPT ↔ Task Engine — PR #444: **reparada, desplegada y verificada con consultas reales**.
 - Recordatorios móviles unidireccionales con Google Calendar — #343: **completado y cerrado**.
 - Adjuntos en Google Drive: terminado.
 - Tareas En espera: terminado.
