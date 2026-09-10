@@ -14,7 +14,7 @@ export class Sidebar {
         contexts = [],
         tags = [],
         taskFilters = {},
-        taskSort = "MANUAL",
+        taskSort = "CREATED_NEWEST",
         canRestoreBackup = false,
         syncConfigured = false,
         syncUrl = "",
