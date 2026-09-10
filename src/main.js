@@ -84,6 +84,9 @@ import {
     PwaController
 } from "./ui/PwaController.js";
 import {
+    OfflineSyncRecoveryController
+} from "./ui/OfflineSyncRecoveryController.js";
+import {
     AiSettingsController
 } from "./ui/AiSettingsController.js";
 import {
@@ -210,6 +213,8 @@ const ongoingSyncReconciliationController =
     new OngoingSyncReconciliationController(app);
 const pwaController =
     new PwaController(app);
+const offlineSyncRecoveryController =
+    new OfflineSyncRecoveryController(app);
 const aiSettingsController =
     new AiSettingsController(app);
 const aiAssistantController =
@@ -304,6 +309,7 @@ syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
 ongoingSyncReconciliationController
     .start();
+offlineSyncRecoveryController.start();
 pwaController.start();
 aiSettingsController.start();
 aiSidebarGroupController.start();

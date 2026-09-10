@@ -39,7 +39,8 @@ export class Sidebar {
         settingsSection = null,
         sidebarTitle = "",
         sidebarTitleSaved = false,
-        showNotionDashboard = true
+        showNotionDashboard = true,
+        syncOffline = false
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -316,35 +317,42 @@ export class Sidebar {
         const syncStatusClass =
             !syncConfigured
                 ? "disconnected"
-                : syncLastError
-                    ? "error"
-                    : syncInProgress
-                        ? "syncing"
-                        : syncConflict
-                            ? "conflict"
-                            : syncRemoteUpdateAvailable
-                                ? "remote"
-                                : syncPendingChanges
-                                    ? "pending"
-                                    : "configured";
+                : syncOffline
+                    ? "offline"
+                    : syncLastError
+                        ? "error"
+                        : syncInProgress
+                            ? "syncing"
+                            : syncConflict
+                                ? "conflict"
+                                : syncRemoteUpdateAvailable
+                                    ? "remote"
+                                    : syncPendingChanges
+                                        ? "pending"
+                                        : "configured";
 
         const syncStatusText =
             !syncConfigured
                 ? "Sin configurar"
-                : syncLastError
-                    ? "Error de sincronización"
-                    : syncInProgress
-                        ? "Sincronizando…"
-                        : syncConflict
-                            ? `Conflicto · nube rev. ${syncRemoteRevision}`
-                            : syncRemoteUpdateAvailable
-                                ? `Actualización disponible · rev. ${syncRemoteRevision}`
-                                : syncPendingChanges
-                                    ? `Cambios pendientes · rev. ${syncRevision}`
-                                    : `Sincronizada · rev. ${syncRevision}`;
+                : syncOffline
+                    ? syncPendingChanges
+                        ? `Sin conexión · cambios pendientes · rev. ${syncRevision}`
+                        : `Sin conexión · rev. ${syncRevision}`
+                    : syncLastError
+                        ? "Error de sincronización"
+                        : syncInProgress
+                            ? "Sincronizando…"
+                            : syncConflict
+                                ? `Conflicto · nube rev. ${syncRemoteRevision}`
+                                : syncRemoteUpdateAvailable
+                                    ? `Actualización disponible · rev. ${syncRemoteRevision}`
+                                    : syncPendingChanges
+                                        ? `Cambios pendientes · rev. ${syncRevision}`
+                                        : `Sincronizada · rev. ${syncRevision}`;
 
         const sidebarSyncStatusText = {
             disconnected: "Desconectado",
+            offline: "Sin conexión",
             error: "Error de sincronización",
             syncing: "Sincronizando…",
             conflict: "Conflicto de sincronización",
@@ -365,12 +373,20 @@ export class Sidebar {
                     </span>
                 </header>
 
+                ${syncOffline
+                    ? `
+                        <p class="syncOfflineHint">
+                            Los cambios se guardan en este dispositivo y se sincronizarán automáticamente al volver internet. Adjuntos, Notion y Calendar requieren conexión.
+                        </p>
+                    `
+                    : ""}
+
                 ${syncLastError
                     ? `
                         <p
                             class="syncErrorHint"
                             title="${escapeHtml(syncLastError)}">
-                            Los cambios continúan guardados localmente. La aplicación volverá a intentarlo después de un nuevo cambio o al recuperar el foco.
+                            Los cambios continúan guardados localmente. La aplicación volverá a intentarlo automáticamente; también podés reintentar ahora.
                             <span class="syncErrorDetail">
                                 Detalle: ${escapeHtml(syncLastError)}
                             </span>

@@ -454,7 +454,8 @@ export class MainView {
             taskViewCounts,
             sidebarTitle,
             sidebarTitleSaved,
-            showNotionDashboard
+            showNotionDashboard,
+            syncOffline
         } = state;
 
         const applicationTitle =
@@ -521,7 +522,8 @@ export class MainView {
                     settingsSection,
                     sidebarTitle,
                     sidebarTitleSaved,
-                    showNotionDashboard
+                    showNotionDashboard,
+                    syncOffline
                 )}
 
                 ${this.viewRouter.render(state)}

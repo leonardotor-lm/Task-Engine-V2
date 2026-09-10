@@ -272,5 +272,5 @@ test("la sincronización consulta también los formularios transitorios", () => 
         /hasActiveTransientForm/g
     ) ?? [];
 
-    assert.equal(occurrences.length, 2);
+    assert.equal(occurrences.length, 3);
 });

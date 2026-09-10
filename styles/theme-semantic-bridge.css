@@ -101,7 +101,9 @@
 }
 
 .syncStatus.pending,
-.sidebarSyncStatus.pending {
+.sidebarSyncStatus.pending,
+.syncStatus.offline,
+.sidebarSyncStatus.offline {
     color: var(--color-warning);
 }
 

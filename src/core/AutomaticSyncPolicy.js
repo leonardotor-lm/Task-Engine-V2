@@ -11,13 +11,15 @@ export function getAutomaticSyncAction({
     remoteChecked,
     localPending,
     remoteUpdateAvailable,
-    inProgress
+    inProgress,
+    offline = false
 }) {
 
     if (
         !configured ||
         !remoteChecked ||
-        inProgress
+        inProgress ||
+        offline
     ) {
         return AutomaticSyncAction.NONE;
     }

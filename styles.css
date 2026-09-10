@@ -854,6 +854,11 @@ body {
     color: var(--color-text-muted);
 }
 
+.syncStatus.offline {
+    color: #b45309;
+    font-weight: 600;
+}
+
 .syncTools form,
 .syncActions {
     display: flex;
@@ -939,6 +944,10 @@ body {
     color: #b45309;
 }
 
+.sidebarSyncStatus.offline {
+    color: #b45309;
+}
+
 .sidebarSyncStatus.remote,
 .sidebarSyncStatus.conflict,
 .sidebarSyncStatus.error {
@@ -948,6 +957,13 @@ body {
 .syncErrorHint {
     margin: 10px 0 0;
     color: var(--color-danger);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.syncOfflineHint {
+    margin: 10px 0 0;
+    color: var(--color-text-secondary);
     font-size: 11px;
     line-height: 1.4;
 }

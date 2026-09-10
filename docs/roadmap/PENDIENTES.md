@@ -27,6 +27,15 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ## Mejoras funcionales aprobadas — 10/09/2026
 
+### Recuperación automática después del trabajo offline — #453
+
+- **Estado:** en desarrollo.
+- Distinguir **Sin conexión** de los errores reales del servicio.
+- Conservar los cambios locales pendientes y reintentar automáticamente al volver internet.
+- Aplicar reintentos graduales si Apps Script todavía no está accesible al producirse el evento de reconexión.
+- No cerrar editores ni formularios activos y no sobrescribir conflictos reales.
+- Mantener la reconciliación, las acciones manuales y el modelo de datos existentes.
+
 ### Captura rápida PWA en Android — #446
 
 - **Estado:** pendiente.

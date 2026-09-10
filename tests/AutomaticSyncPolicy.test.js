@@ -85,6 +85,18 @@ test("no sincroniza sin configuración ni durante otra operación", () => {
 
 });
 
+test("no intenta sincronizar automáticamente mientras no hay conexión", () => {
+
+    assert.equal(
+        decide({
+            localPending: true,
+            offline: true
+        }),
+        AutomaticSyncAction.NONE
+    );
+
+});
+
 test("no realiza solicitudes cuando ambos estados coinciden", () => {
 
     assert.equal(
