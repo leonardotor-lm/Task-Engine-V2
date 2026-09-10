@@ -183,7 +183,9 @@ export class OngoingSyncReconciliationController {
         if (
             !config?.isConfigured?.() ||
             !config?.hasKnownSyncState?.() ||
-            !this.app.syncRemoteUpdateAvailable
+            !this.app.syncRemoteUpdateAvailable ||
+            this.app
+                .hasSyncBlockingInteraction?.()
         ) {
             return false;
         }

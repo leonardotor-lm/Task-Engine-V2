@@ -49,6 +49,14 @@ test("la página registra los metadatos y habilita el service worker", async () 
     assert.match(index, /worker-src 'self'/);
     assert.match(main, /new PwaController\(app\)/);
     assert.match(main, /pwaController\.start\(\)/);
+    assert.match(
+        main,
+        /new OfflineSyncRecoveryController\(app\)/
+    );
+    assert.match(
+        main,
+        /offlineSyncRecoveryController\.start\(\)/
+    );
 
 });
 

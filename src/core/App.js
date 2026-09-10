@@ -173,6 +173,7 @@ export class App {
         this.autoSyncScheduledFingerprint = null;
         this.autoSyncBlockedFingerprint = null;
         this.syncLastError = null;
+        this.syncOffline = false;
 
         this.syncFocusWatcher =
             new SyncFocusWatcher({
@@ -2142,7 +2143,9 @@ export class App {
                 this.syncRemoteUpdateAvailable,
             inProgress:
                 this.autoSyncInProgress ||
-                this.syncCheckInProgress
+                this.syncCheckInProgress,
+            offline:
+                this.syncOffline
         });
 
     }
@@ -2339,8 +2342,12 @@ export class App {
 
             if (
                 action ===
-                AutomaticSyncAction.PULL
+                    AutomaticSyncAction.PULL
             ) {
+
+                if (this.hasSyncBlockingInteraction()) {
+                    return;
+                }
 
                 this.autoSyncInProgress = true;
 
@@ -2373,6 +2380,25 @@ export class App {
             this.render({ preserveTransientUi: true });
 
         }
+
+    }
+
+    hasSyncBlockingInteraction() {
+
+        return Boolean(
+            this.mainView
+                ?.hasActiveEntityEdit() ||
+            this.mainView
+                ?.hasActiveEntityCreation() ||
+            this.mainView
+                ?.hasActiveTransientForm(
+                    this.selectedGoal
+                ) ||
+            this.mainView
+                ?.hasUnsavedTaskEdit(
+                    this.selectedTask
+                )
+        );
 
     }
 
@@ -3008,6 +3034,8 @@ export class App {
                 this.syncCheckInProgress,
             syncLastError:
                 this.syncLastError,
+            syncOffline:
+                this.syncOffline,
             selectedTask: this.selectedTask,
             selectedGoal: this.selectedGoal,
             goalEditorOpen:

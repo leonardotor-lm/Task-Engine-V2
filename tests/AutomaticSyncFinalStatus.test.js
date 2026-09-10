@@ -72,3 +72,48 @@ test("la descarga automática vuelve a renderizar después de finalizar", async 
     );
 
 });
+
+test("una actualización remota espera si hay una edición activa", async () => {
+
+    const app = Object.create(App.prototype);
+    let pulls = 0;
+
+    app.syncCheckInProgress = false;
+    app.autoSyncInProgress = false;
+    app.syncRemoteRevision = 1;
+    app.syncRemoteUpdateAvailable = false;
+    app.syncLastError = null;
+    app.autoSyncBlockedFingerprint = null;
+    app.selectedGoal = null;
+    app.selectedTask = null;
+    app.mainView = {
+        hasActiveEntityEdit: () => true
+    };
+    app.syncConfig = {
+        isConfigured: () => true
+    };
+    app.syncEngine = {
+        async checkRemoteRevision() {
+            return {
+                remoteRevision: 2,
+                updateAvailable: true
+            };
+        },
+        async pull() {
+            pulls += 1;
+            return { revision: 2 };
+        }
+    };
+    app.resolveAutomaticSyncAction =
+        () => AutomaticSyncAction.PULL;
+    app.render = () => {};
+
+    await app.checkRemoteStatus();
+
+    assert.equal(pulls, 0);
+    assert.equal(
+        app.syncRemoteUpdateAvailable,
+        true
+    );
+
+});

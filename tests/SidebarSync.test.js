@@ -13,7 +13,8 @@ function renderSync({
     remoteRevision = null,
     remoteUpdateAvailable = false,
     inProgress = false,
-    lastError = null
+    lastError = null,
+    offline = false
 } = {}) {
 
     return new Sidebar().render(
@@ -46,7 +47,11 @@ function renderSync({
         false,
         true,
         true,
-        "sync"
+        "sync",
+        "Mis tareas",
+        false,
+        true,
+        offline
     );
 
 }
@@ -246,6 +251,34 @@ test("muestra el estado mientras sincroniza", () => {
     assert.match(
         html,
         /class="syncStatus syncing"/
+    );
+
+});
+
+test("distingue la falta de conexión de un error del servidor", () => {
+
+    const html = renderSync({
+        configured: true,
+        revision: 4,
+        pendingChanges: true,
+        offline: true
+    });
+
+    assert.match(
+        html,
+        /sidebarSyncStatus offline[\s\S]*?Sin conexión/
+    );
+    assert.match(
+        html,
+        /Sin conexión · cambios pendientes · rev\. 4/
+    );
+    assert.match(
+        html,
+        /se sincronizarán automáticamente al volver internet/
+    );
+    assert.doesNotMatch(
+        html,
+        /Error de sincronización/
     );
 
 });
