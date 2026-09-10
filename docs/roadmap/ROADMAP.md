@@ -178,9 +178,19 @@ Con este bloque se completa el alcance del issue #212: conexión/configuración,
 - el contrato OpenAPI y los diagnósticos distinguen errores del Worker, la autenticación y la respuesta de Apps Script;
 - la reparación quedó desplegada y verificada con consultas reales el 10 de septiembre de 2026.
 
+### Mantenimiento automático y respaldos en Google Drive — PR #451 / #445
+
+- genera y valida un respaldo JSON diario de la revisión activa;
+- conserva además copias mensuales y previas a cada compactación;
+- separa los archivos por instalación dentro de `Task Engine V2/Mantenimiento y respaldos`;
+- aplica una rotación conservadora: 45 automáticos, 12 mensuales, 20 previos a compactación y 90 diagnósticos;
+- permite crear copias manuales, inspeccionarlas y restaurarlas como una revisión nueva después de generar una copia de seguridad;
+- registra diagnósticos de integridad y de los disparadores instalados;
+- quedó publicado, activado y verificado con un respaldo real el 10 de septiembre de 2026.
+
 ## Etapa operativa actual
 
-Los bloques funcionales aprobados hasta la PR #444 quedaron cerrados y verificados. La prioridad vigente es completar la segunda etapa de mantenimiento preventivo y respaldos automáticos registrada en el issue #445 y en `docs/roadmap/PENDIENTES.md`.
+Los bloques funcionales aprobados hasta la PR #451 quedaron cerrados y verificados, incluida la segunda etapa de mantenimiento preventivo y respaldos automáticos. El trabajo vigente continúa en `docs/roadmap/PENDIENTES.md`.
 
 Quedan separados del backlog activo:
 
