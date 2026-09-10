@@ -118,6 +118,8 @@ export class ProjectWorkspaceController {
                         null;
                 }
 
+                this.collapseProjectTree(task);
+
                 return originalOpenProject(id);
 
             };
@@ -646,17 +648,7 @@ export class ProjectWorkspaceController {
         this.app.selectedTask = null;
         this.app.currentView = View.PROJECT;
 
-        this.app.expandedTaskIds.add(project.id);
-
-        for (
-            const descendant of
-            this.app.taskService
-                .getProjectDescendants(project.id)
-        ) {
-            this.app.expandedTaskIds.add(
-                descendant.id
-            );
-        }
+        this.collapseProjectTree(project);
 
         this.app.render();
 
@@ -725,6 +717,26 @@ export class ProjectWorkspaceController {
         this.app.projectTaskCreationOpen = false;
         this.app.inlineSubtaskParentId = null;
         this.app.selectedTask = null;
+
+    }
+
+    collapseProjectTree(project) {
+
+        if (!project) return;
+
+        this.app.expandedTaskIds?.delete?.(
+            project.id
+        );
+
+        for (
+            const descendant of
+            this.app.taskService
+                .getProjectDescendants(project.id)
+        ) {
+            this.app.expandedTaskIds?.delete?.(
+                descendant.id
+            );
+        }
 
     }
 
