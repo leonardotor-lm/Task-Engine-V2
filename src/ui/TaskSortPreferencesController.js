@@ -104,9 +104,16 @@ export class TaskSortPreferencesController {
 
     readSort(viewKey) {
 
-        const storedSort =
-            this.repository?.get?.(viewKey) ??
-            TaskSort.MANUAL;
+        const preferences =
+            this.readPreferences();
+        const hasStoredSort =
+            Object.prototype.hasOwnProperty.call(
+                preferences,
+                viewKey
+            );
+        const storedSort = hasStoredSort
+            ? this.normalizeSort(preferences[viewKey])
+            : TaskSort.CREATED_NEWEST;
 
         if (this.app.currentView === View.COMPLETED) {
             return storedSort === TaskSort.CREATED_OLDEST

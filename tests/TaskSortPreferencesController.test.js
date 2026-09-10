@@ -123,7 +123,7 @@ test("recuerda un orden independiente para cada vista", () => {
 
     assert.equal(
         app.taskSort,
-        TaskSort.MANUAL
+        TaskSort.CREATED_NEWEST
     );
 
     app.mainView.callbacks.onChangeTaskSort(
@@ -144,6 +144,37 @@ test("recuerda un orden independiente para cada vista", () => {
     assert.equal(
         app.taskSort,
         TaskSort.CREATED_NEWEST
+    );
+
+});
+
+test("conserva Orden manual cuando el usuario lo eligió", () => {
+
+    const storage = createStorage();
+    const app = createApp();
+    const controller =
+        new TaskSortPreferencesController(
+            app,
+            { storage }
+        );
+
+    controller.start();
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.CREATED_NEWEST
+    );
+
+    app.mainView.callbacks.onChangeTaskSort(
+        TaskSort.MANUAL
+    );
+    app.taskSort = TaskSort.PRIORITY;
+    app.render();
+
+    assert.equal(
+        app.taskSort,
+        TaskSort.MANUAL
     );
 
 });
@@ -174,7 +205,7 @@ test("distingue el orden de cada área", () => {
 
     assert.equal(
         app.taskSort,
-        TaskSort.MANUAL
+        TaskSort.CREATED_NEWEST
     );
 
     app.mainView.callbacks.onChangeTaskSort(
@@ -217,7 +248,7 @@ test("distingue el orden de cada objetivo", () => {
 
     assert.equal(
         app.taskSort,
-        TaskSort.MANUAL
+        TaskSort.CREATED_NEWEST
     );
 
     app.mainView.callbacks.onChangeTaskSort(
@@ -302,7 +333,7 @@ test("Completadas usa recientes por defecto y descarta órdenes ajenos", () => {
 
 });
 
-test("usa el orden manual ante datos dañados o valores inválidos", () => {
+test("usa Más recientes ante datos dañados o valores inválidos", () => {
 
     const storage = createStorage();
     const app = createApp();
@@ -319,7 +350,7 @@ test("usa el orden manual ante datos dañados o valores inválidos", () => {
 
     assert.equal(
         controller.readSort("view:today"),
-        TaskSort.MANUAL
+        TaskSort.CREATED_NEWEST
     );
 
     storage.setItem(
@@ -331,7 +362,7 @@ test("usa el orden manual ante datos dañados o valores inválidos", () => {
 
     assert.equal(
         controller.readSort("view:today"),
-        TaskSort.MANUAL
+        TaskSort.CREATED_NEWEST
     );
 
 });
