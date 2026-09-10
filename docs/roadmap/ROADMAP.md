@@ -6,7 +6,7 @@ Construir una aplicación útil y estable, incorporando complejidad de manera gr
 
 La secuencia inicial por fases cumplió su propósito. Desde agosto de 2026, este documento registra las capacidades consolidadas y los cierres principales; el trabajo vigente se mantiene únicamente en `docs/roadmap/PENDIENTES.md`.
 
-## Estado actual — agosto de 2026
+## Estado actual — septiembre de 2026
 
 Task Engine V2 cuenta con:
 
@@ -170,9 +170,17 @@ La búsqueda avanzada admite `esProyecto:si/no` como alias semántico de `tieneS
 
 Con este bloque se completa el alcance del issue #212: conexión/configuración, vinculación de páginas, actualización de estados y reintentos, aislamiento entre instalaciones y revisión móvil.
 
+### Integración GPT ↔ Task Engine — PR #444
+
+- el GPT personalizado consulta y administra Task Engine mediante una Action autenticada;
+- un Worker de Cloudflare valida la credencial y mantiene separados los datos de conexión de cada cuenta;
+- Apps Script expone operaciones de contexto, búsqueda, lectura, creación, actualización y finalización;
+- el contrato OpenAPI y los diagnósticos distinguen errores del Worker, la autenticación y la respuesta de Apps Script;
+- la reparación quedó desplegada y verificada con consultas reales el 10 de septiembre de 2026.
+
 ## Etapa operativa actual
 
-Los bloques funcionales aprobados hasta la PR #342 quedaron cerrados y verificados. La próxima prioridad funcional acordada es la integración unidireccional de recordatorios móviles con Google Calendar, registrada en el issue #343 y en `docs/roadmap/PENDIENTES.md`.
+Los bloques funcionales aprobados hasta la PR #444 quedaron cerrados y verificados. La prioridad vigente es completar la segunda etapa de mantenimiento preventivo y respaldos automáticos registrada en el issue #445 y en `docs/roadmap/PENDIENTES.md`.
 
 Quedan separados del backlog activo:
 

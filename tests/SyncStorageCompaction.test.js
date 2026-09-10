@@ -10,6 +10,13 @@ const source = readFileSync(
     ),
     "utf8"
 );
+const backupSource = readFileSync(
+    new URL(
+        "../google-apps-script/MaintenanceBackups.gs",
+        import.meta.url
+    ),
+    "utf8"
+);
 
 function loadBackend() {
 
@@ -17,6 +24,7 @@ function loadBackend() {
 
     vm.createContext(context);
     vm.runInContext(source, context);
+    vm.runInContext(backupSource, context);
 
     return context;
 
@@ -235,15 +243,20 @@ test("la compactación respalda, verifica y reemplaza la hoja activa", () => {
         }
     };
     backend.SpreadsheetApp = { flush() {} };
-    backend.DriveApp = {
-        createFile(name, content) {
-            backupContent = content;
-            return {
-                getId: () => "backup-id",
-                getName: () => name,
-                getUrl: () => "https://drive.test/backup-id"
-            };
-        }
+    backend.createTaskEngineBackupFile_ = (
+        snapshot,
+        revision,
+        kind
+    ) => {
+        backupContent = JSON.stringify(snapshot);
+        assert.equal(revision, 7);
+        assert.equal(kind, "COMPACTION");
+        return {
+            id: "backup-id",
+            name: "backup.json",
+            url: "https://drive.test/backup-id",
+            verified: true
+        };
     };
 
     const result = backend.compactTaskEngineStorage_(true);

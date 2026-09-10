@@ -65,7 +65,40 @@ function installTaskEngineMaintenance() {
 
 function runTaskEngineMaintenance() {
 
-    return compactTaskEngineStorage_(false);
+    var startedAt = new Date().toISOString();
+
+    try {
+        var backup = runTaskEngineBackupCycle_();
+        var compaction =
+            compactTaskEngineStorage_(false);
+        var result = {
+            ok: true,
+            startedAt: startedAt,
+            finishedAt: new Date().toISOString(),
+            backup: backup,
+            compaction: compaction
+        };
+
+        result.diagnostic =
+            recordTaskEngineMaintenanceDiagnostic_(
+                result
+            );
+
+        return result;
+    } catch (error) {
+        recordTaskEngineMaintenanceDiagnostic_({
+            ok: false,
+            startedAt: startedAt,
+            finishedAt: new Date().toISOString(),
+            error: {
+                code: error.code ||
+                    "MAINTENANCE_FAILED",
+                message: error.message
+            }
+        });
+
+        throw error;
+    }
 
 }
 
@@ -920,25 +953,12 @@ function createCompactionBackup_(
 
     validateSnapshot_(backup);
 
-    var timestamp = new Date()
-        .toISOString()
-        .replace(/[:.]/g, "-");
-    var name =
-        "task-engine-compaction-backup-rev-" +
-        currentRevision +
-        "-" + timestamp + ".json";
-
-    var file = DriveApp.createFile(
-        name,
-        JSON.stringify(backup),
-        "application/json"
+    return createTaskEngineBackupFile_(
+        backup,
+        currentRevision,
+        "COMPACTION",
+        new Date()
     );
-
-    return {
-        id: file.getId(),
-        name: file.getName(),
-        url: file.getUrl()
-    };
 
 }
 
