@@ -25,20 +25,6 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - **Operativo:** no requiere desarrollo nuevo, pero falta configuración o puesta en marcha.
 - **Evaluación:** mejora válida cuyo diseño técnico todavía debe decidirse.
 
-## Prioridad actual
-
-### Mantenimiento automático y backups — #445
-
-- **Estado:** en desarrollo.
-- Completar la segunda etapa del mantenimiento automático iniciada con la PR #423.
-- La implementación en curso genera backups JSON diarios y mensuales en Google Drive.
-- La carpeta `Mantenimiento y respaldos` separa cada base mediante su nombre y un fragmento estable del ID.
-- La rotación conserva 45 copias diarias, 12 mensuales, 20 previas a compactación y 90 diagnósticos; las copias manuales no se rotan.
-- Cada archivo se valida antes y después de escribirlo en Drive.
-- Mantener un enfoque conservador, sin borrados destructivos automáticos de datos de usuario.
-- La restauración valida primero el archivo, crea una copia manual de seguridad y registra los datos restaurados como una revisión nueva.
-- Falta publicar, activar y verificar el ciclo real en Apps Script antes de cerrar el issue.
-
 ## Mejoras funcionales aprobadas — 10/09/2026
 
 ### Captura rápida PWA en Android — #446
@@ -104,6 +90,7 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 ## Capacidades que no deben volver al backlog sin una regresión concreta
 
 - Integración GPT ↔ Task Engine — PR #444: **reparada, desplegada y verificada con consultas reales**.
+- Mantenimiento automático y respaldos en Google Drive — PR #451 / #445: **desplegado, activado y verificado con respaldo real el 10 de septiembre de 2026**.
 - Recordatorios móviles unidireccionales con Google Calendar — #343: **completado y cerrado**.
 - Adjuntos en Google Drive: terminado.
 - Tareas En espera: terminado.
