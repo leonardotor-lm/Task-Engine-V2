@@ -223,7 +223,45 @@ test("captura el filtro guardado antes de abrir un proyecto", () => {
 
 });
 
-test("un ancestro del breadcrumb navega sin volver al proyecto hijo", () => {
+test("abre un proyecto con todos sus niveles contraídos", () => {
+
+    const project = {
+        id: "project",
+        parentTaskId: null,
+        isProject: true
+    };
+    const child = {
+        id: "child",
+        parentTaskId: project.id
+    };
+    const grandchild = {
+        id: "grandchild",
+        parentTaskId: child.id
+    };
+    const { app } = createApp({
+        tasks: [project, child, grandchild],
+        currentView: View.PROJECTS
+    });
+
+    app.expandedTaskIds.add(project.id);
+    app.expandedTaskIds.add(child.id);
+    app.expandedTaskIds.add(grandchild.id);
+
+    new ProjectWorkspaceController(
+        app,
+        { documentRef: null }
+    ).start();
+
+    app.mainView.callbacks.onOpenProject(project.id);
+
+    assert.deepEqual(
+        [...app.expandedTaskIds],
+        []
+    );
+
+});
+
+test("un ancestro del breadcrumb navega con sus subtareas contraídas", () => {
 
     const root = {
         id: "root",
@@ -265,6 +303,8 @@ test("un ancestro del breadcrumb navega sin volver al proyecto hijo", () => {
     );
 
     controller.start();
+    app.expandedTaskIds.add(parent.id);
+    app.expandedTaskIds.add(descendant.id);
     app.mainView.render({ view: View.PROJECT });
     ancestorButton.click();
 
@@ -277,8 +317,8 @@ test("un ancestro del breadcrumb navega sin volver al proyecto hijo", () => {
     assert.equal(app.inlineSubtaskParentId, null);
     assert.equal(app.selectedTask, null);
     assert.equal(app.currentView, View.PROJECT);
-    assert.ok(app.expandedTaskIds.has(parent.id));
-    assert.ok(app.expandedTaskIds.has(descendant.id));
+    assert.ok(!app.expandedTaskIds.has(parent.id));
+    assert.ok(!app.expandedTaskIds.has(descendant.id));
     assert.ok(!app.projectHistory.includes(child.id));
 
 });
