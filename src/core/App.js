@@ -161,7 +161,7 @@ export class App {
             priority: "",
             due: ""
         };
-        this.taskSort = TaskSort.MANUAL;
+        this.taskSort = TaskSort.CREATED_NEWEST;
         this.expandedTaskIds = new Set();
         this.selectedTaskIds = new Set();
         this.bulkSelectionMode = false;
@@ -923,13 +923,13 @@ export class App {
                 this.inlineSubtaskParentId = null;
                 this.selectedTask = null;
 
-                this.expandedTaskIds.add(id);
+                this.expandedTaskIds.delete(id);
 
                 for (
                     const task of
                     this.taskService.getDescendants(id)
                 ) {
-                    this.expandedTaskIds.add(task.id);
+                    this.expandedTaskIds.delete(task.id);
                 }
 
                 this.currentView = View.PROJECT;
@@ -2401,7 +2401,7 @@ export class App {
             priority: "",
             due: ""
         };
-        this.taskSort = TaskSort.MANUAL;
+        this.taskSort = TaskSort.CREATED_NEWEST;
         this.expandedTaskIds.clear();
         this.selectedTaskIds.clear();
         this.bulkSelectionMode = false;
