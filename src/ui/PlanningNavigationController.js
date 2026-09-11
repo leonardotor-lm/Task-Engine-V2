@@ -23,6 +23,8 @@ export class PlanningNavigationController {
         const goalsButton = document.getElementById("showGoals");
         const waitingButton = document.getElementById("showWaiting");
         const calendarButton = document.getElementById("showCalendar");
+        const reviewButton = document.getElementById("openTaskReview");
+        const whatDoNowButton = document.getElementById("openWhatDoNow");
         const statisticsButton = document.getElementById("showStatistics");
 
         if (
@@ -45,6 +47,8 @@ export class PlanningNavigationController {
             goalsButton,
             waitingButton,
             calendarButton,
+            reviewButton,
+            whatDoNowButton,
             statisticsButton
         ].filter(Boolean);
 

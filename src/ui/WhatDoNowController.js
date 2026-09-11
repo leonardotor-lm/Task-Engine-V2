@@ -4,6 +4,12 @@ import {
 import {
     getLocalDateIso
 } from "../core/AiTaskContext.js";
+import {
+    TaskReviewPreferences
+} from "../infrastructure/TaskReviewPreferences.js";
+import {
+    TaskReviewController
+} from "./TaskReviewController.js";
 import { escapeHtml } from "./escapeHtml.js";
 
 function renderData(data = {}) {
@@ -30,6 +36,15 @@ export class WhatDoNowController {
         this.app = app;
         this.document = documentRef;
         this.started = false;
+
+        if (!this.app.taskReviewPreferences) {
+            this.app.taskReviewPreferences = new TaskReviewPreferences();
+        }
+
+        this.taskReviewController = new TaskReviewController(
+            app,
+            { documentRef }
+        );
     }
 
     start() {
@@ -37,6 +52,7 @@ export class WhatDoNowController {
         this.started = true;
         this.wrapSidebarRender();
         this.wrapAppRender();
+        this.taskReviewController.start();
         this.apply();
     }
 
@@ -128,7 +144,8 @@ export class WhatDoNowController {
             tags: this.app.tagService?.getAllTags?.() || [],
             goals: this.app.goalService?.getAllGoals?.() || [],
             today: getLocalDateIso(),
-            limit: 5
+            limit: 5,
+            ruleConfig: this.app.taskReviewPreferences?.get?.() || {}
         });
     }
 
