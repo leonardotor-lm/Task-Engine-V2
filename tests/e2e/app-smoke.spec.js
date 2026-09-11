@@ -24,12 +24,12 @@ test("Planificación muestra sus vistas en el orden acordado", async ({ page }) 
     );
 
     expect(ids).toEqual([
-        "openWhatDoNow",
         "showAll",
         "showProjects",
         "showGoals",
         "showWaiting",
         "showCalendar",
+        "openWhatDoNow",
         "showStatistics"
     ]);
 });
