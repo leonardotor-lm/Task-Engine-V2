@@ -27,8 +27,8 @@ test("Planificación muestra sus vistas en el orden acordado", async ({ page }) 
         "showAll",
         "showProjects",
         "showGoals",
-        "showWaiting",
         "showCalendar",
+        "openWhatDoNow",
         "showStatistics"
     ]);
 });
