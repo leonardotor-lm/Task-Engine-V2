@@ -181,12 +181,10 @@ export class WhatDoNowController {
                 <div class="whatDoNowList">${content}</div>
             </div>
             <div class="settingsDialogFooter">
-                <button id="refreshWhatDoNow" type="button" class="secondaryAction">Actualizar selección</button>
                 <button id="cancelWhatDoNow" type="button" class="tertiaryAction">Cerrar</button>
             </div>`;
 
         this.document.getElementById("closeWhatDoNow")?.addEventListener("click", () => this.close());
         this.document.getElementById("cancelWhatDoNow")?.addEventListener("click", () => this.close());
-        this.document.getElementById("refreshWhatDoNow")?.addEventListener("click", () => this.renderDialog());
     }
 }
