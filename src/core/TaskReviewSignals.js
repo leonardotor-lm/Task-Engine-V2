@@ -12,6 +12,9 @@ export const DEFAULT_TASK_REVIEW_RULES = Object.freeze({
     repeatedPostponements: Object.freeze({
         enabled: true,
         count: 3
+    }),
+    unplannedProcessed: Object.freeze({
+        enabled: true
     })
 });
 
@@ -51,6 +54,10 @@ function mergeRuleConfig(config = {}) {
         repeatedPostponements: {
             ...DEFAULT_TASK_REVIEW_RULES.repeatedPostponements,
             ...(config.repeatedPostponements || {})
+        },
+        unplannedProcessed: {
+            ...DEFAULT_TASK_REVIEW_RULES.unplannedProcessed,
+            ...(config.unplannedProcessed || {})
         }
     };
 }
@@ -125,6 +132,24 @@ export function buildTaskReviewSignals({
                     label: `Pospuesta ${postponementCount} veces`
                 });
             }
+        }
+
+        if (
+            rules.unplannedProcessed.enabled &&
+            task.status === "PENDING" &&
+            !task.startDate &&
+            !task.dueDate &&
+            !task.parentTaskId &&
+            !task.isProject &&
+            !task.isWaiting
+        ) {
+            signals.push({
+                taskId: task.id,
+                type: "UNPLANNED_PROCESSED",
+                value: true,
+                threshold: null,
+                label: "Procesada sin fecha ni proyecto"
+            });
         }
     }
 
