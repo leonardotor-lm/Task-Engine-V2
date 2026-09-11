@@ -49,11 +49,20 @@ export class WhatDoNowController {
             const html = originalRender(...args);
             if (html.includes('id="openWhatDoNow"')) return html;
 
+            const buttonMarkup = `\n                            <button id="openWhatDoNow" type="button" class="sidebarButton" aria-haspopup="dialog">Qué hago ahora</button>`;
+            const statisticsMarker = /(<button\b[^>]*id=["']showStatistics["'][^>]*>)/i;
+
+            if (statisticsMarker.test(html)) {
+                return html.replace(
+                    statisticsMarker,
+                    `${buttonMarkup}\n                            $1`
+                );
+            }
+
             const groupedMarker = /(<div\b[^>]*class=["'][^"']*\bsidebarPlanningGroupBody\b[^"']*["'][^>]*>)/i;
-            const groupedButton = `\n                            <button id="openWhatDoNow" type="button" class="sidebarButton" aria-haspopup="dialog">Qué hago ahora</button>`;
 
             if (groupedMarker.test(html)) {
-                return html.replace(groupedMarker, `$1${groupedButton}`);
+                return html.replace(groupedMarker, `$1${buttonMarkup}`);
             }
 
             const planningMarker = /(<span\b[^>]*class=["'][^"']*\bsidebarSectionLabel\b[^"']*["'][^>]*>\s*Planificación\s*<\/span>)/i;
