@@ -88,6 +88,17 @@ export class WhatDoNowController {
     apply() {
         this.ensureDialog();
         const button = this.document?.getElementById?.("openWhatDoNow");
+        const statistics = this.document?.getElementById?.("showStatistics");
+
+        if (
+            button &&
+            statistics &&
+            button.parentElement === statistics.parentElement &&
+            button.nextElementSibling !== statistics
+        ) {
+            statistics.before(button);
+        }
+
         if (!button || button.dataset.whatDoNowBound) return;
 
         button.dataset.whatDoNowBound = "true";
