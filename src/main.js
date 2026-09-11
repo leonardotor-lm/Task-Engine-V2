@@ -158,6 +158,9 @@ import {
 import {
     CalendarReminderController
 } from "./ui/CalendarReminderController.js";
+import {
+    WhatDoNowController
+} from "./ui/WhatDoNowController.js";
 
 const app = new App();
 app.aiPreferences = new AiPreferences();
@@ -287,6 +290,8 @@ const themeController =
     new ThemeController(app);
 const calendarReminderController =
     new CalendarReminderController(app);
+const whatDoNowController =
+    new WhatDoNowController(app);
 
 attachmentController.start();
 bindAttachmentSearchReference(app);
@@ -307,7 +312,7 @@ syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
-ongoingSyncReconciliationController
+goingSyncReconciliationController
     .start();
 offlineSyncRecoveryController.start();
 pwaController.start();
@@ -340,5 +345,6 @@ businessDayRecurrenceController.start();
 viewTaskSummaryController.start();
 strictAdvancedSearchResultsController.start();
 calendarReminderController.start();
+whatDoNowController.start();
 app.start();
 themeController.start();
