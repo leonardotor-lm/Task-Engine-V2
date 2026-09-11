@@ -28,9 +28,22 @@ test("Planificación muestra sus vistas en el orden acordado", async ({ page }) 
         "showProjects",
         "showGoals",
         "showCalendar",
+        "openTaskReview",
         "openWhatDoNow",
         "showStatistics"
     ]);
+});
+
+test("Revisión de tareas abre reglas configurables sin modificar tareas", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#openTaskReview").click();
+
+    const dialog = page.locator("#taskReviewDialog");
+    await expect(dialog).toBeVisible();
+    await expect(page.locator("#reviewOverdueEnabled")).toBeChecked();
+    await expect(page.locator("#reviewStaleDays")).toHaveValue("30");
+    await expect(page.locator("#reviewPostponedCount")).toHaveValue("3");
+    await expect(page.locator("#reviewUnplannedEnabled")).toBeChecked();
 });
 
 test("los grupos Planificación y Asistencia con IA se pueden contraer y expandir", async ({ page }) => {
