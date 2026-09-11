@@ -8,10 +8,12 @@ import {
 } from "../src/core/WhatDoNow.js";
 
 const TODAY = "2026-09-11";
+let taskSequence = 0;
 
 function task(overrides = {}) {
+    taskSequence += 1;
     return {
-        id: overrides.id || crypto.randomUUID(),
+        id: overrides.id || `generated-task-${taskSequence}`,
         title: overrides.title || "Tarea",
         status: "PENDING",
         priority: 0,
