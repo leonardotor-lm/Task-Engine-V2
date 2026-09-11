@@ -312,7 +312,7 @@ syncOptionalDataBridge.start();
 taskFilterSyncBridge.start();
 syncNavigationPreservationController.start();
 smartSyncReconnectionController.start();
-goingSyncReconciliationController
+ongoingSyncReconciliationController
     .start();
 offlineSyncRecoveryController.start();
 pwaController.start();
