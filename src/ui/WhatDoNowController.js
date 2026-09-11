@@ -128,7 +128,8 @@ export class WhatDoNowController {
             tags: this.app.tagService?.getAllTags?.() || [],
             goals: this.app.goalService?.getAllGoals?.() || [],
             today: getLocalDateIso(),
-            limit: 5
+            limit: 5,
+            ruleConfig: this.app.taskReviewPreferences?.get?.() || {}
         });
     }
 
