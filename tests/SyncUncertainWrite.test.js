@@ -48,7 +48,7 @@ function createBackupService(localBackup) {
     };
 }
 
-test("adopta la revisión remota si un push incierto sí había quedado guardado", async () => {
+test("verifica inmediatamente si un push incierto sí había quedado guardado", async () => {
     const localBackup = createBackup();
     const config = createConfig();
     let saveCalls = 0;
@@ -65,6 +65,12 @@ test("adopta la revisión remota si un push incierto sí había quedado guardado
         },
         async load() {
             loadCalls += 1;
+            if (loadCalls === 1) {
+                return {
+                    revision: 3,
+                    data: createBackup(0)
+                };
+            }
             return {
                 revision: 4,
                 data: localBackup
@@ -74,21 +80,19 @@ test("adopta la revisión remota si un push incierto sí había quedado guardado
     const engine = new SyncEngine({
         backupService: createBackupService(localBackup),
         config,
-        gateway
+        gateway,
+        uncertainWriteRetryDelays: [1],
+        waitFn: async () => {}
     });
-
-    await assert.rejects(
-        engine.push(),
-        /timeout/
-    );
 
     const result = await engine.push();
 
     assert.equal(result.revision, 4);
     assert.equal(config.getRevision(), 4);
     assert.equal(saveCalls, 1);
-    assert.equal(loadCalls, 1);
+    assert.equal(loadCalls, 2);
     assert.equal(config.synchronized.length, 1);
+    assert.equal(result.writeOutcomeVerified, true);
 });
 
 test("reintenta el push si la nube no avanzó después del resultado incierto", async () => {
@@ -117,13 +121,12 @@ test("reintenta el push si la nube no avanzó después del resultado incierto", 
     const engine = new SyncEngine({
         backupService: createBackupService(localBackup),
         config,
-        gateway
+        gateway,
+        uncertainWriteRetryDelays: [],
+        waitFn: async () => {}
     });
 
-    await assert.rejects(
-        engine.push(),
-        /corte de red/
-    );
+    await assert.rejects(engine.push(), /corte de red/);
 
     const result = await engine.push();
 
@@ -151,13 +154,10 @@ test("no sobrescribe si la nube avanzó con contenido distinto después de un pu
     const engine = new SyncEngine({
         backupService: createBackupService(localBackup),
         config,
-        gateway
+        gateway,
+        uncertainWriteRetryDelays: [],
+        waitFn: async () => {}
     });
-
-    await assert.rejects(
-        engine.push(),
-        /timeout/
-    );
 
     await assert.rejects(
         engine.push(),

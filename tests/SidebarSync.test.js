@@ -158,6 +158,7 @@ test("muestra cantidad pendiente y métricas de la última sincronización", () 
             pendingBaseRevision: 4,
             lastMetric: {
                 mode: "incremental",
+                outcome: "verified_after_uncertain_write",
                 durationMs: 280,
                 requestBytes: 1536,
                 savedBytes: 4096
@@ -168,6 +169,7 @@ test("muestra cantidad pendiente y métricas de la última sincronización", () 
     assert.match(html, /3 cambios pendientes/);
     assert.match(html, /Cambios locales pendientes[\s\S]*?<dd>3<\/dd>/);
     assert.match(html, /Último envío[\s\S]*?<dd>Incremental<\/dd>/);
+    assert.match(html, /Resultado[\s\S]*?Confirmado después de una demora/);
     assert.match(html, /Duración[\s\S]*?<dd>280 ms<\/dd>/);
     assert.match(html, /Datos enviados[\s\S]*?<dd>1\.5 KB<\/dd>/);
     assert.match(html, /Ahorro estimado[\s\S]*?<dd>4\.0 KB<\/dd>/);

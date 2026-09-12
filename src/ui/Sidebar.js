@@ -373,6 +373,12 @@ export class Sidebar {
                 : lastSyncMetric?.mode === "full"
                     ? "Completa"
                     : "Sin datos";
+        const lastSyncOutcome = {
+            success: "Correcto",
+            verified_after_uncertain_write:
+                "Confirmado después de una demora",
+            failed: "Fallido"
+        }[lastSyncMetric?.outcome] ?? null;
         const formatBytes = value => {
             if (!Number.isFinite(value)) return "—";
             if (value < 1024) return `${value} B`;
@@ -483,6 +489,14 @@ export class Sidebar {
                                 <dt>Último envío</dt>
                                 <dd>${lastSyncMode}</dd>
                             </div>
+                            ${lastSyncOutcome
+                                ? `
+                                    <div>
+                                        <dt>Resultado</dt>
+                                        <dd>${lastSyncOutcome}</dd>
+                                    </div>
+                                `
+                                : ""}
                             <div>
                                 <dt>Duración</dt>
                                 <dd>${Number.isFinite(lastSyncMetric?.durationMs)
