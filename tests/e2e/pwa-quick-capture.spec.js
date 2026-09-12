@@ -4,7 +4,6 @@ test("una captura compartida abre el editor con título notas y enlace", async (
     page
 }) => {
     const query = new URLSearchParams({
-        capture: "share",
         title: "Artículo para Literatura",
         text: "Revisar para la próxima clase",
         url: "https://example.com/articulo"

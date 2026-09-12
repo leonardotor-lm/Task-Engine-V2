@@ -94,7 +94,27 @@ export function getPwaLaunchRequest(url) {
         return null;
     }
 
-    if (parsed.searchParams.get("capture") === "share") {
+    const shortcut = parsed.searchParams.get("shortcut");
+
+    if (["new-task", "inbox", "today"].includes(shortcut)) {
+        return {
+            type: "shortcut",
+            shortcut
+        };
+    }
+
+    const hasSharedContent = [
+        "title",
+        "text",
+        "url"
+    ].some(parameter =>
+        clean(parsed.searchParams.get(parameter))
+    );
+
+    if (
+        parsed.searchParams.get("capture") === "share" ||
+        hasSharedContent
+    ) {
         return {
             type: "share",
             draft: createSharedTaskDraft({
@@ -102,15 +122,6 @@ export function getPwaLaunchRequest(url) {
                 text: parsed.searchParams.get("text"),
                 url: parsed.searchParams.get("url")
             })
-        };
-    }
-
-    const shortcut = parsed.searchParams.get("shortcut");
-
-    if (["new-task", "inbox", "today"].includes(shortcut)) {
-        return {
-            type: "shortcut",
-            shortcut
         };
     }
 

@@ -72,9 +72,9 @@ test("prepara título notas y enlace sin duplicar contenido", () => {
     );
 });
 
-test("reconoce únicamente URLs de lanzamiento de la PWA", () => {
+test("reconoce los parámetros GET que Android entrega al Share Target", () => {
     const request = getPwaLaunchRequest(
-        "https://example.com/app/?capture=share&title=Texto&url=https%3A%2F%2Fexample.org"
+        "https://example.com/app/?title=Texto&url=https%3A%2F%2Fexample.org"
     );
 
     assert.equal(request.type, "share");
@@ -84,11 +84,22 @@ test("reconoce únicamente URLs de lanzamiento de la PWA", () => {
         "https://example.org"
     );
     assert.equal(
-        getPwaLaunchRequest(
-            "https://example.com/app/?title=Texto"
-        ),
+        getPwaLaunchRequest("https://example.com/app/"),
         null
     );
+});
+
+test("admite tanto el marcador propio como la URL GET generada por Android", () => {
+    const withMarker = getPwaLaunchRequest(
+        "https://example.com/app/?capture=share&text=Una%20idea"
+    );
+    const androidGet = getPwaLaunchRequest(
+        "https://example.com/app/?text=Una%20idea"
+    );
+
+    assert.deepEqual(androidGet, withMarker);
+    assert.equal(androidGet.type, "share");
+    assert.equal(androidGet.draft.title, "Una idea");
 });
 
 test("abre la captura en Inbox y limpia los parámetros consumidos", () => {
