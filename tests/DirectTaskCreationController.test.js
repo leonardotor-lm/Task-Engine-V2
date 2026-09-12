@@ -200,6 +200,39 @@ test("el botón de nueva tarea abre un borrador directamente en el editor", asyn
 
 });
 
+test("la creación directa admite contenido precargado sin guardar automáticamente", () => {
+    const context = createApp(View.INBOX);
+    const controller =
+        new DirectTaskCreationController(
+            context.app,
+            {
+                documentRef: {
+                    getElementById() {
+                        return null;
+                    }
+                },
+                windowRef: null
+            }
+        );
+
+    controller.start();
+    controller.openCreationDraft({
+        title: "Artículo compartido",
+        description:
+            "https://example.com/articulo"
+    });
+
+    assert.equal(
+        context.app.selectedTask.title,
+        "Artículo compartido"
+    );
+    assert.equal(
+        context.app.selectedTask.description,
+        "https://example.com/articulo"
+    );
+    assert.equal(context.created.length, 0);
+});
+
 test("guardar el borrador crea una sola tarea con todos los datos del editor", async () => {
 
     const context = createApp(View.TODAY);

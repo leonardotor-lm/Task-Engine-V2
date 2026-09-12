@@ -159,7 +159,10 @@ export class DirectTaskCreationController {
 
     }
 
-    openCreationDraft() {
+    openCreationDraft({
+        title = "",
+        description = ""
+    } = {}) {
 
         const creationView =
             getTaskCreationView(
@@ -182,6 +185,8 @@ export class DirectTaskCreationController {
         });
 
         this.prepareDraft(draft, "task");
+        draft.title = String(title).trim();
+        draft.description = String(description).trim();
 
         this.app.currentView = creationView;
         this.openDraft(draft);
