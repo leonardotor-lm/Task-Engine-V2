@@ -14,7 +14,8 @@ function renderSync({
     remoteUpdateAvailable = false,
     inProgress = false,
     lastError = null,
-    offline = false
+    offline = false,
+    diagnostics = {}
 } = {}) {
 
     return new Sidebar().render(
@@ -51,7 +52,8 @@ function renderSync({
         "Mis tareas",
         false,
         true,
-        offline
+        offline,
+        diagnostics
     );
 
 }
@@ -143,6 +145,52 @@ test("destaca cambios locales pendientes", () => {
         html,
         /Última sincronización:/
     );
+
+});
+
+test("muestra cantidad pendiente y métricas de la última sincronización", () => {
+
+    const html = renderSync({
+        configured: true,
+        pendingChanges: true,
+        diagnostics: {
+            pendingChangeCount: 3,
+            pendingBaseRevision: 4,
+            lastMetric: {
+                mode: "incremental",
+                durationMs: 280,
+                requestBytes: 1536,
+                savedBytes: 4096
+            }
+        }
+    });
+
+    assert.match(html, /3 cambios pendientes/);
+    assert.match(html, /Cambios locales pendientes[\s\S]*?<dd>3<\/dd>/);
+    assert.match(html, /Último envío[\s\S]*?<dd>Incremental<\/dd>/);
+    assert.match(html, /Duración[\s\S]*?<dd>280 ms<\/dd>/);
+    assert.match(html, /Datos enviados[\s\S]*?<dd>1\.5 KB<\/dd>/);
+    assert.match(html, /Ahorro estimado[\s\S]*?<dd>4\.0 KB<\/dd>/);
+
+});
+
+test("explica por qué la última sincronización usó snapshot completo", () => {
+
+    const html = renderSync({
+        configured: true,
+        diagnostics: {
+            lastMetric: {
+                mode: "full",
+                durationMs: 900,
+                requestBytes: 8000,
+                fallbackReason: "FULL_SNAPSHOT_REQUIRED"
+            }
+        }
+    });
+
+    assert.match(html, /Último envío[\s\S]*?<dd>Completa<\/dd>/);
+    assert.match(html, /Motivo de sincronización completa/);
+    assert.match(html, /El servidor solicitó una recuperación completa/);
 
 });
 

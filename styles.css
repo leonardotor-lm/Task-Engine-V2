@@ -968,6 +968,37 @@ body {
     line-height: 1.4;
 }
 
+.syncDiagnostics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0 0;
+    padding: 9px;
+    border-radius: 6px;
+    background: var(--color-surface-subtle);
+}
+
+.syncDiagnostics div {
+    min-width: 0;
+}
+
+.syncDiagnostics dt {
+    color: var(--color-text-muted);
+    font-size: 10px;
+}
+
+.syncDiagnostics dd {
+    margin: 2px 0 0;
+    color: var(--color-text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.syncDiagnostics .syncDiagnosticWide {
+    grid-column: 1 / -1;
+}
+
 .syncErrorDetail {
     display: block;
     margin-top: 6px;

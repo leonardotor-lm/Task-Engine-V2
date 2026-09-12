@@ -3036,6 +3036,10 @@ export class App {
                 this.syncLastError,
             syncOffline:
                 this.syncOffline,
+            syncDiagnostics:
+                this.syncEngine.getDiagnostics(
+                    this.syncConfig.get().url
+                ),
             selectedTask: this.selectedTask,
             selectedGoal: this.selectedGoal,
             goalEditorOpen:

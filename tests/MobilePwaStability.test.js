@@ -21,6 +21,6 @@ test("la PWA precarga las hojas críticas de la interfaz móvil", () => {
 
     assert.match(
         serviceWorker,
-        /CACHE_NAME = `\$\{CACHE_PREFIX\}-v8`/
+        /CACHE_NAME = `\$\{CACHE_PREFIX\}-v9`/
     );
 });

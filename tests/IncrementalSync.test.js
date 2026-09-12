@@ -211,6 +211,41 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
     assert.equal(pendingRepository.cleared, true);
     assert.equal(metrics[0].mode, "incremental");
     assert.ok(metrics[0].requestBytes < metrics[0].fullSnapshotBytes);
+    assert.equal(metrics[0].fallbackReason, null);
+    assert.ok(metrics[0].durationMs >= 0);
+});
+
+test("SyncEngine expone cambios pendientes y la última métrica", () => {
+    const metric = {
+        mode: "incremental",
+        durationMs: 120
+    };
+    const engine = new SyncEngine({
+        backupService: {},
+        config: {},
+        gateway: {},
+        pendingChangesRepository: {
+            get(endpoint) {
+                assert.equal(endpoint, "https://example.com/exec");
+                return {
+                    baseRevision: 8,
+                    changes: [{ id: "task-1" }, { id: "task-2" }]
+                };
+            }
+        },
+        metricsRepository: {
+            getLatest: () => metric
+        }
+    });
+
+    assert.deepEqual(
+        engine.getDiagnostics("https://example.com/exec"),
+        {
+            pendingChangeCount: 2,
+            pendingBaseRevision: 8,
+            lastMetric: metric
+        }
+    );
 });
 
 test("Apps Script aplica un lote incremental y rechaza duplicados", () => {
