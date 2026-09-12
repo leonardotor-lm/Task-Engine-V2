@@ -30,4 +30,9 @@ export class SyncMetricsRepository {
             return [];
         }
     }
+
+    getLatest() {
+        const entries = this.getAll();
+        return entries.at(-1) ?? null;
+    }
 }

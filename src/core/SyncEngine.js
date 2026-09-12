@@ -79,6 +79,20 @@ export class SyncEngine {
         console.info("Task Engine sync", metric);
     }
 
+    getDiagnostics(endpoint = "") {
+        const pending =
+            this.pendingChangesRepository.get(endpoint);
+
+        return {
+            pendingChangeCount:
+                pending?.changes?.length ?? 0,
+            pendingBaseRevision:
+                pending?.baseRevision ?? null,
+            lastMetric:
+                this.metricsRepository.getLatest()
+        };
+    }
+
     ensureConfigured() {
 
         if (!this.config.isConfigured()) {
@@ -270,6 +284,8 @@ export class SyncEngine {
 
     async push() {
 
+        const startedAt = Date.now();
+
         const connection =
             this.ensureConfigured();
 
@@ -296,6 +312,9 @@ export class SyncEngine {
         let mode = "full";
         let changeCount = null;
         let requestBytes = JSON.stringify(fullRequest).length;
+        let fallbackReason = pending
+            ? null
+            : "missing_base_snapshot";
 
         if (
             pending &&
@@ -329,6 +348,7 @@ export class SyncEngine {
                 ) {
                     throw error;
                 }
+                fallbackReason = error.code;
                 response = await this.saveRemote(fullRequest);
             }
         } else {
@@ -344,6 +364,7 @@ export class SyncEngine {
             createSyncFingerprint(backup)
         );
         this.pendingChangesRepository.clear();
+        const durationMs = Date.now() - startedAt;
         this.rememberMetric({
             mode,
             changeCount,
@@ -358,7 +379,9 @@ export class SyncEngine {
                 ),
             serverRowsWritten:
                 response.rowsWritten ?? null,
-            revision
+            revision,
+            durationMs,
+            fallbackReason
         });
 
         return {
@@ -366,6 +389,8 @@ export class SyncEngine {
             syncMode: mode,
             changeCount,
             requestBytes,
+            durationMs,
+            fallbackReason,
             summary: this.summarize(
                 this.backupService
                     .parseAndValidate(

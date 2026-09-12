@@ -40,7 +40,8 @@ export class Sidebar {
         sidebarTitle = "",
         sidebarTitleSaved = false,
         showNotionDashboard = true,
-        syncOffline = false
+        syncOffline = false,
+        syncDiagnostics = {}
     ) {
 
         // Compatibilidad con llamadas anteriores a la incorporación
@@ -361,6 +362,34 @@ export class Sidebar {
             configured: "Sincronizado"
         }[syncStatusClass];
 
+        const pendingChangeCount = Number(
+            syncDiagnostics?.pendingChangeCount ?? 0
+        );
+        const lastSyncMetric =
+            syncDiagnostics?.lastMetric ?? null;
+        const lastSyncMode =
+            lastSyncMetric?.mode === "incremental"
+                ? "Incremental"
+                : lastSyncMetric?.mode === "full"
+                    ? "Completa"
+                    : "Sin datos";
+        const formatBytes = value => {
+            if (!Number.isFinite(value)) return "—";
+            if (value < 1024) return `${value} B`;
+            return `${(value / 1024).toFixed(1)} KB`;
+        };
+        const fallbackReasonText = {
+            missing_base_snapshot:
+                "No había una base local segura",
+            UNKNOWN_ACTION:
+                "El servidor no reconoce el modo incremental",
+            INVALID_ACTION:
+                "El servidor rechazó el modo incremental",
+            FULL_SNAPSHOT_REQUIRED:
+                "El servidor solicitó una recuperación completa"
+        }[lastSyncMetric?.fallbackReason] ??
+            lastSyncMetric?.fallbackReason;
+
         const syncTools = `
             <section class="syncTools settingsToolPanel">
 
@@ -444,6 +473,43 @@ export class Sidebar {
                                 )
                                 : "todavía no registrada"}
                         </p>
+
+                        <dl class="syncDiagnostics">
+                            <div>
+                                <dt>Cambios locales pendientes</dt>
+                                <dd>${pendingChangeCount}</dd>
+                            </div>
+                            <div>
+                                <dt>Último envío</dt>
+                                <dd>${lastSyncMode}</dd>
+                            </div>
+                            <div>
+                                <dt>Duración</dt>
+                                <dd>${Number.isFinite(lastSyncMetric?.durationMs)
+                                    ? `${lastSyncMetric.durationMs} ms`
+                                    : "—"}</dd>
+                            </div>
+                            <div>
+                                <dt>Datos enviados</dt>
+                                <dd>${formatBytes(lastSyncMetric?.requestBytes)}</dd>
+                            </div>
+                            ${lastSyncMetric?.mode === "incremental"
+                                ? `
+                                    <div>
+                                        <dt>Ahorro estimado</dt>
+                                        <dd>${formatBytes(lastSyncMetric.savedBytes)}</dd>
+                                    </div>
+                                `
+                                : ""}
+                            ${lastSyncMetric?.fallbackReason
+                                ? `
+                                    <div class="syncDiagnosticWide">
+                                        <dt>Motivo de sincronización completa</dt>
+                                        <dd>${escapeHtml(fallbackReasonText)}</dd>
+                                    </div>
+                                `
+                                : ""}
+                        </dl>
 
                         <div class="syncActions">
 
@@ -747,7 +813,9 @@ export class Sidebar {
                             class="sidebarSyncStatusDot"
                             aria-hidden="true">
                         </span>
-                        <span>${sidebarSyncStatusText}</span>
+                        <span>${syncStatusClass === "pending" && pendingChangeCount > 0
+                            ? `${pendingChangeCount} ${pendingChangeCount === 1 ? "cambio pendiente" : "cambios pendientes"}`
+                            : sidebarSyncStatusText}</span>
                     </span>
                 </div>
 
