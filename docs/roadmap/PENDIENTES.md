@@ -2,7 +2,7 @@
 
 Este documento es la **fuente de verdad del backlog vigente** de Task Engine. Debe contener únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
 
-Última actualización: **10 de septiembre de 2026**.
+Última actualización: **12 de septiembre de 2026**.
 
 ## Regla obligatoria de lectura
 
@@ -25,16 +25,7 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - **Operativo:** no requiere desarrollo nuevo, pero falta configuración o puesta en marcha.
 - **Evaluación:** mejora válida cuyo diseño técnico todavía debe decidirse.
 
-## Mejoras funcionales aprobadas — 10/09/2026
-
-### Recuperación automática después del trabajo offline — #453
-
-- **Estado:** en desarrollo.
-- Distinguir **Sin conexión** de los errores reales del servicio.
-- Conservar los cambios locales pendientes y reintentar automáticamente al volver internet.
-- Aplicar reintentos graduales si Apps Script todavía no está accesible al producirse el evento de reconexión.
-- No cerrar editores ni formularios activos y no sobrescribir conflictos reales.
-- Mantener la reconciliación, las acciones manuales y el modelo de datos existentes.
+## Mejoras funcionales aprobadas — 12/09/2026
 
 ### Captura rápida PWA en Android — #446
 
@@ -52,25 +43,15 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - No inventar datos ausentes y mostrar el resultado interpretado cuando exista ambigüedad relevante.
 - Mantener siempre disponible el editor tradicional.
 
-### Reglas y automatizaciones — #448
-
-- **Estado:** pendiente.
-- Crear reglas simples y transparentes que ayuden a detectar tareas estancadas o mal procesadas.
-- Casos iniciales: tareas sin fecha durante demasiado tiempo, posposiciones reiteradas, vencidas sin resolver y tareas fuera de Inbox que quedan sin fecha ni proyecto claro.
-- Priorizar avisos/sugerencias antes que modificaciones automáticas.
-- Cada regla debe poder configurarse o desactivarse.
-- No realizar cambios silenciosos sobre las tareas.
-
-### «Qué hago ahora» — #449
-
-- **Estado:** pendiente.
-- Ofrecer una selección breve, idealmente 3–5 tareas, como próximas acciones razonables.
-- Considerar prioridad, vencimiento, atraso, inicio, contexto, área, etiquetas, proyecto/objetivo, posposiciones, En espera y recurrencia cuando corresponda.
-- Explicar brevemente por qué se sugieren.
-- No modificar tareas automáticamente.
-- Debe ser una ayuda de decisión, no una nueva estructura obligatoria.
-
 ## Otros pendientes confirmados
+
+### Verificar sincronización incremental en uso real — PR #458
+
+- **Estado:** pendiente de verificación; prioridad alta.
+- Confirmar desde el celular la creación, edición y eliminación de tareas con la nueva ruta incremental.
+- Verificar que otro dispositivo reciba cada cambio y que no aparezcan conflictos falsos.
+- Probar recuperación después de trabajar sin conexión y confirmar que el snapshot completo siga disponible como fallback.
+- Una vez verificado, registrar el cierre operativo sin reabrir el diseño de sincronización.
 
 ### Orden por vencimiento teniendo en cuenta la hora — #355
 
@@ -100,6 +81,10 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 - Integración GPT ↔ Task Engine — PR #444: **reparada, desplegada y verificada con consultas reales**.
 - Mantenimiento automático y respaldos en Google Drive — PR #451 / #445: **desplegado, activado y verificado con respaldo real el 10 de septiembre de 2026**.
+- Recuperación automática después del trabajo offline — PR #454 / #453: **implementada y fusionada**.
+- «Qué hago ahora» — PR #455 y #456 / #449: **implementado como recomendador local basado en señales**.
+- Reglas configurables de revisión — PR #457 / #448: **implementadas sin modificaciones automáticas de tareas**.
+- Sincronización incremental — PR #458: **implementada, fusionada y con Apps Script desplegado; resta únicamente la verificación operativa indicada arriba**.
 - Recordatorios móviles unidireccionales con Google Calendar — #343: **completado y cerrado**.
 - Adjuntos en Google Drive: terminado.
 - Tareas En espera: terminado.
