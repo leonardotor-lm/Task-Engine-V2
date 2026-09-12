@@ -34,7 +34,11 @@ export class SyncEngine {
         pendingChangesRepository =
             new PendingSyncChangesRepository(),
         metricsRepository =
-            new SyncMetricsRepository()
+            new SyncMetricsRepository(),
+        uncertainWriteRetryDelays = [1000, 3000],
+        waitFn = delay => new Promise(resolve =>
+            setTimeout(resolve, delay)
+        )
     }) {
 
         this.backupService = backupService;
@@ -45,6 +49,10 @@ export class SyncEngine {
         this.pendingChangesRepository =
             pendingChangesRepository;
         this.metricsRepository = metricsRepository;
+        this.uncertainWriteRetryDelays = [
+            ...uncertainWriteRetryDelays
+        ];
+        this.wait = waitFn;
         this.remoteWriteOutcomeUncertain = false;
 
     }
@@ -173,7 +181,10 @@ export class SyncEngine {
 
     async reconcileUncertainPush(
         connection,
-        backup
+        backup,
+        {
+            retainUncertainIfUnchanged = false
+        } = {}
     ) {
 
         if (!this.remoteWriteOutcomeUncertain) {
@@ -189,7 +200,8 @@ export class SyncEngine {
             this.config.getRevision();
 
         if (remoteRevision === localRevision) {
-            this.remoteWriteOutcomeUncertain = false;
+            this.remoteWriteOutcomeUncertain =
+                retainUncertainIfUnchanged;
             return null;
         }
 
@@ -237,6 +249,33 @@ export class SyncEngine {
             remoteRevision
         );
 
+    }
+
+    async verifyUncertainPush(connection, backup) {
+        const delays = [
+            0,
+            ...this.uncertainWriteRetryDelays
+        ];
+
+        for (const delay of delays) {
+            if (delay > 0) await this.wait(delay);
+
+            try {
+                const reconciled =
+                    await this.reconcileUncertainPush(
+                        connection,
+                        backup,
+                        {
+                            retainUncertainIfUnchanged: true
+                        }
+                    );
+                if (reconciled) return reconciled;
+            } catch (error) {
+                if (this.isConflict(error)) throw error;
+            }
+        }
+
+        return null;
     }
 
     async inspectRemote() {
@@ -316,43 +355,108 @@ export class SyncEngine {
             ? null
             : "missing_base_snapshot";
 
-        if (
-            pending &&
-            pending.baseRevision ===
-                this.config.getRevision()
-        ) {
-            const incrementalRequest = {
-                ...connection,
-                baseRevision: pending.baseRevision,
-                changes: pending.changes
-            };
+        try {
+            if (
+                pending &&
+                pending.baseRevision ===
+                    this.config.getRevision()
+            ) {
+                const incrementalRequest = {
+                    ...connection,
+                    baseRevision: pending.baseRevision,
+                    changes: pending.changes
+                };
 
-            try {
-                response = await this
-                    .saveRemoteIncremental(
-                        incrementalRequest
-                    );
                 mode = "incremental";
                 changeCount = pending.changes.length;
                 requestBytes = JSON.stringify(
                     incrementalRequest
                 ).length;
-            } catch (error) {
-                if (
-                    !(error instanceof SyncProtocolError) ||
-                    ![
-                        "UNKNOWN_ACTION",
-                        "INVALID_ACTION",
-                        "FULL_SNAPSHOT_REQUIRED"
-                    ].includes(error.code)
-                ) {
-                    throw error;
+
+                try {
+                    response = await this
+                        .saveRemoteIncremental(
+                            incrementalRequest
+                        );
+                } catch (error) {
+                    if (
+                        !(error instanceof SyncProtocolError) ||
+                        ![
+                            "UNKNOWN_ACTION",
+                            "INVALID_ACTION",
+                            "FULL_SNAPSHOT_REQUIRED"
+                        ].includes(error.code)
+                    ) {
+                        throw error;
+                    }
+                    fallbackReason = error.code;
+                    mode = "full";
+                    changeCount = null;
+                    requestBytes = JSON.stringify(
+                        fullRequest
+                    ).length;
+                    response = await this.saveRemote(fullRequest);
                 }
-                fallbackReason = error.code;
+            } else {
                 response = await this.saveRemote(fullRequest);
             }
-        } else {
-            response = await this.saveRemote(fullRequest);
+        } catch (error) {
+            if (this.remoteWriteOutcomeUncertain) {
+                const reconciled =
+                    await this.verifyUncertainPush(
+                        connection,
+                        backup
+                    );
+
+                if (reconciled) {
+                    const durationMs =
+                        Date.now() - startedAt;
+                    this.rememberMetric({
+                        mode,
+                        outcome:
+                            "verified_after_uncertain_write",
+                        changeCount,
+                        requestBytes,
+                        fullSnapshotBytes:
+                            JSON.stringify(fullRequest).length,
+                        savedBytes: Math.max(
+                            0,
+                            JSON.stringify(fullRequest).length -
+                                requestBytes
+                        ),
+                        serverRowsWritten: null,
+                        revision: reconciled.revision,
+                        durationMs,
+                        fallbackReason
+                    });
+                    return {
+                        ...reconciled,
+                        syncMode: mode,
+                        changeCount,
+                        requestBytes,
+                        durationMs,
+                        fallbackReason,
+                        writeOutcomeVerified: true
+                    };
+                }
+            }
+
+            this.rememberMetric({
+                mode,
+                outcome: "failed",
+                changeCount,
+                requestBytes,
+                fullSnapshotBytes:
+                    JSON.stringify(fullRequest).length,
+                savedBytes: 0,
+                serverRowsWritten: null,
+                revision: this.config.getRevision(),
+                durationMs: Date.now() - startedAt,
+                fallbackReason,
+                errorName:
+                    error?.name ?? "Error de sincronización"
+            });
+            throw error;
         }
 
         const revision = this.validateRevision(
@@ -367,6 +471,7 @@ export class SyncEngine {
         const durationMs = Date.now() - startedAt;
         this.rememberMetric({
             mode,
+            outcome: "success",
             changeCount,
             requestBytes,
             fullSnapshotBytes:

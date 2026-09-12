@@ -22,15 +22,24 @@ export class SyncProtocolError extends Error {
     }
 }
 
+export class SyncTimeoutError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "SyncTimeoutError";
+    }
+}
+
 export class CloudGateway {
 
     constructor({
         fetchFn = fetch,
-        timeoutMs = 30000
+        timeoutMs = 30000,
+        writeTimeoutMs = 60000
     } = {}) {
 
         this.fetchFn = fetchFn;
         this.timeoutMs = timeoutMs;
+        this.writeTimeoutMs = writeTimeoutMs;
 
     }
 
@@ -78,7 +87,7 @@ export class CloudGateway {
         } catch (error) {
 
             if (error.name === "AbortError") {
-                throw new Error(timeoutMessage);
+                throw new SyncTimeoutError(timeoutMessage);
             }
 
             const detail = error?.message
@@ -160,6 +169,11 @@ export class CloudGateway {
                     baseRevision,
                     data
                 })
+            },
+            {
+                timeoutMs: this.writeTimeoutMs,
+                timeoutMessage:
+                    "La subida tardó demasiado en responder. Estamos comprobando si llegó a guardarse."
             }
         );
     }
@@ -183,6 +197,11 @@ export class CloudGateway {
                     baseRevision,
                     changes
                 })
+            },
+            {
+                timeoutMs: this.writeTimeoutMs,
+                timeoutMessage:
+                    "La subida tardó demasiado en responder. Estamos comprobando si llegó a guardarse."
             }
         );
     }
