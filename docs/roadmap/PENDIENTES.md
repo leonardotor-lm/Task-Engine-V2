@@ -38,11 +38,11 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ### Captura rápida PWA en Android — #446
 
-- **Estado:** pendiente.
-- Implementar Web Share Target para enviar texto/enlaces compatibles a Task Engine desde Compartir de Android.
-- Agregar shortcuts PWA, al menos Nueva tarea, Inbox y Hoy cuando el soporte lo permita.
-- Precargar el contenido recibido en el flujo normal de creación.
-- Mantener Task Engine como PWA; no requiere una app Android nativa.
+- **Estado:** pendiente de verificación.
+- Web Share Target y shortcuts para Nueva tarea, Inbox y Hoy implementados en la PWA.
+- La captura abre un borrador normal en Inbox con título, notas y enlace precargados, sin guardar automáticamente.
+- Verificar en Android real que Task Engine aparezca en Compartir y que los accesos rápidos funcionen desde el ícono instalado.
+- Confirmar si Android actualiza el manifiesto existente o exige reinstalar la PWA para registrar estas capacidades.
 
 ### Entrada de tareas con lenguaje natural — #447
 

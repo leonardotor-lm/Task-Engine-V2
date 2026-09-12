@@ -10,6 +10,36 @@
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
   "categories": ["productivity"],
+  "share_target": {
+    "action": "./?capture=share",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Nueva tarea",
+      "short_name": "Nueva tarea",
+      "description": "Abrir el editor para crear una tarea",
+      "url": "./?shortcut=new-task"
+    },
+    {
+      "name": "Inbox",
+      "short_name": "Inbox",
+      "description": "Abrir las tareas de Inbox",
+      "url": "./?shortcut=inbox"
+    },
+    {
+      "name": "Hoy",
+      "short_name": "Hoy",
+      "description": "Abrir las tareas de hoy",
+      "url": "./?shortcut=today"
+    }
+  ],
   "icons": [
     {
       "src": "./icons/app-icon-192.png",
