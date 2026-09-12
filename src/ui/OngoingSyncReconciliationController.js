@@ -33,6 +33,8 @@ export class OngoingSyncReconciliationController {
         this.app = app;
         this.repository =
             repository ??
+            app?.syncEngine
+                ?.baseSnapshotRepository ??
             new SyncBaseSnapshotRepository(
                 storage
             );

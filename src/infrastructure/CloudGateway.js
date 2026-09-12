@@ -14,6 +14,14 @@ export class SyncConflictError extends Error {
 
 }
 
+export class SyncProtocolError extends Error {
+    constructor(message, code = "SYNC_ERROR") {
+        super(message);
+        this.name = "SyncProtocolError";
+        this.code = code;
+    }
+}
+
 export class CloudGateway {
 
     constructor({
@@ -116,7 +124,7 @@ export class CloudGateway {
                 );
             }
 
-            throw new Error(message);
+            throw new SyncProtocolError(message, code);
 
         }
 
@@ -151,6 +159,29 @@ export class CloudGateway {
                     token,
                     baseRevision,
                     data
+                })
+            }
+        );
+    }
+
+    saveIncremental({
+        url,
+        token,
+        baseRevision,
+        changes
+    }) {
+        return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "saveIncremental",
+                    token,
+                    baseRevision,
+                    changes
                 })
             }
         );

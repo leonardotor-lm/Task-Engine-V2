@@ -154,6 +154,18 @@ function handleRequest_(event, method) {
 
         if (
             method === "POST" &&
+            action === "saveIncremental"
+        ) {
+            return jsonResponse_(
+                saveIncremental_(
+                    body.changes,
+                    body.baseRevision
+                )
+            );
+        }
+
+        if (
+            method === "POST" &&
             action === "uploadAttachment"
         ) {
             return jsonResponse_(
@@ -1521,6 +1533,226 @@ function saveSnapshot_(
         lock.releaseLock();
     }
 
+}
+
+function saveIncremental_(changes, baseRevision) {
+
+    var lock = LockService.getScriptLock();
+
+    if (!lock.tryLock(20000)) {
+        throw protocolError_(
+            "SERVER_BUSY",
+            "El servidor está ocupado. Intentá nuevamente."
+        );
+    }
+
+    try {
+        var storage = getStorage_();
+        var currentRevision =
+            getRevision_(storage.metaSheet);
+
+        validateBaseRevision_(
+            baseRevision,
+            currentRevision
+        );
+        validateIncrementalChanges_(changes);
+
+        if (currentRevision === 0) {
+            throw protocolError_(
+                "FULL_SNAPSHOT_REQUIRED",
+                "La nube necesita una copia completa inicial."
+            );
+        }
+
+        var currentRows = getRevisionRows_(
+            storage.dataSheet,
+            currentRevision
+        );
+        var snapshot = {
+            format:
+                TASK_ENGINE_SETTINGS.BACKUP_FORMAT,
+            version:
+                TASK_ENGINE_SETTINGS.BACKUP_VERSION,
+            exportedAt: new Date().toISOString(),
+            data: rowsToSnapshotData_(currentRows)
+        };
+
+        applyIncrementalChanges_(snapshot, changes);
+        validateSnapshot_(snapshot);
+
+        var nextRevision = currentRevision + 1;
+        var rows = snapshotToRows_(
+            snapshot,
+            nextRevision
+        );
+
+        if (rows.length > 0) {
+            storage.dataSheet
+                .getRange(
+                    storage.dataSheet.getLastRow() + 1,
+                    1,
+                    rows.length,
+                    6
+                )
+                .setValues(rows);
+        }
+
+        storage.metaSheet
+            .getRange(2, 1, 1, 3)
+            .setValues([[
+                nextRevision,
+                snapshot.exportedAt,
+                TASK_ENGINE_SETTINGS.BACKUP_VERSION
+            ]]);
+
+        SpreadsheetApp.flush();
+
+        return {
+            ok: true,
+            revision: nextRevision,
+            syncMode: "incremental",
+            changeCount: changes.length,
+            rowsWritten: rows.length
+        };
+    } finally {
+        lock.releaseLock();
+    }
+}
+
+function validateBaseRevision_(
+    baseRevision,
+    currentRevision
+) {
+    if (
+        !Number.isInteger(baseRevision) ||
+        baseRevision < 0
+    ) {
+        throw protocolError_(
+            "INVALID_REVISION",
+            "La revisión enviada no es válida."
+        );
+    }
+
+    if (baseRevision !== currentRevision) {
+        var conflict = protocolError_(
+            "CONFLICT",
+            "Hay cambios más recientes en la nube."
+        );
+        conflict.remoteRevision = currentRevision;
+        throw conflict;
+    }
+}
+
+function validateIncrementalChanges_(changes) {
+    if (!Array.isArray(changes)) {
+        throw protocolError_(
+            "INVALID_CHANGES",
+            "El registro incremental es inválido."
+        );
+    }
+
+    var entityCollections = {
+        tasks: true,
+        areas: true,
+        contexts: true,
+        tags: true,
+        goals: true,
+        customFilters: true,
+        activityEvents: true
+    };
+    var preferenceCollections = {
+        taskSortPreferences: true,
+        taskFilterPreferences: true,
+        projectPinPreferences: true,
+        displayPreferences: true
+    };
+    var seen = {};
+
+    changes.forEach(function(change) {
+        var collection = change && change.collection;
+        var operation = change && change.operation;
+        var id = String(change && change.id || "");
+        var isEntity = entityCollections[collection] === true;
+        var isPreference =
+            preferenceCollections[collection] === true;
+        var key = collection + ":" + id;
+
+        if (
+            (!isEntity && !isPreference) ||
+            !id ||
+            seen[key] ||
+            ["create", "update", "delete"]
+                .indexOf(operation) === -1 ||
+            (isPreference &&
+                (operation !== "update" ||
+                    id !== "preferences")) ||
+            (operation !== "delete" &&
+                (!change.value ||
+                    typeof change.value !== "object" ||
+                    Array.isArray(change.value))) ||
+            (isEntity &&
+                operation !== "delete" &&
+                change.value.id !== id)
+        ) {
+            throw protocolError_(
+                "INVALID_CHANGES",
+                "El registro incremental contiene una operación inválida."
+            );
+        }
+
+        seen[key] = true;
+    });
+}
+
+function applyIncrementalChanges_(snapshot, changes) {
+    changes.forEach(function(change) {
+        var collection = change.collection;
+
+        if (change.id === "preferences") {
+            snapshot.data[collection] = change.value;
+            return;
+        }
+
+        var items = snapshot.data[collection];
+        if (!Array.isArray(items)) {
+            items = [];
+            snapshot.data[collection] = items;
+        }
+
+        var index = -1;
+        for (var position = 0;
+            position < items.length;
+            position += 1) {
+            if (items[position].id === change.id) {
+                index = position;
+                break;
+            }
+        }
+
+        if (change.operation === "create") {
+            if (index !== -1) {
+                throw protocolError_(
+                    "INVALID_CHANGES",
+                    "No se puede crear una entidad que ya existe."
+                );
+            }
+            items.push(change.value);
+            return;
+        }
+
+        if (index === -1) {
+            throw protocolError_(
+                "INVALID_CHANGES",
+                "La entidad incremental ya no existe."
+            );
+        }
+
+        if (change.operation === "delete") {
+            items.splice(index, 1);
+        } else {
+            items[index] = change.value;
+        }
+    });
 }
 
 function snapshotToRows_(
