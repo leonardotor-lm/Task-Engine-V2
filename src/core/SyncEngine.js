@@ -1,4 +1,19 @@
-import { SyncConflictError } from "../infrastructure/CloudGateway.js";
+import {
+    SyncConflictError,
+    SyncProtocolError
+} from "../infrastructure/CloudGateway.js";
+import {
+    createIncrementalChanges
+} from "./SyncChangeSet.js";
+import {
+    SyncBaseSnapshotRepository
+} from "../infrastructure/SyncBaseSnapshotRepository.js";
+import {
+    PendingSyncChangesRepository
+} from "../infrastructure/PendingSyncChangesRepository.js";
+import {
+    SyncMetricsRepository
+} from "../infrastructure/SyncMetricsRepository.js";
 import { createSyncFingerprint } from "./SyncFingerprint.js";
 import {
     createSafeMergedSyncBackup
@@ -13,14 +28,55 @@ export class SyncEngine {
     constructor({
         backupService,
         config,
-        gateway
+        gateway,
+        baseSnapshotRepository =
+            new SyncBaseSnapshotRepository(),
+        pendingChangesRepository =
+            new PendingSyncChangesRepository(),
+        metricsRepository =
+            new SyncMetricsRepository()
     }) {
 
         this.backupService = backupService;
         this.config = config;
         this.gateway = gateway;
+        this.baseSnapshotRepository =
+            baseSnapshotRepository;
+        this.pendingChangesRepository =
+            pendingChangesRepository;
+        this.metricsRepository = metricsRepository;
         this.remoteWriteOutcomeUncertain = false;
 
+    }
+
+    capturePendingChanges(backup = null) {
+        if (!this.config.isConfigured()) return null;
+
+        const connection = this.config.get();
+        const base = this.baseSnapshotRepository.get(
+            connection.url
+        );
+
+        if (!base) {
+            this.pendingChangesRepository.clear();
+            return null;
+        }
+
+        const changes = createIncrementalChanges(
+            base,
+            backup ?? this.backupService.createBackup()
+        );
+
+        return this.pendingChangesRepository.replace({
+            endpoint: connection.url,
+            baseRevision: this.config.getRevision(),
+            changes
+        });
+    }
+
+    rememberMetric(metric) {
+        this.metricsRepository.add(metric);
+        console.info("Task Engine sync", metric);
     }
 
     ensureConfigured() {
@@ -87,6 +143,20 @@ export class SyncEngine {
 
     }
 
+    async saveRemoteIncremental(payload) {
+        try {
+            const response =
+                await this.gateway.saveIncremental(payload);
+            this.remoteWriteOutcomeUncertain = false;
+            return response;
+        } catch (error) {
+            if (!this.isConflict(error)) {
+                this.remoteWriteOutcomeUncertain = true;
+            }
+            throw error;
+        }
+    }
+
     async reconcileUncertainPush(
         connection,
         backup
@@ -134,6 +204,7 @@ export class SyncEngine {
             this.config.markSynchronized(
                 localFingerprint
             );
+            this.pendingChangesRepository.clear();
             this.remoteWriteOutcomeUncertain = false;
 
             return {
@@ -215,12 +286,54 @@ export class SyncEngine {
             return reconciled;
         }
 
-        const response = await this.saveRemote({
+        const pending = this.capturePendingChanges(backup);
+        const fullRequest = {
             ...connection,
-            baseRevision:
-                this.config.getRevision(),
+            baseRevision: this.config.getRevision(),
             data: backup
-        });
+        };
+        let response;
+        let mode = "full";
+        let changeCount = null;
+        let requestBytes = JSON.stringify(fullRequest).length;
+
+        if (
+            pending &&
+            pending.baseRevision ===
+                this.config.getRevision()
+        ) {
+            const incrementalRequest = {
+                ...connection,
+                baseRevision: pending.baseRevision,
+                changes: pending.changes
+            };
+
+            try {
+                response = await this
+                    .saveRemoteIncremental(
+                        incrementalRequest
+                    );
+                mode = "incremental";
+                changeCount = pending.changes.length;
+                requestBytes = JSON.stringify(
+                    incrementalRequest
+                ).length;
+            } catch (error) {
+                if (
+                    !(error instanceof SyncProtocolError) ||
+                    ![
+                        "UNKNOWN_ACTION",
+                        "INVALID_ACTION",
+                        "FULL_SNAPSHOT_REQUIRED"
+                    ].includes(error.code)
+                ) {
+                    throw error;
+                }
+                response = await this.saveRemote(fullRequest);
+            }
+        } else {
+            response = await this.saveRemote(fullRequest);
+        }
 
         const revision = this.validateRevision(
             response.revision
@@ -230,9 +343,29 @@ export class SyncEngine {
         this.config.markSynchronized(
             createSyncFingerprint(backup)
         );
+        this.pendingChangesRepository.clear();
+        this.rememberMetric({
+            mode,
+            changeCount,
+            requestBytes,
+            fullSnapshotBytes:
+                JSON.stringify(fullRequest).length,
+            savedBytes:
+                Math.max(
+                    0,
+                    JSON.stringify(fullRequest).length -
+                        requestBytes
+                ),
+            serverRowsWritten:
+                response.rowsWritten ?? null,
+            revision
+        });
 
         return {
             revision,
+            syncMode: mode,
+            changeCount,
+            requestBytes,
             summary: this.summarize(
                 this.backupService
                     .parseAndValidate(

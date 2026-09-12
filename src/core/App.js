@@ -2118,10 +2118,10 @@ export class App {
     }
 
     getCurrentSyncFingerprint() {
+        const backup = this.backupService.createBackup();
+        this.syncEngine.capturePendingChanges(backup);
 
-        return createSyncFingerprint(
-            this.backupService.createBackup()
-        );
+        return createSyncFingerprint(backup);
 
     }
 
