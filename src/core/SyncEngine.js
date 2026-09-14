@@ -35,7 +35,8 @@ export class SyncEngine {
             new PendingSyncChangesRepository(),
         metricsRepository =
             new SyncMetricsRepository(),
-        uncertainWriteRetryDelays = [1000, 3000],
+        uncertainWriteRetryDelays = [2000, 5000, 10000],
+        serverBusyRetryDelays = [1000, 3000, 7000],
         waitFn = delay => new Promise(resolve =>
             setTimeout(resolve, delay)
         )
@@ -52,8 +53,12 @@ export class SyncEngine {
         this.uncertainWriteRetryDelays = [
             ...uncertainWriteRetryDelays
         ];
+        this.serverBusyRetryDelays = [
+            ...serverBusyRetryDelays
+        ];
         this.wait = waitFn;
         this.remoteWriteOutcomeUncertain = false;
+        this.lightweightStatusSupported = null;
 
     }
 
@@ -147,7 +152,9 @@ export class SyncEngine {
         try {
 
             const response =
-                await this.gateway.save(payload);
+                await this.executeRemoteWrite(
+                    () => this.gateway.save(payload)
+                );
 
             this.remoteWriteOutcomeUncertain = false;
 
@@ -155,9 +162,9 @@ export class SyncEngine {
 
         } catch (error) {
 
-            if (!this.isConflict(error)) {
-                this.remoteWriteOutcomeUncertain = true;
-            }
+            this.remoteWriteOutcomeUncertain =
+                !this.isConflict(error) &&
+                !(error instanceof SyncProtocolError);
 
             throw error;
 
@@ -168,14 +175,74 @@ export class SyncEngine {
     async saveRemoteIncremental(payload) {
         try {
             const response =
-                await this.gateway.saveIncremental(payload);
+                await this.executeRemoteWrite(
+                    () => this.gateway
+                        .saveIncremental(payload)
+                );
             this.remoteWriteOutcomeUncertain = false;
             return response;
         } catch (error) {
-            if (!this.isConflict(error)) {
-                this.remoteWriteOutcomeUncertain = true;
-            }
+            this.remoteWriteOutcomeUncertain =
+                !this.isConflict(error) &&
+                !(error instanceof SyncProtocolError);
             throw error;
+        }
+    }
+
+    async executeRemoteWrite(operation) {
+        const delays = [
+            0,
+            ...this.serverBusyRetryDelays
+        ];
+
+        for (let index = 0; index < delays.length; index += 1) {
+            const delay = delays[index];
+            if (delay > 0) await this.wait(delay);
+
+            try {
+                return await operation();
+            } catch (error) {
+                if (
+                    !(error instanceof SyncProtocolError) ||
+                    error.code !== "SERVER_BUSY" ||
+                    index === delays.length - 1
+                ) {
+                    throw error;
+                }
+            }
+        }
+
+        throw new Error(
+            "No se pudo completar la escritura remota."
+        );
+    }
+
+    async fetchRemoteStatus(connection) {
+        if (
+            this.lightweightStatusSupported === false ||
+            typeof this.gateway.status !== "function"
+        ) {
+            return this.gateway.load(connection);
+        }
+
+        try {
+            const response =
+                await this.gateway.status(connection);
+            this.lightweightStatusSupported = true;
+            return response;
+        } catch (error) {
+            if (
+                !(error instanceof SyncProtocolError) ||
+                ![
+                    "UNKNOWN_ACTION",
+                    "INVALID_ACTION"
+                ].includes(error.code)
+            ) {
+                throw error;
+            }
+
+            this.lightweightStatusSupported = false;
+            return this.gateway.load(connection);
         }
     }
 
@@ -191,11 +258,11 @@ export class SyncEngine {
             return null;
         }
 
-        const response = await this.gateway.load(
+        const status = await this.fetchRemoteStatus(
             connection
         );
         const remoteRevision =
-            this.validateRevision(response.revision);
+            this.validateRevision(status.revision);
         const localRevision =
             this.config.getRevision();
 
@@ -210,6 +277,11 @@ export class SyncEngine {
                 "La revisión remota es anterior a la revisión local confirmada."
             );
         }
+
+        const response = Object.prototype.hasOwnProperty
+            .call(status, "data")
+            ? status
+            : await this.gateway.load(connection);
 
         const localFingerprint =
             createSyncFingerprint(backup);
@@ -425,6 +497,10 @@ export class SyncEngine {
                                 requestBytes
                         ),
                         serverRowsWritten: null,
+                        serverProcessingMs: null,
+                        serverLockWaitMs: null,
+                        serverReadMs: null,
+                        serverWriteMs: null,
                         revision: reconciled.revision,
                         durationMs,
                         fallbackReason
@@ -450,6 +526,10 @@ export class SyncEngine {
                     JSON.stringify(fullRequest).length,
                 savedBytes: 0,
                 serverRowsWritten: null,
+                serverProcessingMs: null,
+                serverLockWaitMs: null,
+                serverReadMs: null,
+                serverWriteMs: null,
                 revision: this.config.getRevision(),
                 durationMs: Date.now() - startedAt,
                 fallbackReason,
@@ -484,6 +564,14 @@ export class SyncEngine {
                 ),
             serverRowsWritten:
                 response.rowsWritten ?? null,
+            serverProcessingMs:
+                response.processingMs ?? null,
+            serverLockWaitMs:
+                response.lockWaitMs ?? null,
+            serverReadMs:
+                response.readMs ?? null,
+            serverWriteMs:
+                response.writeMs ?? null,
             revision,
             durationMs,
             fallbackReason
@@ -511,9 +599,8 @@ export class SyncEngine {
         const connection =
             this.ensureConfigured();
 
-        const response = await this.gateway.load(
-            connection
-        );
+        const response =
+            await this.fetchRemoteStatus(connection);
 
         const remoteRevision =
             this.validateRevision(

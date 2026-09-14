@@ -2,7 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { SyncEngine } from "../src/core/SyncEngine.js";
-import { SyncConflictError } from "../src/infrastructure/CloudGateway.js";
+import {
+    SyncConflictError,
+    SyncProtocolError
+} from "../src/infrastructure/CloudGateway.js";
 
 function createBackup(version = 1) {
     return {
@@ -170,4 +173,70 @@ test("no sobrescribe si la nube avanzó con contenido distinto después de un pu
 
     assert.equal(saveCalls, 1);
     assert.equal(config.getRevision(), 3);
+});
+
+test("verifica una escritura incierta con estado liviano antes de descargar", async () => {
+    const localBackup = createBackup();
+    const config = createConfig();
+    let statusCalls = 0;
+    let loadCalls = 0;
+    const engine = new SyncEngine({
+        backupService: createBackupService(localBackup),
+        config,
+        gateway: {
+            async save() {
+                throw new Error("timeout");
+            },
+            async status() {
+                statusCalls += 1;
+                return { revision: 4 };
+            },
+            async load() {
+                loadCalls += 1;
+                return {
+                    revision: 4,
+                    data: localBackup
+                };
+            }
+        },
+        uncertainWriteRetryDelays: [],
+        waitFn: async () => {}
+    });
+
+    const result = await engine.push();
+
+    assert.equal(result.writeOutcomeVerified, true);
+    assert.equal(statusCalls, 1);
+    assert.equal(loadCalls, 1);
+});
+
+test("reintenta SERVER_BUSY sin tratarlo como escritura incierta", async () => {
+    const config = createConfig();
+    const delays = [];
+    let calls = 0;
+    const engine = new SyncEngine({
+        backupService: createBackupService(createBackup()),
+        config,
+        gateway: {
+            async save() {
+                calls += 1;
+                if (calls < 3) {
+                    throw new SyncProtocolError(
+                        "Servidor ocupado",
+                        "SERVER_BUSY"
+                    );
+                }
+                return { revision: 4 };
+            }
+        },
+        serverBusyRetryDelays: [5, 15],
+        waitFn: async delay => delays.push(delay)
+    });
+
+    const result = await engine.saveRemote({});
+
+    assert.equal(result.revision, 4);
+    assert.equal(calls, 3);
+    assert.deepEqual(delays, [5, 15]);
+    assert.equal(engine.remoteWriteOutcomeUncertain, false);
 });

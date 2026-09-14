@@ -188,6 +188,15 @@ Con este bloque se completa el alcance del issue #212: conexión/configuración,
 - registra diagnósticos de integridad y de los disparadores instalados;
 - quedó publicado, activado y verificado con un respaldo real el 10 de septiembre de 2026.
 
+### Confiabilidad y asistencia local — PR #454 a #467
+
+- la recuperación offline conserva los cambios y reintenta gradualmente al volver la conexión;
+- la sincronización incremental transmite únicamente las diferencias locales y mantiene el snapshot completo como recuperación segura;
+- «Qué hago ahora» y las reglas de revisión funcionan localmente con señales transparentes y sin modificar tareas automáticamente;
+- la PWA recibe contenido compartido desde Android y ofrece accesos rápidos;
+- el editor interpreta fechas, horas, `/área`, `@contexto`, `#etiqueta` y prioridades `!1–!4` sin IA ni conexión externa;
+- estos flujos fueron verificados en uso real el 14 de septiembre de 2026; la reducción de bloqueos intermitentes de sincronización continúa como trabajo de confiabilidad.
+
 ## Etapa operativa actual
 
 Los bloques funcionales aprobados hasta la PR #451 quedaron cerrados y verificados, incluida la segunda etapa de mantenimiento preventivo y respaldos automáticos. El trabajo vigente continúa en `docs/roadmap/PENDIENTES.md`.

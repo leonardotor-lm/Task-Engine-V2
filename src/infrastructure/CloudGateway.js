@@ -34,12 +34,41 @@ export class CloudGateway {
     constructor({
         fetchFn = fetch,
         timeoutMs = 30000,
-        writeTimeoutMs = 60000
+        writeTimeoutMs = 60000,
+        lockManager = globalThis.navigator?.locks ?? null
     } = {}) {
 
         this.fetchFn = fetchFn;
         this.timeoutMs = timeoutMs;
         this.writeTimeoutMs = writeTimeoutMs;
+        this.lockManager = lockManager;
+
+    }
+
+    requestWrite(url, options) {
+
+        const operation = () => this.request(
+            url,
+            options,
+            {
+                timeoutMs: this.writeTimeoutMs,
+                timeoutMessage:
+                    "La subida tardó demasiado en responder. Estamos comprobando si llegó a guardarse."
+            }
+        );
+
+        if (
+            typeof this.lockManager?.request !==
+                "function"
+        ) {
+            return operation();
+        }
+
+        return this.lockManager.request(
+            `task-engine-sync-write:${url}`,
+            { mode: "exclusive" },
+            operation
+        );
 
     }
 
@@ -155,8 +184,25 @@ export class CloudGateway {
         );
     }
 
-    save({ url, token, baseRevision, data }) {
+    status({ url, token }) {
         return this.request(
+            this.buildUrl(url),
+            {
+                method: "POST",
+                cache: "no-store",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+                    action: "status",
+                    token
+                })
+            }
+        );
+    }
+
+    save({ url, token, baseRevision, data }) {
+        return this.requestWrite(
             this.buildUrl(url),
             {
                 method: "POST",
@@ -169,11 +215,6 @@ export class CloudGateway {
                     baseRevision,
                     data
                 })
-            },
-            {
-                timeoutMs: this.writeTimeoutMs,
-                timeoutMessage:
-                    "La subida tardó demasiado en responder. Estamos comprobando si llegó a guardarse."
             }
         );
     }
@@ -184,7 +225,7 @@ export class CloudGateway {
         baseRevision,
         changes
     }) {
-        return this.request(
+        return this.requestWrite(
             this.buildUrl(url),
             {
                 method: "POST",
@@ -197,11 +238,6 @@ export class CloudGateway {
                     baseRevision,
                     changes
                 })
-            },
-            {
-                timeoutMs: this.writeTimeoutMs,
-                timeoutMessage:
-                    "La subida tardó demasiado en responder. Estamos comprobando si llegó a guardarse."
             }
         );
     }

@@ -10,7 +10,8 @@ import {
     PendingSyncChangesRepository
 } from "../src/infrastructure/PendingSyncChangesRepository.js";
 import {
-    CloudGateway
+    CloudGateway,
+    SyncProtocolError
 } from "../src/infrastructure/CloudGateway.js";
 import { SyncEngine } from "../src/core/SyncEngine.js";
 
@@ -132,6 +133,95 @@ test("CloudGateway envía sólo el lote incremental y baseRevision", async () =>
     assert.equal(requestBody.changes.length, 1);
 });
 
+test("Apps Script expone una consulta de revisión sin reconstruir el snapshot", () => {
+    const source = readFileSync(
+        new URL("../google-apps-script/Code.gs", import.meta.url),
+        "utf8"
+    );
+    const backend = { console };
+    vm.createContext(backend);
+    vm.runInContext(source, backend);
+    const metaSheet = { name: "meta" };
+    backend.getSpreadsheet_ = () => ({
+        getSheetByName: () => metaSheet
+    });
+    backend.getRevision_ = () => 12;
+
+    const result = backend.loadSyncStatus_();
+
+    assert.equal(result.ok, true);
+    assert.equal(result.revision, 12);
+    assert.equal("data" in result, false);
+    assert.match(result.serverTime, /^\d{4}-\d{2}-\d{2}T/);
+});
+
+test("SyncEngine usa el estado liviano para comprobar revisiones", async () => {
+    let statusCalls = 0;
+    let loadCalls = 0;
+    const engine = new SyncEngine({
+        backupService: {},
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "secret"
+            }),
+            getRevision: () => 8
+        },
+        gateway: {
+            async status() {
+                statusCalls += 1;
+                return { ok: true, revision: 9 };
+            },
+            async load() {
+                loadCalls += 1;
+                return { ok: true, revision: 9, data: null };
+            }
+        }
+    });
+
+    const result = await engine.checkRemoteRevision();
+
+    assert.equal(result.updateAvailable, true);
+    assert.equal(statusCalls, 1);
+    assert.equal(loadCalls, 0);
+});
+
+test("conserva compatibilidad con un Apps Script anterior", async () => {
+    let statusCalls = 0;
+    let loadCalls = 0;
+    const engine = new SyncEngine({
+        backupService: {},
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "secret"
+            }),
+            getRevision: () => 8
+        },
+        gateway: {
+            async status() {
+                statusCalls += 1;
+                throw new SyncProtocolError(
+                    "Acción desconocida",
+                    "INVALID_ACTION"
+                );
+            },
+            async load() {
+                loadCalls += 1;
+                return { ok: true, revision: 8, data: null };
+            }
+        }
+    });
+
+    await engine.checkRemoteRevision();
+    await engine.checkRemoteRevision();
+
+    assert.equal(statusCalls, 1);
+    assert.equal(loadCalls, 2);
+});
+
 test("SyncEngine usa incremental con base conocida y registra métricas", async () => {
     const unchanged = Array.from(
         { length: 20 },
@@ -184,7 +274,15 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
         gateway: {
             async saveIncremental(request) {
                 incrementalRequest = request;
-                return { ok: true, revision: 6 };
+                return {
+                    ok: true,
+                    revision: 6,
+                    rowsWritten: 42,
+                    processingMs: 320,
+                    lockWaitMs: 20,
+                    readMs: 100,
+                    writeMs: 180
+                };
             },
             async save() {
                 fullSaves += 1;
@@ -212,6 +310,11 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
     assert.equal(metrics[0].mode, "incremental");
     assert.ok(metrics[0].requestBytes < metrics[0].fullSnapshotBytes);
     assert.equal(metrics[0].fallbackReason, null);
+    assert.equal(metrics[0].serverRowsWritten, 42);
+    assert.equal(metrics[0].serverProcessingMs, 320);
+    assert.equal(metrics[0].serverLockWaitMs, 20);
+    assert.equal(metrics[0].serverReadMs, 100);
+    assert.equal(metrics[0].serverWriteMs, 180);
     assert.ok(metrics[0].durationMs >= 0);
 });
 

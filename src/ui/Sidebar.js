@@ -515,6 +515,38 @@ export class Sidebar {
                                     </div>
                                 `
                                 : ""}
+                            ${Number.isFinite(lastSyncMetric?.serverProcessingMs)
+                                ? `
+                                    <div>
+                                        <dt>Proceso en servidor</dt>
+                                        <dd>${lastSyncMetric.serverProcessingMs} ms</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Espera por bloqueo</dt>
+                                        <dd>${Number.isFinite(lastSyncMetric.serverLockWaitMs)
+                                            ? `${lastSyncMetric.serverLockWaitMs} ms`
+                                            : "—"}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Lectura en servidor</dt>
+                                        <dd>${Number.isFinite(lastSyncMetric.serverReadMs)
+                                            ? `${lastSyncMetric.serverReadMs} ms`
+                                            : "—"}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Escritura en servidor</dt>
+                                        <dd>${Number.isFinite(lastSyncMetric.serverWriteMs)
+                                            ? `${lastSyncMetric.serverWriteMs} ms`
+                                            : "—"}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Filas escritas</dt>
+                                        <dd>${Number.isFinite(lastSyncMetric.serverRowsWritten)
+                                            ? lastSyncMetric.serverRowsWritten
+                                            : "—"}</dd>
+                                    </div>
+                                `
+                                : ""}
                             ${lastSyncMetric?.fallbackReason
                                 ? `
                                     <div class="syncDiagnosticWide">
