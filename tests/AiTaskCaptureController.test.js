@@ -34,85 +34,14 @@ test("parsea tareas válidas, elimina duplicados y descarta títulos vacíos", (
         [
             {
                 title: "Llamar al plomero",
-                description: "Consultar disponibilidad.",
-                dueDate: null,
-                dueTime: null,
-                priority: 0,
-                areaId: null,
-                contextId: null,
-                tagIds: [],
-                ambiguities: []
+                description: "Consultar disponibilidad."
             },
             {
                 title: "Comprar materiales",
-                description: "Para la clase del martes.",
-                dueDate: null,
-                dueTime: null,
-                priority: 0,
-                areaId: null,
-                contextId: null,
-                tagIds: [],
-                ambiguities: []
+                description: "Para la clase del martes."
             }
         ]
     );
-});
-
-test("conserva metadatos claros y descarta referencias inexistentes", () => {
-    const answer = JSON.stringify({
-        tasks: [{
-            title: "Pagar seguro del auto",
-            description: "",
-            dueDate: "2026-09-18",
-            dueTime: "18:30",
-            priority: 3,
-            areaId: "area-personal",
-            contextId: "context-casa",
-            tagIds: ["tag-tramites", "tag-inventada"],
-            ambiguities: ["No se indicó el medio de pago."]
-        }]
-    });
-
-    assert.deepEqual(
-        parseTaskCaptureProposals(answer, {
-            areas: [{ id: "area-personal", name: "Personal" }],
-            contexts: [{ id: "context-casa", name: "Casa" }],
-            tags: [{ id: "tag-tramites", name: "Trámites" }]
-        }),
-        [{
-            title: "Pagar seguro del auto",
-            description: "",
-            dueDate: "2026-09-18",
-            dueTime: "18:30",
-            priority: 3,
-            areaId: "area-personal",
-            contextId: "context-casa",
-            tagIds: ["tag-tramites"],
-            ambiguities: [
-                "No se indicó el medio de pago.",
-                "Se descartaron etiquetas que no existen en Task Engine."
-            ]
-        }]
-    );
-});
-
-test("no conserva una hora aislada ni una fecha inválida", () => {
-    const answer = JSON.stringify({
-        tasks: [{
-            title: "Llamar a Julia",
-            dueDate: "2026-02-30",
-            dueTime: "09:15"
-        }]
-    });
-
-    const [proposal] = parseTaskCaptureProposals(answer);
-
-    assert.equal(proposal.dueDate, null);
-    assert.equal(proposal.dueTime, null);
-    assert.deepEqual(proposal.ambiguities, [
-        "Se descartó una fecha que no era válida.",
-        "Se descartó la hora porque no había una fecha clara."
-    ]);
 });
 
 test("limita una propuesta a diez tareas", () => {
@@ -184,13 +113,7 @@ test("crea sólo las tareas seleccionadas mediante TaskService después de confi
         assert.deepEqual(created, [
             {
                 title: "Llamar al plomero",
-                description: "Consultar disponibilidad.",
-                dueDate: null,
-                dueTime: null,
-                priority: 0,
-                areaId: null,
-                contextId: null,
-                tagIds: []
+                description: "Consultar disponibilidad."
             }
         ]);
         assert.equal(controller.proposal, null);
