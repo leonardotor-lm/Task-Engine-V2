@@ -52,7 +52,7 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - No inventar datos ausentes y mostrar el resultado interpretado cuando exista ambigüedad relevante.
 - Mantener siempre disponible el editor tradicional.
 - Implementación local dentro del editor de nuevas tareas, sin IA ni conexión externa.
-- Sintaxis inicial: fechas y horas en español, `/área`, `@contexto`, `#etiqueta` y `!prioridad`; sólo reconoce entidades existentes.
+- Sintaxis inicial: fechas y horas en español, `/área`, `@contexto`, `#etiqueta` y prioridad por palabra o por rango `!1` (crítica) a `!4` (baja); sólo reconoce entidades existentes.
 - La herramienta de IA «Convertir texto en tareas» conserva su alcance anterior para párrafos o listas y queda separada de esta función.
 - Verificar en escritorio y Android antes de cerrar el issue.
 

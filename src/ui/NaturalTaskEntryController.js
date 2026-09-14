@@ -56,7 +56,7 @@ export class NaturalTaskEntryController {
 
         const help = this.document.createElement("span");
         help.className = "naturalTaskEntryHelp";
-        help.textContent = "Fechas · /área · @contexto · #etiqueta · !prioridad";
+        help.textContent = "Fechas · /área · @contexto · #etiqueta · !1–!4";
 
         const status = this.document.createElement("p");
         status.id = "naturalTaskEntryStatus";

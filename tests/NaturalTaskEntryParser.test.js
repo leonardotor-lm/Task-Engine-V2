@@ -58,6 +58,25 @@ test("acepta fecha relativa, hora y prioridad abreviada", () => {
     assert.equal(result.priority, 4);
 });
 
+test("la prioridad numérica usa uno como nivel más alto", () => {
+    const cases = [
+        ["!1", 4],
+        ["!2", 3],
+        ["!3", 2],
+        ["!4", 1]
+    ];
+
+    for (const [token, expected] of cases) {
+        const result = parseNaturalTaskEntry(
+            `Resolver trámite ${token}`,
+            options
+        );
+
+        assert.equal(result.title, "Resolver trámite");
+        assert.equal(result.priority, expected);
+    }
+});
+
 test("una fecha sin año avanza al año siguiente si ya pasó", () => {
     const result = parseNaturalTaskEntry(
         "Renovar permiso el 10/9",

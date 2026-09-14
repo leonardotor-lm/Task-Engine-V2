@@ -5,6 +5,13 @@ const PRIORITIES = Object.freeze({
     critica: 4
 });
 
+const NUMERIC_PRIORITIES = Object.freeze({
+    1: 4,
+    2: 3,
+    3: 2,
+    4: 1
+});
+
 const PRIORITY_LABELS = Object.freeze({
     1: "Prioridad baja",
     2: "Prioridad media",
@@ -205,6 +212,13 @@ function findPriorityMatches(source) {
         source,
         /(?:^|\s)!(baja|media|alta|crítica|critica)\b/giu,
         match => PRIORITIES[normalize(match[1])],
+        matches
+    );
+
+    collectMatches(
+        source,
+        /(?:^|\s)!([1-4])\b/gu,
+        match => NUMERIC_PRIORITIES[match[1]],
         matches
     );
 
