@@ -9,6 +9,15 @@ const MAX_SOURCE_LENGTH = 6000;
 const MAX_TASKS = 10;
 const MAX_TITLE_LENGTH = 140;
 const MAX_DESCRIPTION_LENGTH = 1200;
+const MAX_AMBIGUITIES = 4;
+const MAX_AMBIGUITY_LENGTH = 240;
+
+const PRIORITY_LABELS = Object.freeze({
+    1: "Baja",
+    2: "Media",
+    3: "Alta",
+    4: "Crítica"
+});
 
 function normalizeText(value, maxLength) {
     return String(value || "")
@@ -17,7 +26,72 @@ function normalizeText(value, maxLength) {
         .slice(0, maxLength);
 }
 
-export function parseTaskCaptureProposals(answer) {
+function normalizeEntityId(value, validIds, label, ambiguities) {
+    const normalized = String(value || "").trim();
+    if (!normalized) return null;
+    if (validIds.has(normalized)) return normalized;
+    ambiguities.push(`Se descartó ${label} porque no coincide con una opción existente.`);
+    return null;
+}
+
+function normalizeDate(value, ambiguities) {
+    const normalized = String(value || "").trim();
+    if (!normalized) return null;
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(normalized);
+    if (match) {
+        const date = new Date(`${normalized}T12:00:00Z`);
+        if (
+            date.getUTCFullYear() === Number(match[1]) &&
+            date.getUTCMonth() + 1 === Number(match[2]) &&
+            date.getUTCDate() === Number(match[3])
+        ) {
+            return normalized;
+        }
+    }
+    ambiguities.push("Se descartó una fecha que no era válida.");
+    return null;
+}
+
+function normalizeTime(value, dueDate, ambiguities) {
+    const normalized = String(value || "").trim();
+    if (!normalized) return null;
+    if (!dueDate) {
+        ambiguities.push("Se descartó la hora porque no había una fecha clara.");
+        return null;
+    }
+    if (/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(normalized)) {
+        return normalized;
+    }
+    ambiguities.push("Se descartó una hora que no era válida.");
+    return null;
+}
+
+function normalizePriority(value, ambiguities) {
+    if (value === null || value === undefined || value === "") return 0;
+    const normalized = Number(value);
+    if (Number.isInteger(normalized) && normalized >= 0 && normalized <= 4) {
+        return normalized;
+    }
+    ambiguities.push("Se descartó una prioridad que no era válida.");
+    return 0;
+}
+
+function normalizeAmbiguities(value) {
+    const items = Array.isArray(value)
+        ? value
+        : value
+            ? [value]
+            : [];
+    return items
+        .map(item => normalizeText(item, MAX_AMBIGUITY_LENGTH))
+        .filter(Boolean)
+        .slice(0, MAX_AMBIGUITIES);
+}
+
+export function parseTaskCaptureProposals(
+    answer,
+    { areas = [], contexts = [], tags = [] } = {}
+) {
     const text = String(answer || "").trim();
     const firstBrace = text.indexOf("{");
     const lastBrace = text.lastIndexOf("}");
@@ -39,6 +113,10 @@ export function parseTaskCaptureProposals(answer) {
     );
     const seen = new Set();
 
+    const areaIds = new Set(areas.map(area => String(area.id)));
+    const contextIds = new Set(contexts.map(context => String(context.id)));
+    const tagIds = new Set(tags.map(tag => String(tag.id)));
+
     return items.slice(0, MAX_TASKS).map(item => {
         const title = normalizeText(item?.title, MAX_TITLE_LENGTH);
         const description = String(item?.description || "")
@@ -47,7 +125,39 @@ export function parseTaskCaptureProposals(answer) {
         const key = title.toLocaleLowerCase("es");
         if (!title || seen.has(key)) return null;
         seen.add(key);
-        return { title, description };
+        const ambiguities = normalizeAmbiguities(item?.ambiguities);
+        const dueDate = normalizeDate(item?.dueDate, ambiguities);
+        const dueTime = normalizeTime(item?.dueTime, dueDate, ambiguities);
+        const areaId = normalizeEntityId(
+            item?.areaId,
+            areaIds,
+            "el área",
+            ambiguities
+        );
+        const contextId = normalizeEntityId(
+            item?.contextId,
+            contextIds,
+            "el contexto",
+            ambiguities
+        );
+        const normalizedTagIds = Array.isArray(item?.tagIds)
+            ? [...new Set(item.tagIds.map(id => String(id).trim()).filter(Boolean))]
+            : [];
+        const validTagIds = normalizedTagIds.filter(id => tagIds.has(id));
+        if (validTagIds.length !== normalizedTagIds.length) {
+            ambiguities.push("Se descartaron etiquetas que no existen en Task Engine.");
+        }
+        return {
+            title,
+            description,
+            dueDate,
+            dueTime,
+            priority: normalizePriority(item?.priority, ambiguities),
+            areaId,
+            contextId,
+            tagIds: validTagIds,
+            ambiguities: [...new Set(ambiguities)].slice(0, MAX_AMBIGUITIES)
+        };
     }).filter(Boolean);
 }
 
@@ -96,7 +206,7 @@ export class AiTaskCaptureController {
         button.type = "button";
         button.className = "sidebarButton";
         button.setAttribute("aria-haspopup", "dialog");
-        button.textContent = "Convertir texto en tareas";
+        button.textContent = "Añadir con lenguaje natural";
 
         const assistant = body.querySelector?.("#openAiAssistant");
         if (assistant?.nextSibling) {
@@ -150,10 +260,13 @@ export class AiTaskCaptureController {
                 .aiTaskCaptureItem input { margin-top:3px; }
                 .aiTaskCaptureItemTitle { font-weight:600; }
                 .aiTaskCaptureItemDescription { margin:4px 0 0; line-height:1.4; white-space:pre-wrap; }
+                .aiTaskCaptureMetadata { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+                .aiTaskCaptureMetadata span { padding:3px 7px; border:1px solid var(--color-border); border-radius:999px; font-size:.86em; }
+                .aiTaskCaptureAmbiguities { margin:8px 0 0; padding-left:18px; color:var(--color-text-muted); line-height:1.35; }
                 .aiTaskCaptureActions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
             </style>
             <div class="settingsDialogHeader">
-                <h2 id="aiTaskCaptureTitle">Convertir texto en tareas</h2>
+                <h2 id="aiTaskCaptureTitle">Añadir con lenguaje natural</h2>
                 <button id="closeAiTaskCapture" type="button" class="iconButton" aria-label="Cerrar" title="Cerrar">×</button>
             </div>
             <div class="settingsDialogBody">${this.getBodyHtml()}</div>
@@ -170,10 +283,10 @@ export class AiTaskCaptureController {
         const selectedCount = this.getSelectedItems().length;
         return `
             <section class="settingsToolPanel">
-                <p>Pegá una nota, párrafo o lista informal. La IA propondrá tareas concretas para que las revises antes de crearlas.</p>
+                <p>Escribí una instrucción breve o una lista. Task Engine propondrá tareas y reconocerá sólo los datos suficientemente claros.</p>
                 <label for="aiTaskCaptureSource"><strong>Texto a procesar</strong></label>
-                <textarea id="aiTaskCaptureSource" class="aiTaskCaptureInput" maxlength="${MAX_SOURCE_LENGTH}" placeholder="Ej.: Tengo que llamar al plomero, comprar los materiales para la clase del martes y revisar las evaluaciones de 3.º...">${escapeHtml(this.sourceText)}</textarea>
-                <p class="settingsHint">Las tareas se crearán en Inbox. La IA no asignará áreas, etiquetas, fechas ni prioridades.</p>
+                <textarea id="aiTaskCaptureSource" class="aiTaskCaptureInput" maxlength="${MAX_SOURCE_LENGTH}" placeholder="Ej.: Pagar seguro del auto el viernes prioridad alta #trámites">${escapeHtml(this.sourceText)}</textarea>
+                <p class="settingsHint">Puede reconocer fecha, hora, prioridad, etiquetas existentes, área y contexto. Revisá siempre la interpretación antes de crear.</p>
                 ${this.error ? `<p class="syncErrorHint" role="alert">${escapeHtml(this.error)}</p>` : ""}
                 ${this.proposal ? this.getProposalHtml() : ""}
                 <div class="aiTaskCaptureActions">
@@ -195,10 +308,32 @@ export class AiTaskCaptureController {
                 <div>
                     <div class="aiTaskCaptureItemTitle">${escapeHtml(item.title)}</div>
                     ${item.description ? `<p class="aiTaskCaptureItemDescription">${escapeHtml(item.description)}</p>` : ""}
+                    ${this.getMetadataHtml(item)}
+                    ${item.ambiguities?.length ? `<ul class="aiTaskCaptureAmbiguities">${item.ambiguities.map(message => `<li>${escapeHtml(message)}</li>`).join("")}</ul>` : ""}
                 </div>
             </label>`).join("");
         return `<div class="aiTaskCaptureList">${html}</div>
             <p class="settingsHint">${this.getSelectedItems().length} de ${items.length} propuestas seleccionadas.</p>`;
+    }
+
+    getMetadataHtml(item) {
+        const metadata = [];
+        if (item.dueDate) {
+            metadata.push(`Fecha: ${item.dueDate}${item.dueTime ? ` · ${item.dueTime}` : ""}`);
+        }
+        if (PRIORITY_LABELS[item.priority]) {
+            metadata.push(`Prioridad: ${PRIORITY_LABELS[item.priority]}`);
+        }
+        const area = this.app?.areaService?.getAreaById?.(item.areaId);
+        const context = this.app?.contextService?.getContextById?.(item.contextId);
+        if (area) metadata.push(`Área: ${area.name}`);
+        if (context) metadata.push(`Contexto: ${context.name}`);
+        const tagNames = (item.tagIds || [])
+            .map(id => this.app?.tagService?.getTagById?.(id)?.name)
+            .filter(Boolean);
+        if (tagNames.length) metadata.push(`Etiquetas: ${tagNames.join(", ")}`);
+        if (!metadata.length) return '<div class="aiTaskCaptureMetadata"><span>Sin metadatos añadidos</span></div>';
+        return `<div class="aiTaskCaptureMetadata">${metadata.map(value => `<span>${escapeHtml(value)}</span>`).join("")}</div>`;
     }
 
     getSelectedItems() {
@@ -238,7 +373,11 @@ export class AiTaskCaptureController {
         return {
             requestType: "taskCapture",
             tasks: [],
+            today: this.app?.getTodayString?.() || new Date().toISOString().slice(0, 10),
             sourceText: this.sourceText.trim(),
+            availableAreas: this.app?.areaService?.getAllAreas?.().map(({ id, name }) => ({ id, name })) || [],
+            availableContexts: this.app?.contextService?.getAllContexts?.().map(({ id, name }) => ({ id, name })) || [],
+            availableTags: this.app?.tagService?.getAllTags?.().map(({ id, name }) => ({ id, name })) || [],
             aiProvider: this.app?.aiPreferences?.getProvider?.() || "gemini",
             aiModel: this.app?.aiPreferences?.getModel?.() || "gemini-3.7-flash"
         };
@@ -265,13 +404,13 @@ export class AiTaskCaptureController {
         }
 
         const question = [
-            "Convertí el texto libre recibido en una lista conservadora de tareas concretas y accionables.",
-            "No inventes acciones que no estén expresadas o claramente implicadas por el texto.",
-            "No agregues fechas, prioridades, áreas, contextos, etiquetas, personas, compromisos ni datos que no estén en el texto.",
-            "Usá títulos breves redactados como acciones. Usá description sólo para conservar información útil del texto que no entre naturalmente en el título.",
-            `Proponé como máximo ${MAX_TASKS} tareas. Si no hay acciones concretas, devolvé una lista vacía.`,
-            "Devolvé exclusivamente JSON válido, sin Markdown ni texto adicional, con esta forma exacta:",
-            '{"tasks":[{"title":"acción breve","description":"detalle opcional"}]}'
+            "Convertí sourceText en tareas concretas. No inventes acciones ni metadatos.",
+            "Interpretá fechas relativas usando today. Fecha: YYYY-MM-DD; hora: HH:MM; prioridad: 0 ninguna, 1 baja, 2 media, 3 alta, 4 crítica.",
+            "Para área, contexto y etiquetas usá sólo IDs exactos de availableAreas, availableContexts y availableTags. No crees opciones nuevas.",
+            "Si un dato admite más de una interpretación, omitilo y explicalo brevemente en ambiguities. dueTime requiere dueDate.",
+            "Usá títulos breves como acciones y description sólo para detalles útiles. Máximo 10 tareas.",
+            "Devolvé sólo JSON válido con esta forma:",
+            '{"tasks":[{"title":"acción","description":"","dueDate":null,"dueTime":null,"priority":0,"areaId":null,"contextId":null,"tagIds":[],"ambiguities":[]}]}'
         ].join("\n");
 
         this.loading = true;
@@ -284,7 +423,14 @@ export class AiTaskCaptureController {
                 context: this.buildContext()
             });
             assertAiStructuredResponseComplete(response, { kind: "La propuesta de tareas" });
-            const items = parseTaskCaptureProposals(response.answer);
+            const items = parseTaskCaptureProposals(
+                response.answer,
+                {
+                    areas: this.app?.areaService?.getAllAreas?.() || [],
+                    contexts: this.app?.contextService?.getAllContexts?.() || [],
+                    tags: this.app?.tagService?.getAllTags?.() || []
+                }
+            );
             this.proposal = {
                 provider: response.provider || "",
                 model: response.model || "",
@@ -312,7 +458,16 @@ export class AiTaskCaptureController {
                 throw new Error("La propuesta contiene una tarea inválida o duplicada.");
             }
             seen.add(key);
-            return { title, description };
+            return {
+                title,
+                description,
+                dueDate: item.dueDate || null,
+                dueTime: item.dueTime || null,
+                priority: item.priority || 0,
+                areaId: item.areaId || null,
+                contextId: item.contextId || null,
+                tagIds: [...(item.tagIds || [])]
+            };
         });
     }
 

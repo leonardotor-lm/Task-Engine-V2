@@ -2,7 +2,7 @@
 
 Este documento es la **fuente de verdad del backlog vigente** de Task Engine. Debe contener únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
 
-Última actualización: **10 de septiembre de 2026**.
+Última actualización: **14 de septiembre de 2026**.
 
 ## Regla obligatoria de lectura
 
@@ -46,11 +46,13 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ### Entrada de tareas con lenguaje natural — #447
 
-- **Estado:** pendiente.
+- **Estado:** pendiente de verificación.
 - Permitir expresiones breves como `Pagar seguro del auto el viernes prioridad alta #trámites`.
 - Interpretar únicamente metadatos suficientemente claros: fecha, hora, prioridad, etiquetas y organización simple.
 - No inventar datos ausentes y mostrar el resultado interpretado cuando exista ambigüedad relevante.
 - Mantener siempre disponible el editor tradicional.
+- Implementación inicial: amplía «Convertir texto en tareas» como «Añadir con lenguaje natural» y reconoce fecha, hora, prioridad, etiquetas existentes, área y contexto.
+- Verificar con el proveedor de IA configurado casos claros, ambiguos y opciones inexistentes antes de cerrar el issue.
 
 ### Reglas y automatizaciones — #448
 
