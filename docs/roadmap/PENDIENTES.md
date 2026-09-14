@@ -25,61 +25,20 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - **Operativo:** no requiere desarrollo nuevo, pero falta configuración o puesta en marcha.
 - **Evaluación:** mejora válida cuyo diseño técnico todavía debe decidirse.
 
-## Mejoras funcionales aprobadas — 10/09/2026
+## Confiabilidad en desarrollo — 14/09/2026
 
-### Recuperación automática después del trabajo offline — #453
+### Reducir bloqueos intermitentes de sincronización
 
-- **Estado:** en desarrollo.
-- Distinguir **Sin conexión** de los errores reales del servicio.
-- Conservar los cambios locales pendientes y reintentar automáticamente al volver internet.
-- Aplicar reintentos graduales si Apps Script todavía no está accesible al producirse el evento de reconexión.
-- No cerrar editores ni formularios activos y no sobrescribir conflictos reales.
-- Mantener la reconciliación, las acciones manuales y el modelo de datos existentes.
-
-### Captura rápida PWA en Android — #446
-
-- **Estado:** pendiente de verificación.
-- Web Share Target y shortcuts para Nueva tarea, Inbox y Hoy implementados en la PWA.
-- La captura abre un borrador normal en Inbox con título, notas y enlace precargados, sin guardar automáticamente.
-- Verificar en Android real que Task Engine aparezca en Compartir y que los accesos rápidos funcionen desde el ícono instalado.
-- Confirmar si Android actualiza el manifiesto existente o exige reinstalar la PWA para registrar estas capacidades.
-
-### Entrada de tareas con lenguaje natural — #447
-
-- **Estado:** pendiente de verificación.
-- Permitir expresiones breves como `Pagar seguro del auto el viernes prioridad alta #trámites`.
-- Interpretar únicamente metadatos suficientemente claros: fecha, hora, prioridad, etiquetas y organización simple.
-- No inventar datos ausentes y mostrar el resultado interpretado cuando exista ambigüedad relevante.
-- Mantener siempre disponible el editor tradicional.
-- Implementación local dentro del editor de nuevas tareas, sin IA ni conexión externa.
-- Sintaxis inicial: fechas y horas en español, `/área`, `@contexto`, `#etiqueta` y prioridad por palabra o por rango `!1` (crítica) a `!4` (baja); sólo reconoce entidades existentes.
-- La herramienta de IA «Convertir texto en tareas» conserva su alcance anterior para párrafos o listas y queda separada de esta función.
-- Verificar en escritorio y Android antes de cerrar el issue.
-
-### Reglas y automatizaciones — #448
-
-- **Estado:** pendiente.
-- Crear reglas simples y transparentes que ayuden a detectar tareas estancadas o mal procesadas.
-- Casos iniciales: tareas sin fecha durante demasiado tiempo, posposiciones reiteradas, vencidas sin resolver y tareas fuera de Inbox que quedan sin fecha ni proyecto claro.
-- Priorizar avisos/sugerencias antes que modificaciones automáticas.
-- Cada regla debe poder configurarse o desactivarse.
-- No realizar cambios silenciosos sobre las tareas.
-
-### «Qué hago ahora» — #449
-
-- **Estado:** pendiente.
-- Ofrecer una selección breve, idealmente 3–5 tareas, como próximas acciones razonables.
-- Considerar prioridad, vencimiento, atraso, inicio, contexto, área, etiquetas, proyecto/objetivo, posposiciones, En espera y recurrencia cuando corresponda.
-- Explicar brevemente por qué se sugieren.
-- No modificar tareas automáticamente.
-- Debe ser una ayuda de decisión, no una nueva estructura obligatoria.
+- **Estado:** en desarrollo; prioridad alta.
+- La sincronización incremental está implementada y verificada en uso real, pero todavía puede requerir varios intentos antes de completarse.
+- Evitar que una comprobación de revisión descargue y reconstruya todo el snapshot remoto.
+- Reintentar de forma gradual las respuestas `SERVER_BUSY` sin tratarlas como escrituras de resultado incierto.
+- Serializar las escrituras iniciadas por varias pestañas del mismo navegador.
+- Exponer tiempos de bloqueo, lectura y escritura de Apps Script para localizar el cuello de botella real.
+- Conservar el almacenamiento actual y evaluar una persistencia verdaderamente incremental sólo si estas mejoras no resultan suficientes.
+- Requiere desplegar nuevamente Apps Script y verificar el comportamiento desde escritorio y Android.
 
 ## Otros pendientes confirmados
-
-### Orden por vencimiento teniendo en cuenta la hora — #355
-
-- **Estado:** pendiente; prioridad media.
-- Orden esperado: vencidas → hoy con hora en orden cronológico → hoy sin hora → resto según comportamiento vigente.
 
 ### Formato 24 h en selectores de hora — #356
 
@@ -104,6 +63,13 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 - Integración GPT ↔ Task Engine — PR #444: **reparada, desplegada y verificada con consultas reales**.
 - Mantenimiento automático y respaldos en Google Drive — PR #451 / #445: **desplegado, activado y verificado con respaldo real el 10 de septiembre de 2026**.
+- Recuperación automática después del trabajo offline — PR #454 / #453: implementada y verificada.
+- «Qué hago ahora» — PR #455 y #456 / #449: implementado y verificado.
+- Reglas configurables de revisión — PR #457 / #448: implementadas y verificadas.
+- Sincronización incremental — PR #458: implementada y verificada; la estabilización del servicio continúa separadamente arriba.
+- Captura rápida PWA en Android — PR #460 y #461 / #446: implementada y verificada.
+- Entrada local de tareas en lenguaje natural — PR #466 y #467 / #447: implementada y verificada sin asistencia de IA.
+- Orden por vencimiento teniendo en cuenta la hora — #355: implementado y cubierto por pruebas; conserva vencidas primero y ordena las tareas de hoy con hora antes de las que no tienen hora.
 - Recordatorios móviles unidireccionales con Google Calendar — #343: **completado y cerrado**.
 - Adjuntos en Google Drive: terminado.
 - Tareas En espera: terminado.
@@ -125,7 +91,7 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ## PR abiertas que no constituyen por sí solas backlog funcional
 
-- **PR #396 — Tema Matrix:** rama visual abierta. No tratarla como prioridad funcional salvo decisión expresa de retomarla o cerrarla.
+- **PR #347 — Tema Retrofuturo** y **PR #396 — Tema Matrix:** ramas visuales abiertas. No tratarlas como prioridad funcional salvo decisión expresa de retomarlas o cerrarlas.
 
 ## Principios de planificación
 

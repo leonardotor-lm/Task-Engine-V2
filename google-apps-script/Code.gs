@@ -136,6 +136,13 @@ function handleRequest_(event, method) {
 
         if (
             method === "POST" &&
+            action === "status"
+        ) {
+            return jsonResponse_(loadSyncStatus_());
+        }
+
+        if (
+            method === "POST" &&
             action === "load"
         ) {
             return jsonResponse_(loadSnapshot_());
@@ -828,6 +835,26 @@ function loadSnapshot_() {
                 new Date().toISOString(),
             data: rowsToSnapshotData_(rows)
         }
+    };
+
+}
+
+function loadSyncStatus_() {
+
+    var spreadsheet = getSpreadsheet_();
+    var metaSheet = spreadsheet.getSheetByName(
+        TASK_ENGINE_SETTINGS.META_SHEET
+    );
+
+    if (!metaSheet) {
+        metaSheet = ensureStorage_(spreadsheet)
+            .metaSheet;
+    }
+
+    return {
+        ok: true,
+        revision: getRevision_(metaSheet),
+        serverTime: new Date().toISOString()
     };
 
 }
@@ -1537,6 +1564,7 @@ function saveSnapshot_(
 
 function saveIncremental_(changes, baseRevision) {
 
+    var startedAt = Date.now();
     var lock = LockService.getScriptLock();
 
     if (!lock.tryLock(20000)) {
@@ -1546,7 +1574,10 @@ function saveIncremental_(changes, baseRevision) {
         );
     }
 
+    var lockWaitMs = Date.now() - startedAt;
+
     try {
+        var readStartedAt = Date.now();
         var storage = getStorage_();
         var currentRevision =
             getRevision_(storage.metaSheet);
@@ -1576,6 +1607,7 @@ function saveIncremental_(changes, baseRevision) {
             exportedAt: new Date().toISOString(),
             data: rowsToSnapshotData_(currentRows)
         };
+        var readMs = Date.now() - readStartedAt;
 
         applyIncrementalChanges_(snapshot, changes);
         validateSnapshot_(snapshot);
@@ -1585,6 +1617,7 @@ function saveIncremental_(changes, baseRevision) {
             snapshot,
             nextRevision
         );
+        var writeStartedAt = Date.now();
 
         if (rows.length > 0) {
             storage.dataSheet
@@ -1606,13 +1639,18 @@ function saveIncremental_(changes, baseRevision) {
             ]]);
 
         SpreadsheetApp.flush();
+        var writeMs = Date.now() - writeStartedAt;
 
         return {
             ok: true,
             revision: nextRevision,
             syncMode: "incremental",
             changeCount: changes.length,
-            rowsWritten: rows.length
+            rowsWritten: rows.length,
+            processingMs: Date.now() - startedAt,
+            lockWaitMs: lockWaitMs,
+            readMs: readMs,
+            writeMs: writeMs
         };
     } finally {
         lock.releaseLock();

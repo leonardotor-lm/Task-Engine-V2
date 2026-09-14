@@ -161,7 +161,12 @@ test("muestra cantidad pendiente y métricas de la última sincronización", () 
                 outcome: "verified_after_uncertain_write",
                 durationMs: 280,
                 requestBytes: 1536,
-                savedBytes: 4096
+                savedBytes: 4096,
+                serverProcessingMs: 210,
+                serverLockWaitMs: 10,
+                serverReadMs: 80,
+                serverWriteMs: 120,
+                serverRowsWritten: 540
             }
         }
     });
@@ -173,6 +178,11 @@ test("muestra cantidad pendiente y métricas de la última sincronización", () 
     assert.match(html, /Duración[\s\S]*?<dd>280 ms<\/dd>/);
     assert.match(html, /Datos enviados[\s\S]*?<dd>1\.5 KB<\/dd>/);
     assert.match(html, /Ahorro estimado[\s\S]*?<dd>4\.0 KB<\/dd>/);
+    assert.match(html, /Proceso en servidor[\s\S]*?<dd>210 ms<\/dd>/);
+    assert.match(html, /Espera por bloqueo[\s\S]*?<dd>10 ms<\/dd>/);
+    assert.match(html, /Lectura en servidor[\s\S]*?<dd>80 ms<\/dd>/);
+    assert.match(html, /Escritura en servidor[\s\S]*?<dd>120 ms<\/dd>/);
+    assert.match(html, /Filas escritas[\s\S]*?<dd>540<\/dd>/);
 
 });
 
