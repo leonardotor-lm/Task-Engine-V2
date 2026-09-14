@@ -51,8 +51,10 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - Interpretar únicamente metadatos suficientemente claros: fecha, hora, prioridad, etiquetas y organización simple.
 - No inventar datos ausentes y mostrar el resultado interpretado cuando exista ambigüedad relevante.
 - Mantener siempre disponible el editor tradicional.
-- Implementación inicial: amplía «Convertir texto en tareas» como «Añadir con lenguaje natural» y reconoce fecha, hora, prioridad, etiquetas existentes, área y contexto.
-- Verificar con el proveedor de IA configurado casos claros, ambiguos y opciones inexistentes antes de cerrar el issue.
+- Implementación local dentro del editor de nuevas tareas, sin IA ni conexión externa.
+- Sintaxis inicial: fechas y horas en español, `/área`, `@contexto`, `#etiqueta` y `!prioridad`; sólo reconoce entidades existentes.
+- La herramienta de IA «Convertir texto en tareas» conserva su alcance anterior para párrafos o listas y queda separada de esta función.
+- Verificar en escritorio y Android antes de cerrar el issue.
 
 ### Reglas y automatizaciones — #448
 

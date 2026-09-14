@@ -48,6 +48,9 @@ import {
     DirectTaskCreationController
 } from "./ui/DirectTaskCreationController.js";
 import {
+    NaturalTaskEntryController
+} from "./ui/NaturalTaskEntryController.js";
+import {
     TaskSortPreferencesController
 } from "./ui/TaskSortPreferencesController.js";
 import {
@@ -195,6 +198,8 @@ const mobileMainLayoutController =
     new MobileMainLayoutController(app);
 const directTaskCreationController =
     new DirectTaskCreationController(app);
+const naturalTaskEntryController =
+    new NaturalTaskEntryController(app);
 const taskSortPreferencesController =
     new TaskSortPreferencesController(app);
 const taskFilterPreferencesController =
@@ -344,6 +349,7 @@ notionGoalNotesController.start();
 notionGoalNotesEventBridge.start();
 desktopTaskEditorLayoutController.start();
 mobileTaskEditorController.start();
+naturalTaskEntryController.start();
 accessibilityStateController.start();
 keyboardNavigationController.start();
 keyboardActionShortcutsController.start();
