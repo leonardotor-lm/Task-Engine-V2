@@ -21,8 +21,7 @@ function backup() {
     };
 }
 
-test("una recuperación exitosa limpia el diagnóstico de conflicto y renueva la base", async () => {
-    let remembered = null;
+test("una recuperación exitosa limpia el diagnóstico sin reconstruir la base", async () => {
     const current = backup();
     const app = {
         syncConflictDetails: [
@@ -48,8 +47,10 @@ test("una recuperación exitosa limpia el diagnóstico de conflicto y renueva la
         }
     };
     const repository = {
-        set(value, endpoint) {
-            remembered = { value, endpoint };
+        set() {
+            throw new Error(
+                "El controlador no debe reconstruir la base confirmada"
+            );
         },
         get() {
             return null;
@@ -69,9 +70,4 @@ test("una recuperación exitosa limpia el diagnóstico de conflicto y renueva la
         app.autoSyncBlockedFingerprint,
         null
     );
-    assert.equal(
-        remembered.endpoint,
-        "https://sync.test"
-    );
-    assert.deepEqual(remembered.value, current);
 });

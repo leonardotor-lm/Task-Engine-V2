@@ -246,6 +246,8 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
     let incrementalRequest;
     let fullSaves = 0;
     const metrics = [];
+    let rememberedBase = null;
+    let rememberedEndpoint = null;
     const config = {
         isConfigured: () => true,
         get: () => ({
@@ -289,7 +291,11 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
             }
         },
         baseSnapshotRepository: {
-            get: () => base
+            get: () => base,
+            set(value, endpoint) {
+                rememberedBase = value;
+                rememberedEndpoint = endpoint;
+            }
         },
         pendingChangesRepository: pendingRepository,
         metricsRepository: {
@@ -307,6 +313,11 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
     assert.equal(incrementalRequest.changes.length, 1);
     assert.equal(incrementalRequest.changes[0].operation, "update");
     assert.equal(pendingRepository.cleared, true);
+    assert.equal(rememberedBase, current);
+    assert.equal(
+        rememberedEndpoint,
+        "https://example.com/exec"
+    );
     assert.equal(metrics[0].mode, "incremental");
     assert.ok(metrics[0].requestBytes < metrics[0].fullSnapshotBytes);
     assert.equal(metrics[0].fallbackReason, null);
@@ -316,6 +327,149 @@ test("SyncEngine usa incremental con base conocida y registra métricas", async 
     assert.equal(metrics[0].serverReadMs, 100);
     assert.equal(metrics[0].serverWriteMs, 180);
     assert.ok(metrics[0].durationMs >= 0);
+});
+
+test("conserva como base el snapshot exacto confirmado durante una escritura", async () => {
+    const base = backup({
+        tasks: [{ id: "task-1", version: 1, title: "Antes" }]
+    });
+    const sentBackup = backup({
+        tasks: [{ id: "task-1", version: 2, title: "Enviado" }]
+    });
+    const laterBackup = backup({
+        tasks: [
+            { id: "task-1", version: 2, title: "Enviado" },
+            { id: "task-2", version: 1, title: "Creada durante la espera" }
+        ]
+    });
+    let current = sentBackup;
+    let rememberedBase = base;
+    let releaseWrite;
+    let markWriteStarted;
+    const writeStarted = new Promise(resolve => {
+        markWriteStarted = resolve;
+    });
+    const writeFinished = new Promise(resolve => {
+        releaseWrite = resolve;
+    });
+    let revision = 5;
+    const pendingRepository = {
+        replace(state) {
+            this.state = state;
+            return state;
+        },
+        clear() {
+            this.state = null;
+        }
+    };
+    const engine = new SyncEngine({
+        backupService: {
+            createBackup: () => structuredClone(current),
+            parseAndValidate: json => JSON.parse(json).data
+        },
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "secret"
+            }),
+            getRevision: () => revision,
+            setRevision(value) {
+                revision = value;
+            },
+            markSynchronized() {}
+        },
+        gateway: {
+            async saveIncremental() {
+                markWriteStarted();
+                await writeFinished;
+                return { revision: 6 };
+            }
+        },
+        baseSnapshotRepository: {
+            get: () => structuredClone(rememberedBase),
+            set(value) {
+                rememberedBase = structuredClone(value);
+            }
+        },
+        pendingChangesRepository: pendingRepository,
+        metricsRepository: { add() {} }
+    });
+
+    const push = engine.push();
+    await writeStarted;
+    current = laterBackup;
+    releaseWrite();
+    await push;
+
+    assert.deepEqual(rememberedBase, sentBackup);
+
+    const nextPending = engine.capturePendingChanges(laterBackup);
+    assert.deepEqual(
+        nextPending.changes.map(change => [
+            change.id,
+            change.operation
+        ]),
+        [["task-2", "create"]]
+    );
+});
+
+test("recupera una base incremental incompatible con un snapshot completo", async () => {
+    const staleBase = backup({
+        tasks: [{ id: "task-1", version: 1, title: "Ya eliminada" }]
+    });
+    const current = backup({ tasks: [] });
+    let fullRequest = null;
+    let incrementalCalls = 0;
+    let rememberedBase = staleBase;
+    const engine = new SyncEngine({
+        backupService: {
+            createBackup: () => current,
+            parseAndValidate: () => current.data
+        },
+        config: {
+            isConfigured: () => true,
+            get: () => ({
+                url: "https://example.com/exec",
+                token: "secret"
+            }),
+            getRevision: () => 5,
+            setRevision() {},
+            markSynchronized() {}
+        },
+        gateway: {
+            async saveIncremental() {
+                incrementalCalls += 1;
+                throw new SyncProtocolError(
+                    "La entidad incremental ya no existe.",
+                    "INVALID_CHANGES"
+                );
+            },
+            async save(request) {
+                fullRequest = request;
+                return { revision: 6 };
+            }
+        },
+        baseSnapshotRepository: {
+            get: () => staleBase,
+            set(value) {
+                rememberedBase = value;
+            }
+        },
+        pendingChangesRepository: {
+            replace: state => state,
+            clear() {}
+        },
+        metricsRepository: { add() {} }
+    });
+
+    const result = await engine.push();
+
+    assert.equal(incrementalCalls, 1);
+    assert.equal(fullRequest.data, current);
+    assert.equal(result.syncMode, "full");
+    assert.equal(result.fallbackReason, "INVALID_CHANGES");
+    assert.equal(rememberedBase, current);
 });
 
 test("SyncEngine expone cambios pendientes y la última métrica", () => {
