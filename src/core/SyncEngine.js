@@ -87,6 +87,14 @@ export class SyncEngine {
         });
     }
 
+    rememberSynchronizedBase(backup, endpoint = "") {
+        this.baseSnapshotRepository.set(
+            backup,
+            endpoint
+        );
+        this.pendingChangesRepository.clear();
+    }
+
     rememberMetric(metric) {
         this.metricsRepository.add(metric);
         console.info("Task Engine sync", metric);
@@ -302,7 +310,10 @@ export class SyncEngine {
             this.config.markSynchronized(
                 localFingerprint
             );
-            this.pendingChangesRepository.clear();
+            this.rememberSynchronizedBase(
+                backup,
+                connection.url
+            );
             this.remoteWriteOutcomeUncertain = false;
 
             return {
@@ -456,7 +467,8 @@ export class SyncEngine {
                         ![
                             "UNKNOWN_ACTION",
                             "INVALID_ACTION",
-                            "FULL_SNAPSHOT_REQUIRED"
+                            "FULL_SNAPSHOT_REQUIRED",
+                            "INVALID_CHANGES"
                         ].includes(error.code)
                     ) {
                         throw error;
@@ -547,7 +559,10 @@ export class SyncEngine {
         this.config.markSynchronized(
             createSyncFingerprint(backup)
         );
-        this.pendingChangesRepository.clear();
+        this.rememberSynchronizedBase(
+            backup,
+            connection.url
+        );
         const durationMs = Date.now() - startedAt;
         this.rememberMetric({
             mode,
@@ -678,6 +693,10 @@ export class SyncEngine {
             this.config.markSynchronized(
                 createSyncFingerprint(localBackup)
             );
+            this.rememberSynchronizedBase(
+                localBackup,
+                connection.url
+            );
 
             return {
                 action,
@@ -710,6 +729,10 @@ export class SyncEngine {
                 createSyncFingerprint(
                     importedBackup
                 )
+            );
+            this.rememberSynchronizedBase(
+                importedBackup,
+                connection.url
             );
 
             return {
@@ -773,6 +796,10 @@ export class SyncEngine {
                     normalizedMergedBackup
                 )
             );
+            this.rememberSynchronizedBase(
+                normalizedMergedBackup,
+                connection.url
+            );
 
             return {
                 action,
@@ -796,6 +823,10 @@ export class SyncEngine {
         this.config.setRevision(revision);
         this.config.markSynchronized(
             createSyncFingerprint(localBackup)
+        );
+        this.rememberSynchronizedBase(
+            localBackup,
+            connection.url
         );
 
         return {
@@ -837,6 +868,10 @@ export class SyncEngine {
         this.config.setRevision(revision);
         this.config.markSynchronized(
             createSyncFingerprint(backup)
+        );
+        this.rememberSynchronizedBase(
+            backup,
+            connection.url
         );
 
         return {
@@ -894,6 +929,10 @@ export class SyncEngine {
             createSyncFingerprint(
                 importedBackup
             )
+        );
+        this.rememberSynchronizedBase(
+            importedBackup,
+            connection.url
         );
 
         return {
