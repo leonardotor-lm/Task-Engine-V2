@@ -143,6 +143,25 @@ test("Apariencia forma parte del HTML que devuelve Sidebar", () => {
 
 });
 
+test("Noche boreal se guarda y recupera como tema válido", () => {
+
+    const preferences =
+        new TaskDisplayPreferences(
+            new MemoryStorage()
+        );
+
+    assert.equal(
+        preferences.setTheme("night-boreal"),
+        "night-boreal"
+    );
+
+    assert.equal(
+        preferences.getTheme(),
+        "night-boreal"
+    );
+
+});
+
 test("inicia el controlador de tema después de App", async () => {
 
     const source = await readFile(
