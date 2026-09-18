@@ -110,6 +110,8 @@ test("Apariencia forma parte del HTML que devuelve Sidebar", () => {
     assert.match(html, /value="default"/);
     assert.match(html, /value="paper"/);
     assert.match(html, /Papel/);
+    assert.match(html, /value="night-boreal"/);
+    assert.match(html, /Noche boreal/);
     assert.match(html, /value="high-contrast"/);
     assert.match(html, /Alto contraste/);
     assert.match(html, /value="dark"/);

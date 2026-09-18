@@ -1,0 +1,316 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap");
+
+:root[data-theme="night-boreal"] {
+    --color-text: #fff5f8;
+    --color-text-subtle: #f5dfe7;
+    --color-text-secondary: #c9dce1;
+    --color-text-muted: #9fb7bf;
+
+    --color-surface: #4a1630;
+    --color-surface-subtle: #280b19;
+    --color-surface-hover: #641d40;
+    --color-border: #77445a;
+    --color-border-strong: #579eb2;
+
+    --color-accent: #f5276c;
+    --color-accent-strong: #ff5c91;
+    --color-accent-soft: #5c1734;
+    --color-accent-muted: #701b3f;
+    --color-on-accent: #240813;
+
+    --color-on-dark: #fff5f8;
+    --color-focus-ring: #579eb2;
+
+    --color-danger: #ff7a89;
+    --color-danger-soft: #59232d;
+
+    --disabled-opacity: 0.48;
+    --interface-radius: 0px;
+
+    --boreal-pink-deep: #280b19;
+    --boreal-pink-dark: #371022;
+    --boreal-pink-surface: #4a1630;
+    --boreal-pink-raised: #571a38;
+    --boreal-pink-hover: #641d40;
+
+    --boreal-blue: #579eb2;
+    --boreal-blue-soft: #79b7c8;
+    --boreal-blue-deep: #315e6b;
+
+    --ui-font:
+        Lexend,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    --ui-font-size: 14px;
+    --ui-line-height: 1.4;
+    --panel-padding: 12px;
+    --content-padding: 16px;
+    --task-padding-y: 8px;
+    --task-padding-x: 8px;
+    --compact-gap: 7px;
+
+    --transient-surface-border: 1px solid var(--color-border-strong);
+    --transient-surface-radius: 0px;
+    --transient-surface-shadow: none;
+    --transient-dialog-shadow: none;
+    --transient-backdrop: rgb(20 5 13 / 72%);
+    --transient-surface-gap: 8px;
+    --transient-surface-padding: 12px;
+    --transient-header-padding: 13px 15px;
+    --transient-body-padding: 15px;
+    --transient-actions-padding: 11px 15px;
+}
+
+:root[data-theme="night-boreal"],
+:root[data-theme="night-boreal"] body,
+:root[data-theme="night-boreal"] #app,
+:root[data-theme="night-boreal"] .layout {
+    background: var(--boreal-pink-deep);
+    color: var(--color-text);
+}
+
+:root[data-theme="night-boreal"] body,
+:root[data-theme="night-boreal"] button,
+:root[data-theme="night-boreal"] input,
+:root[data-theme="night-boreal"] select,
+:root[data-theme="night-boreal"] textarea,
+:root[data-theme="night-boreal"] dialog {
+    font-family: var(--ui-font);
+}
+
+:root[data-theme="night-boreal"] body {
+    color-scheme: dark;
+    letter-spacing: -0.003em;
+}
+
+:root[data-theme="night-boreal"] .sidebar {
+    background: var(--boreal-pink-dark);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="night-boreal"] .content,
+:root[data-theme="night-boreal"] .details,
+:root[data-theme="night-boreal"] .mobileHeader {
+    background: var(--boreal-pink-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="night-boreal"] button,
+:root[data-theme="night-boreal"] input,
+:root[data-theme="night-boreal"] select,
+:root[data-theme="night-boreal"] textarea {
+    border-color: var(--color-border);
+    background-color: var(--boreal-pink-raised);
+    color: var(--color-text);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+:root[data-theme="night-boreal"] input::placeholder,
+:root[data-theme="night-boreal"] textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+:root[data-theme="night-boreal"] .sidebarBrand h3,
+:root[data-theme="night-boreal"] .sidebar h1,
+:root[data-theme="night-boreal"] .sidebar h2,
+:root[data-theme="night-boreal"] .sidebarTitle,
+:root[data-theme="night-boreal"] .sidebarHeader h1,
+:root[data-theme="night-boreal"] .sidebarHeader h2,
+:root[data-theme="night-boreal"] .content > h1,
+:root[data-theme="night-boreal"] .content > h2,
+:root[data-theme="night-boreal"] .contentHeader h1,
+:root[data-theme="night-boreal"] .contentHeader h2,
+:root[data-theme="night-boreal"] .viewHeader h1,
+:root[data-theme="night-boreal"] .viewHeader h2,
+:root[data-theme="night-boreal"] .viewTitle,
+:root[data-theme="night-boreal"] .mainViewTitle,
+:root[data-theme="night-boreal"] .mobileHeaderTitle {
+    color: #f5276c !important;
+}
+
+:root[data-theme="night-boreal"] .sidebarButton {
+    color: var(--color-text-subtle);
+    border-radius: 0;
+}
+
+:root[data-theme="night-boreal"] .sidebarButton:hover,
+:root[data-theme="night-boreal"] .task:hover {
+    background: var(--boreal-pink-hover);
+}
+
+:root[data-theme="night-boreal"] .sidebarButton.active {
+    background: var(--color-accent-muted);
+    color: var(--color-text);
+    border-left-color: var(--boreal-blue);
+}
+
+:root[data-theme="night-boreal"] .task {
+    color: var(--color-text);
+    border-bottom-color: var(--color-border);
+    border-radius: 0;
+}
+
+:root[data-theme="night-boreal"] .task.bulkSelectedTask,
+:root[data-theme="night-boreal"] .advancedSearchActiveNotice,
+:root[data-theme="night-boreal"] .bulkToolbar {
+    background: #642042;
+    border-color: var(--boreal-blue-deep);
+    border-radius: 0;
+}
+
+:root[data-theme="night-boreal"] .settingsToolPanel,
+:root[data-theme="night-boreal"] dialog,
+:root[data-theme="night-boreal"] .taskDrawer,
+:root[data-theme="night-boreal"] .searchableSelectMenu,
+:root[data-theme="night-boreal"] .searchableMultiSelectManagerBody,
+:root[data-theme="night-boreal"] .taskEditorPopover {
+    background: var(--boreal-pink-raised);
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+:root[data-theme="night-boreal"] .primaryAction {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+:root[data-theme="night-boreal"] .primaryAction:not(:disabled):hover {
+    background: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
+}
+
+:root[data-theme="night-boreal"] .secondaryAction,
+:root[data-theme="night-boreal"] .tertiaryAction {
+    background: var(--boreal-pink-raised);
+    border-color: var(--boreal-blue-deep);
+    color: var(--color-text-subtle);
+}
+
+:root[data-theme="night-boreal"] .dangerAction {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+:root[data-theme="night-boreal"] .floatingActionButton,
+:root[data-theme="night-boreal"] .addTaskButton,
+:root[data-theme="night-boreal"] .fab,
+:root[data-theme="night-boreal"] [data-action="add-task"] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: none;
+}
+
+:root[data-theme="night-boreal"] a {
+    color: var(--boreal-blue-soft);
+}
+
+:root[data-theme="night-boreal"] :focus-visible {
+    outline-color: var(--color-focus-ring);
+}
+
+:root[data-theme="night-boreal"] ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+:root[data-theme="night-boreal"] * {
+    scrollbar-color: var(--boreal-blue) var(--boreal-pink-deep);
+}
+
+:root[data-theme="night-boreal"] *,
+:root[data-theme="night-boreal"] *::before,
+:root[data-theme="night-boreal"] *::after {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+    :root[data-theme="night-boreal"] {
+        --ui-font-size: 15px;
+        --ui-line-height: 1.43;
+        --content-padding: 12px;
+        --task-padding-y: 9px;
+        --task-padding-x: 7px;
+        --interface-radius: 0px;
+        --transient-surface-radius: 0px;
+        --transient-surface-shadow: none;
+    }
+
+    :root[data-theme="night-boreal"],
+    :root[data-theme="night-boreal"] body,
+    :root[data-theme="night-boreal"] #app,
+    :root[data-theme="night-boreal"] .layout {
+        background: var(--boreal-pink-deep);
+    }
+
+    :root[data-theme="night-boreal"] .content,
+    :root[data-theme="night-boreal"] .mobileHeader {
+        background: var(--boreal-pink-surface);
+        backdrop-filter: none;
+    }
+
+    :root[data-theme="night-boreal"] .sidebar {
+        background: var(--boreal-pink-dark);
+        backdrop-filter: none;
+    }
+
+    :root[data-theme="night-boreal"] .mobileHeader {
+        border-bottom-color: var(--boreal-blue-deep);
+    }
+
+    :root[data-theme="night-boreal"] .task {
+        border-bottom-color: transparent;
+        font-size: 16px;
+        line-height: 1.36;
+    }
+
+    :root[data-theme="night-boreal"] .task:hover {
+        background: transparent;
+    }
+
+    :root[data-theme="night-boreal"] .task.bulkSelectedTask {
+        background: var(--boreal-pink-hover);
+    }
+
+    :root[data-theme="night-boreal"] .sidebarButton {
+        border-color: transparent;
+        font-weight: 500;
+    }
+
+    :root[data-theme="night-boreal"] .taskDrawer,
+    :root[data-theme="night-boreal"] dialog,
+    :root[data-theme="night-boreal"] .searchableSelectMenu,
+    :root[data-theme="night-boreal"] .searchableMultiSelectManagerBody,
+    :root[data-theme="night-boreal"] .taskEditorPopover {
+        border-color: var(--color-border-strong);
+        box-shadow: none;
+    }
+
+    :root[data-theme="night-boreal"] .advancedSearchActiveNotice,
+    :root[data-theme="night-boreal"] .bulkToolbar {
+        background: var(--boreal-pink-hover);
+        border-color: var(--boreal-blue-deep);
+    }
+
+    :root[data-theme="night-boreal"] .settingsToolPanel,
+    :root[data-theme="night-boreal"] .settingsToolPanel:nth-of-type(2n) {
+        background: var(--boreal-pink-raised);
+    }
+}
