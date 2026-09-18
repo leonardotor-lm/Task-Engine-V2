@@ -24,6 +24,10 @@ const AVAILABLE_THEMES = Object.freeze([
         label: "Noche de invierno Flat"
     },
     {
+        id: "night-boreal",
+        label: "Noche boreal"
+    },
+    {
         id: "high-contrast",
         label: "Alto contraste"
     },
