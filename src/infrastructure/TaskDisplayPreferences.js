@@ -32,7 +32,8 @@ const VALID_THEMES = new Set([
     "things-mobile",
     "lavender-mobile",
     "winter-night",
-    "winter-night-flat"
+    "winter-night-flat",
+    "night-boreal"
 ]);
 
 export class TaskDisplayPreferences {
