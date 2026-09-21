@@ -22,7 +22,8 @@ function task(overrides = {}) {
         priority: overrides.priority ?? 0,
         dueDate: overrides.dueDate ?? null,
         parentTaskId: overrides.parentTaskId ?? null,
-        recurrence: overrides.recurrence ?? null
+        recurrence: overrides.recurrence ?? null,
+        reminder: overrides.reminder ?? null
     };
 
 }
@@ -190,6 +191,52 @@ test("filtra estados y propiedades booleanas", () => {
             searchContext
         ),
         true
+    );
+
+});
+
+test("filtra por presencia o ausencia de recordatorio", () => {
+
+    const withReminder = task({
+        reminder: {
+            type: "at",
+            at: "2026-07-27T15:00:00.000Z"
+        }
+    });
+
+    const withoutReminder = task();
+
+    assert.equal(
+        matchesAdvancedSearch(
+            withReminder,
+            compileAdvancedSearch(
+                "tieneRecordatorio:si"
+            ),
+            context
+        ),
+        true
+    );
+
+    assert.equal(
+        matchesAdvancedSearch(
+            withoutReminder,
+            compileAdvancedSearch(
+                "tieneRecordatorio:no"
+            ),
+            context
+        ),
+        true
+    );
+
+    assert.equal(
+        matchesAdvancedSearch(
+            withReminder,
+            compileAdvancedSearch(
+                "hasReminder:false"
+            ),
+            context
+        ),
+        false
     );
 
 });
