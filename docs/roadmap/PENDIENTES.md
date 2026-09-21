@@ -29,15 +29,16 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 
 ### Manual de usuario
 
-- **Estado:** en desarrollo.
-- Primera versión integral preparada en PR #473.
+- **Estado:** completado.
+- Fusionado en PR #473.
 - Incluye inicio rápido, flujo de trabajo recomendado y referencia funcional de las capacidades consolidadas.
-- Pendiente de revisión y fusión.
 
 ### Manual técnico
 
-- **Estado:** pendiente.
-- Documentar arquitectura, estructura del repositorio, modelo de datos, sincronización, Apps Script/Sheets, Drive, Notion, PWA, respaldos, pruebas, despliegue y recuperación.
+- **Estado:** en desarrollo.
+- Primera versión integral preparada en la rama `agent/technical-manual`.
+- Documenta arquitectura, estructura del repositorio, modelo de datos, sincronización, Apps Script/Sheets, Drive, Notion, PWA, respaldos, pruebas, despliegue y recuperación.
+- Pendiente de revisión y fusión.
 
 ## Otros pendientes confirmados
 
