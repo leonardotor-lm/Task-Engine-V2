@@ -25,6 +25,20 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - **Operativo:** no requiere desarrollo nuevo, pero falta configuración o puesta en marcha.
 - **Evaluación:** mejora válida cuyo diseño técnico todavía debe decidirse.
 
+## Documentación
+
+### Manual de usuario
+
+- **Estado:** en desarrollo.
+- Primera versión integral preparada en PR #473.
+- Incluye inicio rápido, flujo de trabajo recomendado y referencia funcional de las capacidades consolidadas.
+- Pendiente de revisión y fusión.
+
+### Manual técnico
+
+- **Estado:** pendiente.
+- Documentar arquitectura, estructura del repositorio, modelo de datos, sincronización, Apps Script/Sheets, Drive, Notion, PWA, respaldos, pruebas, despliegue y recuperación.
+
 ## Otros pendientes confirmados
 
 ### Formato 24 h en selectores de hora — #356
