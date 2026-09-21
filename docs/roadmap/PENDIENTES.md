@@ -2,7 +2,7 @@
 
 Este documento es la **fuente de verdad del backlog vigente** de Task Engine. Debe contener únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
 
-Última actualización: **14 de septiembre de 2026**.
+Última actualización: **21 de septiembre de 2026**.
 
 ## Regla obligatoria de lectura
 
@@ -24,19 +24,6 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - **Pendiente de verificación:** implementación realizada que necesita validación operativa.
 - **Operativo:** no requiere desarrollo nuevo, pero falta configuración o puesta en marcha.
 - **Evaluación:** mejora válida cuyo diseño técnico todavía debe decidirse.
-
-## Confiabilidad en desarrollo — 14/09/2026
-
-### Reducir bloqueos intermitentes de sincronización
-
-- **Estado:** en desarrollo; prioridad alta.
-- La sincronización incremental está implementada y verificada en uso real, pero todavía puede requerir varios intentos antes de completarse.
-- Evitar que una comprobación de revisión descargue y reconstruya todo el snapshot remoto.
-- Reintentar de forma gradual las respuestas `SERVER_BUSY` sin tratarlas como escrituras de resultado incierto.
-- Serializar las escrituras iniciadas por varias pestañas del mismo navegador.
-- Exponer tiempos de bloqueo, lectura y escritura de Apps Script para localizar el cuello de botella real.
-- Conservar el almacenamiento actual y evaluar una persistencia verdaderamente incremental sólo si estas mejoras no resultan suficientes.
-- Requiere desplegar nuevamente Apps Script y verificar el comportamiento desde escritorio y Android.
 
 ## Otros pendientes confirmados
 
@@ -66,7 +53,7 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - Recuperación automática después del trabajo offline — PR #454 / #453: implementada y verificada.
 - «Qué hago ahora» — PR #455 y #456 / #449: implementado y verificado.
 - Reglas configurables de revisión — PR #457 / #448: implementadas y verificadas.
-- Sincronización incremental — PR #458: implementada y verificada; la estabilización del servicio continúa separadamente arriba.
+- Sincronización incremental y estabilización — PR #458, #468 y #469: **implementadas, desplegadas y verificadas durante varios días de uso real en escritorio y Android**. Los errores y reintentos se redujeron de forma muy significativa; no requieren nuevo desarrollo salvo regresión reproducible.
 - Captura rápida PWA en Android — PR #460 y #461 / #446: implementada y verificada.
 - Entrada local de tareas en lenguaje natural — PR #466 y #467 / #447: implementada y verificada sin asistencia de IA.
 - Orden por vencimiento teniendo en cuenta la hora — #355: implementado y cubierto por pruebas; conserva vencidas primero y ordena las tareas de hoy con hora antes de las que no tienen hora.
