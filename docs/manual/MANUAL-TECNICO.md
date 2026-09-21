@@ -769,6 +769,22 @@ Admite expresiones combinables mediante:
 
 Los filtros trabajan sobre propiedades semánticas de las tareas, no sobre consultas directas a Google Sheets.
 
+Entre los criterios booleanos disponibles se encuentra la presencia o ausencia de recordatorio:
+
+```text
+tieneRecordatorio:si
+tieneRecordatorio:no
+```
+
+También se admite el alias en inglés:
+
+```text
+hasReminder:true
+hasReminder:false
+```
+
+El filtro evalúa la presencia del objeto `task.reminder`; no requiere cambios adicionales en sincronización ni en el modelo persistido porque `reminder` ya forma parte de la entidad `Task`.
+
 Los filtros guardados persisten como entidades locales y participan de sincronización/backups según su integración vigente.
 
 ---
