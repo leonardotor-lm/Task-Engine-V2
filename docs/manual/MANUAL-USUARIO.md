@@ -388,6 +388,32 @@ Entre los criterios disponibles se encuentran:
 
 ---
 
+### Buscar tareas según tengan recordatorio
+
+Podés filtrar tareas según tengan o no tengan un recordatorio configurado:
+
+```text
+tieneRecordatorio:si
+```
+
+muestra las tareas que tienen recordatorio.
+
+```text
+tieneRecordatorio:no
+```
+
+muestra las tareas que no tienen recordatorio.
+
+También se admite el alias en inglés `hasReminder:true/false`.
+
+Este criterio puede combinarse con los demás operadores y filtros. Por ejemplo:
+
+```text
+prioridad:alta AND tieneRecordatorio:no
+```
+
+busca tareas de prioridad alta que todavía no tienen recordatorio.
+
 ## 11. Orden manual
 
 Cuando una vista está en **Orden manual** y no existen filtros o búsquedas incompatibles activas, las tareas pueden reorganizarse mediante arrastre.
