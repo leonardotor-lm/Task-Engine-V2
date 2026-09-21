@@ -47,6 +47,8 @@ const FIELD_ALIASES = Object.freeze({
     proyecto: "project",
     isrecurring: "isRecurring",
     recurrente: "isRecurring",
+    hasreminder: "hasReminder",
+    tienerecordatorio: "hasReminder",
     isarchived: "isArchived",
     archivada: "isArchived",
     isdeleted: "isDeleted",
@@ -1591,6 +1593,16 @@ function matchesField(task, node, context) {
 
             return expected !== null &&
                 Boolean(task.recurrence) === expected;
+
+        }
+
+        case "hasReminder": {
+
+            const expected =
+                parseBoolean(node.value);
+
+            return expected !== null &&
+                Boolean(task.reminder) === expected;
 
         }
 

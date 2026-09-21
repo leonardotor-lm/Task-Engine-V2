@@ -338,7 +338,10 @@ posposiciones:>=3 AND estado:incompleta
 | `esProyecto` | Alias más claro de `tieneSubtareas` | `esProyecto:si` |
 | `esSubtarea` | Tareas que dependen de otra | `esSubtarea:si` |
 | `recurrente` | Tareas con alguna recurrencia | `recurrente:si` |
+| `tieneRecordatorio` | Tareas que tienen o no tienen recordatorio | `tieneRecordatorio:si` |
 | `repeticion` | Una frecuencia determinada | `repeticion:semanal` |
+
+También se admite el alias en inglés `hasReminder` para `tieneRecordatorio`.
 
 Frecuencias admitidas:
 
