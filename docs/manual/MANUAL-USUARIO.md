@@ -12,7 +12,27 @@ Task Engine no obliga a usar todas sus funciones. Áreas, contextos, etiquetas, 
 
 ---
 
-## 2. Flujo de trabajo recomendado
+## 2. Inicio rápido
+
+Si recién empezás a usar Task Engine, alcanza con este circuito:
+
+1. **Capturá** todo lo nuevo en Inbox.
+2. **Procesá Inbox** una o dos veces por día.
+3. Poné **fecha de vencimiento sólo cuando exista un plazo real**.
+4. Usá **fecha de inicio** cuando una tarea no deba aparecer todavía entre las acciones disponibles.
+5. Agrupá en **proyectos** lo que requiera varios pasos.
+6. Usá **En espera** para lo que dependa de otra persona o condición.
+7. Trabajá principalmente desde **Hoy y atrasadas**, **Próximas** y los proyectos activos.
+8. Cuando no esté claro qué seguir, consultá **Qué hago ahora**.
+9. Revisá periódicamente las sugerencias de revisión para detectar tareas olvidadas o demasiado pospuestas.
+10. Completá, archivá o eliminá lo que ya no requiera atención.
+
+No hace falta configurar todo desde el primer día. Podés empezar usando sólo Inbox, fechas y proyectos, e incorporar el resto a medida que lo necesites.
+
+---
+
+## 3. Flujo de trabajo recomendado
+
 
 La forma más simple de usar Task Engine puede resumirse así:
 
@@ -126,7 +146,7 @@ Después de completar una tarea, Task Engine ofrece una posibilidad contextual d
 
 ---
 
-## 3. Vistas principales
+## 4. Vistas principales
 
 ### Inbox
 
@@ -190,7 +210,7 @@ Contiene los elementos eliminados y permite separarlos claramente del archivo hi
 
 ---
 
-## 4. Crear y editar tareas
+## 5. Crear y editar tareas
 
 Una tarea puede incluir:
 
@@ -230,7 +250,7 @@ Sólo se utilizan áreas, contextos y etiquetas que ya existen. La interpretaci�
 
 ---
 
-## 5. Fechas, inicio, vencimiento y posposición
+## 6. Fechas, inicio, vencimiento y posposición
 
 ### Fecha de inicio
 
@@ -250,7 +270,7 @@ Task Engine conserva información sobre las posposiciones, que también puede ut
 
 ---
 
-## 6. Áreas, contextos, etiquetas y prioridad
+## 7. Áreas, contextos, etiquetas y prioridad
 
 ### Áreas
 
@@ -281,7 +301,7 @@ En captura rápida:
 
 ---
 
-## 7. Proyectos y subtareas
+## 8. Proyectos y subtareas
 
 Un proyecto es una tarea que posee subtareas.
 
@@ -301,7 +321,7 @@ El orden manual nunca cambia la relación padre-hijo de las tareas.
 
 ---
 
-## 8. Objetivos y subobjetivos
+## 9. Objetivos y subobjetivos
 
 Los objetivos representan resultados más amplios que una tarea o un proyecto.
 
@@ -320,7 +340,7 @@ Los proyectos pueden propagar sus objetivos a las tareas descendientes cuando co
 
 ---
 
-## 9. Búsqueda, filtros y orden
+## 10. Búsqueda, filtros y orden
 
 ### Búsqueda simple
 
@@ -368,7 +388,7 @@ Entre los criterios disponibles se encuentran:
 
 ---
 
-## 10. Orden manual
+## 11. Orden manual
 
 Cuando una vista está en **Orden manual** y no existen filtros o búsquedas incompatibles activas, las tareas pueden reorganizarse mediante arrastre.
 
@@ -378,7 +398,7 @@ El orden se sincroniza entre dispositivos.
 
 ---
 
-## 11. Recurrencias
+## 12. Recurrencias
 
 Las recurrencias permiten representar tareas que deben repetirse.
 
@@ -388,7 +408,7 @@ Conviene utilizar recurrencias para obligaciones verdaderamente repetitivas y no
 
 ---
 
-## 12. Adjuntos en Google Drive
+## 13. Adjuntos en Google Drive
 
 Las tareas pueden contener archivos adjuntos almacenados en Google Drive.
 
@@ -403,7 +423,7 @@ Los adjuntos forman parte de los datos sincronizados de la tarea, mientras que e
 
 ---
 
-## 13. Notas en Notion
+## 14. Notas en Notion
 
 Task Engine puede vincular tareas, proyectos y objetivos con páginas externas de Notion.
 
@@ -421,7 +441,7 @@ Si una actualización hacia Notion falla, Task Engine conserva una cola para rei
 
 ---
 
-## 14. Recordatorios
+## 15. Recordatorios
 
 Task Engine puede utilizar Google Calendar para generar recordatorios unidireccionales.
 
@@ -429,7 +449,7 @@ El calendario funciona como mecanismo externo de aviso; Task Engine continúa si
 
 ---
 
-## 15. «Qué hago ahora»
+## 16. «Qué hago ahora»
 
 «Qué hago ahora» ayuda a elegir una cantidad reducida de próximas acciones.
 
@@ -453,7 +473,7 @@ No cambia prioridades ni modifica tareas automáticamente.
 
 ---
 
-## 16. Reglas de revisión
+## 17. Reglas de revisión
 
 Las reglas configurables detectan situaciones que merecen atención.
 
@@ -465,7 +485,7 @@ Pueden desactivarse o configurarse según el flujo personal.
 
 ---
 
-## 17. PWA y Android
+## 18. PWA y Android
 
 Task Engine puede instalarse como aplicación web progresiva.
 
@@ -481,7 +501,7 @@ Si Android no ofrece automáticamente la instalación, Task Engine puede mostrar
 
 ---
 
-## 18. Trabajo sin conexión
+## 19. Trabajo sin conexión
 
 Si se pierde Internet, los cambios continúan guardándose localmente.
 
@@ -493,7 +513,7 @@ Si aparece un conflicto real entre dos conjuntos de cambios incompatibles, Task 
 
 ---
 
-## 19. Sincronización
+## 20. Sincronización
 
 Task Engine utiliza sincronización incremental para enviar normalmente sólo los cambios locales pendientes.
 
@@ -512,7 +532,7 @@ Los errores transitorios pueden reintentarse. No conviene realizar acciones de r
 
 ---
 
-## 20. Copias de seguridad y mantenimiento
+## 21. Copias de seguridad y mantenimiento
 
 La instalación puede generar respaldos automáticos en Google Drive.
 
@@ -530,7 +550,7 @@ Estas funciones buscan proteger los datos sin depender de copias manuales frecue
 
 ---
 
-## 21. Atajos de teclado
+## 22. Atajos de teclado
 
 En escritorio están disponibles, entre otros:
 
@@ -542,7 +562,7 @@ Los atajos no se ejecutan cuando interferirían con la escritura dentro de campo
 
 ---
 
-## 22. Sincronización entre dispositivos
+## 23. Sincronización entre dispositivos
 
 Task Engine puede utilizarse desde más de un dispositivo conectado a la misma instalación.
 
@@ -556,7 +576,7 @@ Para reducir conflictos:
 
 ---
 
-## 23. Un ejemplo de rutina diaria
+## 24. Un ejemplo de rutina diaria
 
 Una rutina sencilla podría ser:
 
@@ -588,7 +608,7 @@ Una rutina sencilla podría ser:
 
 ---
 
-## 24. Principio general de uso
+## 25. Principio general de uso
 
 Task Engine funciona mejor cuando la estructura sirve a las tareas y no al revés.
 
