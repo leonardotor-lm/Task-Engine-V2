@@ -556,6 +556,8 @@ La interfaz informa el estado general de sincronización y puede mostrar:
 
 Los errores transitorios pueden reintentarse. No conviene realizar acciones de recuperación manual mientras la aplicación todavía está intentando confirmar una escritura demorada, salvo que exista un error persistente.
 
+Si hay un problema temporal, la aplicación sigue intentando sincronizar mientras permanezca abierta, con pausas crecientes de hasta cinco minutos. En Configuración → Sincronización se muestra la próxima hora de intento y la última sincronización confirmada. Cuando hay cambios locales pendientes, el estado indica que están guardados en este dispositivo. Un rechazo explícito del token o un conflicto requiere atención y no se reintenta indefinidamente.
+
 ---
 
 ## 21. Copias de seguridad y mantenimiento

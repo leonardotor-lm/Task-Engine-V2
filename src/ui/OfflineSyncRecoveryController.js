@@ -2,7 +2,17 @@ const DEFAULT_RETRY_DELAYS = Object.freeze([
     5000,
     15000,
     30000,
-    60000
+    60000,
+    120000,
+    300000
+]);
+
+const NON_RETRYABLE_CODES = new Set([
+    "UNAUTHORIZED",
+    "SERVER_NOT_CONFIGURED",
+    "INVALID_ACTION",
+    "INVALID_CHANGES",
+    "INVALID_REVISION"
 ]);
 
 export class OfflineSyncRecoveryController {
@@ -24,6 +34,7 @@ export class OfflineSyncRecoveryController {
         this.retryDelays = [...retryDelays];
         this.retryAttempt = 0;
         this.retryTimer = null;
+        this.app.syncRetryAt = null;
         this.started = false;
         this.originalCheckRemoteStatus = null;
         this.originalRunAutomaticPush = null;
@@ -173,7 +184,10 @@ export class OfflineSyncRecoveryController {
         if (
             this.app.syncLastError &&
             !this.app.syncRemoteUpdateAvailable &&
-            this.app.syncConfig?.isConfigured?.()
+            this.app.syncConfig?.isConfigured?.() &&
+            !NON_RETRYABLE_CODES.has(
+                this.app.syncLastErrorCode
+            )
         ) {
             this.scheduleRetry();
         } else if (
@@ -196,11 +210,7 @@ export class OfflineSyncRecoveryController {
             this.retryTimer !== null ||
             this.isOffline() ||
             !this.app.syncConfig?.isConfigured?.() ||
-            (
-                incrementAttempt &&
-                this.retryAttempt >=
-                    this.retryDelays.length
-            )
+            this.retryDelays.length === 0
         ) {
             return;
         }
@@ -215,9 +225,11 @@ export class OfflineSyncRecoveryController {
             this.retryAttempt += 1;
         }
 
+        this.app.syncRetryAt = Date.now() + delay;
         this.retryTimer = this.setTimeout(
             () => {
                 this.retryTimer = null;
+                this.app.syncRetryAt = null;
 
                 if (this.hasBlockingInteraction()) {
                     this.scheduleRetry(false);
@@ -228,6 +240,7 @@ export class OfflineSyncRecoveryController {
             },
             delay
         );
+        this.app.render?.({ preserveTransientUi: true });
 
     }
 
@@ -238,6 +251,7 @@ export class OfflineSyncRecoveryController {
         }
 
         this.retryTimer = null;
+        this.app.syncRetryAt = null;
 
     }
 

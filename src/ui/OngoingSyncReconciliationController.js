@@ -332,6 +332,7 @@ export class OngoingSyncReconciliationController {
         this.reconciling = true;
         this.app.autoSyncInProgress = true;
         this.app.syncLastError = null;
+        this.app.syncLastErrorCode = null;
         this.app.render({
             preserveTransientUi: true
         });
@@ -520,6 +521,7 @@ export class OngoingSyncReconciliationController {
             this.app.syncLastError =
                 error?.message ||
                 "No se pudieron reconciliar los cambios automáticamente.";
+            this.app.syncLastErrorCode = error?.code ?? null;
 
             console.warn(
                 "No se pudieron reconciliar los cambios automáticamente.",

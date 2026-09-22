@@ -1416,7 +1416,9 @@ A septiembre de 2026:
 - la corrección de base incremental está desplegada;
 - el sistema fue utilizado durante varios días en escritorio y Android;
 - los errores que exigían reintentos se redujeron de forma muy significativa;
-- no existe actualmente un pendiente de rediseño de sincronización salvo que aparezca una regresión reproducible.
+- los fallos transitorios se reintentan mientras la aplicación esté abierta, con intervalos crecientes hasta cinco minutos; los rechazos explícitos de credenciales y los conflictos no se reintentan automáticamente;
+- una respuesta ilegible después de enviar una escritura se trata como resultado incierto y se verifica en la nube antes de volver a escribir;
+- Apps Script registra acción, resultado, código de error y duración de cada solicitud sin registrar tokens ni tareas. Para activar ese registro hay que actualizar el despliegue de Apps Script con `google-apps-script/Code.gs`.
 
 ---
 
