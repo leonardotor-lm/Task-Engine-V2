@@ -842,6 +842,19 @@ export class SyncEngine {
         const connection =
             this.ensureConfigured();
 
+        const backup =
+            this.backupService.createBackup();
+
+        // Un intento anterior pudo haberse guardado aunque no recibimos
+        // su respuesta. Confirmarlo antes de volver a sobrescribir.
+        const previousWrite =
+            await this.reconcileUncertainPush(
+                connection,
+                backup
+            );
+
+        if (previousWrite) return previousWrite;
+
         const currentRemote =
             await this.gateway.load(connection);
 
@@ -850,16 +863,27 @@ export class SyncEngine {
                 currentRemote.revision
             );
 
-        this.remoteWriteOutcomeUncertain = false;
+        let response;
 
-        const backup =
-            this.backupService.createBackup();
+        try {
+            response = await this.saveRemote({
+                ...connection,
+                baseRevision,
+                data: backup
+            });
+        } catch (error) {
+            if (this.remoteWriteOutcomeUncertain) {
+                const verified =
+                    await this.verifyUncertainPush(
+                        connection,
+                        backup
+                    );
 
-        const response = await this.saveRemote({
-            ...connection,
-            baseRevision,
-            data: backup
-        });
+                if (verified) return verified;
+            }
+
+            throw error;
+        }
 
         const revision = this.validateRevision(
             response.revision

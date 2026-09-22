@@ -126,6 +126,78 @@ test("comprueba en la nube una escritura con respuesta ilegible", async () => {
     assert.equal(config.getRevision(), 4);
 });
 
+test("confirma una sobrescritura si el servidor guardó pero la respuesta fue ilegible", async () => {
+    const localBackup = createBackup();
+    const config = createConfig();
+    let remoteRevision = 3;
+    let saves = 0;
+    const engine = new SyncEngine({
+        backupService: createBackupService(localBackup),
+        config,
+        gateway: {
+            async load() {
+                return {
+                    revision: remoteRevision,
+                    data: remoteRevision === 3
+                        ? createBackup(0)
+                        : localBackup
+                };
+            },
+            async save() {
+                saves += 1;
+                remoteRevision = 4;
+                throw new SyncInvalidResponseError();
+            }
+        },
+        uncertainWriteRetryDelays: [],
+        waitFn: async () => {}
+    });
+
+    const result = await engine.overwriteRemote();
+
+    assert.equal(result.revision, 4);
+    assert.equal(config.getRevision(), 4);
+    assert.equal(saves, 1);
+});
+
+test("antes de repetir una sobrescritura confirma el intento anterior", async () => {
+    const localBackup = createBackup();
+    const config = createConfig();
+    let remoteRevision = 3;
+    let saves = 0;
+    const engine = new SyncEngine({
+        backupService: createBackupService(localBackup),
+        config,
+        gateway: {
+            async load() {
+                return {
+                    revision: remoteRevision,
+                    data: remoteRevision === 3
+                        ? createBackup(0)
+                        : localBackup
+                };
+            },
+            async save() {
+                saves += 1;
+                throw new SyncInvalidResponseError();
+            }
+        },
+        uncertainWriteRetryDelays: [],
+        waitFn: async () => {}
+    });
+
+    await assert.rejects(
+        engine.overwriteRemote(),
+        SyncInvalidResponseError
+    );
+
+    remoteRevision = 4;
+    const result = await engine.overwriteRemote();
+
+    assert.equal(result.revision, 4);
+    assert.equal(saves, 1);
+});
+
 test("reintenta el push si la nube no avanzó después del resultado incierto", async () => {
     const localBackup = createBackup();
     const config = createConfig();
