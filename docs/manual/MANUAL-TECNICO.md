@@ -1418,6 +1418,7 @@ A septiembre de 2026:
 - los errores que exigían reintentos se redujeron de forma muy significativa;
 - los fallos transitorios se reintentan mientras la aplicación esté abierta, con intervalos crecientes hasta cinco minutos; los rechazos explícitos de credenciales y los conflictos no se reintentan automáticamente;
 - una respuesta ilegible después de enviar una escritura se trata como resultado incierto y se verifica en la nube antes de volver a escribir;
+- la acción manual «Conservar versión local» también verifica si un intento anterior llegó a guardarse, antes de volver a sobrescribir la nube; si no puede confirmarlo, conserva el estado local y no presume éxito;
 - Apps Script registra acción, resultado, código de error y duración de cada solicitud sin registrar tokens ni tareas. Para activar ese registro hay que actualizar el despliegue de Apps Script con `google-apps-script/Code.gs`.
 
 ---
