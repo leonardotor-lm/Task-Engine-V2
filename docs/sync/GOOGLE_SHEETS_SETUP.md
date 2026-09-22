@@ -97,6 +97,8 @@ Cuando cambie `Code.gs`:
 
 La URL `/exec` se mantiene.
 
+Si cambia `google-apps-script/CalendarReminders.gs`, copiá también ese archivo en el archivo homónimo del mismo proyecto de Apps Script. El activador de recordatorios usa el código guardado en el editor. Conservá el activador existente; no hace falta crear otro.
+
 Las actualizaciones que incorporen adjuntos pueden solicitar una nueva autorización de Drive. Si Google la muestra al probar la primera subida, aceptala desde la misma cuenta propietaria del despliegue.
 
 ### Mantenimiento del historial

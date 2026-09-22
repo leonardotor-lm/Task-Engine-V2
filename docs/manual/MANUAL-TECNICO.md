@@ -699,6 +699,8 @@ Puede existir sin vencimiento.
 
 La integración es unidireccional: Task Engine origina el recordatorio y Google Calendar funciona como mecanismo externo de aviso.
 
+El activador `syncCalendarReminders` consulta la revisión de Sheets cada minuto. Si no cambió, evita releer todas las tareas y actualizar Calendar. Cuando cambia, sólo modifica los eventos cuyo contenido es diferente y evita ejecutar dos recorridos simultáneos. Una revisión diaria comprueba también los eventos aunque no hayan cambiado las tareas. El código de este activador está en `google-apps-script/CalendarReminders.gs` y debe actualizarse por separado en Apps Script.
+
 ---
 
 ## 29. PWA

@@ -2,6 +2,11 @@ var TASK_ENGINE_CALENDAR_REMINDERS = Object.freeze({
     CALENDAR_ID_PROPERTY: "TASK_ENGINE_REMINDER_CALENDAR_ID",
     CALENDAR_NAME: "Task Engine — Recordatorios",
     EVENT_PROPERTY_PREFIX: "TASK_ENGINE_REMINDER_EVENT_",
+    STATE_PROPERTY_PREFIX: "TASK_ENGINE_REMINDER_STATE_",
+    LAST_REVISION_PROPERTY: "TASK_ENGINE_REMINDERS_LAST_REVISION",
+    LAST_SUCCESS_PROPERTY: "TASK_ENGINE_REMINDERS_LAST_SUCCESS",
+    RUNNING_CACHE_KEY: "task-engine-calendar-reminders-running",
+    RECHECK_AFTER_MS: 24 * 60 * 60 * 1000,
     POPUP_MINUTES_FOR_ABSOLUTE: 5,
     SYNC_HANDLER: "syncCalendarReminders"
 });
@@ -40,6 +45,62 @@ function setupCalendarReminders() {
 
 function syncCalendarReminders() {
 
+    var cache = CacheService.getScriptCache();
+    var lock = LockService.getScriptLock();
+
+    // Reservar la ejecución sin mantener el bloqueo de las escrituras
+    // mientras Calendar responde. Los disparadores pueden solaparse.
+    if (!lock.tryLock(1000)) {
+        return { ok: true, skipped: true, synced: 0, removed: 0, errors: 0 };
+    }
+
+    var claim = String(Date.now()) + ":" + String(Math.random());
+
+    try {
+        if (cache.get(
+            TASK_ENGINE_CALENDAR_REMINDERS.RUNNING_CACHE_KEY
+        )) {
+            return { ok: true, skipped: true, synced: 0, removed: 0, errors: 0 };
+        }
+        cache.put(
+            TASK_ENGINE_CALENDAR_REMINDERS.RUNNING_CACHE_KEY,
+            claim,
+            180
+        );
+    } finally {
+        lock.releaseLock();
+    }
+
+    try {
+        return runCalendarRemindersSync_();
+    } finally {
+        if (cache.get(
+            TASK_ENGINE_CALENDAR_REMINDERS.RUNNING_CACHE_KEY
+        ) === claim) {
+            cache.remove(
+                TASK_ENGINE_CALENDAR_REMINDERS.RUNNING_CACHE_KEY
+            );
+        }
+    }
+}
+
+function runCalendarRemindersSync_() {
+
+    var properties = PropertiesService.getScriptProperties();
+    var previousRevision = properties.getProperty(
+        TASK_ENGINE_CALENDAR_REMINDERS.LAST_REVISION_PROPERTY
+    );
+    var previousSuccess = Number(properties.getProperty(
+        TASK_ENGINE_CALENDAR_REMINDERS.LAST_SUCCESS_PROPERTY
+    ) || 0);
+    var revision = loadSyncStatus_().revision;
+    var refreshDue = Date.now() - previousSuccess >=
+        TASK_ENGINE_CALENDAR_REMINDERS.RECHECK_AFTER_MS;
+
+    if (String(revision) === previousRevision && !refreshDue) {
+        return { ok: true, unchanged: true, synced: 0, removed: 0, errors: 0 };
+    }
+
     var snapshot = loadSnapshot_();
     var tasks = snapshot &&
         snapshot.data &&
@@ -49,8 +110,7 @@ function syncCalendarReminders() {
             : [];
 
     var calendar = getReminderCalendar_();
-    var properties = PropertiesService
-        .getScriptProperties();
+    var allProperties = properties.getProperties();
     var taskById = {};
     var synced = 0;
     var removed = 0;
@@ -69,20 +129,40 @@ function syncCalendarReminders() {
         try {
             var desired = buildDesiredReminder_(task);
             var key = reminderEventPropertyKey_(task.id);
-            var eventId = properties.getProperty(key);
+            var stateKey = reminderStatePropertyKey_(task.id);
+            var eventId = allProperties[key];
+
+            if (!desired) {
+                if (eventId) {
+                    var oldEvent = getReminderEventById_(
+                        calendar,
+                        eventId
+                    );
+                    if (oldEvent) {
+                        oldEvent.deleteEvent();
+                        removed += 1;
+                    }
+                    properties.deleteProperty(key);
+                    properties.deleteProperty(stateKey);
+                }
+                return;
+            }
+
+            var state = reminderState_(desired);
+
+            if (
+                eventId &&
+                allProperties[stateKey] === state &&
+                !refreshDue
+            ) {
+                synced += 1;
+                return;
+            }
+
             var event = getReminderEventById_(
                 calendar,
                 eventId
             );
-
-            if (!desired) {
-                if (event) {
-                    event.deleteEvent();
-                    removed += 1;
-                }
-                properties.deleteProperty(key);
-                return;
-            }
 
             if (!event) {
                 event = calendar.createEvent(
@@ -114,6 +194,7 @@ function syncCalendarReminders() {
             event.addPopupReminder(
                 desired.popupMinutes
             );
+            properties.setProperty(stateKey, state);
             synced += 1;
 
         } catch (error) {
@@ -128,8 +209,6 @@ function syncCalendarReminders() {
         }
 
     });
-
-    var allProperties = properties.getProperties();
 
     Object.keys(allProperties).forEach(function(key) {
 
@@ -163,7 +242,21 @@ function syncCalendarReminders() {
         }
 
         properties.deleteProperty(key);
+        properties.deleteProperty(
+            reminderStatePropertyKey_(taskId)
+        );
     });
+
+    if (errors === 0) {
+        properties.setProperty(
+            TASK_ENGINE_CALENDAR_REMINDERS.LAST_REVISION_PROPERTY,
+            String(revision)
+        );
+        properties.setProperty(
+            TASK_ENGINE_CALENDAR_REMINDERS.LAST_SUCCESS_PROPERTY,
+            String(Date.now())
+        );
+    }
 
     return {
         ok: true,
@@ -171,6 +264,21 @@ function syncCalendarReminders() {
         removed: removed,
         errors: errors
     };
+}
+
+function reminderStatePropertyKey_(taskId) {
+    return TASK_ENGINE_CALENDAR_REMINDERS.STATE_PROPERTY_PREFIX +
+        String(taskId);
+}
+
+function reminderState_(desired) {
+    return JSON.stringify({
+        title: desired.title,
+        start: desired.start.toISOString(),
+        end: desired.end.toISOString(),
+        popupMinutes: desired.popupMinutes,
+        description: desired.description
+    });
 }
 
 function getReminderCalendar_() {
