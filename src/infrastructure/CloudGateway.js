@@ -29,6 +29,14 @@ export class SyncTimeoutError extends Error {
     }
 }
 
+export class SyncInvalidResponseError extends Error {
+    constructor() {
+        super("El servicio de sincronización devolvió una respuesta inválida.");
+        this.name = "SyncInvalidResponseError";
+        this.code = "INVALID_RESPONSE";
+    }
+}
+
 export class CloudGateway {
 
     constructor({
@@ -138,9 +146,9 @@ export class CloudGateway {
         try {
             payload = await response.json();
         } catch {
-            throw new Error(
-                "El servicio de sincronización devolvió una respuesta inválida."
-            );
+            // En una escritura, el servidor pudo haber guardado los datos
+            // aunque su respuesta no haya llegado en formato JSON.
+            throw new SyncInvalidResponseError();
         }
 
         if (!response.ok || payload?.ok === false) {

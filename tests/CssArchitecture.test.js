@@ -62,6 +62,7 @@ test("index carga únicamente hojas CSS existentes y en el orden previsto", asyn
             "styles/themes/lavender-mobile.css",
             "styles/themes/winter-night.css",
             "styles/themes/winter-night-flat.css",
+            "styles/themes/night-boreal.css",
             "styles/themes/high-contrast.css",
             "styles/themes/ink-blue.css",
             "styles/themes/rose.css",

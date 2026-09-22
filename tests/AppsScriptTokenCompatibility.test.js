@@ -53,7 +53,8 @@ function createContext() {
             }
         },
         console: {
-            warn() {}
+            warn() {},
+            info() {}
         }
     };
 

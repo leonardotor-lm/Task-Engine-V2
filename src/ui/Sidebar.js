@@ -367,6 +367,13 @@ export class Sidebar {
         );
         const lastSyncMetric =
             syncDiagnostics?.lastMetric ?? null;
+        const retryAt = syncDiagnostics?.retryAt;
+        const retryTime = Number.isFinite(retryAt)
+            ? new Date(retryAt).toLocaleTimeString(
+                "es-AR",
+                { hour: "2-digit", minute: "2-digit" }
+            )
+            : null;
         const lastSyncMode =
             lastSyncMetric?.mode === "incremental"
                 ? "Incremental"
@@ -421,7 +428,12 @@ export class Sidebar {
                         <p
                             class="syncErrorHint"
                             title="${escapeHtml(syncLastError)}">
-                            Los cambios continúan guardados localmente. La aplicación volverá a intentarlo automáticamente; también podés reintentar ahora.
+                            ${syncPendingChanges
+                                ? "Los cambios están guardados en este dispositivo y pendientes de sincronizar."
+                                : "No se pudo comprobar el estado de la nube."}
+                            ${retryTime
+                                ? `Próximo intento automático: ${escapeHtml(retryTime)}. También podés reintentar ahora.`
+                                : "Podés reintentar ahora."}
                             <span class="syncErrorDetail">
                                 Detalle: ${escapeHtml(syncLastError)}
                             </span>
@@ -472,7 +484,7 @@ export class Sidebar {
                 ${syncConfigured
                     ? `
                         <p class="syncLastSuccess">
-                            Última sincronización:
+                            Última sincronización confirmada:
                             ${syncLastSuccess
                                 ? this.formatSyncDate(
                                     syncLastSuccess
@@ -859,7 +871,9 @@ export class Sidebar {
                             class="sidebarSyncStatusDot"
                             aria-hidden="true">
                         </span>
-                        <span>${syncStatusClass === "pending" && pendingChangeCount > 0
+                        <span>${syncLastError && syncPendingChanges
+                            ? "Guardado aquí · pendiente"
+                            : syncStatusClass === "pending" && pendingChangeCount > 0
                             ? `${pendingChangeCount} ${pendingChangeCount === 1 ? "cambio pendiente" : "cambios pendientes"}`
                             : sidebarSyncStatusText}</span>
                     </span>

@@ -173,6 +173,7 @@ export class App {
         this.autoSyncScheduledFingerprint = null;
         this.autoSyncBlockedFingerprint = null;
         this.syncLastError = null;
+        this.syncLastErrorCode = null;
         this.syncOffline = false;
 
         this.syncFocusWatcher =
@@ -2082,6 +2083,7 @@ export class App {
             this.autoSyncBlockedFingerprint =
                 null;
             this.syncLastError = null;
+            this.syncLastErrorCode = null;
 
             if (resetTransientState) {
                 this.resetTransientState();
@@ -2094,6 +2096,7 @@ export class App {
             this.syncLastError =
                 error?.message ||
                 "No se pudo completar la sincronización.";
+            this.syncLastErrorCode = error?.code ?? null;
 
             if (
                 this.syncEngine.isConflict(
@@ -2224,6 +2227,7 @@ export class App {
 
         this.autoSyncInProgress = true;
         this.syncLastError = null;
+        this.syncLastErrorCode = null;
         this.render({ preserveTransientUi: true });
 
         try {
@@ -2238,6 +2242,7 @@ export class App {
             this.autoSyncBlockedFingerprint =
                 null;
             this.syncLastError = null;
+            this.syncLastErrorCode = null;
 
         } catch (error) {
 
@@ -2246,6 +2251,7 @@ export class App {
             this.syncLastError =
                 error?.message ||
                 "No se pudo sincronizar automáticamente.";
+            this.syncLastErrorCode = error?.code ?? null;
 
             if (
                 this.syncEngine.isConflict(
@@ -2320,6 +2326,7 @@ export class App {
 
         this.syncCheckInProgress = true;
         this.syncLastError = null;
+        this.syncLastErrorCode = null;
         this.render({ preserveTransientUi: true });
 
         try {
@@ -2335,6 +2342,7 @@ export class App {
             this.autoSyncBlockedFingerprint =
                 null;
             this.syncLastError = null;
+            this.syncLastErrorCode = null;
             this.syncCheckInProgress = false;
 
             const action =
@@ -2367,6 +2375,7 @@ export class App {
             this.syncLastError =
                 error?.message ||
                 "No se pudo comprobar la sincronización.";
+            this.syncLastErrorCode = error?.code ?? null;
 
             console.warn(
                 "No se pudo comprobar o descargar la revisión remota.",
@@ -3037,9 +3046,12 @@ export class App {
             syncOffline:
                 this.syncOffline,
             syncDiagnostics:
-                this.syncEngine.getDiagnostics(
-                    this.syncConfig.get().url
-                ),
+                {
+                    ...this.syncEngine.getDiagnostics(
+                        this.syncConfig.get().url
+                    ),
+                    retryAt: this.syncRetryAt
+                },
             selectedTask: this.selectedTask,
             selectedGoal: this.selectedGoal,
             goalEditorOpen:

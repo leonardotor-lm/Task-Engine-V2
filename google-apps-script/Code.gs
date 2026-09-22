@@ -122,6 +122,11 @@ function doPost(event) {
 
 function handleRequest_(event, method) {
 
+    var startedAt = Date.now();
+    var action = "unknown";
+    var outcome = "success";
+    var errorCode = null;
+
     try {
 
         var body =
@@ -132,7 +137,7 @@ function handleRequest_(event, method) {
         authorize_(event, body);
         enforceRateLimit_();
 
-        var action = body.action;
+        action = body.action || "unknown";
 
         if (
             method === "POST" &&
@@ -297,6 +302,9 @@ function handleRequest_(event, method) {
 
     } catch (error) {
 
+        outcome = "failed";
+        errorCode = error.code || "INTERNAL_ERROR";
+
         logRejectedRequest_(
             error,
             method
@@ -317,6 +325,16 @@ function handleRequest_(event, method) {
                         : null
             }
         });
+
+    } finally {
+
+        // El registro no incluye token ni datos de las tareas.
+        console.info("Task Engine request", JSON.stringify({
+            action: action,
+            outcome: outcome,
+            errorCode: errorCode,
+            durationMs: Date.now() - startedAt
+        }));
 
     }
 

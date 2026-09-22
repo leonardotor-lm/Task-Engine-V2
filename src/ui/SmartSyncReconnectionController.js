@@ -205,6 +205,7 @@ export class SmartSyncReconnectionController {
             this.app.syncLastError =
                 error?.message ||
                 "No se pudo reconciliar la conexión de sincronización.";
+            this.app.syncLastErrorCode = error?.code ?? null;
 
             console.warn(
                 "No se pudo reconciliar la conexión de sincronización.",

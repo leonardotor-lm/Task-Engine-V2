@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import { SyncEngine } from "../src/core/SyncEngine.js";
 import {
     SyncConflictError,
-    SyncProtocolError
+    SyncProtocolError,
+    SyncInvalidResponseError
 } from "../src/infrastructure/CloudGateway.js";
 
 function createBackup(version = 1) {
@@ -96,6 +97,33 @@ test("verifica inmediatamente si un push incierto sí había quedado guardado", 
     assert.equal(loadCalls, 2);
     assert.equal(config.synchronized.length, 1);
     assert.equal(result.writeOutcomeVerified, true);
+});
+
+test("comprueba en la nube una escritura con respuesta ilegible", async () => {
+    const localBackup = createBackup();
+    const config = createConfig();
+    let saveCalls = 0;
+    const engine = new SyncEngine({
+        backupService: createBackupService(localBackup),
+        config,
+        gateway: {
+            async save() {
+                saveCalls += 1;
+                throw new SyncInvalidResponseError();
+            },
+            async load() {
+                return { revision: 4, data: localBackup };
+            }
+        },
+        uncertainWriteRetryDelays: [],
+        waitFn: async () => {}
+    });
+
+    const result = await engine.push();
+
+    assert.equal(result.writeOutcomeVerified, true);
+    assert.equal(saveCalls, 1);
+    assert.equal(config.getRevision(), 4);
 });
 
 test("reintenta el push si la nube no avanzó después del resultado incierto", async () => {

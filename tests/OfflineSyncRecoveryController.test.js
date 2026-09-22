@@ -34,6 +34,7 @@ function createHarness({ online = true } = {}) {
     let checks = 0;
     let shouldFail = false;
     let shouldConflict = false;
+    let failureCode = null;
     let blocking = false;
     const app = {
         syncOffline: false,
@@ -56,6 +57,9 @@ function createHarness({ online = true } = {}) {
             this.syncLastError = shouldFail
                 ? "Servicio temporalmente inaccesible"
                 : null;
+            this.syncLastErrorCode = shouldFail
+                ? failureCode
+                : null;
             this.syncRemoteUpdateAvailable =
                 shouldConflict;
             return { ok: !shouldFail };
@@ -63,6 +67,9 @@ function createHarness({ online = true } = {}) {
         async runAutomaticPush() {
             this.syncLastError = shouldFail
                 ? "No se pudo guardar"
+                : null;
+            this.syncLastErrorCode = shouldFail
+                ? failureCode
                 : null;
         }
     };
@@ -92,6 +99,9 @@ function createHarness({ online = true } = {}) {
         getChecks: () => checks,
         setFailure(value) {
             shouldFail = value;
+        },
+        setFailureCode(value) {
+            failureCode = value;
         },
         setConflict(value) {
             shouldConflict = value;
@@ -154,7 +164,7 @@ test("reintenta gradualmente si la primera recuperación falla", async () => {
 
 });
 
-test("detiene la serie automática después del máximo de intentos", async () => {
+test("continúa reintentando a un intervalo máximo mientras falla", async () => {
 
     const harness = createHarness();
     harness.controller.retryDelays = [5, 15];
@@ -166,9 +176,22 @@ test("detiene la serie automática después del máximo de intentos", async () =
     await harness.runTimer(1);
 
     assert.equal(harness.getChecks(), 3);
-    assert.equal(harness.timers.length, 2);
-    assert.equal(harness.controller.retryTimer, null);
+    assert.equal(harness.timers.length, 3);
+    assert.equal(harness.timers[2].delay, 15);
+    assert.ok(harness.app.syncRetryAt > Date.now());
 
+});
+
+test("no reintenta un rechazo explícito del token", async () => {
+    const harness = createHarness();
+    harness.controller.start();
+    harness.setFailure(true);
+    harness.setFailureCode("UNAUTHORIZED");
+
+    await harness.app.checkRemoteStatus();
+
+    assert.equal(harness.timers.length, 0);
+    assert.equal(harness.app.syncRetryAt, null);
 });
 
 test("pospone el reintento mientras hay un editor activo", async () => {

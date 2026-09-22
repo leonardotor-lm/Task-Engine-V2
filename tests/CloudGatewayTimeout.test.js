@@ -2,8 +2,29 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-    CloudGateway
+    CloudGateway,
+    SyncInvalidResponseError
 } from "../src/infrastructure/CloudGateway.js";
+
+test("una respuesta ilegible tras escribir deja el resultado incierto", async () => {
+    const gateway = new CloudGateway({
+        fetchFn: async () => ({
+            ok: true,
+            json: async () => { throw new SyntaxError("HTML"); }
+        }),
+        lockManager: null
+    });
+
+    await assert.rejects(
+        gateway.saveIncremental({
+            url: "https://example.com/exec",
+            token: "secret",
+            baseRevision: 1,
+            changes: []
+        }),
+        SyncInvalidResponseError
+    );
+});
 
 test("las lecturas toleran treinta segundos y las escrituras sesenta", () => {
 

@@ -143,9 +143,25 @@ test("destaca cambios locales pendientes", () => {
 
     assert.match(
         html,
-        /Última sincronización:/
+        /Última sincronización confirmada:/
     );
 
+});
+
+test("distingue cambios locales seguros de la nube cuando espera un reintento", () => {
+    const html = renderSync({
+        configured: true,
+        pendingChanges: true,
+        lastError: "La sincronización tardó demasiado.",
+        diagnostics: {
+            retryAt: new Date("2026-09-22T19:30:00Z").getTime()
+        }
+    });
+
+    assert.match(html, /Guardado aquí · pendiente/);
+    assert.match(html, /guardados en este dispositivo y pendientes/);
+    assert.match(html, /Próximo intento automático:/);
+    assert.match(html, /Última sincronización confirmada:/);
 });
 
 test("muestra cantidad pendiente y métricas de la última sincronización", () => {
@@ -363,7 +379,7 @@ test("muestra un error sin perder los controles manuales", () => {
     );
     assert.match(
         html,
-        /Los cambios continúan guardados localmente/
+        /Los cambios están guardados en este dispositivo y pendientes de sincronizar/
     );
     assert.match(html, /Detalle: No se pudo conectar\./);
     assert.match(html, /id="retrySync"/);
