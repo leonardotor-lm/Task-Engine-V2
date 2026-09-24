@@ -683,6 +683,20 @@
     }
 
     .desktopTaskEditorLayout
+        .desktopTaskEditorPopover
+        .attachmentIdentity {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .desktopTaskEditorLayout
+        .desktopTaskEditorPopover
+        .removeTaskAttachment {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .desktopTaskEditorLayout
         .subtaskForm {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
