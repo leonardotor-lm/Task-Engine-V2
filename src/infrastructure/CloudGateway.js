@@ -30,10 +30,20 @@ export class SyncTimeoutError extends Error {
 }
 
 export class SyncInvalidResponseError extends Error {
-    constructor() {
-        super("El servicio de sincronización devolvió una respuesta inválida.");
+    constructor(response) {
+        const status = Number(response?.status) || null;
+        const contentType = response?.headers?.get?.("content-type")
+            ?.split(";")[0] ?? null;
+        const detail = [
+            status ? `HTTP ${status}` : null,
+            contentType
+        ].filter(Boolean).join(", ");
+        super("El servicio de sincronización devolvió una respuesta inválida" +
+            (detail ? ` (${detail}).` : "."));
         this.name = "SyncInvalidResponseError";
         this.code = "INVALID_RESPONSE";
+        this.httpStatus = status;
+        this.contentType = contentType;
     }
 }
 
@@ -108,73 +118,90 @@ export class CloudGateway {
             timeoutMs
         );
 
-        let response;
+        let onAbort;
+        const expired = new Promise((_, reject) => {
+            onAbort = () => reject(
+                new SyncTimeoutError(timeoutMessage)
+            );
+            controller.signal.addEventListener(
+                "abort", onAbort, { once: true }
+            );
+        });
 
         try {
-
-            response = await this.fetchFn.call(
-                globalThis,
-                url,
-                {
-                    ...options,
-                    signal: controller.signal
+            let response;
+            try {
+                response = await Promise.race([
+                    this.fetchFn.call(
+                        globalThis,
+                        url,
+                        {
+                            ...options,
+                            signal: controller.signal
+                        }
+                    ),
+                    expired
+                ]);
+            } catch (error) {
+                if (error.name === "AbortError" ||
+                    error instanceof SyncTimeoutError) {
+                    throw new SyncTimeoutError(timeoutMessage);
                 }
-            );
-
-        } catch (error) {
-
-            if (error.name === "AbortError") {
-                throw new SyncTimeoutError(timeoutMessage);
-            }
-
-            const detail = error?.message
-                ? `: ${error.message}`
-                : "";
-
-            throw new Error(
-                `No se pudo conectar con el servicio de sincronización${detail}.`
-            );
-
-        } finally {
-
-            clearTimeout(timeoutId);
-
-        }
-
-        let payload;
-
-        try {
-            payload = await response.json();
-        } catch {
-            // En una escritura, el servidor pudo haber guardado los datos
-            // aunque su respuesta no haya llegado en formato JSON.
-            throw new SyncInvalidResponseError();
-        }
-
-        if (!response.ok || payload?.ok === false) {
-
-            const code = payload?.error?.code ?? payload?.code;
-            const message =
-                payload?.error?.message ??
-                payload?.message ??
-                "La sincronización fue rechazada.";
-            const remoteRevision =
-                payload?.error?.remoteRevision ??
-                payload?.remoteRevision ??
-                null;
-
-            if (code === "CONFLICT") {
-                throw new SyncConflictError(
-                    message,
-                    remoteRevision
+                const detail = error?.message
+                    ? `: ${error.message}`
+                    : "";
+                throw new Error(
+                    `No se pudo conectar con el servicio de sincronización${detail}.`
                 );
             }
 
-            throw new SyncProtocolError(message, code);
+            let payload;
+            try {
+                payload = await Promise.race([
+                    response.json(), expired
+                ]);
+            } catch (error) {
+                if (error instanceof SyncTimeoutError ||
+                    error?.name === "AbortError") {
+                    throw new SyncTimeoutError(timeoutMessage);
+                }
+                // Una escritura pudo completarse aunque la respuesta no sea JSON.
+                throw new SyncInvalidResponseError(response);
+            }
 
+            if (!payload || typeof payload !== "object" ||
+                Array.isArray(payload)) {
+                throw new SyncInvalidResponseError(response);
+            }
+
+            if (!response.ok || payload.ok === false) {
+
+                const code = payload.error?.code ?? payload.code;
+                const message =
+                    payload.error?.message ??
+                    payload.message ??
+                    "La sincronización fue rechazada.";
+                const remoteRevision =
+                    payload.error?.remoteRevision ??
+                    payload.remoteRevision ??
+                    null;
+
+                if (code === "CONFLICT") {
+                    throw new SyncConflictError(
+                        message,
+                        remoteRevision
+                    );
+                }
+
+                throw new SyncProtocolError(message, code);
+
+            }
+
+            return payload;
+        } finally {
+            clearTimeout(timeoutId);
+            controller.signal.removeEventListener("abort", onAbort);
         }
-
-        return payload;
 
     }
 

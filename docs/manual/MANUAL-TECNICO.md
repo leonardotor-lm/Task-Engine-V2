@@ -455,6 +455,10 @@ y genera altas, modificaciones y eliminaciones incrementales.
 
 Cuando la escritura incremental se confirma, la base local pasa a ser exactamente el snapshot cuya escritura fue confirmada.
 
+En Apps Script, las revisiones incrementales se guardan como lotes de cambios. La revisión 16 de cada ciclo guarda una copia completa para acotar la reconstrucción. Las revisiones anteriores al cambio siguen siendo copias completas válidas. La compactación materializa las cinco revisiones retenidas como copias completas y verifica la activa antes de reemplazar la hoja. Un lote iniciado y no confirmado no se aplica si otro intento completa esa misma revisión.
+
+El servidor informa `rowsWritten`, `readMs`, `writeMs` y `lockWaitMs` para distinguir escritura de hoja, lectura y espera por el bloqueo. Las respuestas ilegibles muestran sólo estado HTTP y tipo de contenido; no incluyen el cuerpo ni el token. El plazo de espera también cubre la lectura del cuerpo HTTP.
+
 Este punto es importante: no debe reconstruirse la base desde un estado local posterior a la escritura, porque podrían incorporarse cambios que todavía no llegaron a la nube.
 
 ---
