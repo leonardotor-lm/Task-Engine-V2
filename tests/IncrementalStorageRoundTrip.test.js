@@ -81,6 +81,20 @@ test("ignora un lote incremental anterior que quedó sin confirmar", () => {
         .areas[0].name, "Confirmada");
 });
 
+test("un checkpoint confirmado reemplaza un delta anterior sin confirmar", () => {
+    const { backend, sheet, append, base } = backendWithSheet();
+    append(backend.incrementalChangesToRows_([
+        { collection: "areas", id: "a", operation: "delete" }
+    ], 2));
+    append([[2, "checkpointStart", "batch", 2, "", ""]]);
+    append(backend.snapshotToRows_({ ...base, data: {
+        ...base.data,
+        areas: [{ id: "a", name: "Confirmada", version: 2 }]
+    } }, 2));
+    assert.equal(backend.readSnapshotDataAtRevision_(sheet, 2)
+        .areas[0].name, "Confirmada");
+});
+
 test("rechaza cadenas de deltas sin checkpoint y revisiones interrumpidas", () => {
     const { backend, sheet, append } = backendWithSheet();
     append(backend.incrementalChangesToRows_([

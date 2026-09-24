@@ -979,30 +979,21 @@ function readSnapshotDataAtRevision_(dataSheet, revision) {
                 "Falta una revisión necesaria para reconstruir los datos."
             );
         }
-        if (["incrementalStart", "incrementalDelta"]
-            .indexOf(String(rows[0][1])) === -1) {
-            var lastCheckpointStart = -1;
-            rows.forEach(function(row, index) {
-                if (row[1] === "checkpointStart") {
-                    lastCheckpointStart = index;
-                }
-            });
-            checkpointRows = rows.slice(lastCheckpointStart + 1);
+        var lastBatchStart = -1;
+        rows.forEach(function(row, index) {
+            if (row[1] === "incrementalStart" ||
+                row[1] === "checkpointStart") {
+                lastBatchStart = index;
+            }
+        });
+        if (lastBatchStart === -1 ||
+            rows[lastBatchStart][1] === "checkpointStart") {
+            checkpointRows = rows.slice(lastBatchStart + 1);
             break;
         }
         // Si un intento anterior escribió filas pero no confirmó la revisión,
         // sólo cuenta el último lote completo que sí llegó a metaSheet.
-        var start = -1;
-        rows.forEach(function(row, index) {
-            if (row[1] === "incrementalStart") start = index;
-        });
-        if (start === -1) {
-            throw protocolError_(
-                "CORRUPT_REMOTE_DATA",
-                "Falta el inicio del lote incremental."
-            );
-        }
-        pending.unshift(rows.slice(start + 1));
+        pending.unshift(rows.slice(lastBatchStart + 1));
         if (pending.length >=
             TASK_ENGINE_SETTINGS.INCREMENTAL_CHECKPOINT_INTERVAL) {
             throw protocolError_(
@@ -1636,6 +1627,9 @@ function saveSnapshot_(
             snapshot,
             currentRevision + 1
         );
+
+        rows.unshift([currentRevision + 1, "checkpointStart", "batch",
+            TASK_ENGINE_SETTINGS.SYNC_SCHEMA_VERSION, "", ""]);
 
         if (rows.length > 0) {
 
