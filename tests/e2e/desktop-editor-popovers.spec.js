@@ -137,6 +137,41 @@ test("los popovers son exclusivos, contenidos y recuperan el foco", async ({ pag
     await expect(attachmentsButton).toBeFocused();
 });
 
+test("el adjunto conserva un enlace legible y se puede abrir", async ({ page }) => {
+    await openEditor(page);
+    const attachments = page.locator(
+        ".desktopTaskEditorToolRow .desktopTaskEditorSectionTool",
+        { has: page.locator("summary", { hasText: "Adjuntos" }) }
+    );
+    await attachments.locator(":scope > summary").click();
+
+    const link = attachments.getByRole("link", {
+        name: "archivo-con-un-nombre-largo.pdf"
+    });
+    const remove = attachments.getByRole("button", {
+        name: "Quitar"
+    });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+        "href",
+        "https://drive.google.com/file/d/drive-file-1/view"
+    );
+
+    const [linkBox, removeBox] = await Promise.all([
+        link.boundingBox(),
+        remove.boundingBox()
+    ]);
+    expect(linkBox.width).toBeGreaterThan(160);
+    expect(linkBox.x + linkBox.width)
+        .toBeLessThanOrEqual(removeBox.x);
+
+    const popupPromise = page.waitForEvent("popup");
+    await link.click();
+    const popup = await popupPromise;
+    expect(popup.url()).toContain("drive.google.com/file/d/drive-file-1/view");
+    await popup.close();
+});
+
 test("Programación se abre completa dentro del editor y del viewport", async ({ page }) => {
     await openEditor(page);
     const planning = page.locator(
