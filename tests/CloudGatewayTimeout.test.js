@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 import {
     CloudGateway,
-    SyncInvalidResponseError
+    SyncInvalidResponseError,
+    SyncTimeoutError
 } from "../src/infrastructure/CloudGateway.js";
 
 test("una respuesta ilegible tras escribir deja el resultado incierto", async () => {
@@ -23,6 +24,38 @@ test("una respuesta ilegible tras escribir deja el resultado incierto", async ()
             changes: []
         }),
         SyncInvalidResponseError
+    );
+});
+
+test("el plazo también cubre la lectura del cuerpo de la respuesta", async () => {
+    const gateway = new CloudGateway({
+        fetchFn: async () => ({
+            ok: true,
+            json: () => new Promise(() => {})
+        }),
+        timeoutMs: 15
+    });
+    await assert.rejects(
+        gateway.status({ url: "https://example.com/exec", token: "secret" }),
+        SyncTimeoutError
+    );
+});
+
+test("una respuesta HTML muestra estado y tipo sin exponer su contenido", async () => {
+    const gateway = new CloudGateway({
+        fetchFn: async () => ({
+            ok: false,
+            status: 503,
+            headers: { get: () => "text/html; charset=UTF-8" },
+            json: async () => { throw new SyntaxError("HTML privado"); }
+        })
+    });
+    await assert.rejects(
+        gateway.status({ url: "https://example.com/exec", token: "secret" }),
+        error => error instanceof SyncInvalidResponseError &&
+            error.httpStatus === 503 &&
+            error.contentType === "text/html" &&
+            !error.message.includes("privado")
     );
 });
 

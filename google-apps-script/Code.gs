@@ -16,6 +16,7 @@ var TASK_ENGINE_SETTINGS = Object.freeze({
     MAX_REQUESTS_PER_WINDOW: 120,
     COMPACTION_MAX_ROWS: 50000,
     COMPACTION_REVISIONS_TO_KEEP: 5,
+    INCREMENTAL_CHECKPOINT_INTERVAL: 16,
     MAINTENANCE_TRIGGER_HANDLER:
         "runTaskEngineMaintenance"
 });
@@ -833,7 +834,7 @@ function loadSnapshot_() {
         };
     }
 
-    var rows = getRevisionRows_(
+    var data = readSnapshotDataAtRevision_(
         storage.dataSheet,
         revision
     );
@@ -851,7 +852,7 @@ function loadSnapshot_() {
                     .getRange(2, 2)
                     .getDisplayValue() ||
                 new Date().toISOString(),
-            data: rowsToSnapshotData_(rows)
+            data: data
         }
     };
 
@@ -962,6 +963,91 @@ function getRevisionRows_(
 
 }
 
+// Las revisiones anteriores a este formato siguen siendo checkpoints completos.
+// Una revisión delta contiene sólo las entidades modificadas y se reproduce
+// desde el último checkpoint, siempre dentro de un intervalo acotado.
+function readSnapshotDataAtRevision_(dataSheet, revision) {
+    var pending = [];
+    var cursor = revision;
+    var checkpointRows = null;
+
+    while (cursor >= 1) {
+        var rows = getRevisionRows_(dataSheet, cursor);
+        if (rows.length === 0) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "Falta una revisión necesaria para reconstruir los datos."
+            );
+        }
+        var lastBatchStart = -1;
+        rows.forEach(function(row, index) {
+            if (row[1] === "incrementalStart" ||
+                row[1] === "checkpointStart") {
+                lastBatchStart = index;
+            }
+        });
+        if (lastBatchStart === -1 ||
+            rows[lastBatchStart][1] === "checkpointStart") {
+            checkpointRows = rows.slice(lastBatchStart + 1);
+            break;
+        }
+        // Si un intento anterior escribió filas pero no confirmó la revisión,
+        // sólo cuenta el último lote completo que sí llegó a metaSheet.
+        pending.unshift(rows.slice(lastBatchStart + 1));
+        if (pending.length >=
+            TASK_ENGINE_SETTINGS.INCREMENTAL_CHECKPOINT_INTERVAL) {
+            throw protocolError_(
+                "CORRUPT_REMOTE_DATA",
+                "La cadena incremental excede el límite de seguridad."
+            );
+        }
+        cursor -= 1;
+    }
+
+    if (!checkpointRows) {
+        throw protocolError_(
+            "CORRUPT_REMOTE_DATA",
+            "No se encontró una copia completa para reconstruir los datos."
+        );
+    }
+
+    var data = rowsToSnapshotData_(checkpointRows);
+    pending.forEach(function(rows) {
+        var changes = rows.filter(function(row) {
+            return row[1] === "incrementalDelta";
+        }).map(function(row) {
+            try {
+                return JSON.parse(row[5]);
+            } catch (error) {
+                throw protocolError_(
+                    "CORRUPT_REMOTE_DATA",
+                    "La revisión incremental contiene datos dañados."
+                );
+            }
+        });
+        validateIncrementalChanges_(changes);
+        applyIncrementalChanges_({ data: data }, changes);
+    });
+    return data;
+}
+
+function incrementalChangesToRows_(changes, revision) {
+    var rows = [[revision, "incrementalStart", "batch",
+        TASK_ENGINE_SETTINGS.SYNC_SCHEMA_VERSION, "", ""]];
+    return rows.concat(changes.map(function(change) {
+        var payload = JSON.stringify(change);
+        assertPayloadSize_(payload);
+        return [
+            revision,
+            "incrementalDelta",
+            change.collection + ":" + change.id,
+            TASK_ENGINE_SETTINGS.SYNC_SCHEMA_VERSION,
+            "",
+            payload
+        ];
+    }));
+}
+
 function getRecentRevisionRows_(
     dataSheet,
     currentRevision,
@@ -979,12 +1065,12 @@ function getRecentRevisionRows_(
         revision <= currentRevision;
         revision += 1
     ) {
-        rows = rows.concat(
-            getRevisionRows_(
-                dataSheet,
-                revision
-            )
-        );
+        rows = rows.concat(snapshotToRows_({
+            format: TASK_ENGINE_SETTINGS.BACKUP_FORMAT,
+            version: TASK_ENGINE_SETTINGS.BACKUP_VERSION,
+            exportedAt: new Date().toISOString(),
+            data: readSnapshotDataAtRevision_(dataSheet, revision)
+        }, revision));
     }
 
     return rows;
@@ -1068,10 +1154,15 @@ function compactTaskEngineStorage_(force) {
             };
         }
 
-        var currentRows = getRevisionRows_(
-            originalSheet,
-            currentRevision
-        );
+        var currentRows = snapshotToRows_({
+            format: TASK_ENGINE_SETTINGS.BACKUP_FORMAT,
+            version: TASK_ENGINE_SETTINGS.BACKUP_VERSION,
+            exportedAt: new Date().toISOString(),
+            data: readSnapshotDataAtRevision_(
+                originalSheet,
+                currentRevision
+            )
+        }, currentRevision);
 
         if (currentRows.length === 0) {
             throw protocolError_(
@@ -1537,6 +1628,9 @@ function saveSnapshot_(
             currentRevision + 1
         );
 
+        rows.unshift([currentRevision + 1, "checkpointStart", "batch",
+            TASK_ENGINE_SETTINGS.SYNC_SCHEMA_VERSION, "", ""]);
+
         if (rows.length > 0) {
 
             var firstRow =
@@ -1613,7 +1707,7 @@ function saveIncremental_(changes, baseRevision) {
             );
         }
 
-        var currentRows = getRevisionRows_(
+        var currentData = readSnapshotDataAtRevision_(
             storage.dataSheet,
             currentRevision
         );
@@ -1623,7 +1717,7 @@ function saveIncremental_(changes, baseRevision) {
             version:
                 TASK_ENGINE_SETTINGS.BACKUP_VERSION,
             exportedAt: new Date().toISOString(),
-            data: rowsToSnapshotData_(currentRows)
+            data: currentData
         };
         var readMs = Date.now() - readStartedAt;
 
@@ -1631,10 +1725,23 @@ function saveIncremental_(changes, baseRevision) {
         validateSnapshot_(snapshot);
 
         var nextRevision = currentRevision + 1;
-        var rows = snapshotToRows_(
-            snapshot,
-            nextRevision
-        );
+        var checkpoint = nextRevision %
+            TASK_ENGINE_SETTINGS.INCREMENTAL_CHECKPOINT_INTERVAL === 0;
+        var rows;
+        if (!checkpoint) {
+            try {
+                rows = incrementalChangesToRows_(changes, nextRevision);
+            } catch (error) {
+                if (error.code !== "ENTITY_TOO_LARGE") throw error;
+                checkpoint = true;
+            }
+        }
+        if (checkpoint) {
+            rows = [[nextRevision, "checkpointStart", "batch",
+                TASK_ENGINE_SETTINGS.SYNC_SCHEMA_VERSION, "", ""]]
+                .concat(snapshotToRows_(snapshot, nextRevision));
+        }
+        // La revisión debe tener al menos una fila para poder recuperarse.
         var writeStartedAt = Date.now();
 
         if (rows.length > 0) {
@@ -1665,6 +1772,7 @@ function saveIncremental_(changes, baseRevision) {
             syncMode: "incremental",
             changeCount: changes.length,
             rowsWritten: rows.length,
+            checkpoint: checkpoint,
             processingMs: Date.now() - startedAt,
             lockWaitMs: lockWaitMs,
             readMs: readMs,
