@@ -655,13 +655,20 @@ export class App {
 
             },
 
-            onRenameCustomFilter: (
+            onUpdateCustomFilter: (
                 id,
-                name
+                data
             ) => {
 
-                this.customFilterService
-                    .updateFilter(id, { name });
+                const filter = this.customFilterService
+                    .updateFilter(id, data);
+
+                if (this.currentCustomFilterId === id) {
+                    this.searchQuery = filter.query;
+                    this.advancedSearchExpression =
+                        compileAdvancedSearch(filter.query);
+                    this.advancedSearchError = "";
+                }
 
                 this.render();
 

@@ -103,6 +103,9 @@ test("muestra filtros personalizados en una sección plegable", () => {
         /renameCustomFilter/
     );
 
+    assert.match(html, /class="customFilterQueryInput"/);
+    assert.match(html, /value="prioridad:critica"/);
+
     assert.match(
         html,
         /deleteCustomFilter/

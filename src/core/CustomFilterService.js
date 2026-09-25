@@ -72,6 +72,15 @@ export class CustomFilterService {
             );
         }
 
+        if (data.name !== undefined &&
+            this.repository.getAll().some(other =>
+                other.id !== id &&
+                other.name.toLocaleLowerCase("es") ===
+                    String(data.name).trim().toLocaleLowerCase("es")
+            )) {
+            throw new Error("Ya existe un filtro con ese nombre.");
+        }
+
         filter.update(data);
         this.repository.update(filter);
 
