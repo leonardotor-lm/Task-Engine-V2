@@ -1191,8 +1191,8 @@ export class Sidebar {
                                                     type="button"
                                                     class="renameCustomFilter"
                                                     data-id="${escapeHtml(filter.id)}"
-                                                    aria-label="Renombrar ${escapeHtml(filter.name)}"
-                                                    title="Renombrar filtro">
+                                                    aria-label="Editar ${escapeHtml(filter.name)}"
+                                                    title="Editar filtro">
                                                     ${Icon.render(
                                                         "edit",
                                                         "sidebarUtilityIcon"
@@ -1219,8 +1219,15 @@ export class Sidebar {
                                                 <input
                                                     class="customFilterRenameInput"
                                                     type="text"
+                                                    aria-label="Nombre del filtro"
                                                     value="${escapeHtml(filter.name)}"
                                                     maxlength="80"
+                                                    required>
+                                                <input
+                                                    class="customFilterQueryInput"
+                                                    type="search"
+                                                    aria-label="Criterios del filtro"
+                                                    value="${escapeHtml(filter.query)}"
                                                     required>
                                                 <button type="submit">
                                                     Guardar
