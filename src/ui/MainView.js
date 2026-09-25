@@ -2692,14 +2692,20 @@ export class MainView {
                         )
                         .value.trim();
 
-                    if (!name) return;
+                    const query = form
+                        .querySelector(
+                            ".customFilterQueryInput"
+                        )
+                        .value.trim();
+
+                    if (!name || !query) return;
 
                     try {
 
                         this.callbacks
-                            .onRenameCustomFilter(
+                            .onUpdateCustomFilter(
                                 form.dataset.id,
-                                name
+                                { name, query }
                             );
 
                     } catch (error) {
