@@ -110,7 +110,9 @@ export class SyncEngine {
             pendingBaseRevision:
                 pending?.baseRevision ?? null,
             lastMetric:
-                this.metricsRepository.getLatest()
+                this.metricsRepository.getLatest(),
+            lastLoadMetric:
+                this.metricsRepository.getLatestLoad()
         };
     }
 
