@@ -63,12 +63,14 @@ export class CloudGateway {
         fetchFn = fetch,
         timeoutMs = 30000,
         writeTimeoutMs = 60000,
+        onRequestMetric = null,
         lockManager = globalThis.navigator?.locks ?? null
     } = {}) {
 
         this.fetchFn = fetchFn;
         this.timeoutMs = timeoutMs;
         this.writeTimeoutMs = writeTimeoutMs;
+        this.onRequestMetric = onRequestMetric;
         this.lockManager = lockManager;
 
     }
@@ -141,6 +143,14 @@ export class CloudGateway {
         } = {}
     ) {
 
+        const startedAt = Date.now();
+        let headersMs = null;
+        let bodyMs = null;
+        let phase = "respuesta";
+        let outcome = "success";
+        let errorCode = null;
+        let serverProcessingMs = null;
+        let serverReadMs = null;
         const controller = new AbortController();
 
         const timeoutId = setTimeout(
@@ -172,6 +182,8 @@ export class CloudGateway {
                     ),
                     expired
                 ]);
+                headersMs = Date.now() - startedAt;
+                phase = "cuerpo";
             } catch (error) {
                 if (error.name === "AbortError" ||
                     error instanceof SyncTimeoutError) {
@@ -190,6 +202,7 @@ export class CloudGateway {
                 payload = await Promise.race([
                     response.json(), expired
                 ]);
+                bodyMs = Date.now() - startedAt - headersMs;
             } catch (error) {
                 if (error instanceof SyncTimeoutError ||
                     error?.name === "AbortError") {
@@ -227,10 +240,37 @@ export class CloudGateway {
 
             }
 
+            serverProcessingMs = Number.isFinite(
+                payload.diagnostics?.serverProcessingMs
+            ) ? payload.diagnostics.serverProcessingMs : null;
+            serverReadMs = Number.isFinite(
+                payload.diagnostics?.serverReadMs
+            ) ? payload.diagnostics.serverReadMs : null;
             return payload;
+        } catch (error) {
+            outcome = "failed";
+            errorCode = error?.code ?? error?.name ?? "ERROR";
+            throw error;
         } finally {
             clearTimeout(timeoutId);
             controller.signal.removeEventListener("abort", onAbort);
+            if (operation === "descarga") {
+                try {
+                    this.onRequestMetric?.({
+                        operation,
+                        outcome,
+                        errorCode,
+                        phase,
+                        durationMs: Date.now() - startedAt,
+                        headersMs,
+                        bodyMs,
+                        serverProcessingMs,
+                        serverReadMs
+                    });
+                } catch {
+                    // La telemetría local nunca impide leer la copia.
+                }
+            }
         }
 
     }
