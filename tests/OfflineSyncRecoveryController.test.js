@@ -182,6 +182,22 @@ test("continúa reintentando a un intervalo máximo mientras falla", async () =>
 
 });
 
+test("reintenta una consulta fallida aunque hubiera una revisión remota pendiente", async () => {
+    const harness = createHarness();
+    harness.controller.start();
+    harness.setConflict(true);
+    harness.setFailure(true);
+
+    await harness.app.checkRemoteStatus();
+
+    assert.equal(harness.timers.length, 1);
+    assert.ok(harness.app.syncRetryAt > Date.now());
+    harness.setFailure(false);
+    await harness.runTimer(0);
+    assert.equal(harness.getChecks(), 2);
+    assert.equal(harness.app.syncLastError, null);
+});
+
 test("no reintenta un rechazo explícito del token", async () => {
     const harness = createHarness();
     harness.controller.start();
