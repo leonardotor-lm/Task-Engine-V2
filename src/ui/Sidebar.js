@@ -368,7 +368,8 @@ export class Sidebar {
         const lastSyncMetric =
             syncDiagnostics?.lastMetric ?? null;
         const retryAt = syncDiagnostics?.retryAt;
-        const retryTime = Number.isFinite(retryAt)
+        const retryTime = Number.isFinite(retryAt) &&
+            retryAt > Date.now()
             ? new Date(retryAt).toLocaleTimeString(
                 "es-AR",
                 { hour: "2-digit", minute: "2-digit" }
