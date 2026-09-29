@@ -158,6 +158,29 @@ function createHarness({
 
 }
 
+test("una consulta fallida no inicia la conciliación con un estado remoto anterior", async () => {
+    const harness = createHarness({
+        baseBackup: backup(),
+        localBackup: backup({ customFilters: [filter()] }),
+        remoteBackup: backup({ tags: [{ id: "tag-remoto" }] })
+    });
+    harness.app.checkRemoteStatus = async () => {
+        harness.app.syncLastError =
+            "La consulta de estado tardó demasiado en responder.";
+    };
+    const controller = new OngoingSyncReconciliationController(
+        harness.app,
+        { repository: harness.repository }
+    );
+    controller.start();
+
+    await harness.app.checkRemoteStatus();
+
+    assert.equal(harness.getSavedRemote(), null);
+    assert.equal(harness.app.syncRemoteUpdateAvailable, true);
+    assert.match(harness.app.syncLastError, /tardó demasiado/);
+});
+
 test("fusiona automáticamente cambios independientes de local y nube", async () => {
 
     const baseBackup = backup();
