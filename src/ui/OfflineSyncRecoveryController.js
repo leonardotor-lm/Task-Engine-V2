@@ -183,7 +183,6 @@ export class OfflineSyncRecoveryController {
 
         if (
             this.app.syncLastError &&
-            !this.app.syncRemoteUpdateAvailable &&
             this.app.syncConfig?.isConfigured?.() &&
             !NON_RETRYABLE_CODES.has(
                 this.app.syncLastErrorCode
