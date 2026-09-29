@@ -314,12 +314,20 @@ export class Sidebar {
         const syncConflict =
             syncRemoteUpdateAvailable &&
             syncPendingChanges;
+        const quietBackgroundError = Boolean(
+            syncLastError &&
+            !syncPendingChanges &&
+            syncLastSuccess &&
+            Number.isFinite(syncDiagnostics?.retryAt)
+        );
 
         const syncStatusClass =
             !syncConfigured
                 ? "disconnected"
                 : syncOffline
                     ? "offline"
+                    : quietBackgroundError
+                        ? "syncing"
                     : syncLastError
                         ? "error"
                         : syncInProgress
@@ -339,6 +347,8 @@ export class Sidebar {
                     ? syncPendingChanges
                         ? `Sin conexión · cambios pendientes · rev. ${syncRevision}`
                         : `Sin conexión · rev. ${syncRevision}`
+                    : quietBackgroundError
+                        ? `Comprobación pendiente · rev. ${syncRevision}`
                     : syncLastError
                         ? "Error de sincronización"
                         : syncInProgress
@@ -351,7 +361,9 @@ export class Sidebar {
                                         ? `Cambios pendientes · rev. ${syncRevision}`
                                         : `Sincronizada · rev. ${syncRevision}`;
 
-        const sidebarSyncStatusText = {
+        const sidebarSyncStatusText = quietBackgroundError
+            ? "Comprobación pendiente"
+            : {
             disconnected: "Desconectado",
             offline: "Sin conexión",
             error: "Error de sincronización",
@@ -426,7 +438,17 @@ export class Sidebar {
                     `
                     : ""}
 
-                ${syncLastError
+                ${quietBackgroundError
+                    ? `
+                        <p class="syncOfflineHint">
+                            La última sincronización sigue confirmada. La app volverá a comprobar la nube automáticamente.
+                            <details>
+                                <summary>Detalle de la última comprobación</summary>
+                                ${escapeHtml(syncLastError)}
+                            </details>
+                        </p>
+                    `
+                    : syncLastError
                     ? `
                         <p
                             class="syncErrorHint"
