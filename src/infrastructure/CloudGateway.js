@@ -34,9 +34,18 @@ export class SyncInvalidResponseError extends Error {
         const status = Number(response?.status) || null;
         const contentType = response?.headers?.get?.("content-type")
             ?.split(";")[0] ?? null;
+        let responseHost = null;
+        try {
+            responseHost = response?.url
+                ? new URL(response.url).hostname
+                : null;
+        } catch {
+            // Nunca mostramos la URL completa de una respuesta.
+        }
         const detail = [
             status ? `HTTP ${status}` : null,
-            contentType
+            contentType,
+            responseHost ? `en ${responseHost}` : null
         ].filter(Boolean).join(", ");
         super(`La ${operation} devolvió una respuesta inválida` +
             (detail ? ` (${detail}).` : "."));
@@ -44,6 +53,7 @@ export class SyncInvalidResponseError extends Error {
         this.code = "INVALID_RESPONSE";
         this.httpStatus = status;
         this.contentType = contentType;
+        this.responseHost = responseHost;
     }
 }
 
@@ -100,6 +110,24 @@ export class CloudGateway {
 
         return url.toString();
 
+    }
+
+    async requestRead(url, options, settings) {
+        try {
+            return await this.request(url, options, settings);
+        } catch (error) {
+            if (
+                !(error instanceof SyncInvalidResponseError) ||
+                error.httpStatus !== 404 ||
+                error.responseHost !== "script.googleusercontent.com"
+            ) {
+                throw error;
+            }
+
+            // La URL de ContentService es de un solo uso. Una nueva
+            // consulta de lectura obtiene una redirección nueva.
+            return this.request(url, options, settings);
+        }
     }
 
     async request(
@@ -208,7 +236,7 @@ export class CloudGateway {
     }
 
     load({ url, token }) {
-        return this.request(
+        return this.requestRead(
             this.buildUrl(url),
             {
                 method: "POST",
@@ -226,7 +254,7 @@ export class CloudGateway {
     }
 
     status({ url, token }) {
-        return this.request(
+        return this.requestRead(
             this.buildUrl(url),
             {
                 method: "POST",
