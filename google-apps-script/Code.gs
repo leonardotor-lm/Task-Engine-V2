@@ -822,6 +822,7 @@ function hasOwn_(object, property) {
 
 function loadSnapshot_() {
 
+    var startedAt = Date.now();
     var storage = getStorage_();
     var revision =
         getRevision_(storage.metaSheet);
@@ -830,18 +831,28 @@ function loadSnapshot_() {
         return {
             ok: true,
             revision: 0,
-            data: null
+            data: null,
+            diagnostics: {
+                serverReadMs: 0,
+                serverProcessingMs: Date.now() - startedAt
+            }
         };
     }
 
+    var readStartedAt = Date.now();
     var data = readSnapshotDataAtRevision_(
         storage.dataSheet,
         revision
     );
+    var serverReadMs = Date.now() - readStartedAt;
 
     return {
         ok: true,
         revision: revision,
+        diagnostics: {
+            serverReadMs: serverReadMs,
+            serverProcessingMs: Date.now() - startedAt
+        },
         data: {
             format:
                 TASK_ENGINE_SETTINGS.BACKUP_FORMAT,

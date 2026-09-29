@@ -367,6 +367,8 @@ export class Sidebar {
         );
         const lastSyncMetric =
             syncDiagnostics?.lastMetric ?? null;
+        const lastLoadMetric =
+            syncDiagnostics?.lastLoadMetric ?? null;
         const retryAt = syncDiagnostics?.retryAt;
         const retryTime = Number.isFinite(retryAt) &&
             retryAt > Date.now()
@@ -569,6 +571,27 @@ export class Sidebar {
                                 `
                                 : ""}
                         </dl>
+
+                        ${lastLoadMetric ? `
+                            <dl class="syncDiagnostics">
+                                <div class="syncDiagnosticWide">
+                                    <dt>Última descarga</dt>
+                                    <dd>${lastLoadMetric.outcome === "success"
+                                        ? "Correcta"
+                                        : `Fallida (${escapeHtml(lastLoadMetric.phase ?? "desconocida")})`}</dd>
+                                </div>
+                                <div><dt>Tiempo total</dt><dd>${Number.isFinite(lastLoadMetric.durationMs)
+                                    ? `${lastLoadMetric.durationMs} ms` : "—"}</dd></div>
+                                <div><dt>Hasta la respuesta</dt><dd>${Number.isFinite(lastLoadMetric.headersMs)
+                                    ? `${lastLoadMetric.headersMs} ms` : "—"}</dd></div>
+                                <div><dt>Lectura de la respuesta</dt><dd>${Number.isFinite(lastLoadMetric.bodyMs)
+                                    ? `${lastLoadMetric.bodyMs} ms` : "—"}</dd></div>
+                                <div><dt>Reconstrucción en servidor</dt><dd>${Number.isFinite(lastLoadMetric.serverReadMs)
+                                    ? `${lastLoadMetric.serverReadMs} ms` : "—"}</dd></div>
+                                <div><dt>Proceso en servidor</dt><dd>${Number.isFinite(lastLoadMetric.serverProcessingMs)
+                                    ? `${lastLoadMetric.serverProcessingMs} ms` : "—"}</dd></div>
+                            </dl>
+                        ` : ""}
 
                         <div class="syncActions">
 

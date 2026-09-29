@@ -122,6 +122,9 @@ export class App {
             config: this.syncConfig,
             gateway: new CloudGateway()
         });
+        this.syncEngine.gateway.onRequestMetric = metric =>
+            this.syncEngine.metricsRepository
+                .setLatestLoad(metric);
 
         this.selectedTask = null;
         this.selectedGoal = null;

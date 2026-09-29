@@ -39,6 +39,30 @@ function backendWithSheet() {
     return { backend, rows, sheet, append, plain, base };
 }
 
+test("la descarga informa la reconstrucción y el tiempo total del servidor", () => {
+    const { backend, sheet, base } = backendWithSheet();
+    const metaSheet = {
+        getRange(_row, column) {
+            return {
+                getValue: () => 1,
+                getDisplayValue: () => column === 2
+                    ? base.exportedAt : "1"
+            };
+        }
+    };
+    backend.getStorage_ = () => ({
+        dataSheet: sheet,
+        metaSheet
+    });
+
+    const response = backend.loadSnapshot_();
+    assert.equal(response.revision, 1);
+    assert.ok(response.diagnostics.serverReadMs >= 0);
+    assert.ok(response.diagnostics.serverProcessingMs >=
+        response.diagnostics.serverReadMs);
+    assert.equal(response.data.data.areas[0].id, "a");
+});
+
 test("persiste sólo cambios y reconstruye altas, bajas, preferencias y checkpoint", () => {
     const { backend, rows, sheet, append, plain, base } = backendWithSheet();
     const changes = [

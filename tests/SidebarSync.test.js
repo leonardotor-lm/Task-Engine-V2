@@ -154,7 +154,7 @@ test("distingue cambios locales seguros de la nube cuando espera un reintento", 
         pendingChanges: true,
         lastError: "La sincronización tardó demasiado.",
         diagnostics: {
-            retryAt: new Date("2026-09-22T19:30:00Z").getTime()
+            retryAt: Date.now() + 60000
         }
     });
 
@@ -162,6 +162,29 @@ test("distingue cambios locales seguros de la nube cuando espera un reintento", 
     assert.match(html, /guardados en este dispositivo y pendientes/);
     assert.match(html, /Próximo intento automático:/);
     assert.match(html, /Última sincronización confirmada:/);
+});
+
+test("muestra la etapa y los tiempos de la última descarga", () => {
+    const html = renderSync({
+        configured: true,
+        diagnostics: {
+            lastLoadMetric: {
+                outcome: "failed",
+                phase: "cuerpo",
+                durationMs: 30000,
+                headersMs: 1100,
+                bodyMs: null,
+                serverReadMs: null,
+                serverProcessingMs: null
+            }
+        }
+    });
+
+    assert.match(html, /Última descarga/);
+    assert.match(html, /Fallida \(cuerpo\)/);
+    assert.match(html, /Hasta la respuesta/);
+    assert.match(html, /1100 ms/);
+    assert.match(html, /Reconstrucción en servidor/);
 });
 
 test("muestra cantidad pendiente y métricas de la última sincronización", () => {

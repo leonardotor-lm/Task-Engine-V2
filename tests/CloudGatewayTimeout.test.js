@@ -153,6 +153,53 @@ test("un 404 en la URL inicial no se reintenta ni revela la URL", async () => {
     assert.equal(calls, 1);
 });
 
+test("registra por separado los tiempos de descarga y el diagnóstico del servidor", async () => {
+    const metrics = [];
+    const gateway = new CloudGateway({
+        onRequestMetric: metric => metrics.push(metric),
+        fetchFn: async () => ({
+            ok: true,
+            json: async () => ({
+                ok: true,
+                revision: 7,
+                diagnostics: {
+                    serverProcessingMs: 12,
+                    serverReadMs: 8
+                }
+            })
+        })
+    });
+
+    await gateway.load({ url: "https://example.com/exec", token: "secret" });
+    assert.equal(metrics.length, 1);
+    assert.equal(metrics[0].outcome, "success");
+    assert.equal(metrics[0].serverReadMs, 8);
+    assert.equal(metrics[0].serverProcessingMs, 12);
+    assert.ok(metrics[0].headersMs >= 0);
+    assert.ok(metrics[0].bodyMs >= 0);
+    assert.ok(metrics[0].durationMs >= 0);
+    assert.ok(!JSON.stringify(metrics).includes("secret"));
+});
+
+test("identifica si la descarga agotó el plazo antes o después de la respuesta", async () => {
+    const metrics = [];
+    const gateway = new CloudGateway({
+        timeoutMs: 5,
+        onRequestMetric: metric => metrics.push(metric),
+        fetchFn: async () => ({
+            ok: true,
+            json: () => new Promise(() => {})
+        })
+    });
+    await assert.rejects(
+        gateway.load({ url: "https://example.com/exec", token: "secret" }),
+        SyncTimeoutError
+    );
+    assert.equal(metrics[0].outcome, "failed");
+    assert.equal(metrics[0].phase, "cuerpo");
+    assert.ok(metrics[0].headersMs !== null);
+});
+
 test("las lecturas toleran treinta segundos y las escrituras sesenta", () => {
 
     const gateway = new CloudGateway({
