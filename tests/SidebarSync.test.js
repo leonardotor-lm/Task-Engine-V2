@@ -164,6 +164,33 @@ test("distingue cambios locales seguros de la nube cuando espera un reintento", 
     assert.match(html, /Última sincronización confirmada:/);
 });
 
+test("una comprobación fallida de fondo con datos confirmados no exige intervención", () => {
+    const html = renderSync({
+        configured: true,
+        revision: 8,
+        lastSuccess: new Date().toISOString(),
+        lastError: "La consulta de estado tardó demasiado en responder.",
+        diagnostics: { retryAt: Date.now() + 5000 }
+    });
+
+    assert.match(html, /Comprobación pendiente · rev. 8/);
+    assert.match(html, /La última sincronización sigue confirmada/);
+    assert.match(html, /Detalle de la última comprobación/);
+    assert.doesNotMatch(html, /Error de sincronización/);
+    assert.doesNotMatch(html, /id="retrySync"/);
+});
+
+test("un rechazo sin reintento sigue visible aunque no haya cambios pendientes", () => {
+    const html = renderSync({
+        configured: true,
+        lastSuccess: new Date().toISOString(),
+        lastError: "Token inválido"
+    });
+
+    assert.match(html, /Error de sincronización/);
+    assert.match(html, /id="retrySync"/);
+});
+
 test("muestra la etapa y los tiempos de la última descarga", () => {
     const html = renderSync({
         configured: true,
