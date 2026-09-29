@@ -101,6 +101,58 @@ test("una respuesta HTML muestra estado y tipo sin exponer su contenido", async 
     );
 });
 
+test("reintenta sólo una lectura con 404 en la redirección de ContentService", async () => {
+    let calls = 0;
+    const gateway = new CloudGateway({
+        fetchFn: async () => {
+            calls += 1;
+            return calls === 1
+                ? {
+                    ok: false,
+                    status: 404,
+                    url: "https://script.googleusercontent.com/macros/echo?private=secret",
+                    headers: { get: () => "text/html" },
+                    json: async () => { throw new SyntaxError("HTML"); }
+                }
+                : {
+                    ok: true,
+                    json: async () => ({ ok: true, revision: 4 })
+                };
+        }
+    });
+
+    assert.equal((await gateway.status({
+        url: "https://script.google.com/macros/s/id/exec",
+        token: "secret"
+    })).revision, 4);
+    assert.equal(calls, 2);
+});
+
+test("un 404 en la URL inicial no se reintenta ni revela la URL", async () => {
+    let calls = 0;
+    const gateway = new CloudGateway({
+        fetchFn: async () => {
+            calls += 1;
+            return {
+                ok: false,
+                status: 404,
+                url: "https://script.google.com/macros/s/private/exec",
+                headers: { get: () => "text/html" },
+                json: async () => { throw new SyntaxError("HTML"); }
+            };
+        }
+    });
+    await assert.rejects(
+        gateway.status({
+            url: "https://script.google.com/macros/s/private/exec",
+            token: "secret"
+        }),
+        error => error.responseHost === "script.google.com" &&
+            !error.message.includes("private")
+    );
+    assert.equal(calls, 1);
+});
+
 test("las lecturas toleran treinta segundos y las escrituras sesenta", () => {
 
     const gateway = new CloudGateway({
