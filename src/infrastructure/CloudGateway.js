@@ -30,7 +30,7 @@ export class SyncTimeoutError extends Error {
 }
 
 export class SyncInvalidResponseError extends Error {
-    constructor(response) {
+    constructor(response, operation = "sincronización") {
         const status = Number(response?.status) || null;
         const contentType = response?.headers?.get?.("content-type")
             ?.split(";")[0] ?? null;
@@ -38,7 +38,7 @@ export class SyncInvalidResponseError extends Error {
             status ? `HTTP ${status}` : null,
             contentType
         ].filter(Boolean).join(", ");
-        super("El servicio de sincronización devolvió una respuesta inválida" +
+        super(`La ${operation} devolvió una respuesta inválida` +
             (detail ? ` (${detail}).` : "."));
         this.name = "SyncInvalidResponseError";
         this.code = "INVALID_RESPONSE";
@@ -63,15 +63,16 @@ export class CloudGateway {
 
     }
 
-    requestWrite(url, options) {
+    requestWrite(url, options, operation = "subida") {
 
-        const operation = () => this.request(
+        const performWrite = () => this.request(
             url,
             options,
             {
                 timeoutMs: this.writeTimeoutMs,
+                operation,
                 timeoutMessage:
-                    "La subida tardó demasiado en responder. Estamos comprobando si llegó a guardarse."
+                    `La ${operation} tardó demasiado en responder. Estamos comprobando si llegó a guardarse.`
             }
         );
 
@@ -79,13 +80,13 @@ export class CloudGateway {
             typeof this.lockManager?.request !==
                 "function"
         ) {
-            return operation();
+            return performWrite();
         }
 
         return this.lockManager.request(
             `task-engine-sync-write:${url}`,
             { mode: "exclusive" },
-            operation
+            performWrite
         );
 
     }
@@ -106,6 +107,7 @@ export class CloudGateway {
         options = {},
         {
             timeoutMs = this.timeoutMs,
+            operation = "sincronización",
             timeoutMessage =
                 "La sincronización tardó demasiado en responder."
         } = {}
@@ -166,12 +168,12 @@ export class CloudGateway {
                     throw new SyncTimeoutError(timeoutMessage);
                 }
                 // Una escritura pudo completarse aunque la respuesta no sea JSON.
-                throw new SyncInvalidResponseError(response);
+                throw new SyncInvalidResponseError(response, operation);
             }
 
             if (!payload || typeof payload !== "object" ||
                 Array.isArray(payload)) {
-                throw new SyncInvalidResponseError(response);
+                throw new SyncInvalidResponseError(response, operation);
             }
 
             if (!response.ok || payload.ok === false) {
@@ -215,6 +217,10 @@ export class CloudGateway {
                     "Content-Type": "text/plain;charset=utf-8"
                 },
                 body: JSON.stringify({ action: "load", token })
+            },
+            {
+                operation: "descarga",
+                timeoutMessage: "La descarga tardó demasiado en responder."
             }
         );
     }
@@ -232,6 +238,10 @@ export class CloudGateway {
                     action: "status",
                     token
                 })
+            },
+            {
+                operation: "consulta de estado",
+                timeoutMessage: "La consulta de estado tardó demasiado en responder."
             }
         );
     }
@@ -250,7 +260,8 @@ export class CloudGateway {
                     baseRevision,
                     data
                 })
-            }
+            },
+            "subida completa"
         );
     }
 
@@ -273,7 +284,8 @@ export class CloudGateway {
                     baseRevision,
                     changes
                 })
-            }
+            },
+            "subida incremental"
         );
     }
 

@@ -41,6 +41,48 @@ test("el plazo también cubre la lectura del cuerpo de la respuesta", async () =
     );
 });
 
+test("identifica la operación que agotó la espera", async () => {
+    const gateway = new CloudGateway({
+        fetchFn: async () => new Promise(() => {}),
+        timeoutMs: 5,
+        writeTimeoutMs: 5,
+        lockManager: null
+    });
+    const connection = {
+        url: "https://example.com/exec", token: "secret"
+    };
+
+    for (const [request, label] of [
+        [() => gateway.status(connection), "consulta de estado"],
+        [() => gateway.load(connection), "descarga"],
+        [() => gateway.saveIncremental({
+            ...connection, baseRevision: 1, changes: []
+        }), "subida incremental"]
+    ]) {
+        await assert.rejects(request(), error =>
+            error instanceof SyncTimeoutError &&
+            error.message.includes(label)
+        );
+    }
+});
+
+test("identifica la operación cuya respuesta no es JSON", async () => {
+    const gateway = new CloudGateway({
+        fetchFn: async () => ({
+            ok: true,
+            json: async () => { throw new SyntaxError("HTML privado"); }
+        })
+    });
+    await assert.rejects(
+        gateway.load({
+            url: "https://example.com/exec", token: "secret"
+        }),
+        error => error instanceof SyncInvalidResponseError &&
+            error.message.includes("descarga") &&
+            !error.message.includes("privado")
+    );
+});
+
 test("una respuesta HTML muestra estado y tipo sin exponer su contenido", async () => {
     const gateway = new CloudGateway({
         fetchFn: async () => ({

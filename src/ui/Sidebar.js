@@ -498,7 +498,7 @@ export class Sidebar {
                                 <dd>${pendingChangeCount}</dd>
                             </div>
                             <div>
-                                <dt>Último envío</dt>
+                                <dt>Último envío registrado</dt>
                                 <dd>${lastSyncMode}</dd>
                             </div>
                             ${lastSyncOutcome
@@ -510,7 +510,7 @@ export class Sidebar {
                                 `
                                 : ""}
                             <div>
-                                <dt>Duración</dt>
+                                <dt>Duración de ese envío</dt>
                                 <dd>${Number.isFinite(lastSyncMetric?.durationMs)
                                     ? `${lastSyncMetric.durationMs} ms`
                                     : "—"}</dd>
@@ -572,6 +572,10 @@ export class Sidebar {
                         <div class="syncActions">
 
                             ${syncPendingChanges &&
+                                syncRemoteUpdateAvailable &&
+                                syncLastError
+                                ? `<p class="syncConflictHint">Hay cambios en este dispositivo y en la nube. Reintentá la conexión antes de elegir una versión.</p>`
+                                : syncPendingChanges &&
                                 syncRemoteUpdateAvailable
                                 ? `
                                     <p class="syncConflictHint">
