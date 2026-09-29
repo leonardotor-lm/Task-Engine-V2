@@ -2679,6 +2679,52 @@ export class App {
 
     }
 
+    filterAndSortTasksForCurrentView(tasks) {
+
+        const effectiveTaskFilters =
+            this.getApplicableTaskFilters();
+
+        const filteredTasks = filterTaskTreeByCriteria(
+            tasks,
+            {
+                query: this.advancedSearchMode
+                    ? ""
+                    : this.searchQuery,
+                filters: this.advancedSearchMode
+                    ? (
+                        this.currentView ===
+                            View.AREA
+                            ? {
+                                areaId:
+                                    this.currentAreaId
+                            }
+                            : {}
+                    )
+                    : (
+                        this.currentView ===
+                            View.AREA
+                            ? {
+                                ...effectiveTaskFilters,
+                                areaId:
+                                    this.currentAreaId
+                            }
+                            : effectiveTaskFilters
+                    ),
+                today: this.getTodayString()
+            }
+        );
+
+        return sortTaskTree(
+            filteredTasks,
+            this.taskSort,
+            this.getTodayString(),
+            this.currentView === View.COMPLETED
+                ? "completedAt"
+                : "createdAt"
+        );
+
+    }
+
     render({ preserveTransientUi = false } = {}) {
 
         if (
@@ -2748,53 +2794,7 @@ export class App {
 
         }
 
-        if (
-            this.currentView !== View.PROJECT
-        ) {
-
-            const effectiveTaskFilters =
-                this.getApplicableTaskFilters();
-
-            visibleTasks = filterTaskTreeByCriteria(
-                visibleTasks,
-                {
-                    query: this.advancedSearchMode
-                        ? ""
-                        : this.searchQuery,
-                    filters: this.advancedSearchMode
-                        ? (
-                            this.currentView ===
-                                View.AREA
-                                ? {
-                                    areaId:
-                                        this.currentAreaId
-                                }
-                                : {}
-                        )
-                        : (
-                            this.currentView ===
-                                View.AREA
-                                ? {
-                                    ...effectiveTaskFilters,
-                                    areaId:
-                                        this.currentAreaId
-                                }
-                                : effectiveTaskFilters
-                        ),
-                    today: this.getTodayString()
-                }
-            );
-
-            visibleTasks = sortTaskTree(
-                visibleTasks,
-                this.taskSort,
-                this.getTodayString(),
-                this.currentView === View.COMPLETED
-                    ? "completedAt"
-                    : "createdAt"
-            );
-
-        }
+        visibleTasks = this.filterAndSortTasksForCurrentView(visibleTasks);
 
         if (
             this.advancedSearchMode &&
