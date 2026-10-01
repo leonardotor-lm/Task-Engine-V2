@@ -491,7 +491,8 @@ test("SyncEngine expone cambios pendientes y la última métrica", () => {
             }
         },
         metricsRepository: {
-            getLatest: () => metric
+            getLatest: () => metric,
+            getLatestLoad: () => null
         }
     });
 
@@ -500,7 +501,8 @@ test("SyncEngine expone cambios pendientes y la última métrica", () => {
         {
             pendingChangeCount: 2,
             pendingBaseRevision: 8,
-            lastMetric: metric
+            lastMetric: metric,
+            lastLoadMetric: null
         }
     );
 });
