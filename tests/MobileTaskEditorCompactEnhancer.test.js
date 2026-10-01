@@ -282,14 +282,14 @@ test("el compacto no instala observadores ni ciclos autónomos", () => {
     );
 });
 
-test("Mover se integra directamente en Opciones sin fallback destructivo", () => {
+test("Mover conserva su acceso en Opciones y separa el panel de destino", () => {
     assert.match(
         enhancer,
         /grid\?\.querySelector\([\s\S]*"\.mobileTaskEditorMoveTool"/
     );
     assert.match(
         enhancer,
-        /if \(move\) optionFields\.append\(move\)/
+        /optionFields\.append\(moveButton\)/
     );
     assert.doesNotMatch(
         enhancer,
