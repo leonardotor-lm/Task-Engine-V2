@@ -247,7 +247,9 @@ function addPanelHeader(details, body, title) {
     close.textContent = "×";
     close.addEventListener("click", () => {
         details.open = false;
-        details.querySelector(":scope > summary")?.focus();
+        (details.querySelector(":scope > summary:not([hidden])") ??
+            details.closest(".mobileTaskEditorCompactLayout")
+                ?.querySelector(".mobileTaskEditorCompactOverflow > summary"))?.focus();
     });
 
     header.append(heading, close);
@@ -489,7 +491,31 @@ function createOverflow(drawer, grid) {
     const move = grid?.querySelector(
         ".mobileTaskEditorMoveTool"
     );
-    if (move) optionFields.append(move);
+    const moveDetails = move?.querySelector(".taskMoveManager");
+    const moveBody = moveDetails?.querySelector(".taskMoveManagerBody");
+    if (move && moveDetails && moveBody) {
+        // El destino debe ser un panel hermano: si queda dentro de Opciones,
+        // el cierre de ese panel también oculta los controles de Mover.
+        move.classList.add("mobileTaskEditorMoveDestination");
+        moveDetails.id = "mobileTaskEditorMovePanel";
+        moveDetails.querySelector(":scope > summary").hidden = true;
+        drawer.append(move);
+        configureTransient(moveDetails, moveBody, "Mover");
+
+        const moveButton = document.createElement("button");
+        moveButton.type = "button";
+        moveButton.className = "mobileTaskEditorCompactMoveButton";
+        moveButton.textContent = "Mover";
+        moveButton.setAttribute("aria-controls", moveDetails.id);
+        moveButton.addEventListener("click", () => {
+            details.open = false;
+            body.hidden = true;
+            moveDetails.open = true;
+            moveBody.hidden = false;
+            moveBody.querySelector("input")?.focus();
+        });
+        optionFields.append(moveButton);
+    }
 
     if (optionFields.childElementCount > 0) {
         const title = document.createElement("strong");
@@ -607,7 +633,8 @@ function bindPanels(drawer) {
 
         event.preventDefault();
         open.open = false;
-        open.querySelector(":scope > summary")?.focus();
+        (open.querySelector(":scope > summary:not([hidden])") ??
+            drawer.querySelector(".mobileTaskEditorCompactOverflow > summary"))?.focus();
     };
 
     const pointerdown = event => {

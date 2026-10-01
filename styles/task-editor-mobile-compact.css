@@ -459,6 +459,10 @@
         gap: 6px;
     }
 
+    .mobileTaskEditorMoveDestination > .taskMoveManager > summary[hidden] {
+        display: none !important;
+    }
+
     .mobileTaskEditorCompactOverflowTitle {
         margin: 4px 0 0;
         color: var(--color-text-muted);
@@ -483,6 +487,8 @@
     .mobileTaskEditorCompactOverflowOptions
         .projectTaskControl,
     .mobileTaskEditorCompactOverflowActions button,
+    .mobileTaskEditorCompactOverflowOptions
+        .mobileTaskEditorCompactMoveButton,
     .mobileTaskEditorCompactOverflowOptions
         .mobileTaskEditorMoveTool
         summary {
