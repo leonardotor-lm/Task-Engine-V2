@@ -332,9 +332,11 @@ export class UnifiedMobileTaskEditorController
                     event.stopPropagation();
                     details.open = false;
                     if (body) body.hidden = true;
-                    details.querySelector(
-                        ":scope > summary"
-                    )?.focus();
+                    (details.querySelector(
+                        ":scope > summary:not([hidden])"
+                    ) ?? drawer.querySelector(
+                        ".mobileTaskEditorCompactOverflow > summary"
+                    ))?.focus();
                 },
                 true
             );

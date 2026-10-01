@@ -10,17 +10,19 @@ const enhancer = await readFile(
     "utf8"
 );
 
-test("Mover sale de la grilla y queda en Opciones del editor móvil", () => {
+test("Opciones abre Mover como un panel independiente del editor móvil", () => {
     assert.match(
         enhancer,
         /grid\?\.querySelector\([\s\S]*"\.mobileTaskEditorMoveTool"/
     );
     assert.match(
         enhancer,
-        /if \(move\) optionFields\.append\(move\)/
+        /optionFields\.append\(moveButton\)/
     );
     assert.doesNotMatch(
         enhancer,
-        /moveButton\.remove\(\)/
+        /optionFields\.append\(move\)/
     );
+    assert.match(enhancer, /drawer\.append\(move\)/);
+    assert.match(enhancer, /configureTransient\(moveDetails, moveBody, "Mover"\)/);
 });
