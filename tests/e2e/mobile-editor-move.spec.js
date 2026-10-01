@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 test("Mover desde Opciones permite confirmar el destino en móvil", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => {
+        if (localStorage.getItem("task-engine-v2")) return;
         localStorage.setItem("task-engine-v2", JSON.stringify([
             { id: "move-task", title: "Preparar clase", status: "PENDING" },
             { id: "move-project", title: "Plan de acción 1", status: "PENDING", isProject: true }
