@@ -632,6 +632,7 @@ function bindPanels(drawer) {
         if (!open) return;
 
         event.preventDefault();
+        event.stopPropagation();
         open.open = false;
         (open.querySelector(":scope > summary:not([hidden])") ??
             drawer.querySelector(".mobileTaskEditorCompactOverflow > summary"))?.focus();
