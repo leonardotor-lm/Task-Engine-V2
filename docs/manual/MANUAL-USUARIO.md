@@ -668,6 +668,8 @@ Dentro del proceso, **Registrar avance** guarda una entrada fechada. La cantidad
 
 Desde **Editar proceso** podés pausarlo, completarlo, archivarlo o reactivarlo. Alcanzar el total no lo completa automáticamente. Los procesos pausados, completados y archivados conservan su historial; reactivá uno para seguir registrando avances. El selector **Mostrar** permite encontrarlos.
 
+Los proyectos también muestran una sección **Procesos asociados** cuando están vinculados directamente a un proceso. Cada tarjeta muestra su estado y avance; al presionar el título, abrís el proceso. Los procesos vinculados sólo a una subtarea no se atribuyen automáticamente al proyecto.
+
 Los objetivos muestran sus procesos asociados con el estado y avance de cada uno. No calculan un promedio de esos avances.
 
 Para sincronizar esta función, es necesario actualizar `Code.gs` y publicar una nueva versión de Apps Script. Si el servidor todavía no la admite, los datos siguen guardados localmente y la aplicación indica la actualización necesaria.

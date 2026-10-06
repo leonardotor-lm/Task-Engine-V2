@@ -2,6 +2,7 @@ import { TaskList } from "./TaskList.js";
 import { Icon } from "./Icon.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { View } from "../core/View.js";
+import { renderProcessCard } from "./ProcessView.js";
 
 export class ProjectView {
 
@@ -144,6 +145,10 @@ export class ProjectView {
             </nav>
         `;
 
+        const associatedProcesses = (state.processes ?? []).filter(
+            process => (process.taskIds ?? []).includes(project.id)
+        );
+
         const projectSummary = `
             ${breadcrumb}
             <div class="projectWorkspaceSummary">
@@ -151,6 +156,12 @@ export class ProjectView {
                     ${completed} de ${total} completadas
                 </span>
             </div>
+            ${associatedProcesses.length > 0 ? `
+                <section class="processCards projectAssociatedProcesses">
+                    <h3>Procesos asociados</h3>
+                    ${associatedProcesses.map(renderProcessCard).join("")}
+                </section>
+            ` : ""}
         `;
 
         return this.taskList.render(
