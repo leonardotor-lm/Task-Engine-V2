@@ -151,6 +151,8 @@ export class SyncEngine {
             contexts: data.contexts.length,
             tags: data.tags.length,
             goals: (data.goals ?? []).length,
+            processes: (data.processes ?? []).length,
+            processEntries: (data.processEntries ?? []).length,
             activityEvents:
                 (data.activityEvents ?? []).length
         };
@@ -969,6 +971,12 @@ export class SyncEngine {
     }
 
     ensureRemoteGoalsAreSafe(remoteBackup) {
+        const localData = { processes: this.backupService.processRepository?.getAll(), processEntries: this.backupService.processEntryRepository?.getAll() };
+        for (const collection of ["processes", "processEntries"]) {
+            if (localData?.[collection]?.length && !Array.isArray(remoteBackup?.data?.[collection])) {
+                throw new Error("La nube todavía no admite procesos. Actualizá Google Apps Script antes de descargar.");
+            }
+        }
 
         const remoteGoals =
             remoteBackup?.data?.goals;

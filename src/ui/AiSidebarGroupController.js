@@ -37,6 +37,7 @@ export const PLANNING_TOOL_IDS = Object.freeze([
     "showAll",
     "showProjects",
     "showGoals",
+    "showProcesses",
     "showCalendar",
     "showStatistics"
 ]);

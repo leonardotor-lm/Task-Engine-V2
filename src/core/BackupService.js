@@ -3,6 +3,8 @@ import { Area } from "../domain/Area.js";
 import { Context } from "../domain/Context.js";
 import { Tag } from "../domain/Tag.js";
 import { CustomFilter } from "../domain/CustomFilter.js";
+import { Process } from "../domain/Process.js";
+import { ProcessEntry } from "../domain/ProcessEntry.js";
 import { Goal } from "../domain/Goal.js";
 import {
     ActivityEvent
@@ -23,6 +25,8 @@ export class BackupService {
         tagRepository,
         customFilterRepository = null,
         goalRepository = null,
+        processRepository = null,
+        processEntryRepository = null,
         activityRepository = null,
         storage = localStorage
     }) {
@@ -34,6 +38,8 @@ export class BackupService {
         this.customFilterRepository =
             customFilterRepository;
         this.goalRepository = goalRepository;
+        this.processRepository = processRepository;
+        this.processEntryRepository = processEntryRepository;
         this.activityRepository =
             activityRepository;
         this.storage = storage;
@@ -71,6 +77,8 @@ export class BackupService {
                         .map(goal =>
                             goal.toJSON()
                         ) ?? [],
+                ...(this.processRepository ? { processes: this.processRepository.getAll().map(item => item.toJSON()) } : {}),
+                ...(this.processEntryRepository ? { processEntries: this.processEntryRepository.getAll().map(item => item.toJSON()) } : {}),
                 activityEvents:
                     this.activityRepository
                         ?.getAll()
@@ -159,8 +167,16 @@ export class BackupService {
         let customFilters;
         let goals;
         let activityEvents;
+        let processes;
+        let processEntries;
 
         try {
+
+            for (const collection of ["processes", "processEntries"]) {
+                if (Object.hasOwn(data, collection) && !Array.isArray(data[collection])) throw new Error("La colección de procesos o avances es inválida.");
+            }
+            processes = Object.hasOwn(data, "processes") ? data.processes.map(item => new Process(item)) : null;
+            processEntries = Object.hasOwn(data, "processEntries") ? data.processEntries.map(item => new ProcessEntry(item)) : null;
 
             tasks = data.tasks.map(item => new Task(item));
             areas = data.areas.map(item => new Area(item));
@@ -215,6 +231,12 @@ export class BackupService {
             );
         }
         this.validateGoalReferences(goals);
+        if (processes !== null) this.validateUniqueIds(processes, "procesos");
+        if (processEntries !== null) this.validateUniqueIds(processEntries, "avances");
+        const knownProcesses = new Map((processes ?? this.processRepository?.getAll() ?? []).map(item => [item.id, item]));
+        for (const entry of processEntries ?? this.processEntryRepository?.getAll() ?? []) {
+            if (!knownProcesses.has(entry.processId)) throw new Error("Un avance referencia un proceso inexistente.");
+        }
 
         this.validateTaskReferences({
             tasks,
@@ -231,6 +253,8 @@ export class BackupService {
             tags,
             customFilters,
             goals,
+            processes,
+            processEntries,
             activityEvents
         };
 
@@ -449,6 +473,9 @@ export class BackupService {
                 data.customFilters ?? []
             ]);
         }
+
+        if (this.processRepository && data.processes != null) operations.push([this.processRepository, data.processes]);
+        if (this.processEntryRepository && data.processEntries != null) operations.push([this.processEntryRepository, data.processEntries]);
 
         if (this.goalRepository) {
             operations.push([

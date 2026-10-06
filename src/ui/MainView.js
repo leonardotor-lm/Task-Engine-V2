@@ -1932,6 +1932,7 @@ export class MainView {
             ["showArchived", "onShowArchived"],
             ["showTrash", "onShowTrash"],
             ["showGoals", "onShowGoals"],
+            ["showProcesses", "onShowProcesses"],
             ["manageAreas", "onShowAreas"],
             ["manageContexts", "onShowContexts"],
             ["manageTags", "onShowTags"]

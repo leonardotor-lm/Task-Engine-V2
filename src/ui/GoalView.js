@@ -1,3 +1,4 @@
+import { renderProcessCard } from "./ProcessView.js";
 import { TaskList } from "./TaskList.js";
 import { escapeHtml } from "./escapeHtml.js";
 import { Icon } from "./Icon.js";
@@ -211,6 +212,8 @@ export class GoalView {
                         : ""}
                 </p>
             </section>
+
+            ${(state.processes ?? []).some(process => process.objectiveId === goal.id) ? `<section class="processCards"><h3>Procesos asociados</h3>${state.processes.filter(process => process.objectiveId === goal.id).map(renderProcessCard).join("")}</section>` : ""}
 
             ${subgoals}
 

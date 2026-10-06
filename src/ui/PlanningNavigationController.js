@@ -45,6 +45,7 @@ export class PlanningNavigationController {
             allButton,
             projectsButton,
             goalsButton,
+            document.getElementById("showProcesses"),
             waitingButton,
             calendarButton,
             reviewButton,

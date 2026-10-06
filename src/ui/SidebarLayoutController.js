@@ -21,6 +21,7 @@ export class SidebarLayoutController
             "showAll",
             "showProjects",
             "showGoals",
+            "showProcesses",
             "showWaiting",
             "showCalendar",
             "showStatistics"

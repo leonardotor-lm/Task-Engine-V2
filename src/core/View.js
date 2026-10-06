@@ -30,6 +30,8 @@ export const View = Object.freeze({
 
     PROJECT: "project",
 
+    PROCESSES: "processes",
+
     GOALS: "goals",
 
     GOAL: "goal",

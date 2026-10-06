@@ -314,7 +314,18 @@ export class CloudGateway {
         );
     }
 
-    save({ url, token, baseRevision, data }) {
+    async ensureProcessSupport(url, token) {
+        if (this.processServerUrl === url) return;
+        const response = await this.status({ url, token });
+        if (response.supportsProcesses !== true) throw new SyncProtocolError(
+            "Actualizá Google Apps Script para sincronizar los procesos. Los cambios siguen guardados en este dispositivo.",
+            "PROCESSES_NOT_SUPPORTED"
+        );
+        this.processServerUrl = url;
+    }
+
+    async save({ url, token, baseRevision, data }) {
+        if (data?.data?.processes?.length || data?.data?.processEntries?.length) await this.ensureProcessSupport(url, token);
         return this.requestWrite(
             this.buildUrl(url),
             {
@@ -333,12 +344,13 @@ export class CloudGateway {
         );
     }
 
-    saveIncremental({
+    async saveIncremental({
         url,
         token,
         baseRevision,
         changes
     }) {
+        if (changes?.some(change => ["processes", "processEntries"].includes(change.collection))) await this.ensureProcessSupport(url, token);
         return this.requestWrite(
             this.buildUrl(url),
             {

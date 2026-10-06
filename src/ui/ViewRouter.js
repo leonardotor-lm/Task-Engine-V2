@@ -1,6 +1,7 @@
 import { TaskList } from "./TaskList.js";
 import { EntityManager } from "./EntityManager.js";
 import { ProjectView } from "./ProjectView.js";
+import { ProcessView } from "./ProcessView.js";
 import { GoalList } from "./GoalList.js";
 import { GoalView } from "./GoalView.js";
 import { CalendarView } from "./CalendarView.js";
@@ -17,6 +18,7 @@ export class ViewRouter {
         this.taskList = new TaskList();
         this.entityManager = new EntityManager();
         this.projectView = new ProjectView();
+        this.processView = new ProcessView();
         this.goalList = new GoalList();
         this.goalView = new GoalView();
         this.calendarView = new CalendarView();
@@ -113,6 +115,9 @@ export class ViewRouter {
             case View.PROJECT:
 
                 return this.projectView.render(state);
+
+            case View.PROCESSES:
+                return this.processView.render(state);
 
             case View.GOALS:
 

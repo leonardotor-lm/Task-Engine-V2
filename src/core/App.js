@@ -13,6 +13,7 @@ import {
     installCustomFilterServiceTransactionGuard,
     installTagServiceTransactionGuard
 } from "./EntityServiceTransactionGuard.js";
+import { ProcessService } from "./ProcessService.js";
 import { GoalService } from "./GoalService.js";
 import {
     installGoalServiceTransactionGuard
@@ -100,7 +101,14 @@ export class App {
                     .map(goal => goal.id)
             );
 
+        this.processService = new ProcessService({ goalService: this.goalService, taskService: this.taskService });
+        this.selectedProcessId = null;
+        this.processEditing = false;
+        this.processStatusFilter = "ACTIVE";
+
         this.backupService = new BackupService({
+            processRepository: this.processService.repository,
+            processEntryRepository: this.processService.entryRepository,
             taskRepository: this.taskService.repository,
             areaRepository: this.areaService.repository,
             contextRepository: this.contextService.repository,
@@ -3072,6 +3080,11 @@ export class App {
                 this.currentGoalStatus,
             goalOriginView:
                 this.previousGoalView,
+            processes: this.processService.getAllProcesses(),
+            processEntries: this.processService.entryRepository.getAll(),
+            selectedProcessId: this.selectedProcessId,
+            processEditing: this.processEditing,
+            processStatusFilter: this.processStatusFilter,
             goals: this.goalService.getAllGoals(),
             areas: this.areaService.getAllAreas(),
             contexts: this.contextService.getAllContexts(),

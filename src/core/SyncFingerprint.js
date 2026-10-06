@@ -5,6 +5,8 @@ const COLLECTIONS = [
     "tags",
     "customFilters",
     "goals",
+    "processes",
+    "processEntries",
     "activityEvents"
 ];
 
@@ -79,6 +81,8 @@ export function createSyncFingerprint(
                 [
                     "customFilters",
                     "goals",
+                    "processes",
+                    "processEntries",
                     "activityEvents"
                 ].includes(collection)
                     ? []
@@ -90,6 +94,8 @@ export function createSyncFingerprint(
                 "La copia está incompleta."
             );
         }
+
+        if (["processes", "processEntries"].includes(collection) && entities.length === 0) continue;
 
         fingerprint[collection] =
             entities
