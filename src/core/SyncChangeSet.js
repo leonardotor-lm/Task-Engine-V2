@@ -8,6 +8,8 @@ export const SYNC_ENTITY_COLLECTIONS = [
     "contexts",
     "tags",
     "goals",
+    "processes",
+    "processEntries",
     "customFilters",
     "activityEvents"
 ];

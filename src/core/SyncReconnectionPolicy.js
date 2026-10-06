@@ -27,6 +27,8 @@ const CORE_COLLECTIONS = [
 const OPTIONAL_COLLECTIONS = [
     "customFilters",
     "goals",
+    "processes",
+    "processEntries",
     "activityEvents"
 ];
 

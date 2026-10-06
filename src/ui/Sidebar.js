@@ -1439,6 +1439,8 @@ export class Sidebar {
                         Objetivos
                     </button>
 
+                    <button id="showProcesses" class="${buttonClass(View.PROCESSES)}">Procesos</button>
+
                     <button
                         id="showStatistics"
                         class="${buttonClass(View.STATISTICS)}">

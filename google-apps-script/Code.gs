@@ -884,6 +884,7 @@ function loadSyncStatus_() {
     return {
         ok: true,
         revision: getRevision_(metaSheet),
+        supportsProcesses: true,
         serverTime: new Date().toISOString()
     };
 
@@ -1330,6 +1331,8 @@ function rowsToSnapshotData_(rows) {
         contexts: [],
         tags: [],
         goals: [],
+        processes: [],
+        processEntries: [],
         customFilters: [],
         activityEvents: []
     };
@@ -1340,6 +1343,8 @@ function rowsToSnapshotData_(rows) {
         context: "contexts",
         tag: "tags",
         goal: "goals",
+        process: "processes",
+        processEntry: "processEntries",
         customFilter: "customFilters",
         activityEvent: "activityEvents"
     };
@@ -1437,6 +1442,10 @@ function rowsToSnapshotData_(rows) {
             "La hoja contiene metadatos de persistencia inválidos."
         );
     }
+
+    ["processes", "processEntries"].forEach(function(name) {
+        if (optionalFields[name] === true) data[name] = collections[name];
+    });
 
     if (optionalFields.customFilters === true) {
         data.customFilters =
@@ -1632,6 +1641,13 @@ function saveSnapshot_(
 
             throw conflict;
 
+        }
+
+        if (currentRevision > 0 && (!hasOwn_(snapshot.data, "processes") || !hasOwn_(snapshot.data, "processEntries"))) {
+            var previousData = readSnapshotDataAtRevision_(storage.dataSheet, currentRevision);
+            ["processes", "processEntries"].forEach(function(name) {
+                if (!hasOwn_(snapshot.data, name) && hasOwn_(previousData, name)) snapshot.data[name] = previousData[name];
+            });
         }
 
         var rows = snapshotToRows_(
@@ -1832,6 +1848,8 @@ function validateIncrementalChanges_(changes) {
         contexts: true,
         tags: true,
         goals: true,
+        processes: true,
+        processEntries: true,
         customFilters: true,
         activityEvents: true
     };
@@ -1963,6 +1981,10 @@ function snapshotToRows_(
         ]);
     }
 
+    [["processes", "process"], ["processEntries", "processEntry"]].forEach(function(definition) {
+        if (hasOwn_(snapshot.data, definition[0])) definitions.push(definition);
+    });
+
     var rows = [];
 
     definitions.forEach(function(definition) {
@@ -1992,6 +2014,8 @@ function snapshotToRows_(
     });
 
     var optionalFields = {
+        processes: hasOwn_(snapshot.data, "processes"),
+        processEntries: hasOwn_(snapshot.data, "processEntries"),
         customFilters:
             hasOwn_(
                 snapshot.data,
@@ -2025,6 +2049,8 @@ function snapshotToRows_(
     };
 
     var hasOptionalFields =
+        optionalFields.processes ||
+        optionalFields.processEntries ||
         optionalFields.customFilters ||
         optionalFields.activityEvents ||
         optionalFields.taskSortPreferences ||
@@ -2287,6 +2313,8 @@ function validateSnapshot_(snapshot) {
             snapshot.data.displayPreferences
         );
     }
+
+    validateProcessCollections_(snapshot.data, idsByCollection);
 
     validateTaskReferences_(
         snapshot.data.tasks,
@@ -2825,4 +2853,41 @@ function jsonResponse_(payload) {
             ContentService.MimeType.JSON
         );
 
+}
+
+
+function validateProcessCollections_(data, ids) {
+    ["processes", "processEntries"].forEach(function(name) {
+        if (!hasOwn_(data, name)) return;
+        if (!Array.isArray(data[name])) throw protocolError_("INVALID_SNAPSHOT", "La colección de procesos o avances es inválida.");
+        ids[name] = validateEntityCollection_(data[name], name);
+    });
+    (data.processes || []).forEach(function(process) {
+        if (typeof process.title !== "string" || !process.title.trim() ||
+            ["ACTIVE", "PAUSED", "COMPLETED", "ARCHIVED"].indexOf(process.status) === -1 ||
+            ["NONE", "PERCENTAGE", "QUANTITY"].indexOf(process.progressType) === -1 ||
+            !Array.isArray(process.taskIds) ||
+            typeof process.currentValue !== "number" || !isFinite(process.currentValue) || process.currentValue < 0) {
+            throw protocolError_("INVALID_SNAPSHOT", "El proceso contiene datos inválidos.");
+        }
+        if (process.progressType !== "NONE") {
+            if (typeof process.currentValue !== "number" || !isFinite(process.currentValue) || process.currentValue < 0 ||
+                typeof process.targetValue !== "number" || !isFinite(process.targetValue) || process.targetValue <= 0 || process.currentValue > process.targetValue ||
+                (process.progressType === "PERCENTAGE" && process.targetValue !== 100) ||
+                (process.progressType === "QUANTITY" && !String(process.unit || "").trim())) {
+                throw protocolError_("INVALID_SNAPSHOT", "La medición del proceso es inválida.");
+            }
+        }
+    });
+    var processesById = {};
+    (data.processes || []).forEach(function(process) { processesById[process.id] = process; });
+    (data.processEntries || []).forEach(function(entry) {
+        if (!processesById[entry.processId] ||
+            ["NONE", "PERCENTAGE", "QUANTITY"].indexOf(entry.progressType) === -1 ||
+            (entry.progressType !== "NONE" && (typeof entry.value !== "number" || !isFinite(entry.value) || entry.value < 0)) ||
+            (entry.progressType === "PERCENTAGE" && entry.value > 100) ||
+            (entry.progressType === "NONE" && !String(entry.note || "").trim())) {
+            throw protocolError_("INVALID_SNAPSHOT", "Un avance contiene datos inválidos.");
+        }
+    });
 }

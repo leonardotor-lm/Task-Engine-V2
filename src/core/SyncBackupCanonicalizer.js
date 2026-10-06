@@ -3,6 +3,8 @@ import { Area } from "../domain/Area.js";
 import { Context } from "../domain/Context.js";
 import { Tag } from "../domain/Tag.js";
 import { CustomFilter } from "../domain/CustomFilter.js";
+import { Process } from "../domain/Process.js";
+import { ProcessEntry } from "../domain/ProcessEntry.js";
 import { Goal } from "../domain/Goal.js";
 import {
     ActivityEvent
@@ -73,6 +75,8 @@ const CORE_SERIALIZERS = {
 };
 
 const OPTIONAL_SERIALIZERS = {
+    processes: item => new Process(prepareEntity(item)).toJSON(),
+    processEntries: item => new ProcessEntry(prepareEntity(item)).toJSON(),
     customFilters: item =>
         new CustomFilter(
             prepareEntity(item)

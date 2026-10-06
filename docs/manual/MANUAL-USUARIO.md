@@ -1,6 +1,6 @@
 # Manual de usuario de Task Engine V2
 
-Última actualización: 21 de septiembre de 2026.
+Última actualización: 6 de octubre de 2026.
 
 ## 1. Qué es Task Engine
 
@@ -648,3 +648,26 @@ No hace falta clasificar todo, asignar fechas a todo ni mantener cada lista vac�
 - las fechas conserven significado;
 - los proyectos y objetivos aporten contexto;
 - la aplicación reduzca, en lugar de aumentar, la carga mental.
+
+
+## 26. Procesos
+
+Un proceso representa una actividad sostenida: leer un libro, estudiar un tema o hacer un curso. El objetivo expresa para qué avanzás; el proceso organiza ese avance; las tareas y los proyectos mantienen sus acciones y resultados concretos.
+
+En **Planificación → Procesos**, elegí **Nuevo proceso**. Indicá un título y, si corresponde, un objetivo. Podés medir el avance de tres maneras:
+
+- **Sin medición:** registrás sesiones y notas breves, sin asignar un porcentaje artificial.
+- **Porcentaje:** ingresás el porcentaje alcanzado, entre 0 y 100.
+- **Cantidad:** indicás un total y una unidad, por ejemplo 417 páginas o 12 clases.
+
+Al cambiar la unidad, el avance de la nueva unidad empieza en cero; los registros anteriores conservan su unidad original.
+
+También podés guardar la fecha de inicio, el próximo paso y notas breves. Dentro del editor, abrí **Tareas y proyectos vinculados** y seleccioná elementos existentes. Vincularlos no los mueve ni modifica sus asociaciones anteriores. Completar una tarea no cambia automáticamente el avance del proceso.
+
+Dentro del proceso, **Registrar avance** guarda una entrada fechada. La cantidad o el porcentaje son valores absolutos: si llegaste a la página 176, ingresá 176, no las páginas leídas durante esa sesión. Podés registrar un valor menor para corregir una anotación anterior; el historial se conserva.
+
+Desde **Editar proceso** podés pausarlo, completarlo, archivarlo o reactivarlo. Alcanzar el total no lo completa automáticamente. Los procesos pausados, completados y archivados conservan su historial; reactivá uno para seguir registrando avances. El selector **Mostrar** permite encontrarlos.
+
+Los objetivos muestran sus procesos asociados con el estado y avance de cada uno. No calculan un promedio de esos avances.
+
+Para sincronizar esta función, es necesario actualizar `Code.gs` y publicar una nueva versión de Apps Script. Si el servidor todavía no la admite, los datos siguen guardados localmente y la aplicación indica la actualización necesaria.

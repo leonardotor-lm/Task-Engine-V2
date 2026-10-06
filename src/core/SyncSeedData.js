@@ -135,7 +135,9 @@ function optionalDataIsEmpty(data, tasks) {
         "contexts",
         "tags",
         "customFilters",
-        "goals"
+        "goals",
+        "processes",
+        "processEntries"
     ].every(collection =>
         !Array.isArray(data[collection]) ||
         data[collection].length === 0

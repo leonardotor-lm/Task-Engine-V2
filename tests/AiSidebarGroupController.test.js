@@ -22,6 +22,7 @@ function sidebarHtml() {
             <button id="showProjects" class="sidebarButton">Proyectos</button>
             <button id="showCalendar" class="sidebarButton">Calendario</button>
             <button id="showGoals" class="sidebarButton">Objetivos</button>
+            <button id="showProcesses" class="sidebarButton">Procesos</button>
             <button id="showStatistics" class="sidebarButton">Estadísticas</button>
             <details class="sidebarNavigationGroup sidebarAreaGroup">
                 <summary>Áreas</summary>
@@ -125,6 +126,7 @@ test("convierte Planificación en grupo real, muestra chevron SVG y ordena sus v
         "showAll",
         "showProjects",
         "showGoals",
+        "showProcesses",
         "showCalendar",
         "showStatistics"
     ].map(id => html.indexOf(`id="${id}"`));

@@ -153,7 +153,7 @@ test("la aplicación carga el refinamiento de barra y grupos laterales", async (
     );
     assert.match(
         sidebarController,
-        /"showAll",\s*"showProjects",\s*"showGoals",\s*"showWaiting",\s*"showCalendar",\s*"showStatistics"/
+        /"showAll",\s*"showProjects",\s*"showGoals",\s*"showProcesses",\s*"showWaiting",\s*"showCalendar",\s*"showStatistics"/
     );
 
 });

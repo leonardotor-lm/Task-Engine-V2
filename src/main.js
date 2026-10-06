@@ -168,6 +168,8 @@ import {
     WhatDoNowController
 } from "./ui/WhatDoNowController.js";
 
+import { ProcessController } from "./ui/ProcessController.js";
+
 const app = new App();
 app.aiPreferences = new AiPreferences();
 const attachmentController =
@@ -361,5 +363,6 @@ viewTaskSummaryController.start();
 strictAdvancedSearchResultsController.start();
 calendarReminderController.start();
 whatDoNowController.start();
+new ProcessController(app).start();
 app.start();
 themeController.start();

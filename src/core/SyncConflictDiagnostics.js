@@ -9,6 +9,8 @@ const COLLECTIONS = [
     ["tags", "Etiquetas", "name"],
     ["customFilters", "Filtros", "name"],
     ["goals", "Objetivos", "title"],
+    ["processes", "Procesos", "title"],
+    ["processEntries", "Avances", "note"],
     ["activityEvents", "Actividad", "taskTitle"]
 ];
 

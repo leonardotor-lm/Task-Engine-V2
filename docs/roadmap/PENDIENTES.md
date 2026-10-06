@@ -2,7 +2,7 @@
 
 Este documento es la **fuente de verdad del backlog vigente** de Task Engine. Debe contener únicamente trabajo todavía no implementado, no verificado o deliberadamente postergado.
 
-Última actualización: **21 de septiembre de 2026**.
+Última actualización: **6 de octubre de 2026**.
 
 ## Regla obligatoria de lectura
 
@@ -39,6 +39,13 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - Primera versión integral preparada en la rama `agent/technical-manual`.
 - Documenta arquitectura, estructura del repositorio, modelo de datos, sincronización, Apps Script/Sheets, Drive, Notion, PWA, respaldos, pruebas, despliegue y recuperación.
 - Pendiente de revisión y fusión.
+
+## Procesos de avance sostenido
+
+- **Estado:** pendiente de verificación operativa y despliegue.
+- Implementación preparada en `agent/processes`: entidad independiente, objetivo opcional, cantidad/porcentaje/sin medición, tareas y proyectos vinculados, estados e historial de avances.
+- Antes de usar la sincronización, actualizar `google-apps-script/Code.gs` y publicar una nueva versión del despliegue existente.
+- Pendiente: fusionar la PR y verificar el uso cotidiano entre PC y Android con Apps Script actualizado.
 
 ## Otros pendientes confirmados
 

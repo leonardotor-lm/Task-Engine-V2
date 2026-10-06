@@ -1,6 +1,6 @@
 # Manual técnico de Task Engine V2
 
-Última actualización: 21 de septiembre de 2026.
+Última actualización: 6 de octubre de 2026.
 
 ## 1. Propósito
 
@@ -1438,3 +1438,29 @@ Ante una decisión técnica, conviene favorecer:
 **integridad de datos → recuperación → compatibilidad → claridad → rendimiento → nuevas funciones.**
 
 Una optimización que comprometa la capacidad de recuperar los datos no es una mejora.
+
+
+## Procesos: modelo y persistencia
+
+`Process` y `ProcessEntry` son entidades independientes. `ProcessService` administra la configuración, las asociaciones y el registro de avances; `ProcessController` conecta la vista con esos servicios.
+
+| Campo de Process | Función |
+| --- | --- |
+| `objectiveId` | Objetivo opcional; referencia el `id` de un Goal. |
+| `status` | `ACTIVE`, `PAUSED`, `COMPLETED`, `ARCHIVED`. |
+| `progressType` | `NONE`, `PERCENTAGE`, `QUANTITY`. |
+| `currentValue` | Avance inicial. La vista deriva el avance actual del último registro compatible. |
+| `targetValue`, `unit` | Total y unidad de medida; porcentaje usa total 100. |
+| `taskIds` | Tareas o proyectos asociados, sin modificar la jerarquía de tareas existente. |
+| `startedAt`, `completedAt` | Inicio y finalización explícita. |
+| `nextStep`, `notes` | Próximo paso y notas breves. |
+
+Los registros son entidades versionadas independientes en `processEntries`, con `processId`, medición, valor absoluto, unidad, total, nota y fechas. Registrar una sesión no modifica la versión del proceso. Así, la reconciliación puede conservar dos registros creados simultáneamente en dispositivos distintos. El avance visible y `lastProgressAt` se derivan de la cronología, con desempate determinista por identificador.
+
+Los repositorios usan `task-engine-v2-processes` y `task-engine-v2-process-entries`. Persisten antes de reemplazar sus colecciones en memoria. BackupService incluye ambas colecciones y valida referencias de avances antes de importar; una copia antigua sin estas colecciones conserva los datos locales existentes. Las asociaciones con tareas u objetivos eliminados dejan de mostrarse y se pueden ajustar desde el editor.
+
+Ambas colecciones participan en canonicalización, huellas, cambios incrementales y todos los mecanismos de reconciliación. Apps Script serializa los tipos `process` y `processEntry`, valida sus datos y conserva las colecciones omitidas por clientes anteriores al recibir una subida completa.
+
+El gateway comprueba `supportsProcesses` en el estado del servidor antes de escribir procesos por primera vez en una sesión. Rechaza la operación si el despliegue es antiguo. Es obligatorio actualizar `google-apps-script/Code.gs` y publicar una nueva versión del despliegue existente antes de probar sincronización entre dispositivos. El frontend conserva los cambios locales hasta que se complete esa actualización.
+
+La vista incluye creación, edición, filtros de estado, registro de avance, historial, navegación hacia tareas y objetivos, y restauración de borradores durante un renderizado de fondo. `pwa-assets.js` incluye los módulos y estilos nuevos; la versión de caché se incrementó para renovar la PWA.
