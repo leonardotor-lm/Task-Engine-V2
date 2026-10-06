@@ -66,3 +66,27 @@ test("procesos: sin medición y porcentaje permiten registrar y conservar avance
         else await expect(page.locator("progress")).toHaveCount(0);
     }
 });
+
+test("procesos: selector de activos y navegación al proyecto vinculado", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem("task-engine-v2", JSON.stringify([
+            { id: "project-active", title: "Proyecto activo", status: "PENDING", isProject: true },
+            { id: "task-active", title: "Tarea activa", status: "PENDING" },
+            { id: "project-done", title: "Proyecto finalizado", status: "COMPLETED", isProject: true },
+            { id: "task-done", title: "Tarea finalizada", status: "COMPLETED" }
+        ]));
+    });
+    await page.goto("/");
+    await page.locator("#showProcesses").click();
+    await page.getByRole("button", { name: "Nuevo proceso", exact: true }).click();
+    const editor = page.locator("#processEditorForm");
+    await editor.getByLabel("Título", { exact: true }).fill("Proceso vinculado");
+    await editor.locator("details > summary").click();
+    await expect(editor.locator(".processTaskChoices")).toContainText("Tarea activa");
+    await expect(editor.locator(".processTaskChoices")).not.toContainText("finalizad");
+    await editor.getByLabel("Proyecto activo", { exact: true }).check();
+    await editor.getByRole("button", { name: "Guardar", exact: true }).click();
+    await page.locator('[data-process-task="project-active"]').click();
+    await expect(page.locator(".projectWorkspace")).toBeVisible();
+    await expect(page.locator(".projectAssociatedProcesses")).toContainText("Proceso vinculado");
+});

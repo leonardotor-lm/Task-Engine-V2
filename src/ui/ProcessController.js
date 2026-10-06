@@ -46,7 +46,15 @@ export class ProcessController {
             app.mainView.closeMobileMenu();
         }));
         document.querySelectorAll("[data-process-goal]").forEach(button => button.addEventListener("click", () => app.mainView.callbacks.onSelectGoal(button.dataset.processGoal)));
-        document.querySelectorAll("[data-process-task]").forEach(button => button.addEventListener("click", () => app.mainView.callbacks.onSelectTask(button.dataset.processTask)));
+        document.querySelectorAll("[data-process-task]").forEach(button => button.addEventListener("click", () => {
+            const id = button.dataset.processTask;
+            const task = app.taskService.getTaskById(id);
+            if (task && (task.isProject || app.taskService.getProjectDescendants(id).length > 0)) {
+                app.mainView.callbacks.onOpenProject(id);
+            } else {
+                app.mainView.callbacks.onSelectTask(id);
+            }
+        }));
         document.querySelectorAll("[data-process-action]").forEach(button => button.addEventListener("click", () => {
             this.discardDraftOnce = true;
             const action = button.dataset.processAction;

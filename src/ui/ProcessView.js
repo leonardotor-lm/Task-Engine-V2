@@ -3,6 +3,7 @@ import { ProcessStatus, ProgressType, localProcessStartDate } from "../domain/Pr
 
 export const processStatusLabels = { ACTIVE: "En curso", PAUSED: "Pausado", COMPLETED: "Completado", ARCHIVED: "Archivado" };
 const typeLabels = { NONE: "Sin medición", PERCENTAGE: "Porcentaje", QUANTITY: "Cantidad" };
+const isAvailableTask = task => !task.isDeleted() && !task.isCompleted() && !task.isArchived();
 const options = (labels, value) => Object.entries(labels).map(([key, label]) => `<option value="${key}" ${key === value ? "selected" : ""}>${label}</option>`).join("");
 
 export function renderProcessProgress(process) {
@@ -71,7 +72,8 @@ export class ProcessView {
             <label>Fecha de inicio<input name="startedAt" type="date" value="${e(p.startedAt)}" required></label>
             <label>Próximo paso<input name="nextStep" value="${e(p.nextStep)}"></label>
             <label>Notas breves<textarea name="notes">${e(p.notes)}</textarea></label>
-            <details><summary>Tareas y proyectos vinculados</summary><input type="search" id="processTaskSearch" placeholder="Buscar tareas o proyectos" aria-label="Buscar tareas o proyectos"><div class="processTaskChoices">${(state.allTasks ?? []).filter(task => !task.isDeleted()).map(task => `<label data-process-task-choice><input name="taskIds" type="checkbox" value="${e(task.id)}" ${p.taskIds.includes(task.id) ? "checked" : ""}>${e(task.title)}</label>`).join("")}</div></details>
+            ${(state.allTasks ?? []).filter(task => p.taskIds.includes(task.id) && !isAvailableTask(task)).map(task => `<input type="hidden" name="taskIds" value="${e(task.id)}">`).join("")}
+            <details><summary>Tareas y proyectos vinculados</summary><input type="search" id="processTaskSearch" placeholder="Buscar tareas o proyectos" aria-label="Buscar tareas o proyectos"><div class="processTaskChoices">${(state.allTasks ?? []).filter(isAvailableTask).map(task => `<label data-process-task-choice><input name="taskIds" type="checkbox" value="${e(task.id)}" ${p.taskIds.includes(task.id) ? "checked" : ""}>${e(task.title)}</label>`).join("")}</div></details>
             <div class="processHeading"><button type="submit" class="primaryAction">Guardar</button><button type="button" data-process-action="cancel">Cancelar</button></div>
             <p class="processError" role="alert"></p>
         </form>`;

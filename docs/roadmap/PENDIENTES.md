@@ -46,7 +46,8 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 - Implementación fusionada en PR #491 y ajuste tipográfico fusionado en PR #492: entidad independiente, objetivo opcional, cantidad/porcentaje/sin medición, tareas y proyectos vinculados, estados e historial de avances.
 - Antes de usar la sincronización, actualizar `google-apps-script/Code.gs` y publicar una nueva versión del despliegue existente.
 - Pendiente: verificar el uso cotidiano entre PC y Android con Apps Script actualizado.
-- En desarrollo en `agent/project-process-links`: mostrar en la vista del proyecto sus procesos asociados con un enlace para abrirlos. Esta extensión no requiere cambios de Apps Script.
+- Fusionado en PR #493: la vista del proyecto muestra sus procesos asociados con un enlace para abrirlos.
+- En desarrollo en `agent/process-project-navigation`: abrir los proyectos vinculados en su vista y ofrecer únicamente tareas/proyectos activos en el selector, conservando las asociaciones previas. No requiere cambios de Apps Script.
 
 ## Otros pendientes confirmados
 
