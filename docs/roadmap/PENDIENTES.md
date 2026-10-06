@@ -43,9 +43,10 @@ Las capacidades terminadas se documentan en `docs/roadmap/ROADMAP.md`, decisione
 ## Procesos de avance sostenido
 
 - **Estado:** pendiente de verificación operativa y despliegue.
-- Implementación preparada en `agent/processes`: entidad independiente, objetivo opcional, cantidad/porcentaje/sin medición, tareas y proyectos vinculados, estados e historial de avances.
+- Implementación fusionada en PR #491 y ajuste tipográfico fusionado en PR #492: entidad independiente, objetivo opcional, cantidad/porcentaje/sin medición, tareas y proyectos vinculados, estados e historial de avances.
 - Antes de usar la sincronización, actualizar `google-apps-script/Code.gs` y publicar una nueva versión del despliegue existente.
-- Pendiente: fusionar la PR y verificar el uso cotidiano entre PC y Android con Apps Script actualizado.
+- Pendiente: verificar el uso cotidiano entre PC y Android con Apps Script actualizado.
+- En desarrollo en `agent/project-process-links`: mostrar en la vista del proyecto sus procesos asociados con un enlace para abrirlos. Esta extensión no requiere cambios de Apps Script.
 
 ## Otros pendientes confirmados
 

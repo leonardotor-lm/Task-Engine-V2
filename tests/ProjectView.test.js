@@ -5,6 +5,28 @@ import { View } from "../src/core/View.js";
 import { Task } from "../src/domain/Task.js";
 import { ProjectView } from "../src/ui/ProjectView.js";
 
+test("el proyecto muestra enlaces a sus procesos directos, sin atribuirse los de una subtarea", () => {
+    const project = new Task({ id: "project", title: "Secuencia didáctica", isProject: true });
+    const state = {
+        projectTask: project, tasks: [], allTasks: [project],
+        areas: [], contexts: [], tags: [], expandedTaskIds: new Set(),
+        today: "2026-10-06"
+    };
+    assert.doesNotMatch(new ProjectView().render(state), /projectAssociatedProcesses/);
+    const html = new ProjectView().render({ ...state, processes: [
+        { id: "reading", title: "Estudiar <realismo mágico>", taskIds: ["project"], status: "PAUSED", progressType: "NONE" },
+        { id: "course", title: "Curso de literatura", taskIds: ["project"], status: "ACTIVE", progressType: "NONE" },
+        { id: "child-process", title: "Sólo una subtarea", taskIds: ["child"], status: "ACTIVE", progressType: "NONE" }
+    ] });
+    assert.match(html, /Procesos asociados/);
+    assert.match(html, /data-open-process="reading"/);
+    assert.match(html, /data-open-process="course"/);
+    assert.match(html, /Estudiar &lt;realismo mágico&gt;/);
+    assert.match(html, /Pausado/);
+    assert.doesNotMatch(html, /Sólo una subtarea/);
+    assert.match(html, /0 de 0 completadas/);
+});
+
 test("la vista de proyecto muestra todo el árbol y sus acciones", () => {
 
     const project = new Task({
