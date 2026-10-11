@@ -327,6 +327,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        parentTaskId:
+          type: [string, "null"]
         query:
           type: string
         status:
@@ -366,6 +368,13 @@ components:
       required: [requestId, title]
       additionalProperties: false
       properties:
+        parentTaskId:
+          type: [string, "null"]
+          description: Padre activo no recurrente; hereda área, estado y objetivos.
+        expectedParentVersion:
+          type: integer
+          minimum: 1
+          description: Obligatorio cuando parentTaskId identifica un padre.
         requestId:
           type: string
           description: UUID nuevo y estable para este intento lógico de creación.

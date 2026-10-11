@@ -55,3 +55,5 @@ token ni el cuerpo recibido.
 
 Después de modificar el Worker, volvé a desplegarlo. Después de modificar
 `openapi.yaml`, reemplazá el esquema de la Action dentro del editor del GPT.
+
+Servidor MCP: ver [MCP.md](MCP.md) para arquitectura, pruebas y conexión con ChatGPT.
