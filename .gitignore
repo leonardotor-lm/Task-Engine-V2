@@ -4,3 +4,9 @@
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+node_modules/
+.dev.vars
+wrangler.toml
+.wrangler/
+test-results/
+playwright-report/

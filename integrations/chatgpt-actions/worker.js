@@ -1,3 +1,6 @@
+import { oauthMetadata, oauthAccount } from './mcp-auth.js';
+import { handleMcpRequest } from './mcp.js';
+
 const ROUTES = Object.freeze({
     "/v1/context": "gptGetContext",
     "/v1/tasks/search": "gptSearchTasks",
@@ -18,6 +21,44 @@ export async function handleRequest(
     environment,
     fetchImplementation = fetch
 ) {
+
+    const pathname = new URL(request.url).pathname;
+    if (pathname === '/.well-known/oauth-protected-resource/mcp' || pathname === '/.well-known/oauth-protected-resource') {
+        const metadata = oauthMetadata(request, environment);
+        return metadata ? jsonResponse(200, metadata) : jsonResponse(404, errorBody('NOT_FOUND', 'OAuth no configurado.'));
+    }
+    if (pathname === '/mcp') {
+        // Authenticate discovery and every call, using the same account mapping.
+        let accounts;
+        try { accounts = parseAccounts(environment.TASK_ENGINE_ACCOUNTS); }
+        catch { return jsonResponse(500, errorBody('SERVER_NOT_CONFIGURED', 'El intermediario no está configurado.')); }
+        const bearer = readBearerToken(request);
+        const staticAccount = accounts.find(account => safeEqual(account.apiKey, bearer));
+        const oauth = staticAccount ? null : await oauthAccount(bearer, environment, accounts);
+        const account = staticAccount || oauth?.account;
+        if (!account) {
+            const response = jsonResponse(401, errorBody('UNAUTHORIZED', 'La credencial no es válida.'));
+            if (environment.MCP_RESOURCE_URL) {
+                const metadataUrl = new URL('/.well-known/oauth-protected-resource/mcp', environment.MCP_RESOURCE_URL);
+                response.headers.set('www-authenticate', 'Bearer resource_metadata="' + metadataUrl + '"');
+            }
+            return response;
+        }
+        const origin = request.headers.get('origin');
+        const allowedOrigins = String(environment.MCP_ALLOWED_ORIGINS || '').split(',').map(value => value.trim()).filter(Boolean);
+        if (origin && !allowedOrigins.includes(origin)) {
+            return jsonResponse(403, errorBody('FORBIDDEN_ORIGIN', 'El origen no está permitido.'));
+        }
+        return handleMcpRequest(request, (path, input) => {
+            if (oauth && !oauth.canWrite && ['/v1/tasks/create','/v1/tasks/update','/v1/tasks/complete'].includes(path)) {
+                return jsonResponse(403, errorBody('INSUFFICIENT_SCOPE', 'Se requiere tasks:write.'));
+            }
+            return handleRequest(new Request(new URL(path, request.url), {
+            method: 'POST', headers: {'authorization': 'Bearer ' + account.apiKey, 'content-type': 'application/json'},
+            body: JSON.stringify(input)
+        }), environment, fetchImplementation);
+        });
+    }
 
     if (request.method !== "POST") {
         return jsonResponse(

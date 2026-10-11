@@ -4,3 +4,10 @@ compatibility_date = "2026-09-01"
 
 # Guardá TASK_ENGINE_ACCOUNTS como secreto, nunca en este archivo:
 # npx wrangler secret put TASK_ENGINE_ACCOUNTS
+
+# Variables OAuth para ChatGPT (proveedor externo):
+# [vars]
+# MCP_RESOURCE_URL = 'https://<worker>.workers.dev/mcp'
+# MCP_OAUTH_ISSUER = 'https://<proveedor>/'
+# MCP_OAUTH_JWKS_URL = 'https://<proveedor>/.well-known/jwks.json'
+# MCP_ALLOWED_ORIGINS = ''

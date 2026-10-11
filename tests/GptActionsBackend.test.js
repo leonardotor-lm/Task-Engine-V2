@@ -285,3 +285,26 @@ test("edita y completa sólo la versión vigente", () => {
         error => error.code === "TASK_NOT_ACTIVE"
     );
 });
+
+test('crea subtareas con herencia, versión del padre e idempotencia', () => {
+    const {context, getSnapshot} = loadBackend();
+    const input = {requestId:'subtask-request',title:'Paso uno',parentTaskId:'task-1',expectedParentVersion:1};
+    const created = plain(context.gptCreateTask_(input));
+    assert.equal(created.task.parentTaskId,'task-1');
+    assert.equal(created.task.areaId,'area-1');
+    assert.equal(created.task.status,'PENDING');
+    assert.equal(getSnapshot().data.tasks[0].isProject,true);
+    assert.equal(getSnapshot().data.tasks[0].version,2);
+    assert.equal(plain(context.gptCreateTask_(input)).task.id,created.task.id);
+    assert.equal(getSnapshot().data.tasks.length,2);
+    assert.equal(context.gptSearchTasks_({parentTaskId:'task-1'}).total,1);
+    assert.throws(() => context.gptCreateTask_({...input,requestId:'stale'}), /cambió/);
+    assert.throws(() => context.gptCreateTask_({...input,requestId:'missing',parentTaskId:'missing'}), /encontró/);
+});
+
+test('rechaza subtareas de padres completados sin persistir cambios', () => {
+    const {context,getSnapshot} = loadBackend();
+    context.gptCompleteTask_({requestId:'complete',taskId:'task-1',expectedVersion:1});
+    assert.throws(() => context.gptCreateTask_({requestId:'sub',title:'Paso',parentTaskId:'task-1',expectedParentVersion:2}), /activo/);
+    assert.equal(getSnapshot().data.tasks.length,1);
+});

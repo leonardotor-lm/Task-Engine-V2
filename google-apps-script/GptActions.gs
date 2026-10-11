@@ -114,7 +114,15 @@ function gptCreateTask_(input) {
                 300,
                 "El título es obligatorio."
             );
-            var areaId = gptNullableId_(input.areaId);
+            var parentId = gptNullableId_(input.parentTaskId);
+            var parent = parentId ? gptFindTask_(data.tasks, parentId) : null;
+            if (parent) {
+                gptAssertExpectedVersion_(parent, input.expectedParentVersion);
+                if ((parent.status !== 'INBOX' && parent.status !== 'PENDING') || parent.recurrence) {
+                    throw protocolError_('INVALID_PARENT', 'El padre debe estar activo y no ser recurrente.');
+                }
+            }
+            var areaId = parent ? parent.areaId : gptNullableId_(input.areaId);
             var task = {
                 id: Utilities.getUuid(),
                 title: title,
@@ -123,7 +131,7 @@ function gptCreateTask_(input) {
                     10000,
                     ""
                 ),
-                status: areaId ? "PENDING" : "INBOX",
+                status: parent ? parent.status : (areaId ? "PENDING" : "INBOX"),
                 statusBeforeDelete: null,
                 statusBeforeCompletion: null,
                 isWaitingBeforeCompletion: null,
@@ -133,13 +141,13 @@ function gptCreateTask_(input) {
                 priority:
                     gptPriority_(input.priority, 0),
                 tagIds: gptIdArray_(input.tagIds),
-                goalIds: gptIdArray_(input.goalIds),
+                goalIds: parent ? (parent.goalIds || []).slice() : gptIdArray_(input.goalIds),
                 attachments: [],
                 notionPageId: null,
                 notionPageUrl: null,
                 isWaiting: input.isWaiting === true,
                 isProject: false,
-                parentTaskId: null,
+                parentTaskId: parentId,
                 recurrenceId: null,
                 recurrence: null,
                 recurrenceInterval: 1,
@@ -160,6 +168,11 @@ function gptCreateTask_(input) {
             };
 
             gptValidateTaskDates_(task);
+            if (parent) {
+                parent.isProject = true;
+                parent.version += 1;
+                parent.updatedAt = now;
+            }
             data.tasks.push(task);
             gptAddActivity_(
                 data,
@@ -399,6 +412,7 @@ function gptApplyAllowedChanges_(task, changes) {
 
 function gptTaskMatches_(task, input) {
 
+    if (input.parentTaskId !== undefined && (task.parentTaskId || null) !== gptNullableId_(input.parentTaskId)) return false;
     if (input.query) {
         var query = gptNormalizeText_(input.query);
         var haystack = gptNormalizeText_(
