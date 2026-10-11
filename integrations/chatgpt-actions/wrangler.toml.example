@@ -10,4 +10,5 @@ compatibility_date = "2026-09-01"
 # MCP_RESOURCE_URL = 'https://<worker>.workers.dev/mcp'
 # MCP_OAUTH_ISSUER = 'https://<proveedor>/'
 # MCP_OAUTH_JWKS_URL = 'https://<proveedor>/.well-known/jwks.json'
+# MCP_SINGLE_ACCOUNT_SUBJECT = '<sub exacto; solo si hay una cuenta>'
 # MCP_ALLOWED_ORIGINS = ''

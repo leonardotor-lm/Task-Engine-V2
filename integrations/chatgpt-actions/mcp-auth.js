@@ -19,7 +19,14 @@ export async function oauthAccount(token, env, accounts, keySet) {
         });
         const scopes = new Set(String(payload.scope || '').split(' '));
         if (!scopes.has('tasks:read')) return null;
-        const matches = accounts.filter(account => account.oauthSubject === payload.sub);
+        // An explicit personal binding avoids replacing an existing encrypted secret.
+        // It cannot select from multiple accounts or override an existing subject.
+        const singleSubject = env.MCP_SINGLE_ACCOUNT_SUBJECT;
+        if (singleSubject !== undefined && (
+            typeof singleSubject !== 'string' || !singleSubject || accounts.length !== 1 ||
+            (accounts[0].oauthSubject !== undefined && accounts[0].oauthSubject !== singleSubject)
+        )) return null;
+        const matches = accounts.filter(account => (account.oauthSubject ?? singleSubject) === payload.sub);
         if (matches.length !== 1) return null;
         return {account: matches[0], canWrite: scopes.has('tasks:write')};
     } catch { return null; }

@@ -27,3 +27,25 @@ test('OAuth discovery and 401 challenge use configured canonical resource',async
     assert.equal(unauthorized.status,401);
     assert.match(unauthorized.headers.get('www-authenticate'),/oauth-protected-resource\/mcp/);
 });
+
+test('personal OAuth binding preserves credentials and fails closed on ambiguity', async () => {
+    const {privateKey, publicKey} = await generateKeyPair('RS256');
+    const keys = createLocalJWKSet({keys: [{...await exportJWK(publicKey), kid: 'personal', alg: 'RS256'}]});
+    const sign = (subject, scope = 'tasks:read tasks:write') => new SignJWT({scope})
+        .setProtectedHeader({alg: 'RS256', kid: 'personal'}).setIssuer(env.MCP_OAUTH_ISSUER)
+        .setAudience(env.MCP_RESOURCE_URL).setSubject(subject).setExpirationTime('5m').sign(privateKey);
+    const configured = {...env, MCP_SINGLE_ACCOUNT_SUBJECT: 'personal-user'};
+    const account = {id: 'existing', apiKey: 'existing-key', token: 'existing-token'};
+    const token = await sign('personal-user');
+    const result = await oauthAccount(token, configured, [account], keys);
+    assert.equal(result.account, account);
+    assert.equal(result.canWrite, true);
+    assert.equal((await oauthAccount(await sign('personal-user', 'tasks:read'), configured, [account], keys)).canWrite, false);
+    assert.equal(await oauthAccount(token, env, [account], keys), null);
+    assert.equal(await oauthAccount(await sign('other-user'), configured, [account], keys), null);
+    assert.equal(await oauthAccount(token, configured, [account, {id: 'another'}], keys), null);
+    assert.equal(await oauthAccount(token, configured, [], keys), null);
+    assert.equal(await oauthAccount(token, {...configured, MCP_SINGLE_ACCOUNT_SUBJECT: ''}, [account], keys), null);
+    assert.equal(await oauthAccount(token, configured, [{...account, oauthSubject: 'other-user'}], keys), null);
+    assert.equal((await oauthAccount(token, configured, [{...account, oauthSubject: 'personal-user'}], keys)).account.id, 'existing');
+});
