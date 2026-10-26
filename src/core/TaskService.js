@@ -511,49 +511,19 @@ export class TaskService {
             )
         );
 
-        const nextRecurringTasks =
-            completedTasks
-                .filter(task => task.recurrence)
-                .map(task => new Task({
-                    title: task.title,
-                    description: task.description,
-                    status: TaskStatus.PENDING,
-                    areaId: task.areaId,
-                    contextId: task.contextId,
-                    priority: task.priority,
-                    tagIds: [...task.tagIds],
-                    parentTaskId: null,
-                    recurrenceId:
-                        task.recurrenceId,
-                    recurrence: task.recurrence,
-                    recurrenceInterval:
-                        task.recurrenceInterval,
-                    recurrenceWeekdays: [
-                        ...task.recurrenceWeekdays
-                    ],
-                    dueDate:
-                        getNextRecurrenceDate(
-                            task.dueDate,
-                            task.recurrence,
-                            {
-                                interval:
-                                    task.recurrenceInterval,
-                                weekdays:
-                                    task.recurrenceWeekdays
-                            }
-                        ),
-                    dueTime: task.dueTime
-                }));
+        const nextTasks = this.repository.getAll().map(task =>
+            replacements.get(task.id) ?? task
+        );
 
-        this.repository.replaceAll([
-            ...this.repository
-                .getAll()
-                .map(task =>
-                    replacements.get(task.id) ??
-                    task
-                ),
-            ...nextRecurringTasks
-        ]);
+        // Evaluar juntas las finalizaciones y conservar una sola pendiente.
+        for (const task of [...completedTasks].sort((first, second) =>
+            String(second.dueDate).localeCompare(String(first.dueDate))
+        )) {
+            const next = this.buildNextRecurringTask(task, nextTasks);
+            if (next) nextTasks.push(next);
+        }
+
+        this.repository.replaceAll(nextTasks);
 
         this.activityService?.recordTasks(
             ActivityType.TASK_COMPLETED,
@@ -933,6 +903,31 @@ export class TaskService {
 
     createNextRecurringTask(task) {
 
+        // El estado persistido prevalece sobre copias desactualizadas.
+        const current = this.repository.getById(task?.id);
+        const next = this.buildNextRecurringTask(
+            current,
+            this.repository.getAll()
+        );
+
+        return next ? this.repository.add(next.toJSON()) : null;
+
+    }
+
+    buildNextRecurringTask(task, tasks) {
+
+        if (!task?.isCompleted() || !task.recurrence || !task.recurrenceId) {
+            return null;
+        }
+
+        if (tasks.some(candidate =>
+            candidate.id !== task.id &&
+            candidate.recurrenceId === task.recurrenceId &&
+            this.isActiveTask(candidate)
+        )) {
+            return null;
+        }
+
         const nextDueDate = getNextRecurrenceDate(
             task.dueDate,
             task.recurrence,
@@ -944,7 +939,7 @@ export class TaskService {
             }
         );
 
-        return this.repository.add({
+        return new Task({
 
             title: task.title,
             description: task.description,

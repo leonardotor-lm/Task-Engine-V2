@@ -1,3 +1,4 @@
+import { getRecurringTaskSyncConflicts } from "./RecurringTaskSyncConflicts.js";
 import {
     canonicalizeSyncBackup
 } from "./SyncBackupCanonicalizer.js";
@@ -216,6 +217,8 @@ export function createConservativeMigrationSyncBackup({
         conflicts.push(...result.conflicts);
 
     }
+
+    conflicts.push(...getRecurringTaskSyncConflicts(data.tasks));
 
     if (conflicts.length > 0) {
         return {
