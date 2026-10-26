@@ -1,3 +1,4 @@
+import { getRecurringTaskSyncConflicts } from "./RecurringTaskSyncConflicts.js";
 import {
     canonicalizeSyncBackup
 } from "./SyncBackupCanonicalizer.js";
@@ -208,6 +209,10 @@ export function createSafeMergedSyncBackup({
             return null;
         }
 
+    }
+
+    if (getRecurringTaskSyncConflicts(local.data.tasks).length > 0) {
+        return null;
     }
 
     const mergedData = {};

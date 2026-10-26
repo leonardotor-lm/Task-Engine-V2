@@ -50,6 +50,11 @@ function createFixture(taskData = {}) {
 
             tasks[index] = task;
 
+        },
+
+        replaceAll(nextTasks) {
+            tasks = [...nextTasks];
+
         }
 
     };
@@ -88,6 +93,63 @@ test("genera la siguiente instancia al completar una tarea diaria", () => {
     );
 
 });
+
+test("una pendiente vencida no genera sucesora, tampoco desde una copia completada", () => {
+    const fixture = createFixture({ recurrence: "DAILY" });
+    const current = fixture.getTasks()[0];
+    assert.equal(fixture.service.createNextRecurringTask(current), null);
+    const stale = new Task(current.toJSON());
+    stale.complete();
+    assert.equal(fixture.service.createNextRecurringTask(stale), null);
+    assert.equal(fixture.getTasks().length, 1);
+});
+
+for (const bulk of [false, true]) {
+    test(`completar conserva la pendiente existente sin controlador UI (masiva=${bulk})`, () => {
+        const fixture = createFixture({ recurrence: "DAILY", recurrenceId: "series-1" });
+        fixture.service.repository.add({
+            id: "existing", title: "Ya pendiente", status: "PENDING",
+            recurrence: "DAILY", recurrenceId: "series-1", dueDate: "2026-07-25"
+        });
+        if (bulk) fixture.service.completeTasks(["task-1"]);
+        else fixture.service.toggleTask("task-1");
+        assert.equal(fixture.getTasks().length, 2);
+        assert.equal(fixture.service.createNextRecurringTask(fixture.getTasks()[0]), null);
+        assert.equal(fixture.getTasks().length, 2);
+    });
+}
+
+test("completar juntas duplicadas heredadas crea una sucesora desde la última fecha", () => {
+    const fixture = createFixture({ recurrence: "DAILY", recurrenceId: "series-1" });
+    fixture.service.repository.add({
+        id: "later", title: "Última", status: "PENDING", recurrence: "DAILY",
+        recurrenceId: "series-1", dueDate: "2026-07-26"
+    });
+    fixture.service.completeTasks(["task-1", "later"]);
+    const active = fixture.getTasks().filter(task => !task.isCompleted());
+    assert.equal(active.length, 1);
+    assert.equal(active[0].dueDate, "2026-07-27");
+});
+
+for (const [recurrence, rule, expected] of [
+    ["DAILY", { recurrenceInterval: 3 }, "2026-07-27"],
+    ["WEEKLY", { recurrenceInterval: 2, recurrenceWeekdays: [1, 5] }, "2026-08-03"],
+    ["MONTHLY", { recurrenceInterval: 2 }, "2026-09-24"],
+    ["MONTHLY_BUSINESS_LAST", {}, "2026-08-31"]
+]) {
+    for (const bulk of [false, true]) {
+        test(`completar respeta regla ${recurrence} (masiva=${bulk})`, () => {
+            const fixture = createFixture({ recurrence, ...rule });
+            if (bulk) fixture.service.completeTasks(["task-1"]);
+            else fixture.service.toggleTask("task-1");
+            const next = fixture.getTasks()[1];
+            assert.equal(next.dueDate, expected);
+            assert.equal(next.recurrence, recurrence);
+            assert.equal(next.recurrenceInterval, rule.recurrenceInterval ?? 1);
+            assert.deepEqual(next.recurrenceWeekdays, rule.recurrenceWeekdays ?? []);
+        });
+    }
+}
 
 test("copia la clasificación en la siguiente instancia", () => {
 

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { Task } from "../src/domain/Task.js";
 import {
     OngoingSyncReconciliationController
 } from "../src/ui/OngoingSyncReconciliationController.js";
@@ -8,6 +9,33 @@ import {
 } from "../src/core/SyncFingerprint.js";
 
 const DATE = "2026-08-07T12:00:00.000Z";
+
+test("sucesoras concurrentes bloquean la escritura remota y conservan ambas copias", async () => {
+    const current = new Task({
+        id: "current", title: "Recurrente", status: "PENDING",
+        recurrence: "DAILY", recurrenceId: "series-1", dueDate: "2026-08-07",
+        createdAt: DATE, updatedAt: DATE
+    });
+    const baseBackup = backup({ tasks: [current.toJSON()] });
+    current.complete();
+    const successor = id => new Task({
+        id, title: "Recurrente", status: "PENDING",
+        recurrence: "DAILY", recurrenceId: "series-1", dueDate: "2026-08-08",
+        createdAt: DATE, updatedAt: DATE
+    }).toJSON();
+    const localBackup = backup({ tasks: [current.toJSON(), successor("local-next")] });
+    const remoteBackup = backup({ tasks: [current.toJSON(), successor("remote-next")] });
+    const harness = createHarness({ baseBackup, localBackup, remoteBackup });
+    const controller = new OngoingSyncReconciliationController(
+        harness.app, { repository: harness.repository }
+    );
+    const result = await controller.reconcileKnownChanges();
+    assert.equal(result.action, "CONFLICT");
+    assert.equal(harness.getSavedRemote(), null);
+    assert.deepEqual(harness.getCurrentBackup(), localBackup);
+    assert.deepEqual(harness.getRememberedBase(), baseBackup);
+    assert.match(harness.app.syncConflictDetails[0], /tasks:recurrence:series-1/);
+});
 
 function backup(data = {}) {
 
